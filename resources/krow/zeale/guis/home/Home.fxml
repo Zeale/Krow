@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane minHeight="600.0" minWidth="800.0" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="krow.zeale.guis.home.HomeWindow">
+	<top>
+		<MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
+			<menus>
+				<Menu mnemonicParsing="false" text="Kröw">
+					<items>
+						<MenuItem mnemonicParsing="false" onAction="#onCloseRequested" text="Close" />
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="New">
+					<items>
+						<MenuItem mnemonicParsing="false" text="Construct" />
+						<MenuItem mnemonicParsing="false" text="Program" />
+						<MenuItem mnemonicParsing="false" text="System" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem mnemonicParsing="false" text="Law" />
+						<MenuItem mnemonicParsing="false" text="Policy" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem mnemonicParsing="false" text="Area" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem mnemonicParsing="false" text="Task" />
+						<MenuItem mnemonicParsing="false" text="Event" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<Menu mnemonicParsing="false" text="Ruleset...">
+							<items>
+								<MenuItem mnemonicParsing="false" text="Blank Ruleset" />
+							</items>
+						</Menu>
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem mnemonicParsing="false" text="Mindset" />
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="Options" />
+			</menus>
+		</MenuBar>
+	</top>
+	<center>
+		<AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+	</center>
+	<bottom>
+		<ScrollPane fx:id="bottomPane" prefHeight="200.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+			<content>
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+			</content>
+		</ScrollPane>
+	</bottom>
+   <left>
+				<TableView fx:id="laws" BorderPane.alignment="CENTER">
+					<columns>
+						<TableColumn fx:id="lawName" maxWidth="150.0" minWidth="100.0" prefWidth="100.0" text="Laws" />
+						<TableColumn fx:id="lawDesc" maxWidth="900.0" minWidth="150.0" prefWidth="194.0" text="Descriptions" />
+					</columns>
+				</TableView>
+   </left>
+   <right>
+				<TableView fx:id="constructs" BorderPane.alignment="CENTER">
+					<columns>
+						<TableColumn fx:id="constName" maxWidth="150.0" minWidth="100.0" prefWidth="100.0" text="Constructs" />
+						<TableColumn fx:id="constDesc" maxWidth="900.0" minWidth="150.0" prefWidth="190.0" text="Descriptions" />
+					</columns>
+				</TableView>
+   </right>
+</BorderPane>
