@@ -1,0 +1,112 @@
+/*
+ * Some predefined color variables.
+ */
+.root {
+	text-color: #C00;
+	bg: #1C1C1C;/* Background Color */
+	bge: #0B3C24;/* Background Edge Color */
+}
+
+
+
+/*
+ * Default, universal values.
+ */
+.label {
+	-fx-text-fill: text-color;
+}
+
+
+
+/*
+ * The menu at the top of the window.
+ */
+.menu-bar {
+	-fx-font-weight: bold;
+	-fx-background-color: linear-gradient(#363636 25%, #252525 85%, #202020 100%);
+}
+
+.menu-bar .menu:showing .context-menu {
+	-fx-background-color: black;
+}
+.menu-bar .menu:showing .menu-item:focused {
+	-fx-background-color: gray;
+}
+.menu-bar .menu:showing .menu:showing {
+	-fx-background-color: darkgray;
+}
+.menu-bar .menu:showing .menu .context-menu {
+	-fx-background-color: black;
+}
+
+.menu-bar .menu:showing .menu .menu-item:focused {
+	-fx-background-color: #141414;
+}
+
+.menu-bar .label {
+	-fx-text-fill: text-color;
+}
+.menu-bar .menu:hover {
+	-fx-background-color: white;
+}
+.menu-bar .menu:showing {
+	-fx-background-color: black;
+}
+
+.menu-bar .menu-button {
+	
+}
+
+
+
+/*
+ * The window's backgrounds.
+ */
+/* AnchorPanes don't have a default class so we have to explicitly set their class in fxml. See the FXML documents for details. */
+.center-pane {
+	-fx-background-color: linear-gradient(#1F1F1F 0%,#353535 5%);
+}
+.side-tables {
+	-fx-background-color: linear-gradient(#1F1F1F 0%,#353535 5%);
+}
+.bottom-pane {
+	-fx-background-color: transparent;
+}
+.bottom-pane > .viewport {
+	-fx-background-color: linear-gradient(#353535 0%, #353535 65%, #1F1F1F 100%);
+}
+
+
+
+/*
+ * The borders of the window's children.
+ */
+.side-tables {
+	-fx-border-color: #2F2F2F;
+	-fx-border-width: 0 3px 3px 3px;
+}
+.bottom-pane {
+	-fx-border-color: #2F2F2F;
+	-fx-border-width: 3px 0 0 0;
+}
+
+
+
+/*
+ * Tables and their cells.
+ */
+.cell {
+	-fx-background-color: #282828;
+	-fx-border-width: 1px 1px 0 1px;
+	-fx-border-color: black;
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+}
+.cell:hover {
+	-fx-background-color: #FF4040;
+	-fx-text-fill: blue;
+}
+
+.table-view .column-header {
+	-fx-background-color: linear-gradient(#202020 25%, #252525 85%, #363636 100%);
+}

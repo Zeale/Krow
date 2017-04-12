@@ -35,7 +35,8 @@ public final class Kröw {
 	public static final File SYSTEM_SAVE_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Systems");
 	public static final File LAW_SAVE_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Laws");
 	// During the instantiation of INSTANCE, the above directories are used, so
-	// this object must be created after the above directories.
+	// this object must be created after the above directories, thus, its
+	// positioning here.
 	public static final Kröw INSTANCE = new Kröw();
 
 	private Kröw() {
