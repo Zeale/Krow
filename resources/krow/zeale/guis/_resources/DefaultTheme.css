@@ -83,7 +83,7 @@
  */
 .side-tables {
 	-fx-border-color: #2F2F2F;
-	-fx-border-width: 0 3px 3px 3px;
+	-fx-border-width: 0 3px 0 3px;
 }
 .bottom-pane {
 	-fx-border-color: #2F2F2F;

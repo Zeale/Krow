@@ -8,12 +8,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.text.Text;
 import kröw.libs.Construct;
 import kröw.libs.Law;
 import kröw.zeale.v1.program.guis.Window;
@@ -24,6 +26,8 @@ public final class Kröw {
 	private final ObservableList<Law> laws = FXCollections.<Law>observableArrayList();
 
 	public static final String NAME = new String("Kröw");
+
+	public static boolean DEBUG_MODE = false;
 
 	public static final File KRÖW_HOME_DIRECTORY = new File(System.getProperty("user.home") + "/Appdata/Roaming/",
 			Kröw.NAME);
@@ -110,6 +114,10 @@ public final class Kröw {
 
 	}
 
+	public static void exit() {
+
+	}
+
 	@SuppressWarnings("unchecked")
 	public final static <O> O loadObjectFromFile(final File file) throws IOException {
 		try (final ObjectInputStream stream = new ObjectInputStream(new FileInputStream(file));) {
@@ -142,8 +150,66 @@ public final class Kröw {
 
 	public static void main(final String[] args) throws FileNotFoundException, IOException {
 		Kröw.INSTANCE.start(args);
-		final ObjectOutputStream oos = new ObjectOutputStream(
-				new FileOutputStream(new File(Kröw.CONSTRUCT_SAVE_DIRECTORY, "const.const")));
-		oos.close();
+	}
+
+	public static boolean saveObject(final Serializable serializable, final File file) {
+
+		boolean wasDir = false;
+		try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(file))) {
+			System.out.println("\n\nAttempting to save the specified object.");
+
+			file.mkdirs();
+
+			if (file.isDirectory()) {
+
+				System.out.println("The specified file is a directory. Checking contents.");
+				if (file.listFiles().length == 0) {
+					wasDir = true;
+					System.out.println(
+							"The directory contains nothing. It will now be erased and a file will replace it.");
+					file.delete();
+					file.createNewFile();
+				} else {
+					System.out.println("The directory contains files. The object could not be saved.");
+					return false;
+				}
+			}
+
+			boolean existed = true;
+			if (!file.exists()) {
+				existed = false;
+				file.createNewFile();
+			} else if (!wasDir) {
+				file.delete();
+				file.createNewFile();
+			}
+			if (existed)
+				System.out.println("The file exists. Writng to it now...");
+			else
+				System.out.println("The file now exists. Writing to it...");
+			os.writeObject(serializable);
+
+			return true;
+		} catch (final IOException e) {
+			System.err.println("An object could not be saved.");
+			e.printStackTrace();
+			if (wasDir && !file.exists())
+				file.mkdir();
+			return false;
+		}
+	}
+
+	public static String[] splitStringToStringArray(final String string) {
+		final String[] strarr = new String[string.length()];
+		for (int i = 0; i < string.length(); i++)
+			strarr[i] = String.valueOf(string.charAt(i));
+		return strarr;
+	}
+
+	public static Text[] splitStringToTextArray(final String string) {
+		final Text[] textarr = new Text[string.length()];
+		for (int i = 0; i < string.length(); i++)
+			textarr[i] = new Text(String.valueOf(string.charAt(i)));
+		return textarr;
 	}
 }
