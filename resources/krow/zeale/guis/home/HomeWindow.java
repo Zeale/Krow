@@ -1,37 +1,35 @@
 package krow.zeale.guis.home;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
 import javafx.animation.FillTransition;
+import javafx.animation.Interpolator;
 import javafx.animation.SequentialTransition;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import krow.zeale.guis.create.construct.CreateConstructWindow;
+import krow.zeale.guis.management.ConstructManagerWindow;
 import kröw.libs.Construct;
 import kröw.libs.Law;
 import kröw.zeale.v1.program.core.Kröw;
 import kröw.zeale.v1.program.guis.Window;
 
 public class HomeWindow extends Window {
-
-	// The following two suppressed fields will be used in the next commit.
-	@SuppressWarnings("unused")
-	private final Text[][] textSlides = new Text[Kröw.INSTANCE.getConstructs().size()][];
-	@SuppressWarnings("unused")
-	private final ArrayList<Timeline> timeline = new ArrayList<>();
 
 	@FXML
 	private Text constructCount;
@@ -58,18 +56,9 @@ public class HomeWindow extends Window {
 	private TableColumn<Law, String> lawName, lawDesc;
 
 	@FXML
-	private void onCloseRequested() {
-		Platform.exit();
-	}
+	private ImageView krow;
 
-	@FXML
-	private void onGoToCreateConstructWindow() {
-		try {
-			Window.setScene(CreateConstructWindow.class, "CreateConstructWindow.fxml");
-		} catch (final IOException e) {
-			System.err.println("Could not open up the Create Construct Window.");
-		}
-	}
+	private FadeTransition krowFadeInTransition, krowFadeOutTransition;
 
 	@Override
 	@SuppressWarnings("deprecation")
@@ -78,6 +67,7 @@ public class HomeWindow extends Window {
 
 		// The window can now be dragged around the screen by the Menu Bar.
 		Window.setPaneDraggableByNode(menuBar);
+		Window.setPaneDraggableByNode(krow);
 
 		/*
 		 * "If it's not intended for use then add a workaround..."
@@ -89,10 +79,15 @@ public class HomeWindow extends Window {
 		 * <strike>These may or may not work, but it's worth a shot.</strike>
 		 * These do work... :)
 		 */
-		constDesc.impl_setReorderable(false);
-		constName.impl_setReorderable(false);
-		lawDesc.impl_setReorderable(false);
-		lawName.impl_setReorderable(false);
+		try {
+			constDesc.impl_setReorderable(false);
+			constName.impl_setReorderable(false);
+			lawDesc.impl_setReorderable(false);
+			lawName.impl_setReorderable(false);
+		} catch (final NoSuchMethodError e) {
+			System.err.println(
+					"The tables used in the home screen have headers that can be moved around. This is not supported. Because of the version of Java you are running, some availability to stop those headers from being moved is no longer here. This is not a bad thing but be warned that reordering and dragging around table headers MAY cause visual issues or other effects.");
+		}
 
 		constructs.setItems(Kröw.INSTANCE.getConstructs());
 		laws.setItems(Kröw.INSTANCE.getLaws());
@@ -108,8 +103,8 @@ public class HomeWindow extends Window {
 		constructCount.setText(String.valueOf(Kröw.INSTANCE.getConstructs().size()));
 
 		final FillTransition constCountRed = new FillTransition(Duration.seconds(0.8), constructCount, Color.RED,
-				Color.YELLOW),
-				constCountYellow = new FillTransition(Duration.seconds(0.8), constructCount, Color.YELLOW, Color.GREEN),
+				Color.GOLD),
+				constCountYellow = new FillTransition(Duration.seconds(0.8), constructCount, Color.GOLD, Color.GREEN),
 				constCountGreen = new FillTransition(Duration.seconds(0.8), constructCount, Color.GREEN, Color.BLUE),
 				constCountBlue = new FillTransition(Duration.seconds(0.8), constructCount, Color.BLUE, Color.RED);
 		final SequentialTransition constructCountSequence = new SequentialTransition(constCountRed, constCountYellow,
@@ -117,17 +112,84 @@ public class HomeWindow extends Window {
 		constructCountSequence.setCycleCount(Animation.INDEFINITE);
 		constructCountSequence.play();
 
-		final FillTransition constructTextBlue = new FillTransition(Duration.seconds(1.5), constructText, Color.BLUE,
-				Color.GREEN),
-				constructTextGreen = new FillTransition(Duration.seconds(1.5), constructText, Color.GREEN,
-						Color.YELLOW),
-				constructTextYellow = new FillTransition(Duration.seconds(1.5), constructText, Color.YELLOW, Color.RED),
-				constructTextRed = new FillTransition(Duration.seconds(1.5), constructText, Color.RED, Color.BLUE);
-		final SequentialTransition constructTextSequence = new SequentialTransition(constructTextBlue,
-				constructTextGreen, constructTextYellow, constructTextRed);
+		final FillTransition constTextRed = new FillTransition(Duration.seconds(0.8), constructText, Color.RED,
+				Color.GOLD),
+				constTextYellow = new FillTransition(Duration.seconds(0.8), constructText, Color.GOLD, Color.GREEN),
+				constTextGreen = new FillTransition(Duration.seconds(0.8), constructText, Color.GREEN, Color.BLUE),
+				constTextBlue = new FillTransition(Duration.seconds(0.8), constructText, Color.BLUE, Color.RED);
+		final SequentialTransition constructTextSequence = new SequentialTransition(constTextRed, constTextYellow,
+				constTextGreen, constTextBlue);
 		constructTextSequence.setCycleCount(Animation.INDEFINITE);
 		constructTextSequence.play();
 
+		// Krow image
+		krowFadeInTransition = new FadeTransition(Duration.seconds(0.4), krow);
+		krowFadeInTransition.setInterpolator(Interpolator.EASE_OUT);
+		krowFadeInTransition.setToValue(1);
+
+		krowFadeOutTransition = new FadeTransition(Duration.seconds(0.4), krow);
+		krowFadeOutTransition.setInterpolator(Interpolator.EASE_OUT);
+		krowFadeOutTransition.setToValue(0.1);
+	}
+
+	@FXML
+	private void onChangeIconRequested() {
+		if (Window.DARK_CROW == null || Window.LIGHT_CROW == null)
+			return;
+		else {
+			final ObservableList<Image> icons = Window.getStage().getIcons();
+			if (icons.contains(Window.DARK_CROW)) {
+				icons.remove(Window.DARK_CROW);
+				icons.add(Window.LIGHT_CROW);
+			} else {
+				icons.remove(Window.LIGHT_CROW);
+				icons.add(Window.DARK_CROW);
+			}
+		}
+	}
+
+	@FXML
+	private void onCloseRequested() {
+		Platform.exit();
+	}
+
+	@FXML
+	private void onGoToCreateConstructWindow() {
+		try {
+			Window.setScene(CreateConstructWindow.class, "CreateConstructWindow.fxml");
+		} catch (final IOException e) {
+			System.err.println("Could not open up the Create Construct Window.");
+
+			if (Kröw.DEBUG_MODE) {
+				System.out.println("\n\n");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@FXML
+	private void onGoToManageConstructWindow() {
+		try {
+			Window.setScene(ConstructManagerWindow.class, "ConstructManager.fxml");
+		} catch (final IOException e) {
+			System.err.println("Could not open up the Construct Manager Window.");
+			if (Kröw.DEBUG_MODE) {
+				System.out.println("\n\n");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@FXML
+	private void onMouseEnteredKrowImage() {
+		krowFadeInTransition.setFromValue(krow.getOpacity());
+		krowFadeInTransition.play();
+	}
+
+	@FXML
+	private void onMouseExitedKrowImage() {
+		krowFadeOutTransition.setFromValue(krow.getOpacity());
+		krowFadeOutTransition.play();
 	}
 
 }

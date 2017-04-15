@@ -10,6 +10,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import javafx.application.Application;
@@ -22,17 +24,13 @@ import kröw.zeale.v1.program.guis.Window;
 
 public final class Kröw {
 
-	private final ObservableList<Construct> constructs = FXCollections.<Construct>observableArrayList();
-	private final ObservableList<Law> laws = FXCollections.<Law>observableArrayList();
-
 	public static final String NAME = new String("Kröw");
-
-	public static boolean DEBUG_MODE = false;
+	public static boolean DEBUG_MODE = true;
 
 	public static final File KRÖW_HOME_DIRECTORY = new File(System.getProperty("user.home") + "/Appdata/Roaming/",
 			Kröw.NAME);
-
 	public final static File DATA_DIRECTORY = new File(Kröw.KRÖW_HOME_DIRECTORY, "Data");
+
 	public static final File CONSTRUCT_SAVE_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Constructs");
 	public static final File TASK_SAVE_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Tasks");
 	public static final File PROGRAM_SAVE_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Programs");
@@ -43,59 +41,11 @@ public final class Kröw {
 	// positioning here.
 	public static final Kröw INSTANCE = new Kröw();
 
-	private Kröw() {
-		Kröw.loadSaveDirectories();
-		System.out.println("\n\n\n\n");
-		System.out.println("Loading data...\n");
-		loadData();
-	}
-
-	private void loadData() {
-		boolean cons = false;
-		System.out.println("Now loading Constructs from the file system.....");
-		for (final Construct c : Kröw.<Construct>loadObjectsFromDirectory(Kröw.CONSTRUCT_SAVE_DIRECTORY)) {
-			System.out.println(" ---Loaded the Construct " + c.getName() + " successfully.");
-			constructs.add(c);
-			cons = true;
-		}
-		if (!cons)
-			System.err.println("No Constructs were found!...");
-		System.out.println("\nNow loading Programs from the file system.....");
-
-	}
-
-	private void start(final String[] args) {
-		Application.launch(Window.class, args);
-	}
-
-	public ObservableList<Construct> getConstructs() {
-		return constructs;
-	}
-
-	public ObservableList<Law> getLaws() {
-		return laws;
-	}
-
-	private static void loadSaveDirectories() {
-		// Create the following folders if they don't already exist and catch
-		// any exceptions.
-		try {
-			Kröw.createFolder(Kröw.KRÖW_HOME_DIRECTORY);
-			Kröw.createFolder(Kröw.DATA_DIRECTORY);
-			Kröw.createFolder(Kröw.CONSTRUCT_SAVE_DIRECTORY);
-			Kröw.createFolder(Kröw.TASK_SAVE_DIRECTORY);
-			Kröw.createFolder(Kröw.PROGRAM_SAVE_DIRECTORY);
-			Kröw.createFolder(Kröw.SYSTEM_SAVE_DIRECTORY);
-			Kröw.createFolder(Kröw.LAW_SAVE_DIRECTORY);
-		} catch (final RuntimeException e) {
-			System.err.println(
-					"An exception occurred while trying to create or check some necessary directories. The program will print its errors and exit.");
-			System.out.println("\n\n");
-
-			e.printStackTrace();
-			System.exit(-1);
-		}
-
+	public static boolean containsIgnoreCase(final List<String> list, final String string) {
+		for (final String s : list)
+			if (s.equalsIgnoreCase(string))
+				return true;
+		return false;
 	}
 
 	public static void createFolder(final File fileObj) {
@@ -116,6 +66,38 @@ public final class Kröw {
 
 	public static void exit() {
 
+	}
+
+	public static LinkedList<Construct> getDeadConstructs() {
+		final LinkedList<Construct> list = new LinkedList<>();
+		for (final Construct c : Kröw.INSTANCE.constructs)
+			if (!c.isAlive())
+				list.add(c);
+		return list;
+	}
+
+	public static LinkedList<Construct> getFemaleConstructs() {
+		final LinkedList<Construct> list = new LinkedList<>();
+		for (final Construct c : Kröw.INSTANCE.constructs)
+			if (c.getGender())
+				list.add(c);
+		return list;
+	}
+
+	public static LinkedList<Construct> getLivingConstructs() {
+		final LinkedList<Construct> list = new LinkedList<>();
+		for (final Construct c : Kröw.INSTANCE.constructs)
+			if (c.isAlive())
+				list.add(c);
+		return list;
+	}
+
+	public static LinkedList<Construct> getMaleConstructs() {
+		final LinkedList<Construct> list = new LinkedList<>();
+		for (final Construct c : Kröw.INSTANCE.constructs)
+			if (!c.getGender())
+				list.add(c);
+		return list;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -143,9 +125,35 @@ public final class Kröw {
 			} catch (final IOException e) {
 				System.err.println("Could not load in the Object " + file.getName() + " from the path   "
 						+ file.getAbsolutePath());
+				if (Kröw.DEBUG_MODE) {
+					System.out.println("\n\n\n");
+					e.printStackTrace();
+				}
 			}
 
 		return list;
+	}
+
+	private static void loadSaveDirectories() {
+		// Create the following folders if they don't already exist and catch
+		// any exceptions.
+		try {
+			Kröw.createFolder(Kröw.KRÖW_HOME_DIRECTORY);
+			Kröw.createFolder(Kröw.DATA_DIRECTORY);
+			Kröw.createFolder(Kröw.CONSTRUCT_SAVE_DIRECTORY);
+			Kröw.createFolder(Kröw.TASK_SAVE_DIRECTORY);
+			Kröw.createFolder(Kröw.PROGRAM_SAVE_DIRECTORY);
+			Kröw.createFolder(Kröw.SYSTEM_SAVE_DIRECTORY);
+			Kröw.createFolder(Kröw.LAW_SAVE_DIRECTORY);
+		} catch (final RuntimeException e) {
+			System.err.println(
+					"An exception occurred while trying to create or check some necessary directories. The program will print its errors and exit.");
+			System.out.println("\n\n");
+
+			e.printStackTrace();
+			System.exit(-1);
+		}
+
 	}
 
 	public static void main(final String[] args) throws FileNotFoundException, IOException {
@@ -158,7 +166,7 @@ public final class Kröw {
 		try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(file))) {
 			System.out.println("\n\nAttempting to save the specified object.");
 
-			file.mkdirs();
+			file.getParentFile().mkdirs();
 
 			if (file.isDirectory()) {
 
@@ -174,18 +182,15 @@ public final class Kröw {
 					return false;
 				}
 			}
+			if (wasDir)
+				file.delete();
+			final boolean existed = !file.createNewFile();
 
-			boolean existed = true;
-			if (!file.exists()) {
-				existed = false;
-				file.createNewFile();
-			} else if (!wasDir) {
+			if (existed) {
+				System.out.println("The file exists. Writng to it now...");
 				file.delete();
 				file.createNewFile();
-			}
-			if (existed)
-				System.out.println("The file exists. Writng to it now...");
-			else
+			} else
 				System.out.println("The file now exists. Writing to it...");
 			os.writeObject(serializable);
 
@@ -212,4 +217,50 @@ public final class Kröw {
 			textarr[i] = new Text(String.valueOf(string.charAt(i)));
 		return textarr;
 	}
+
+	private final ObservableList<Construct> constructs = FXCollections.<Construct>observableArrayList();
+
+	private final ObservableList<Law> laws = FXCollections.<Law>observableArrayList();
+
+	private Kröw() {
+
+		Kröw.loadSaveDirectories();
+		System.out.println("\n\n\n\n");
+		System.out.println("Loading data...\n");
+		loadData();
+	}
+
+	public ObservableList<Construct> getConstructs() {
+		return constructs;
+	}
+
+	public ObservableList<Law> getLaws() {
+		return laws;
+	}
+
+	private void loadData() {
+		boolean cons = false;
+		System.out.println("Now loading Constructs from the file system.....");
+		for (final Construct c : Kröw.<Construct>loadObjectsFromDirectory(Kröw.CONSTRUCT_SAVE_DIRECTORY)) {
+			System.out.println(" ---Loaded the Construct " + c.getName() + " successfully.");
+			constructs.add(c);
+			cons = true;
+		}
+		if (!cons)
+			System.err.println("No Constructs were loaded!...");
+
+	}
+
+	private void start(final String[] args) {
+		if (args != null) {
+			final List<String> strings = Arrays.<String>asList(args);
+			if (!Kröw.containsIgnoreCase(strings, "-debug-mode") && !Kröw.containsIgnoreCase(strings, "-debug"))
+				Kröw.DEBUG_MODE = false;
+			if (Kröw.DEBUG_MODE)
+				System.out.println("\n\nDebug mode has been enabled...\n\n");
+			Application.launch(Window.class, new String[] {});
+		}
+
+	}
+
 }

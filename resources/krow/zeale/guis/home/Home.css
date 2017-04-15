@@ -1,0 +1,30 @@
+/*
+ * The window's backgrounds.
+ */
+/* AnchorPanes don't have a default class so we have to explicitly set their class in fxml. See the FXML documents for details. */
+.center-pane {
+	-fx-background-color: linear-gradient(#1F1F1F 0%,#353535 5%);
+}
+.side-tables {
+	-fx-background-color: linear-gradient(#1F1F1F 0%,#353535 5%);
+}
+.bottom-pane {
+	-fx-background-color: transparent;
+}
+.bottom-pane > .viewport {
+	-fx-background-color: linear-gradient(#353535 65%, #1F1F1F 100%);
+}
+
+
+
+/*
+ * The borders of the window's children.
+ */
+.side-tables {
+	-fx-border-color: #2F2F2F;
+	-fx-border-width: 0 3px 0 3px;
+}
+.bottom-pane {
+	-fx-border-color: #2F2F2F;
+	-fx-border-width: 3px 0 0 0;
+}

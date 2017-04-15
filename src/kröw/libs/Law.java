@@ -3,17 +3,24 @@ package kröw.libs;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Law {
+public class Law implements Serializable {
 	private transient StringProperty description = new SimpleStringProperty();
 	private transient StringProperty name = new SimpleStringProperty();
+	private static final long serialVersionUID = 1L;
+
+	private static List<Law> editedLaws = new LinkedList<>();
 
 	public Law(final String name, final String description) {
 		this.name.set(name);
 		this.description.set(description);
+		Law.editedLaws.add(this);
 	}
 
 	private void readObject(final ObjectInputStream io) throws IOException {
@@ -59,10 +66,19 @@ public class Law {
 
 	public void setDescription(final String description) {
 		this.description.set(description);
+		if (!Law.editedLaws.contains(this))
+			Law.editedLaws.add(this);
 	}
 
 	public void setName(final String name) {
 		this.name.set(name);
+		if (!Law.editedLaws.contains(this))
+			Law.editedLaws.add(this);
+
+	}
+
+	public static List<Law> getEditedLaws() {
+		return Law.editedLaws;
 	}
 
 }

@@ -12,12 +12,14 @@ import kröw.zeale.v1.program.guis.Window;
 public class CreateConstructWindow extends Window {
 	@FXML
 	private CheckBox gender;
+	@FXML
+	private CheckBox alive;
 
 	@FXML
 	private TextField nameField;
-
 	@FXML
 	private TextArea descriptionField;
+
 	@FXML
 	private MenuBar menuBar;
 
@@ -28,10 +30,11 @@ public class CreateConstructWindow extends Window {
 			name = "null";
 		if (description.isEmpty())
 			description = "null";
-		final Construct construct = new Construct(name, description, gender.isSelected());
-		if (!Kröw.INSTANCE.getConstructs().contains(construct))
-			Kröw.INSTANCE.getConstructs().add(0, construct);
-		else
+		final Construct construct = new Construct(name, description, gender.isSelected(), alive.isSelected());
+		if (!Kröw.INSTANCE.getConstructs().contains(construct)) {
+			Kröw.INSTANCE.getConstructs().add(construct);
+			goBack();
+		} else
 			System.err.println("The Construct " + construct.getName() + " already exists!");
 
 	}
@@ -44,5 +47,6 @@ public class CreateConstructWindow extends Window {
 	@Override
 	public void initialize() {
 		Window.setPaneDraggableByNode(menuBar);
+
 	}
 }

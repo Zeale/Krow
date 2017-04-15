@@ -7,60 +7,49 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import krow.zeale.guis.home.HomeWindow;
 import kröw.libs.Construct;
+import kröw.libs.Law;
 import kröw.zeale.v1.program.core.Kröw;
 
 public class Window extends Application {
 
-	private double xOffset, yOffset;
-
 	private static Stage stage;
 
 	private static Scene previousScene;
+
+	public static final Image LIGHT_CROW, DARK_CROW;
+
+	static {
+		Image dark = null, light = null;
+		try {
+			dark = new Image("/krow/zeale/DarkKröw.png");
+		} catch (final IllegalArgumentException e) {
+			System.err.println("The Dark Crow icon could not be loaded. Only the Light Crow Icon will be available.");
+
+		}
+
+		try {
+			light = new Image("krow/zeale/LightKröw.png");
+		} catch (final IllegalArgumentException e) {
+			if (dark == null)
+				System.err.println(
+						"The Light Crow icon could not be loaded either! The icons will be set to the default coffee mug.");
+			else
+				System.err
+						.println("The Light Crow icon could not be loaded. Only the Dark Crow icon will be available.");
+		}
+
+		DARK_CROW = dark;
+		LIGHT_CROW = light;
+	}
+
 	private static Window controller;
 
 	private static Window previousController;
-
-	public Window() {
-	}
-
-	public Stage getStage() {
-		return Window.stage;
-	}
-
-	public final double getxOffset() {
-		return xOffset;
-	}
-
-	public final double getyOffset() {
-		return yOffset;
-	}
-
-	public void initialize() {
-
-	}
-
-	@Override
-	public void start(final Stage primaryStage) throws Exception {
-		Window.stage = primaryStage;
-		Window.setScene(HomeWindow.class, "Home.fxml");
-		primaryStage.initStyle(StageStyle.UNDECORATED);
-		primaryStage.setTitle(Kröw.NAME);
-		primaryStage.show();
-	}
-
-	@Override
-	public void stop() throws Exception {
-		for (final Construct c : Kröw.INSTANCE.getConstructs()) {
-			final File cf = new File(Kröw.CONSTRUCT_SAVE_DIRECTORY, c.getName() + ".const");
-			Kröw.saveObject(c, cf);
-
-		}
-		super.stop();
-	}
 
 	public static Object getController() {
 		return Window.controller;
@@ -72,6 +61,10 @@ public class Window extends Application {
 
 	public static Scene getPreviousScene() {
 		return Window.previousScene;
+	}
+
+	public static Stage getStage() {
+		return Window.stage;
 	}
 
 	public static void setPaneDraggableByNode(final Node node) {
@@ -102,10 +95,10 @@ public class Window extends Application {
 		Window.controller = loader.<Window>getController();
 		if (Kröw.DEBUG_MODE) {
 			System.out.println();
-			System.out.println(Window.previousController == null ? "The previous controller's value is null."
-					: "The previous controller's value is not null.");
-			System.out.println(Window.controller == null ? "The current controller's value is null."
-					: "The current controller's value is not null.");
+			System.out.println(Window.previousController == null ? "The previous controller of the window is null."
+					: "The previous controller of the window is not null.");
+			System.out.println(Window.controller == null ? "The current controller of the window is null."
+					: "The current controller of the window is not null.");
 		}
 	}
 
@@ -117,10 +110,10 @@ public class Window extends Application {
 		Window.controller = loader.<Window>getController();
 		if (Kröw.DEBUG_MODE) {
 			System.out.println();
-			System.out.println(Window.previousController == null ? "The previous controller's value is null."
-					: "The previous controller's value is not null.");
-			System.out.println(Window.controller == null ? "The current controller's value is null."
-					: "The current controller's value is not null.");
+			System.out.println(Window.previousController == null ? "The previous controller of the window is null."
+					: "The previous controller of the window is not null.");
+			System.out.println(Window.controller == null ? "The current controller of the window is null."
+					: "The current controller of the window is not null.");
 		}
 
 	}
@@ -138,11 +131,57 @@ public class Window extends Application {
 
 		if (Kröw.DEBUG_MODE) {
 			System.out.println();
-			System.out.println(Window.previousController == null ? "The previous controller's value is null."
-					: "The previous controller's value is not null.");
-			System.out.println(Window.controller == null ? "The current controller's value is null."
-					: "The current controller's value is not null.");
+			System.out.println(Window.previousController == null ? "The previous controller of the window is null."
+					: "The previous controller of the window is not null.");
+			System.out.println(Window.controller == null ? "The current controller of the window is null."
+					: "The current controller of the window is not null.");
 		}
 
 	}
+
+	private double xOffset, yOffset;
+
+	public Window() {
+	}
+
+	public final double getxOffset() {
+		return xOffset;
+	}
+
+	public final double getyOffset() {
+		return yOffset;
+	}
+
+	public void initialize() {
+
+	}
+
+	@Override
+	public void start(final Stage primaryStage) throws Exception {
+		Window.stage = primaryStage;
+		Window.setScene(HomeWindow.class, "Home.fxml");
+		primaryStage.initStyle(StageStyle.UNDECORATED);
+		primaryStage.setTitle(Kröw.NAME);
+		if (Window.DARK_CROW != null)
+			primaryStage.getIcons().add(Window.DARK_CROW);
+		else if (Window.LIGHT_CROW != null)
+			primaryStage.getIcons().add(Window.LIGHT_CROW);
+		primaryStage.show();
+	}
+
+	@Override
+	public void stop() throws Exception {
+		for (final Construct c : Construct.getEditedConstructs()) {
+			final File cf = new File(Kröw.CONSTRUCT_SAVE_DIRECTORY, c.getName() + ".const");
+			Kröw.saveObject(c, cf);
+
+		}
+		for (final Law c : Law.getEditedLaws()) {
+			final File cf = new File(Kröw.LAW_SAVE_DIRECTORY, c.getName() + ".law");
+			Kröw.saveObject(c, cf);
+
+		}
+		super.stop();
+	}
+
 }
