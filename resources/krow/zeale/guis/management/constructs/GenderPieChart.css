@@ -8,3 +8,5 @@
 
 .chart-title {-fx-font-weight: bold;}
 .chart-legend {-fx-background-color: linear-gradient(#1d1d1d 0.0%, #111 10.0%, #000000 30.0%, #000000 75.0%, #111 90.0%, #1d1d1d 100.0%);}
+
+.chart-pie-label {-fx-fill: #ff4f0a;}

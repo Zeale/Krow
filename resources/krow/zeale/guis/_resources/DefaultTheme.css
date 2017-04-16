@@ -14,6 +14,7 @@
  */
 .label {
 	-fx-text-fill: text-color;
+	
 }
 
 
@@ -53,14 +54,10 @@
 	-fx-background-color: black;
 }
 
-.menu-bar .menu-button {
-	
-}
-
 
 
 /*
- * Backgrounds for items in the .background class.
+ * Backgrounds for items in the background class.
  */
 .background {
 	-fx-background-color: linear-gradient(#1F1F1F 0%,#353535 5%);

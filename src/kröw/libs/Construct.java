@@ -6,8 +6,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -17,101 +15,10 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.util.Callback;
+import kröw.zeale.v1.program.core.DataManager;
 import kröw.zeale.v1.program.core.Kröw;
 
-public class Construct implements Serializable {
-
-	public static class CellValueFactory<S extends Construct, T>
-			implements Callback<CellDataFeatures<S, T>, ObservableValue<T>> {
-
-		public static enum Type {
-			NAME, GENDER, ALIVE, DESCRIPTION, MARKS;
-		}
-
-		private final Type type;
-
-		public CellValueFactory(final Type type) {
-			this.type = type;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public ObservableValue<T> call(final CellDataFeatures<S, T> param) {
-			switch (type) {
-			case NAME:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getName());
-			case GENDER:
-				return new ReadOnlyObjectWrapper<>((T) (param.getValue().getGender() ? "Female" : "Male"));
-			case ALIVE:
-				return (ObservableValue<T>) new ReadOnlyBooleanWrapper(param.getValue().isAlive());
-			case DESCRIPTION:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getDescription());
-			case MARKS:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getMarks());
-			default:
-				return null;
-			}
-		}
-
-	}
-
-	public final class Mark implements Serializable {
-		private static final long serialVersionUID = 1L;
-		private transient StringProperty description;
-
-		private transient StringProperty mark;
-
-		public Mark(final String description) {
-			marks.add(this);
-		}
-
-		public Mark(final String mark, final String description) {
-			this.description = new SimpleStringProperty(description);
-			this.mark = new SimpleStringProperty(mark);
-		}
-
-		/**
-		 * @return This Object's description field.
-		 */
-		public final String getDescription() {
-			return description.get();
-		}
-
-		private void readObject(final ObjectInputStream is) throws IOException {
-			try {
-				description = new SimpleStringProperty((String) is.readObject());
-				mark = new SimpleStringProperty((String) is.readObject());
-			} catch (final ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-
-		}
-
-		/**
-		 * @param description
-		 *            the description to set
-		 */
-		public final void setDescription(final String description) {
-			this.description.set(description);
-		}
-
-		private void writeObject(final ObjectOutputStream os) throws IOException {
-			os.writeObject(description.get());
-			os.writeObject(mark.get());
-			os.defaultWriteObject();
-		}
-
-	}
-
-	private static List<Construct> editedConstructs = new LinkedList<>();
-
-	private static final long serialVersionUID = 1L;// This can't change...
-
-	private static final long trueSerialVersionUID = 1L;
-
-	public static List<Construct> getEditedConstructs() {
-		return Construct.editedConstructs;
-	}
+public class Construct extends MindsetObject {
 
 	private transient boolean deleted = false;
 
@@ -126,27 +33,105 @@ public class Construct implements Serializable {
 	private boolean alive;
 
 	public Construct(final String name, final String description, final boolean gender, final boolean alive) {
+		super(name);
 		this.name = new SimpleStringProperty(name);
 		this.description = new SimpleStringProperty(description);
 		this.gender = gender;
 		this.alive = alive;
-		Construct.editedConstructs.add(this);
 
+	}
+
+	private static final long serialVersionUID = 1L;// This can't change...
+
+	private static final long trueSerialVersionUID = 1L;
+
+	public static final String FILE_EXTENSION = ".const";
+
+	private void loadOldObjects(final ObjectInputStream is) {
+		try {
+			name = new SimpleStringProperty((String) is.readObject());
+			description = new SimpleStringProperty((String) is.readObject());
+			gender = ((SimpleBooleanProperty) is.readObject()).get();
+		} catch (final ClassNotFoundException e1) {
+			java.lang.System.err.println("An error occurred while reading a construct.");
+			e1.printStackTrace();
+		} catch (final IOException e) {
+
+		}
+	}
+
+	private void readObject(final ObjectInputStream is) throws IOException {
+		long version;
+		try {
+			version = is.readLong();
+		} catch (final Exception e) {
+			version = 0;
+			loadOldObjects(is);
+			return;
+		}
+		try {
+			name = new SimpleStringProperty((String) is.readObject());
+		} catch (final ClassNotFoundException e) {
+			java.lang.System.err.println("Could not load a construct.");
+			if (Kröw.DEBUG_MODE) {
+				java.lang.System.out.println("\n\n\n");
+				e.printStackTrace();
+			} else
+				java.lang.System.err.println("Enable Debug Mode to see stack traces.");
+		}
+		try {
+			description = new SimpleStringProperty((String) is.readObject());
+			gender = is.readBoolean();
+			alive = is.readBoolean();
+		} catch (final ClassNotFoundException e) {
+			java.lang.System.err.println("Could not load the construct " + name.get() + ".");
+			if (Kröw.DEBUG_MODE) {
+				java.lang.System.out.println("\n\n\n");
+				e.printStackTrace();
+			} else
+				java.lang.System.err.println("Enable Debug Mode to see stack traces.");
+		}
+
+		if (version <= 1)
+			return;
+
+	}
+
+	private void writeObject(final ObjectOutputStream os) throws IOException {
+		os.writeLong(Construct.trueSerialVersionUID);
+		os.writeObject(name.get());
+		os.writeObject(description.get());
+		os.writeBoolean(gender);
+		os.writeBoolean(alive);
+	}
+
+	@Override
+	String getExtension() {
+		return Construct.FILE_EXTENSION;
+	}
+
+	@Override
+	File getSaveDirectory() {
+		return DataManager.CONSTRUCT_SAVE_DIRECTORY;
 	}
 
 	public void delete() {
 
-		System.out.println("\nDeleting the construct " + getName() + "... :(");
+		java.lang.System.out.println("\nDeleting the construct " + getName() + "... :(");
 
-		Construct.editedConstructs.remove(this);
+		MindsetObject.objectsToSave.remove(this);
 
-		final File constructFile = new File(Kröw.CONSTRUCT_SAVE_DIRECTORY, getName() + ".const");
+		final File constructFile = new File(DataManager.CONSTRUCT_SAVE_DIRECTORY, getName() + ".const");
 		if (constructFile.isFile())
 			constructFile.delete();
 		else
-			System.out.println("The construct " + getName()
+			java.lang.System.out.println("The construct " + getName()
 					+ " does not have an associated file... The construct will only be deleted from RAM.");
 		deleted = true;
+	}
+
+	public StringProperty descriptionProperty() {
+		return description;
 	}
 
 	/*
@@ -169,6 +154,11 @@ public class Construct implements Serializable {
 		return description.get();
 	}
 
+	@Override
+	public File getFile() {
+		return new File(getSaveDirectory(), getName() + getExtension());
+	}
+
 	public boolean getGender() {
 		return gender;
 	}
@@ -183,6 +173,7 @@ public class Construct implements Serializable {
 	/**
 	 * @return This Object's name field.
 	 */
+	@Override
 	public final String getName() {
 		return name.get();
 	}
@@ -204,60 +195,14 @@ public class Construct implements Serializable {
 		return alive;
 	}
 
-	private void loadOldObjects(final ObjectInputStream is) {
-		try {
-			name = new SimpleStringProperty((String) is.readObject());
-			description = new SimpleStringProperty((String) is.readObject());
-			gender = ((SimpleBooleanProperty) is.readObject()).get();
-		} catch (final ClassNotFoundException e1) {
-			System.err.println("An error occurred while reading a construct.");
-			e1.printStackTrace();
-		} catch (final IOException e) {
-
-		}
-	}
-
-	private void readObject(final ObjectInputStream is) throws IOException {
-		long version;
-		try {
-			version = is.readLong();
-		} catch (final Exception e) {
-			version = 0;
-			loadOldObjects(is);
-			return;
-		}
-		try {
-			name = new SimpleStringProperty((String) is.readObject());
-		} catch (final ClassNotFoundException e) {
-			System.err.println("Could not load a construct.");
-			if (Kröw.DEBUG_MODE) {
-				System.out.println("\n\n\n");
-				e.printStackTrace();
-			} else
-				System.err.println("Enable Debug Mode to see stack traces.");
-		}
-		try {
-			description = new SimpleStringProperty((String) is.readObject());
-			gender = is.readBoolean();
-			alive = is.readBoolean();
-		} catch (final ClassNotFoundException e) {
-			System.err.println("Could not load the construct " + name.get() + ".");
-			if (Kröw.DEBUG_MODE) {
-				System.out.println("\n\n\n");
-				e.printStackTrace();
-			} else
-				System.err.println("Enable Debug Mode to see stack traces.");
-		}
-
-		if (version <= 1)
-			return;
-
+	public StringProperty nameProperty() {
+		return name;
 	}
 
 	public void setAlive(final boolean alive) {
 		this.alive = alive;
-		if (!Construct.editedConstructs.contains(this) && !deleted)
-			Construct.editedConstructs.add(this);
+		if (!MindsetObject.objectsToSave.contains(this) && !deleted)
+			MindsetObject.objectsToSave.add(this);
 	}
 
 	/**
@@ -266,14 +211,14 @@ public class Construct implements Serializable {
 	 */
 	public final void setDescription(final String description) {
 		this.description.set(description);
-		if (!Construct.editedConstructs.contains(this) && !deleted)
-			Construct.editedConstructs.add(this);
+		if (!MindsetObject.objectsToSave.contains(this) && !deleted)
+			MindsetObject.objectsToSave.add(this);
 	}
 
 	public void setGender(final boolean female) {
 		gender = female;
-		if (!Construct.editedConstructs.contains(this) && !deleted)
-			Construct.editedConstructs.add(this);
+		if (!MindsetObject.objectsToSave.contains(this) && !deleted)
+			MindsetObject.objectsToSave.add(this);
 	}
 
 	/**
@@ -282,8 +227,8 @@ public class Construct implements Serializable {
 	 */
 	public final void setName(final String name) {
 		this.name.set(name);
-		if (!Construct.editedConstructs.contains(this) && !deleted)
-			Construct.editedConstructs.add(this);
+		if (!MindsetObject.objectsToSave.contains(this) && !deleted)
+			MindsetObject.objectsToSave.add(this);
 	}
 
 	public boolean trueEquals(final Object obj) {
@@ -302,12 +247,86 @@ public class Construct implements Serializable {
 		return true;
 	}
 
-	private void writeObject(final ObjectOutputStream os) throws IOException {
-		os.writeLong(Construct.trueSerialVersionUID);
-		os.writeObject(name.get());
-		os.writeObject(description.get());
-		os.writeBoolean(gender);
-		os.writeBoolean(alive);
+	public static class ConstructCellValueFactory<S extends Construct, T>
+			implements Callback<CellDataFeatures<S, T>, ObservableValue<T>> {
+
+		private final Type type;
+
+		public ConstructCellValueFactory(final Type type) {
+			this.type = type;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public ObservableValue<T> call(final CellDataFeatures<S, T> param) {
+			switch (type) {
+			case NAME:
+				return new ReadOnlyObjectWrapper<>((T) param.getValue().getName());
+			case GENDER:
+				return new ReadOnlyObjectWrapper<>((T) (param.getValue().getGender() ? "Female" : "Male"));
+			case ALIVE:
+				return (ObservableValue<T>) new ReadOnlyBooleanWrapper(param.getValue().isAlive());
+			case DESCRIPTION:
+				return new ReadOnlyObjectWrapper<>((T) param.getValue().getDescription());
+			case MARKS:
+				return new ReadOnlyObjectWrapper<>((T) param.getValue().getMarks());
+			default:
+				return null;
+			}
+		}
+
+		public static enum Type {
+			NAME, GENDER, ALIVE, DESCRIPTION, MARKS;
+		}
+
+	}
+
+	public final class Mark implements Serializable {
+		private transient StringProperty description;
+		private transient StringProperty mark;
+
+		public Mark(final String description) {
+			marks.add(this);
+		}
+
+		public Mark(final String mark, final String description) {
+			this.description = new SimpleStringProperty(description);
+			this.mark = new SimpleStringProperty(mark);
+		}
+
+		private static final long serialVersionUID = 1L;
+
+		private void readObject(final ObjectInputStream is) throws IOException {
+			try {
+				description = new SimpleStringProperty((String) is.readObject());
+				mark = new SimpleStringProperty((String) is.readObject());
+			} catch (final ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		private void writeObject(final ObjectOutputStream os) throws IOException {
+			os.writeObject(description.get());
+			os.writeObject(mark.get());
+			os.defaultWriteObject();
+		}
+
+		/**
+		 * @return This Object's description field.
+		 */
+		public final String getDescription() {
+			return description.get();
+		}
+
+		/**
+		 * @param description
+		 *            the description to set
+		 */
+		public final void setDescription(final String description) {
+			this.description.set(description);
+		}
+
 	}
 
 }

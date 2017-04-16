@@ -1,4 +1,4 @@
-package krow.zeale.guis.management;
+package krow.zeale.guis.management.constructs;
 
 import java.util.ArrayList;
 
@@ -40,40 +40,10 @@ public class ConstructManagerWindow extends Window {
 
 	private Construct constructBeingEdited;
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public void initialize() {
-		super.initialize();
-
-		Window.setPaneDraggableByNode(menubar);
-
-		/*
-		 * More deprecated methods with a catch block. The {@link
-		 * HomeWindow#initialize()} method contains a description and the
-		 * printed "error" of what happens when the NoSuchMethodError is thrown.
-		 */
-		try {
-			nameTable.impl_setReorderable(false);
-			genderTable.impl_setReorderable(false);
-			descriptionTable.impl_setReorderable(false);
-			lifeTable.impl_setReorderable(false);
-		} catch (final NoSuchMethodError e) {
-		}
-
-		refreshData();
-		constructs.setItems(Kröw.INSTANCE.getConstructs());
-
-		nameTable.setCellValueFactory(new Construct.CellValueFactory<>(Construct.CellValueFactory.Type.NAME));
-		genderTable.setCellValueFactory(new Construct.CellValueFactory<>(Construct.CellValueFactory.Type.GENDER));
-		descriptionTable
-				.setCellValueFactory(new Construct.CellValueFactory<>(Construct.CellValueFactory.Type.DESCRIPTION));
-		lifeTable.setCellValueFactory(new Construct.CellValueFactory<>(Construct.CellValueFactory.Type.ALIVE));
-
-	}
-
 	@FXML
 	private void onConstructsTableClicked() {
-		constructBeingEdited = Kröw.INSTANCE.getConstructs().get(constructs.getFocusModel().getFocusedCell().getRow());
+		constructBeingEdited = Kröw.getDataManager().getConstructs()
+				.get(constructs.getFocusModel().getFocusedCell().getRow());
 		constructs.setVisible(false);
 
 		editNameField.setText(constructBeingEdited.getName());
@@ -92,7 +62,7 @@ public class ConstructManagerWindow extends Window {
 
 	@FXML
 	private void onDeleteConstruct() {
-		if (!Kröw.INSTANCE.getConstructs().remove(constructBeingEdited))
+		if (!Kröw.getDataManager().getConstructs().remove(constructBeingEdited))
 			System.err.println("The construct " + constructBeingEdited.getName()
 					+ " could not be removed from the Construct list.....");
 		constructBeingEdited.delete();
@@ -124,17 +94,52 @@ public class ConstructManagerWindow extends Window {
 	}
 
 	private void refreshData() {
-		final ArrayList<Construct> constructs = new ArrayList<>(Kröw.INSTANCE.getConstructs());
-		Kröw.INSTANCE.getConstructs().clear();
-		Kröw.INSTANCE.getConstructs().addAll(constructs);
+		final ArrayList<Construct> constructs = new ArrayList<>(Kröw.getDataManager().getConstructs());
+		Kröw.getDataManager().getConstructs().clear();
+		Kröw.getDataManager().getConstructs().addAll(constructs);
 
 		ObservableList<PieChart.Data> list = FXCollections.observableArrayList(
-				new PieChart.Data("Males", Kröw.getMaleConstructs().size()),
-				new PieChart.Data("Females", Kröw.getFemaleConstructs().size()));
+				new PieChart.Data("Males", Kröw.getDataManager().getConstructs().getMaleConstructs().size()),
+				new PieChart.Data("Females", Kröw.getDataManager().getConstructs().getFemaleConstructs().size()));
 		genderPieChart.setData(list);
-		list = FXCollections.observableArrayList(new PieChart.Data("Living", Kröw.getLivingConstructs().size()),
-				new PieChart.Data("Dead", Kröw.getDeadConstructs().size()));
+		list = FXCollections.observableArrayList(
+				new PieChart.Data("Living", Kröw.getDataManager().getConstructs().getLivingConstructs().size()),
+				new PieChart.Data("Dead", Kröw.getDataManager().getConstructs().getDeadConstructs().size()));
 		lifePieChart.setData(list);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void initialize() {
+		super.initialize();
+
+		Window.setPaneDraggableByNode(menubar);
+
+		/*
+		 * More deprecated methods with a catch block. The {@link
+		 * HomeWindow#initialize()} method contains a description and the
+		 * printed "error" of what happens when the NoSuchMethodError is thrown.
+		 */
+		try {
+			nameTable.impl_setReorderable(false);
+			genderTable.impl_setReorderable(false);
+			descriptionTable.impl_setReorderable(false);
+			lifeTable.impl_setReorderable(false);
+		} catch (final NoSuchMethodError e) {
+		}
+
+		refreshData();
+		constructs.setItems(Kröw.getDataManager().getConstructs());
+
+		nameTable.setCellValueFactory(
+				new Construct.ConstructCellValueFactory<>(Construct.ConstructCellValueFactory.Type.NAME));
+		genderTable.setCellValueFactory(
+				new Construct.ConstructCellValueFactory<>(Construct.ConstructCellValueFactory.Type.GENDER));
+		descriptionTable.setCellValueFactory(
+				new Construct.ConstructCellValueFactory<>(Construct.ConstructCellValueFactory.Type.DESCRIPTION));
+		lifeTable.setCellValueFactory(
+				new Construct.ConstructCellValueFactory<>(Construct.ConstructCellValueFactory.Type.ALIVE));
+
 	}
 
 }

@@ -23,7 +23,11 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import krow.zeale.guis.create.construct.CreateConstructWindow;
-import krow.zeale.guis.management.ConstructManagerWindow;
+import krow.zeale.guis.create.law.CreateLawWindow;
+import krow.zeale.guis.create.system.CreateSystemWindow;
+import krow.zeale.guis.management.constructs.ConstructManagerWindow;
+import krow.zeale.guis.management.laws.LawManagerWindow;
+import krow.zeale.pages.Pages;
 import kröw.libs.Construct;
 import kröw.libs.Law;
 import kröw.zeale.v1.program.core.Kröw;
@@ -47,18 +51,143 @@ public class HomeWindow extends Window {
 
 	@FXML
 	private TableView<Construct> constructs;
+
 	@FXML
 	private TableView<Law> laws;
-
 	@FXML
 	private TableColumn<Construct, String> constName, constDesc;
+
 	@FXML
 	private TableColumn<Law, String> lawName, lawDesc;
-
 	@FXML
 	private ImageView krow;
 
 	private FadeTransition krowFadeInTransition, krowFadeOutTransition;
+
+	@FXML
+	private void onChangeIconRequested() {
+		if (Window.DARK_CROW == null || Window.LIGHT_CROW == null)
+			return;
+		else {
+			final ObservableList<Image> icons = Window.getStage().getIcons();
+			if (icons.contains(Window.DARK_CROW)) {
+				icons.remove(Window.DARK_CROW);
+				icons.add(Window.LIGHT_CROW);
+			} else {
+				icons.remove(Window.LIGHT_CROW);
+				icons.add(Window.DARK_CROW);
+			}
+		}
+	}
+
+	@FXML
+	private void onCloseRequested() {
+		Platform.exit();
+	}
+
+	@FXML
+	private void onGoToCreateConstructWindow() {
+		try {
+			Window.setScene(CreateConstructWindow.class, "CreateConstructWindow.fxml");
+		} catch (final IOException e) {
+			System.err.println("Could not open up the Construct Creation Window.");
+
+			if (Kröw.DEBUG_MODE) {
+				System.out.println("\n\n");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@FXML
+	private void onGoToCreateLawWindow() {
+		try {
+			Window.setScene(CreateLawWindow.class, "CreateLawWindow.fxml");
+		} catch (final Exception e) {
+			System.err.println("Could not open up the Law Creation Window.");
+
+			if (Kröw.DEBUG_MODE) {
+				System.out.println("\n\n");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Will be implemented later... Do not use.....
+	 */
+	@FXML
+	private void onGoToCreatePolicyWindow() {
+		try {
+			Window.setScene(CreateSystemWindow.class, "CreatePolicyWindow.fxml");
+		} catch (final IOException e) {
+			System.err.println("Could not open up the Policy Creation Window.");
+
+			if (Kröw.DEBUG_MODE) {
+				System.out.println("\n\n");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@FXML
+	private void onGoToCreateSystemWindow() {
+		try {
+			Window.setScene(CreateSystemWindow.class, "CreateSystemWindow.fxml");
+		} catch (final IOException e) {
+			System.err.println("Could not open up the System Creation Window.");
+
+			if (Kröw.DEBUG_MODE) {
+				System.out.println("\n\n");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@FXML
+	private void onGoToManageConstructWindow() {
+		try {
+			Window.setScene(ConstructManagerWindow.class, "ConstructManager.fxml");
+		} catch (final IOException e) {
+			System.err.println("Could not open up the Construct Manager Window.");
+			if (Kröw.DEBUG_MODE) {
+				System.out.println("\n\n");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@FXML
+	private void onGoToManageLawWindow() {
+		try {
+			Window.setScene(LawManagerWindow.class, "LawManager.fxml");
+		} catch (final IOException e) {
+			System.err.println("Could not open up the Law Manager Window.");
+			if (Kröw.DEBUG_MODE) {
+				System.out.println("\n\n");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@FXML
+	private void onGoToPages() {
+		if (Kröw.DEBUG_MODE)
+			Pages.openPage(Kröw.getDataManager().getConstructs()
+					.get((int) (Math.random() * Kröw.getDataManager().getConstructs().size())));
+	}
+
+	@FXML
+	private void onMouseEnteredKrowImage() {
+		krowFadeInTransition.setFromValue(krow.getOpacity());
+		krowFadeInTransition.play();
+	}
+
+	@FXML
+	private void onMouseExitedKrowImage() {
+		krowFadeOutTransition.setFromValue(krow.getOpacity());
+		krowFadeOutTransition.play();
+	}
 
 	@Override
 	@SuppressWarnings("deprecation")
@@ -89,8 +218,8 @@ public class HomeWindow extends Window {
 					"The tables used in the home screen have headers that can be moved around. This is not supported. Because of the version of Java you are running, some availability to stop those headers from being moved is no longer here. This is not a bad thing but be warned that reordering and dragging around table headers MAY cause visual issues or other effects.");
 		}
 
-		constructs.setItems(Kröw.INSTANCE.getConstructs());
-		laws.setItems(Kröw.INSTANCE.getLaws());
+		constructs.setItems(Kröw.getDataManager().getConstructs());
+		laws.setItems(Kröw.getDataManager().getLaws());
 		constDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
 		constName.setCellValueFactory(new PropertyValueFactory<>("name"));
 		lawDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -100,7 +229,7 @@ public class HomeWindow extends Window {
 
 		// Now lets set up some timelines for animations...
 
-		constructCount.setText(String.valueOf(Kröw.INSTANCE.getConstructs().size()));
+		constructCount.setText(String.valueOf(Kröw.getDataManager().getConstructs().size()));
 
 		final FillTransition constCountRed = new FillTransition(Duration.seconds(0.8), constructCount, Color.RED,
 				Color.GOLD),
@@ -130,66 +259,6 @@ public class HomeWindow extends Window {
 		krowFadeOutTransition = new FadeTransition(Duration.seconds(0.4), krow);
 		krowFadeOutTransition.setInterpolator(Interpolator.EASE_OUT);
 		krowFadeOutTransition.setToValue(0.1);
-	}
-
-	@FXML
-	private void onChangeIconRequested() {
-		if (Window.DARK_CROW == null || Window.LIGHT_CROW == null)
-			return;
-		else {
-			final ObservableList<Image> icons = Window.getStage().getIcons();
-			if (icons.contains(Window.DARK_CROW)) {
-				icons.remove(Window.DARK_CROW);
-				icons.add(Window.LIGHT_CROW);
-			} else {
-				icons.remove(Window.LIGHT_CROW);
-				icons.add(Window.DARK_CROW);
-			}
-		}
-	}
-
-	@FXML
-	private void onCloseRequested() {
-		Platform.exit();
-	}
-
-	@FXML
-	private void onGoToCreateConstructWindow() {
-		try {
-			Window.setScene(CreateConstructWindow.class, "CreateConstructWindow.fxml");
-		} catch (final IOException e) {
-			System.err.println("Could not open up the Create Construct Window.");
-
-			if (Kröw.DEBUG_MODE) {
-				System.out.println("\n\n");
-				e.printStackTrace();
-			}
-		}
-	}
-
-	@FXML
-	private void onGoToManageConstructWindow() {
-		try {
-			Window.setScene(ConstructManagerWindow.class, "ConstructManager.fxml");
-		} catch (final IOException e) {
-			System.err.println("Could not open up the Construct Manager Window.");
-			if (Kröw.DEBUG_MODE) {
-				System.out.println("\n\n");
-				e.printStackTrace();
-			}
-		}
-	}
-
-	@FXML
-	private void onMouseEnteredKrowImage() {
-		krowFadeInTransition.setFromValue(krow.getOpacity());
-		krowFadeInTransition.play();
-	}
-
-	@FXML
-	private void onMouseExitedKrowImage() {
-		krowFadeOutTransition.setFromValue(krow.getOpacity());
-		krowFadeOutTransition.play();
 	}
 
 }

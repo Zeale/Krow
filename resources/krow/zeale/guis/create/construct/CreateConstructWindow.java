@@ -31,8 +31,8 @@ public class CreateConstructWindow extends Window {
 		if (description.isEmpty())
 			description = "null";
 		final Construct construct = new Construct(name, description, gender.isSelected(), alive.isSelected());
-		if (!Kröw.INSTANCE.getConstructs().contains(construct)) {
-			Kröw.INSTANCE.getConstructs().add(construct);
+		if (!Kröw.getDataManager().getConstructs().contains(construct)) {
+			Kröw.getDataManager().getConstructs().add(construct);
 			goBack();
 		} else
 			System.err.println("The Construct " + construct.getName() + " already exists!");

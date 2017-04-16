@@ -29,15 +29,20 @@
 				<Menu mnemonicParsing="false" text="Kröw">
 					<items>
 						<MenuItem mnemonicParsing="false" onAction="#onCloseRequested" text="Close" />
+                  <MenuItem mnemonicParsing="false" onAction="#onGoToPages" text="Pages" />
 					</items>
 				</Menu>
 				<Menu mnemonicParsing="false" text="New">
 					<items>
 						<MenuItem mnemonicParsing="false" onAction="#onGoToCreateConstructWindow" text="• Construct" />
 						<MenuItem mnemonicParsing="false" text="• Program" />
-						<MenuItem mnemonicParsing="false" text="• System" />
+						<MenuItem mnemonicParsing="false" onAction="#onGoToCreateSystemWindow" text="• System" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="• Family" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="• Declaration" />
 						<SeparatorMenuItem mnemonicParsing="false" />
-						<MenuItem mnemonicParsing="false" text="• Law" />
+						<MenuItem mnemonicParsing="false" onAction="#onGoToCreateLawWindow" text="• Law" />
 						<MenuItem mnemonicParsing="false" text="• Policy" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <Menu mnemonicParsing="false" text="• Module">
@@ -86,10 +91,10 @@
                   <Image url="@../_resources/Kröw.png" />
                </image>
             </ImageView>
-            <MenuButton layoutX="268.0" layoutY="421.0" mnemonicParsing="false" text="View">
+            <MenuButton layoutX="268.0" layoutY="421.0" mnemonicParsing="false" text="Manage">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#onGoToManageConstructWindow" text="Constructs" />
-                <MenuItem mnemonicParsing="false" text="Laws" />
+                <MenuItem mnemonicParsing="false" onAction="#onGoToManageLawWindow" text="Laws" />
               </items>
             </MenuButton>
          </children></AnchorPane>
@@ -104,8 +109,11 @@
 				<TableView fx:id="laws" focusTraversable="false" prefHeight="568.0" prefWidth="300.0" styleClass="side-tables" BorderPane.alignment="CENTER">
 					<columns>
 						<TableColumn fx:id="lawName" editable="false" maxWidth="150.0" minWidth="100.0" prefWidth="100.0" resizable="false" text="Law" />
-						<TableColumn fx:id="lawDesc" editable="false" maxWidth="900.0" minWidth="150.0" prefWidth="194.0" resizable="false" text="Description" />
+						<TableColumn fx:id="lawDesc" editable="false" maxWidth="900.0" minWidth="150.0" prefWidth="196.0" resizable="false" text="Description" />
 					</columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
 				</TableView>
    </left>
    <right>

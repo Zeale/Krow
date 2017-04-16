@@ -1,6 +1,5 @@
 package kröw.zeale.v1.program.guis;
 
-import java.io.File;
 import java.io.IOException;
 
 import javafx.application.Application;
@@ -11,11 +10,15 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import krow.zeale.guis.home.HomeWindow;
-import kröw.libs.Construct;
-import kröw.libs.Law;
+import kröw.libs.MindsetObject;
 import kröw.zeale.v1.program.core.Kröw;
 
 public class Window extends Application {
+
+	private double xOffset, yOffset;
+
+	public Window() {
+	}
 
 	private static Stage stage;
 
@@ -139,11 +142,6 @@ public class Window extends Application {
 
 	}
 
-	private double xOffset, yOffset;
-
-	public Window() {
-	}
-
 	public final double getxOffset() {
 		return xOffset;
 	}
@@ -171,16 +169,7 @@ public class Window extends Application {
 
 	@Override
 	public void stop() throws Exception {
-		for (final Construct c : Construct.getEditedConstructs()) {
-			final File cf = new File(Kröw.CONSTRUCT_SAVE_DIRECTORY, c.getName() + ".const");
-			Kröw.saveObject(c, cf);
-
-		}
-		for (final Law c : Law.getEditedLaws()) {
-			final File cf = new File(Kröw.LAW_SAVE_DIRECTORY, c.getName() + ".law");
-			Kröw.saveObject(c, cf);
-
-		}
+		MindsetObject.saveObjects();
 		super.stop();
 	}
 
