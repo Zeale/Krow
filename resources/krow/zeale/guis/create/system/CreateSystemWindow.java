@@ -50,4 +50,9 @@ public class CreateSystemWindow extends Window {
 			System.out.println("The law " + law.getName() + " already exists!");
 	}
 
+	@Override
+	public String getWindowFile() {
+		return "CreateSystemWindow.fxml";
+	}
+
 }

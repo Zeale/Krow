@@ -94,7 +94,8 @@ public class ConstructManagerWindow extends Window {
 	}
 
 	private void refreshData() {
-		final ArrayList<Construct> constructs = new ArrayList<>(Kröw.getDataManager().getConstructs());
+		final ArrayList<Construct> constructs = new ArrayList<>(
+				Kröw.getDataManager().getConstructs().getConstructList());
 		Kröw.getDataManager().getConstructs().clear();
 		Kröw.getDataManager().getConstructs().addAll(constructs);
 
@@ -106,6 +107,11 @@ public class ConstructManagerWindow extends Window {
 				new PieChart.Data("Living", Kröw.getDataManager().getConstructs().getLivingConstructs().size()),
 				new PieChart.Data("Dead", Kröw.getDataManager().getConstructs().getDeadConstructs().size()));
 		lifePieChart.setData(list);
+	}
+
+	@Override
+	public String getWindowFile() {
+		return "ConstructManager.fxml";
 	}
 
 	@SuppressWarnings("deprecation")
@@ -129,7 +135,7 @@ public class ConstructManagerWindow extends Window {
 		}
 
 		refreshData();
-		constructs.setItems(Kröw.getDataManager().getConstructs());
+		constructs.setItems(Kröw.getDataManager().getConstructs().getConstructList());
 
 		nameTable.setCellValueFactory(
 				new Construct.ConstructCellValueFactory<>(Construct.ConstructCellValueFactory.Type.NAME));

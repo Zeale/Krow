@@ -24,6 +24,8 @@
          <menus>
             <Menu mnemonicParsing="false" text="Options">
               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#home" text="Home" />
+                  <MenuItem mnemonicParsing="false" onAction="#close" text="Close" />
                 <MenuItem mnemonicParsing="false" onAction="#goBack" text="Back" />
               </items>
             </Menu>

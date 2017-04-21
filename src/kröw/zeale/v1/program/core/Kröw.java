@@ -59,6 +59,7 @@ public final class Kröw {
 	// Start method
 	public static void start(final String[] args) {
 
+		// This isn't fixing JavaFX's bad text textures but I'll keep it here...
 		System.setProperty("prism.lcdtext", "false");
 		System.setProperty("prism.text", "t2k");
 
@@ -72,18 +73,11 @@ public final class Kröw {
 				Kröw.DEBUG_MODE = false;
 			if (Kröw.DEBUG_MODE)
 				System.out.println("\n\nDebug mode has been enabled...\n\n");
-			Application.launch(Window.class, new String[] {});
+			// If the Window class is loaded from somewhere other than this
+			// method, its static constructor causes a RuntimeException.
+			Application.launch(Window.LaunchImpl.class, args);
 		}
 
 	}
-
-	// The DataManager class
-	/**
-	 * This class helps organize all of the methods that particularly pertain to
-	 * data and would clutter the {@link Kröw} class if they were not secluded.
-	 *
-	 * @author Zeale
-	 *
-	 */
 
 }

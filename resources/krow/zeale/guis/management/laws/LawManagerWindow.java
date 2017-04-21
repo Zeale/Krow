@@ -96,9 +96,14 @@ public class LawManagerWindow extends Window {
 	}
 
 	private void refreshData() {
-		final ArrayList<Law> laws = new ArrayList<>(Kröw.getDataManager().getLaws());
+		final ArrayList<Law> laws = new ArrayList<>(Kröw.getDataManager().getLaws().getLawList());
 		Kröw.getDataManager().getLaws().clear();
 		Kröw.getDataManager().getLaws().addAll(laws);
+	}
+
+	@Override
+	public String getWindowFile() {
+		return "LawManger.fxml";
 	}
 
 	@SuppressWarnings("deprecation")
@@ -122,7 +127,7 @@ public class LawManagerWindow extends Window {
 		}
 
 		refreshData();
-		laws.setItems(Kröw.getDataManager().getLaws());
+		laws.setItems(Kröw.getDataManager().getLaws().getLawList());
 
 		nameTable.setCellValueFactory(new Law.LawCellValueFactory<>(Law.LawCellValueFactory.Type.NAME));
 		dateTable.setCellValueFactory(new Law.LawCellValueFactory<>(Law.LawCellValueFactory.Type.DATE));

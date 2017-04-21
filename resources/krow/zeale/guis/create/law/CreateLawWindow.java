@@ -1,5 +1,6 @@
 package krow.zeale.guis.create.law;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Date;
@@ -10,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import krow.zeale.guis.home.HomeWindow;
 import kröw.libs.Law;
 import kröw.zeale.v1.program.core.Kröw;
 import kröw.zeale.v1.program.guis.Window;
@@ -24,6 +26,14 @@ public class CreateLawWindow extends Window {
 	private TextArea descriptionField, ruleField;
 	@FXML
 	private DatePicker creationDatePicker;
+
+	@FXML
+	private void home() {
+		try {
+			Window.setScene(HomeWindow.class);
+		} catch (InstantiationException | IllegalAccessException | IOException e) {
+		}
+	}
 
 	@FXML
 	private void onClose() {
@@ -59,6 +69,11 @@ public class CreateLawWindow extends Window {
 		descriptionField.setVisible(!descriptionField.isVisible());
 		ruleField.setVisible(!ruleField.isVisible());
 
+	}
+
+	@Override
+	public String getWindowFile() {
+		return "CreateLawWindow.fxml";
 	}
 
 }

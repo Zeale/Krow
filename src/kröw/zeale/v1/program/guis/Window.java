@@ -13,9 +13,7 @@ import krow.zeale.guis.home.HomeWindow;
 import kröw.libs.MindsetObject;
 import kröw.zeale.v1.program.core.Kröw;
 
-public class Window extends Application {
-
-	private double xOffset, yOffset;
+public abstract class Window {
 
 	public Window() {
 	}
@@ -25,8 +23,8 @@ public class Window extends Application {
 	private static Scene previousScene;
 
 	public static final Image LIGHT_CROW, DARK_CROW;
-
 	static {
+
 		Image dark = null, light = null;
 		try {
 			dark = new Image("/krow/zeale/DarkKröw.png");
@@ -54,7 +52,7 @@ public class Window extends Application {
 
 	private static Window previousController;
 
-	public static Object getController() {
+	public static Window getController() {
 		return Window.controller;
 	}
 
@@ -105,6 +103,13 @@ public class Window extends Application {
 		}
 	}
 
+	public static <W extends Window> void setScene(final Class<W> cls)
+			throws InstantiationException, IllegalAccessException, IOException {
+
+		Window.setScene(cls, cls.newInstance().getWindowFile());
+
+	}
+
 	public static void setScene(final String scene) throws IOException {
 		final FXMLLoader loader = new FXMLLoader(Window.class.getResource(scene));
 		Window.previousScene = Window.stage.getScene();
@@ -142,35 +147,31 @@ public class Window extends Application {
 
 	}
 
-	public final double getxOffset() {
-		return xOffset;
-	}
-
-	public final double getyOffset() {
-		return yOffset;
-	}
+	public abstract String getWindowFile();
 
 	public void initialize() {
 
 	}
 
-	@Override
-	public void start(final Stage primaryStage) throws Exception {
-		Window.stage = primaryStage;
-		Window.setScene(HomeWindow.class, "Home.fxml");
-		primaryStage.initStyle(StageStyle.UNDECORATED);
-		primaryStage.setTitle(Kröw.NAME);
-		if (Window.DARK_CROW != null)
-			primaryStage.getIcons().add(Window.DARK_CROW);
-		else if (Window.LIGHT_CROW != null)
-			primaryStage.getIcons().add(Window.LIGHT_CROW);
-		primaryStage.show();
-	}
+	public static class LaunchImpl extends Application {
+		@Override
+		public void start(final Stage primaryStage) throws Exception {
+			Window.stage = primaryStage;
+			Window.setScene(HomeWindow.class, "Home.fxml");
+			primaryStage.initStyle(StageStyle.UNDECORATED);
+			primaryStage.setTitle(Kröw.NAME);
+			if (Window.DARK_CROW != null)
+				primaryStage.getIcons().add(Window.DARK_CROW);
+			else if (Window.LIGHT_CROW != null)
+				primaryStage.getIcons().add(Window.LIGHT_CROW);
+			primaryStage.show();
+		}
 
-	@Override
-	public void stop() throws Exception {
-		MindsetObject.saveObjects();
-		super.stop();
+		@Override
+		public void stop() throws Exception {
+			MindsetObject.saveObjects();
+			super.stop();
+		}
 	}
 
 }

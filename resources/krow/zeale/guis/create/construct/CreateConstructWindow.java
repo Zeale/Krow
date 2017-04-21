@@ -1,10 +1,14 @@
 package krow.zeale.guis.create.construct;
 
+import java.io.IOException;
+
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import krow.zeale.guis.home.HomeWindow;
 import kröw.libs.Construct;
 import kröw.zeale.v1.program.core.Kröw;
 import kröw.zeale.v1.program.guis.Window;
@@ -22,6 +26,11 @@ public class CreateConstructWindow extends Window {
 
 	@FXML
 	private MenuBar menuBar;
+
+	@FXML
+	private void close() {
+		Platform.exit();
+	}
 
 	@FXML
 	private void done() {
@@ -42,6 +51,19 @@ public class CreateConstructWindow extends Window {
 	@FXML
 	private void goBack() {
 		Window.setSceneToPreviousScene();
+	}
+
+	@FXML
+	private void home() {
+		try {
+			Window.setScene(HomeWindow.class);
+		} catch (InstantiationException | IllegalAccessException | IOException e) {
+		}
+	}
+
+	@Override
+	public String getWindowFile() {
+		return "CreateConstructWindow.fxml";
 	}
 
 	@Override

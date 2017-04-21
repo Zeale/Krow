@@ -8,11 +8,24 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
-import com.sun.javafx.collections.ObservableListWrapper;
-
+import javafx.beans.InvalidationListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import kröw.libs.Construct;
 import kröw.libs.Law;
 import kröw.libs.MindsetObject;
@@ -55,6 +68,9 @@ public final class DataManager {
 
 			e.printStackTrace();
 			System.exit(-1);
+			final float a = 4;
+			if (a == a)
+				System.out.println(5);
 		}
 
 	}
@@ -203,15 +219,77 @@ public final class DataManager {
 		return systems;
 	}
 
-	public class ConstructList extends ObservableListWrapper<Construct> {
+	public class ConstructList {
+
+		private final ObservableList<Construct> constructs = FXCollections.observableArrayList();
 
 		private ConstructList() {
-			super(new ArrayList<>());
+		}
+
+		public boolean add(final Construct e) {
+			return constructs.add(e);
+		}
+
+		public void add(final int index, final Construct element) {
+			constructs.add(index, element);
+		}
+
+		public boolean addAll(final Collection<? extends Construct> c) {
+			return constructs.addAll(c);
+		}
+
+		public boolean addAll(final Construct... elements) {
+			return constructs.addAll(elements);
+		}
+
+		public boolean addAll(final int index, final Collection<? extends Construct> c) {
+			return constructs.addAll(index, c);
+		}
+
+		public void addListener(final InvalidationListener listener) {
+			constructs.addListener(listener);
+		}
+
+		public void addListener(final ListChangeListener<? super Construct> listener) {
+			constructs.addListener(listener);
+		}
+
+		public void clear() {
+			constructs.clear();
+		}
+
+		public boolean contains(final Object o) {
+			return constructs.contains(o);
+		}
+
+		public boolean containsAll(final Collection<?> c) {
+			return constructs.containsAll(c);
+		}
+
+		@Override
+		public boolean equals(final Object o) {
+			return constructs.equals(o);
+		}
+
+		public FilteredList<Construct> filtered(final Predicate<Construct> predicate) {
+			return constructs.filtered(predicate);
+		}
+
+		public void forEach(final Consumer<? super Construct> action) {
+			constructs.forEach(action);
+		}
+
+		public Construct get(final int index) {
+			return constructs.get(index);
+		}
+
+		public ObservableList<Construct> getConstructList() {
+			return constructs;
 		}
 
 		public LinkedList<Construct> getDeadConstructs() {
 			final LinkedList<Construct> list = new LinkedList<>();
-			for (final Construct c : this)
+			for (final Construct c : constructs)
 				if (!c.isAlive())
 					list.add(c);
 			return list;
@@ -219,7 +297,7 @@ public final class DataManager {
 
 		public LinkedList<Construct> getFemaleConstructs() {
 			final LinkedList<Construct> list = new LinkedList<>();
-			for (final Construct c : this)
+			for (final Construct c : constructs)
 				if (c.getGender())
 					list.add(c);
 			return list;
@@ -227,7 +305,7 @@ public final class DataManager {
 
 		public LinkedList<Construct> getLivingConstructs() {
 			final LinkedList<Construct> list = new LinkedList<>();
-			for (final Construct c : this)
+			for (final Construct c : constructs)
 				if (c.isAlive())
 					list.add(c);
 			return list;
@@ -235,31 +313,526 @@ public final class DataManager {
 
 		public LinkedList<Construct> getMaleConstructs() {
 			final LinkedList<Construct> list = new LinkedList<>();
-			for (final Construct c : this)
+			for (final Construct c : constructs)
 				if (!c.getGender())
 					list.add(c);
 			return list;
 		}
 
+		@Override
+		public int hashCode() {
+			return constructs.hashCode();
+		}
+
+		public int indexOf(final Object o) {
+			return constructs.indexOf(o);
+		}
+
+		public boolean isEmpty() {
+			return constructs.isEmpty();
+		}
+
+		public Iterator<Construct> iterator() {
+			return constructs.iterator();
+		}
+
+		public int lastIndexOf(final Object o) {
+			return constructs.lastIndexOf(o);
+		}
+
+		public ListIterator<Construct> listIterator() {
+			return constructs.listIterator();
+		}
+
+		public ListIterator<Construct> listIterator(final int index) {
+			return constructs.listIterator(index);
+		}
+
+		public Stream<Construct> parallelStream() {
+			return constructs.parallelStream();
+		}
+
+		public Construct remove(final int index) {
+			return constructs.remove(index);
+		}
+
+		public void remove(final int from, final int to) {
+			constructs.remove(from, to);
+		}
+
+		public boolean remove(final Object o) {
+			return constructs.remove(o);
+		}
+
+		public boolean removeAll(final Collection<?> c) {
+			return constructs.removeAll(c);
+		}
+
+		public boolean removeAll(final Construct... elements) {
+			return constructs.removeAll(elements);
+		}
+
+		public boolean removeIf(final Predicate<? super Construct> filter) {
+			return constructs.removeIf(filter);
+		}
+
+		public void removeListener(final InvalidationListener listener) {
+			constructs.removeListener(listener);
+		}
+
+		public void removeListener(final ListChangeListener<? super Construct> listener) {
+			constructs.removeListener(listener);
+		}
+
+		public void replaceAll(final UnaryOperator<Construct> operator) {
+			constructs.replaceAll(operator);
+		}
+
+		public boolean retainAll(final Collection<?> c) {
+			return constructs.retainAll(c);
+		}
+
+		public boolean retainAll(final Construct... elements) {
+			return constructs.retainAll(elements);
+		}
+
+		public Construct set(final int index, final Construct element) {
+			return constructs.set(index, element);
+		}
+
+		public boolean setAll(final Collection<? extends Construct> col) {
+			return constructs.setAll(col);
+		}
+
+		public boolean setAll(final Construct... elements) {
+			return constructs.setAll(elements);
+		}
+
+		public int size() {
+			return constructs.size();
+		}
+
+		public void sort(final Comparator<? super Construct> c) {
+			constructs.sort(c);
+		}
+
+		public SortedList<Construct> sorted() {
+			return constructs.sorted();
+		}
+
+		public SortedList<Construct> sorted(final Comparator<Construct> comparator) {
+			return constructs.sorted(comparator);
+		}
+
+		public Spliterator<Construct> spliterator() {
+			return constructs.spliterator();
+		}
+
+		public Stream<Construct> stream() {
+			return constructs.stream();
+		}
+
+		public List<Construct> subList(final int fromIndex, final int toIndex) {
+			return constructs.subList(fromIndex, toIndex);
+		}
+
+		public Object[] toArray() {
+			return constructs.toArray();
+		}
+
+		public <T> T[] toArray(final T[] a) {
+			return constructs.toArray(a);
+		}
+
 	}
 
-	public class LawList extends ObservableListWrapper<Law> {
+	public class LawList {
+
+		private final ObservableList<Law> laws = FXCollections.observableArrayList();
 
 		private LawList() {
-			super(new ArrayList<>());
+
+		}
+
+		public void add(final int index, final Law element) {
+			laws.add(index, element);
+		}
+
+		public boolean add(final Law e) {
+			return laws.add(e);
+		}
+
+		public boolean addAll(final Collection<? extends Law> c) {
+			return laws.addAll(c);
+		}
+
+		public boolean addAll(final int index, final Collection<? extends Law> c) {
+			return laws.addAll(index, c);
+		}
+
+		public boolean addAll(final Law... elements) {
+			return laws.addAll(elements);
+		}
+
+		public void addListener(final InvalidationListener listener) {
+			laws.addListener(listener);
+		}
+
+		public void addListener(final ListChangeListener<? super Law> listener) {
+			laws.addListener(listener);
+		}
+
+		public void clear() {
+			laws.clear();
+		}
+
+		public boolean contains(final Object o) {
+			return laws.contains(o);
+		}
+
+		public boolean containsAll(final Collection<?> c) {
+			return laws.containsAll(c);
+		}
+
+		@Override
+		public boolean equals(final Object o) {
+			return laws.equals(o);
+		}
+
+		public FilteredList<Law> filtered(final Predicate<Law> predicate) {
+			return laws.filtered(predicate);
+		}
+
+		public void forEach(final Consumer<? super Law> action) {
+			laws.forEach(action);
+		}
+
+		public Law get(final int index) {
+			return laws.get(index);
+		}
+
+		public ObservableList<Law> getLawList() {
+			return laws;
+		}
+
+		@Override
+		public int hashCode() {
+			return laws.hashCode();
+		}
+
+		public int indexOf(final Object o) {
+			return laws.indexOf(o);
+		}
+
+		public boolean isEmpty() {
+			return laws.isEmpty();
+		}
+
+		public Iterator<Law> iterator() {
+			return laws.iterator();
+		}
+
+		public int lastIndexOf(final Object o) {
+			return laws.lastIndexOf(o);
+		}
+
+		public ListIterator<Law> listIterator() {
+			return laws.listIterator();
+		}
+
+		public ListIterator<Law> listIterator(final int index) {
+			return laws.listIterator(index);
+		}
+
+		public Stream<Law> parallelStream() {
+			return laws.parallelStream();
+		}
+
+		public Law remove(final int index) {
+			return laws.remove(index);
+		}
+
+		public void remove(final int from, final int to) {
+			laws.remove(from, to);
+		}
+
+		public boolean remove(final Object o) {
+			return laws.remove(o);
+		}
+
+		public boolean removeAll(final Collection<?> c) {
+			return laws.removeAll(c);
+		}
+
+		public boolean removeAll(final Law... elements) {
+			return laws.removeAll(elements);
+		}
+
+		public boolean removeIf(final Predicate<? super Law> filter) {
+			return laws.removeIf(filter);
+		}
+
+		public void removeListener(final InvalidationListener listener) {
+			laws.removeListener(listener);
+		}
+
+		public void removeListener(final ListChangeListener<? super Law> listener) {
+			laws.removeListener(listener);
+		}
+
+		public void replaceAll(final UnaryOperator<Law> operator) {
+			laws.replaceAll(operator);
+		}
+
+		public boolean retainAll(final Collection<?> c) {
+			return laws.retainAll(c);
+		}
+
+		public boolean retainAll(final Law... elements) {
+			return laws.retainAll(elements);
+		}
+
+		public Law set(final int index, final Law element) {
+			return laws.set(index, element);
+		}
+
+		public boolean setAll(final Collection<? extends Law> col) {
+			return laws.setAll(col);
+		}
+
+		public boolean setAll(final Law... elements) {
+			return laws.setAll(elements);
+		}
+
+		public int size() {
+			return laws.size();
+		}
+
+		public void sort(final Comparator<? super Law> c) {
+			laws.sort(c);
+		}
+
+		public SortedList<Law> sorted() {
+			return laws.sorted();
+		}
+
+		public SortedList<Law> sorted(final Comparator<Law> comparator) {
+			return laws.sorted(comparator);
+		}
+
+		public Spliterator<Law> spliterator() {
+			return laws.spliterator();
+		}
+
+		public Stream<Law> stream() {
+			return laws.stream();
+		}
+
+		public List<Law> subList(final int fromIndex, final int toIndex) {
+			return laws.subList(fromIndex, toIndex);
+		}
+
+		public Object[] toArray() {
+			return laws.toArray();
+		}
+
+		public <T> T[] toArray(final T[] a) {
+			return laws.toArray(a);
 		}
 
 	}
 
-	public class SystemList extends ObservableListWrapper<System> {
+	public class SystemList {
+
+		private final ObservableList<kröw.libs.System> systems = FXCollections.observableArrayList();
 
 		private SystemList() {
-			super(new ArrayList<>());
 		}
 
-		public void add(final kröw.libs.System l) {
-			// TODO Auto-generated method stub
+		public void add(final int index, final kröw.libs.System element) {
+			systems.add(index, element);
+		}
 
+		public boolean add(final kröw.libs.System e) {
+			return systems.add(e);
+		}
+
+		public boolean addAll(final Collection<? extends kröw.libs.System> c) {
+			return systems.addAll(c);
+		}
+
+		public boolean addAll(final int index, final Collection<? extends kröw.libs.System> c) {
+			return systems.addAll(index, c);
+		}
+
+		public boolean addAll(final kröw.libs.System... elements) {
+			return systems.addAll(elements);
+		}
+
+		public void addListener(final InvalidationListener listener) {
+			systems.addListener(listener);
+		}
+
+		public void addListener(final ListChangeListener<? super kröw.libs.System> listener) {
+			systems.addListener(listener);
+		}
+
+		public void clear() {
+			systems.clear();
+		}
+
+		public boolean contains(final Object o) {
+			return systems.contains(o);
+		}
+
+		public boolean containsAll(final Collection<?> c) {
+			return systems.containsAll(c);
+		}
+
+		@Override
+		public boolean equals(final Object o) {
+			return systems.equals(o);
+		}
+
+		public FilteredList<kröw.libs.System> filtered(final Predicate<kröw.libs.System> predicate) {
+			return systems.filtered(predicate);
+		}
+
+		public void forEach(final Consumer<? super kröw.libs.System> action) {
+			systems.forEach(action);
+		}
+
+		public kröw.libs.System get(final int index) {
+			return systems.get(index);
+		}
+
+		public ObservableList<kröw.libs.System> getSystemList() {
+			return systems;
+		}
+
+		@Override
+		public int hashCode() {
+			return systems.hashCode();
+		}
+
+		public int indexOf(final Object o) {
+			return systems.indexOf(o);
+		}
+
+		public boolean isEmpty() {
+			return systems.isEmpty();
+		}
+
+		public Iterator<kröw.libs.System> iterator() {
+			return systems.iterator();
+		}
+
+		public int lastIndexOf(final Object o) {
+			return systems.lastIndexOf(o);
+		}
+
+		public ListIterator<kröw.libs.System> listIterator() {
+			return systems.listIterator();
+		}
+
+		public ListIterator<kröw.libs.System> listIterator(final int index) {
+			return systems.listIterator(index);
+		}
+
+		public Stream<kröw.libs.System> parallelStream() {
+			return systems.parallelStream();
+		}
+
+		public kröw.libs.System remove(final int index) {
+			return systems.remove(index);
+		}
+
+		public void remove(final int from, final int to) {
+			systems.remove(from, to);
+		}
+
+		public boolean remove(final Object o) {
+			return systems.remove(o);
+		}
+
+		public boolean removeAll(final Collection<?> c) {
+			return systems.removeAll(c);
+		}
+
+		public boolean removeAll(final kröw.libs.System... elements) {
+			return systems.removeAll(elements);
+		}
+
+		public boolean removeIf(final Predicate<? super kröw.libs.System> filter) {
+			return systems.removeIf(filter);
+		}
+
+		public void removeListener(final InvalidationListener listener) {
+			systems.removeListener(listener);
+		}
+
+		public void removeListener(final ListChangeListener<? super kröw.libs.System> listener) {
+			systems.removeListener(listener);
+		}
+
+		public void replaceAll(final UnaryOperator<kröw.libs.System> operator) {
+			systems.replaceAll(operator);
+		}
+
+		public boolean retainAll(final Collection<?> c) {
+			return systems.retainAll(c);
+		}
+
+		public boolean retainAll(final kröw.libs.System... elements) {
+			return systems.retainAll(elements);
+		}
+
+		public kröw.libs.System set(final int index, final kröw.libs.System element) {
+			return systems.set(index, element);
+		}
+
+		public boolean setAll(final Collection<? extends kröw.libs.System> col) {
+			return systems.setAll(col);
+		}
+
+		public boolean setAll(final kröw.libs.System... elements) {
+			return systems.setAll(elements);
+		}
+
+		public int size() {
+			return systems.size();
+		}
+
+		public void sort(final Comparator<? super kröw.libs.System> c) {
+			systems.sort(c);
+		}
+
+		public SortedList<kröw.libs.System> sorted() {
+			return systems.sorted();
+		}
+
+		public SortedList<kröw.libs.System> sorted(final Comparator<kröw.libs.System> comparator) {
+			return systems.sorted(comparator);
+		}
+
+		public Spliterator<kröw.libs.System> spliterator() {
+			return systems.spliterator();
+		}
+
+		public Stream<kröw.libs.System> stream() {
+			return systems.stream();
+		}
+
+		public List<kröw.libs.System> subList(final int fromIndex, final int toIndex) {
+			return systems.subList(fromIndex, toIndex);
+		}
+
+		public Object[] toArray() {
+			return systems.toArray();
+		}
+
+		public <T> T[] toArray(final T[] a) {
+			return systems.toArray(a);
 		}
 
 	}

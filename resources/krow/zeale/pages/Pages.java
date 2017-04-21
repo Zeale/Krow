@@ -54,6 +54,11 @@ public class Pages extends Window {
 	}
 
 	@Override
+	public String getWindowFile() {
+		return "ObjectPage.fxml";
+	}
+
+	@Override
 	public void initialize() {
 		final Text title = new Text(Pages.object.getName());
 		title.setStyle("-fx-fill:red; -fx-font-size:30pt; -fx-font-weight:bold;");

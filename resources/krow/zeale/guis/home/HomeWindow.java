@@ -190,6 +190,11 @@ public class HomeWindow extends Window {
 	}
 
 	@Override
+	public String getWindowFile() {
+		return "Home.fxml";
+	}
+
+	@Override
 	@SuppressWarnings("deprecation")
 	@FXML
 	public void initialize() {
@@ -218,8 +223,8 @@ public class HomeWindow extends Window {
 					"The tables used in the home screen have headers that can be moved around. This is not supported. Because of the version of Java you are running, some availability to stop those headers from being moved is no longer here. This is not a bad thing but be warned that reordering and dragging around table headers MAY cause visual issues or other effects.");
 		}
 
-		constructs.setItems(Kröw.getDataManager().getConstructs());
-		laws.setItems(Kröw.getDataManager().getLaws());
+		constructs.setItems(Kröw.getDataManager().getConstructs().getConstructList());
+		laws.setItems(Kröw.getDataManager().getLaws().getLawList());
 		constDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
 		constName.setCellValueFactory(new PropertyValueFactory<>("name"));
 		lawDesc.setCellValueFactory(new PropertyValueFactory<>("description"));

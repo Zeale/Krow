@@ -115,6 +115,7 @@ public class Construct extends MindsetObject {
 		return DataManager.CONSTRUCT_SAVE_DIRECTORY;
 	}
 
+	@Override
 	public void delete() {
 
 		java.lang.System.out.println("\nDeleting the construct " + getName() + "... :(");
