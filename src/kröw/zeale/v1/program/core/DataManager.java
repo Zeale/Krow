@@ -90,6 +90,8 @@ public final class DataManager {
 	 * The directory for storing {@link Law}s
 	 */
 	public static final File LAW_SAVE_DIRECTORY = new File(DataManager.DATA_DIRECTORY, "Laws");
+	public static final File POLICY_SAVE_DIRECTORY = new File(DataManager.DATA_DIRECTORY, "Policies");
+	public static final File FAMILY_SAVE_DIRECTORY = new File(DataManager.DATA_DIRECTORY, "Families");
 
 	static {
 		// Create the following folders if they don't already exist and catch

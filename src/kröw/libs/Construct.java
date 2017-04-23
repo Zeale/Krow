@@ -20,10 +20,6 @@ import kröw.zeale.v1.program.core.Kröw;
 
 public class Construct extends MindsetObject {
 
-	private transient boolean deleted = false;
-
-	private transient StringProperty name;
-
 	private transient StringProperty description;
 
 	private boolean gender;
@@ -69,27 +65,29 @@ public class Construct extends MindsetObject {
 			loadOldObjects(is);
 			return;
 		}
-		try {
-			name = new SimpleStringProperty((String) is.readObject());
-		} catch (final ClassNotFoundException e) {
-			java.lang.System.err.println("Could not load a construct.");
-			if (Kröw.DEBUG_MODE) {
-				java.lang.System.out.println("\n\n\n");
-				e.printStackTrace();
-			} else
-				java.lang.System.err.println("Enable Debug Mode to see stack traces.");
-		}
-		try {
-			description = new SimpleStringProperty((String) is.readObject());
-			gender = is.readBoolean();
-			alive = is.readBoolean();
-		} catch (final ClassNotFoundException e) {
-			java.lang.System.err.println("Could not load the construct " + name.get() + ".");
-			if (Kröw.DEBUG_MODE) {
-				java.lang.System.out.println("\n\n\n");
-				e.printStackTrace();
-			} else
-				java.lang.System.err.println("Enable Debug Mode to see stack traces.");
+		if (version == Construct.trueSerialVersionUID) {
+			try {
+				name = new SimpleStringProperty((String) is.readObject());
+			} catch (final ClassNotFoundException e) {
+				java.lang.System.err.println("Could not load a construct.");
+				if (Kröw.DEBUG_MODE) {
+					java.lang.System.out.println("\n\n\n");
+					e.printStackTrace();
+				} else
+					java.lang.System.err.println("Enable Debug Mode to see stack traces.");
+			}
+			try {
+				description = new SimpleStringProperty((String) is.readObject());
+				gender = is.readBoolean();
+				alive = is.readBoolean();
+			} catch (final ClassNotFoundException e) {
+				java.lang.System.err.println("Could not load the construct " + name.get() + ".");
+				if (Kröw.DEBUG_MODE) {
+					java.lang.System.out.println("\n\n\n");
+					e.printStackTrace();
+				} else
+					java.lang.System.err.println("Enable Debug Mode to see stack traces.");
+			}
 		}
 
 		if (version <= 1)
@@ -171,12 +169,15 @@ public class Construct extends MindsetObject {
 		return marks;
 	}
 
-	/**
-	 * @return This Object's name field.
-	 */
 	@Override
-	public final String getName() {
-		return name.get();
+	public ObservableValue<?> getProperty(final String key) {
+		if (key.equalsIgnoreCase("Name"))
+			return new ReadOnlyObjectWrapper<>(name.get());
+		else if (key.equalsIgnoreCase("Gender"))
+			return new ReadOnlyBooleanWrapper(gender);
+		else if (key.equalsIgnoreCase("Alive") || key.equalsIgnoreCase("Living"))
+			return new ReadOnlyBooleanWrapper(alive);
+		return null;
 	}
 
 	/*
@@ -194,10 +195,6 @@ public class Construct extends MindsetObject {
 
 	public boolean isAlive() {
 		return alive;
-	}
-
-	public StringProperty nameProperty() {
-		return name;
 	}
 
 	public void setAlive(final boolean alive) {
@@ -218,16 +215,6 @@ public class Construct extends MindsetObject {
 
 	public void setGender(final boolean female) {
 		gender = female;
-		if (!MindsetObject.objectsToSave.contains(this) && !deleted)
-			MindsetObject.objectsToSave.add(this);
-	}
-
-	/**
-	 * @param name
-	 *            the name to set
-	 */
-	public final void setName(final String name) {
-		this.name.set(name);
 		if (!MindsetObject.objectsToSave.contains(this) && !deleted)
 			MindsetObject.objectsToSave.add(this);
 	}

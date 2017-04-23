@@ -4,22 +4,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.TableColumn.CellDataFeatures;
-import javafx.util.Callback;
 import kröw.zeale.v1.program.core.DataManager;
 
 public class Law extends MindsetObject {
 
 	// Class fields
-	private transient StringProperty description = new SimpleStringProperty(), name = new SimpleStringProperty(),
-			rule = new SimpleStringProperty();
+	private transient StringProperty description = new SimpleStringProperty(), rule = new SimpleStringProperty();
 	private transient Date creationDate;
 
 	private boolean deleted;
@@ -27,7 +23,6 @@ public class Law extends MindsetObject {
 	// Constructor
 	public Law(final String name, final String description, final String rule, final Date creationDate) {
 		super(name);
-		this.name.set(name);
 		this.description.set(description);
 		this.rule.set(rule);
 		this.creationDate = creationDate;
@@ -108,12 +103,18 @@ public class Law extends MindsetObject {
 	}
 
 	@Override
-	public String getName() {
-		return name.get();
-	}
-
-	public StringProperty getNameProperty() {
-		return name;
+	public ObservableValue<?> getProperty(final String key) {
+		if (key.equalsIgnoreCase("Name"))
+			return new ReadOnlyObjectWrapper<>(name.get());
+		else if (key.equalsIgnoreCase("Rule") || key.equalsIgnoreCase("Rules"))
+			return new ReadOnlyObjectWrapper<>(rule.get());
+		else if (key.equalsIgnoreCase("Description"))
+			return new ReadOnlyObjectWrapper<>(description.get());
+		else if (key.equalsIgnoreCase("CreationDate") || key.equalsIgnoreCase("Creation Date")
+				|| key.equalsIgnoreCase("Creation-Date"))
+			return new ReadOnlyObjectWrapper<>(creationDate);
+		else
+			return null;
 	}
 
 	public String getRule() {
@@ -122,10 +123,6 @@ public class Law extends MindsetObject {
 
 	public StringProperty getRuleProperty() {
 		return rule;
-	}
-
-	public StringProperty nameProperty() {
-		return name;
 	}
 
 	public StringProperty ruleProperty() {
@@ -144,50 +141,10 @@ public class Law extends MindsetObject {
 			MindsetObject.objectsToSave.add(this);
 	}
 
-	public void setName(final String name) {
-		this.name.set(name);
-		if (!MindsetObject.objectsToSave.contains(this) && !deleted)
-			MindsetObject.objectsToSave.add(this);
-
-	}
-
 	public void setRule(final String rule) {
 		this.rule.set(rule);
 		if (!MindsetObject.objectsToSave.contains(this) && !deleted)
 			MindsetObject.objectsToSave.add(this);
 	}
 
-	// CellValueFactory class
-	public static class LawCellValueFactory<S extends Law, T>
-			implements Callback<CellDataFeatures<S, T>, ObservableValue<T>> {
-
-		private final Type type;
-
-		public LawCellValueFactory(final Type type) {
-			this.type = type;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public ObservableValue<T> call(final CellDataFeatures<S, T> param) {
-			switch (type) {
-			case NAME:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getName());
-			case DESCRIPTION:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getDescription());
-			case RULE:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getRule());
-			case DATE:
-				return new ReadOnlyObjectWrapper<>(
-						(T) new SimpleDateFormat().format(param.getValue().getCreationDate()));
-			default:
-				return null;
-			}
-		}
-
-		public static enum Type {
-			NAME, DESCRIPTION, RULE, DATE;
-		}
-
-	}
 }

@@ -36,7 +36,8 @@ public class System extends MindsetObject {
 	private void readObject(final ObjectInputStream is) throws IOException {
 		try {
 			final long version = is.readLong();
-			if (version == 1) {
+			if (version == System.trueSerialVersionUID) {
+
 				name = new SimpleStringProperty((String) is.readObject());
 				description = new SimpleStringProperty((String) is.readObject());
 				creationDate = (Date) is.readObject();
@@ -86,12 +87,15 @@ public class System extends MindsetObject {
 	}
 
 	@Override
-	public String getName() {
-		return name.get();
-	}
-
-	public StringProperty nameProperty() {
-		return name;
+	public ObservableValue<?> getProperty(final String key) {
+		if (key.equalsIgnoreCase("Name"))
+			return new ReadOnlyObjectWrapper<>(name.get());
+		else if (key.equalsIgnoreCase("Description"))
+			return new ReadOnlyObjectWrapper<>(description.get());
+		else if (key.equalsIgnoreCase("CreationDate") || key.equalsIgnoreCase("Creation Date")
+				|| key.equalsIgnoreCase("Creation-Date"))
+			return new ReadOnlyObjectWrapper<>(creationDate);
+		return null;
 	}
 
 	public void setCreationDate(final Date creationDate) {
@@ -100,10 +104,6 @@ public class System extends MindsetObject {
 
 	public void setDescription(final String description) {
 		this.description.set(description);
-	}
-
-	public void setName(final String name) {
-		this.name.set(name);
 	}
 
 	public static class SystemCellValueFactory<S extends System, T>
