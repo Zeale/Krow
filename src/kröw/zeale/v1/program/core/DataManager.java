@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -30,24 +31,64 @@ import kröw.libs.Construct;
 import kröw.libs.Law;
 import kröw.libs.MindsetObject;
 
+/**
+ * This class is used by the {@link Kröw} class to manage data for the program.
+ *
+ * @author Zeale
+ *
+ */
 public final class DataManager {
 
+	/**
+	 * The list of {@link Construct}s that have been loaded in to the program.
+	 */
 	public final ConstructList constructs = new ConstructList();
+	/**
+	 * The list of loaded {@link Law}s.
+	 */
 	public final LawList laws = new LawList();
+	/**
+	 * The list of {@link System}s.
+	 */
 	public final SystemList systems = new SystemList();
 
+	/**
+	 * This constructor has been made private to prevent instantiation. It
+	 * should only be used by the {@link Kröw} class.
+	 */
 	private DataManager() {
 	}
 
 	// Directory Constants
+	/**
+	 * The home directory of the application.
+	 */
 	public static final File KRÖW_HOME_DIRECTORY = new File(System.getProperty("user.home") + "/Appdata/Roaming/",
 			Kröw.NAME);
 
+	/**
+	 * The directory for data storage of this application.
+	 */
 	public final static File DATA_DIRECTORY = new File(DataManager.KRÖW_HOME_DIRECTORY, "Data");
+	/**
+	 * The directory for storing {@link Construct}s.
+	 */
 	public static final File CONSTRUCT_SAVE_DIRECTORY = new File(DataManager.DATA_DIRECTORY, "Constructs");
+	/**
+	 * The directory for storing Tasks. (These currently don't exist.)
+	 */
 	public static final File TASK_SAVE_DIRECTORY = new File(DataManager.DATA_DIRECTORY, "Tasks");
+	/**
+	 * The directory for storing Programs. (These currently don't exist.)
+	 */
 	public static final File PROGRAM_SAVE_DIRECTORY = new File(DataManager.DATA_DIRECTORY, "Programs");
+	/**
+	 * The directory for storing {@link kröw.libs.System}s.
+	 */
 	public static final File SYSTEM_SAVE_DIRECTORY = new File(DataManager.DATA_DIRECTORY, "Systems");
+	/**
+	 * The directory for storing {@link Law}s
+	 */
 	public static final File LAW_SAVE_DIRECTORY = new File(DataManager.DATA_DIRECTORY, "Laws");
 
 	static {
@@ -75,10 +116,19 @@ public final class DataManager {
 
 	}
 
+	/**
+	 * A static method that allows {@link Kröw} to get a {@link DataManager}
+	 * object.
+	 *
+	 * @return A brand new {@link DataManager}.
+	 */
 	static DataManager getDataManager() {
 		return new DataManager();
 	}
 
+	/**
+	 * A static void method that loads data.
+	 */
 	static void loadData() {
 		boolean cons = false, laws = false;
 		System.out.println("Now loading Constructs from the file system.....");
@@ -112,6 +162,12 @@ public final class DataManager {
 
 	}
 
+	/**
+	 * An API method that attempts to create a folder. This will likely be moved
+	 * to the upcoming API project.
+	 *
+	 * @param fileObj
+	 */
 	public static void createFolder(final File fileObj) {
 		if (fileObj.isFile()) {
 			System.out.println(
@@ -128,6 +184,17 @@ public final class DataManager {
 
 	}
 
+	/**
+	 * A method that loads a {@link Serializable} object from a given file. The
+	 * file should contain only one {@link Serializable} object.
+	 *
+	 * @param file
+	 *            The {@link File} to load the object from.
+	 * @return The {@link Object} that was loaded.
+	 * @throws IOException
+	 *             If something goes wrong as stated in
+	 *             {@link ObjectInputStream#ObjectInputStream(java.io.InputStream)}.
+	 */
 	@SuppressWarnings("unchecked")
 	public final static <O> O loadObjectFromFile(final File file) throws IOException {
 		try (final ObjectInputStream stream = new ObjectInputStream(new FileInputStream(file));) {
@@ -140,6 +207,15 @@ public final class DataManager {
 		return null;
 	}
 
+	/**
+	 * This method will return an {@link ArrayList} (casted to a {@link List})
+	 * which contains multiple objects loaded from a directory of files. The
+	 * objects must be of the given type parameter.
+	 *
+	 * @param directory
+	 *            The directory to load objects from.
+	 * @return A new {@link ArrayList} containing all the loaded objects.
+	 */
 	public final static <O> List<O> loadObjectsFromDirectory(final File directory) {
 		final ArrayList<O> list = new ArrayList<>();
 		for (final File file : directory.listFiles())
@@ -163,6 +239,16 @@ public final class DataManager {
 	}
 
 	// More static methods
+	/**
+	 * This method attempts to save a {@link MindsetObject} into the specified
+	 * {@link File}.
+	 *
+	 * @param object
+	 *            The {@link MindsetObject} to attempt to save.
+	 * @param file
+	 *            The {@link File} to attempt to save to.
+	 * @return {@code true} if the save worked, {@code false} otherwise.
+	 */
 	public static boolean saveObject(final MindsetObject object, final File file) {
 
 		boolean wasDir = false;
@@ -207,18 +293,40 @@ public final class DataManager {
 		}
 	}
 
+	/**
+	 * A getter for {@link #constructs}.
+	 *
+	 * @return {@link #constructs}.
+	 */
 	public ConstructList getConstructs() {
 		return constructs;
 	}
 
+	/**
+	 * A getter for {@link #laws}.
+	 *
+	 * @return {@link #laws}.
+	 */
 	public LawList getLaws() {
 		return laws;
 	}
 
+	/**
+	 * A getter for {@link #systems}.
+	 *
+	 * @return {@link #systems}.
+	 */
 	public SystemList getSystems() {
 		return systems;
 	}
 
+	/**
+	 * A wrapper for an {@link ObservableList} of {@link Construct} objects with
+	 * a few extra helpful methods.
+	 *
+	 * @author Zeale
+	 *
+	 */
 	public class ConstructList {
 
 		private final ObservableList<Construct> constructs = FXCollections.observableArrayList();
@@ -446,6 +554,12 @@ public final class DataManager {
 
 	}
 
+	/**
+	 * A wrapper for an {@link ObservableList} of {@link Law} objects.
+	 *
+	 * @author Zeale
+	 *
+	 */
 	public class LawList {
 
 		private final ObservableList<Law> laws = FXCollections.observableArrayList();
@@ -642,6 +756,12 @@ public final class DataManager {
 
 	}
 
+	/**
+	 * A wrapper for an {@link ObservableList} of {@link System} objects.
+	 *
+	 * @author Zeale
+	 *
+	 */
 	public class SystemList {
 
 		private final ObservableList<kröw.libs.System> systems = FXCollections.observableArrayList();
