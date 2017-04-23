@@ -49,6 +49,8 @@ public final class DataManager {
 	public static final File PROGRAM_SAVE_DIRECTORY = new File(DataManager.DATA_DIRECTORY, "Programs");
 	public static final File SYSTEM_SAVE_DIRECTORY = new File(DataManager.DATA_DIRECTORY, "Systems");
 	public static final File LAW_SAVE_DIRECTORY = new File(DataManager.DATA_DIRECTORY, "Laws");
+	public static final File POLICY_SAVE_DIRECTORY = new File(DataManager.DATA_DIRECTORY, "Policies");
+	public static final File FAMILY_SAVE_DIRECTORY = new File(DataManager.DATA_DIRECTORY, "Families");
 
 	static {
 		// Create the following folders if they don't already exist and catch
