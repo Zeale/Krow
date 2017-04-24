@@ -13,8 +13,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.TableColumn.CellDataFeatures;
-import javafx.util.Callback;
 import kröw.zeale.v1.program.core.DataManager;
 import kröw.zeale.v1.program.core.Kröw;
 
@@ -177,6 +175,8 @@ public class Construct extends MindsetObject {
 			return new ReadOnlyBooleanWrapper(gender);
 		else if (key.equalsIgnoreCase("Alive") || key.equalsIgnoreCase("Living"))
 			return new ReadOnlyBooleanWrapper(alive);
+		else if (key.equalsIgnoreCase("Description"))
+			return new ReadOnlyObjectWrapper<>(description.get());
 		return null;
 	}
 
@@ -233,40 +233,6 @@ public class Construct extends MindsetObject {
 		} else if (!marks.equals(other.marks))
 			return false;
 		return true;
-	}
-
-	public static class ConstructCellValueFactory<S extends Construct, T>
-			implements Callback<CellDataFeatures<S, T>, ObservableValue<T>> {
-
-		private final Type type;
-
-		public ConstructCellValueFactory(final Type type) {
-			this.type = type;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public ObservableValue<T> call(final CellDataFeatures<S, T> param) {
-			switch (type) {
-			case NAME:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getName());
-			case GENDER:
-				return new ReadOnlyObjectWrapper<>((T) (param.getValue().getGender() ? "Female" : "Male"));
-			case ALIVE:
-				return (ObservableValue<T>) new ReadOnlyBooleanWrapper(param.getValue().isAlive());
-			case DESCRIPTION:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getDescription());
-			case MARKS:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getMarks());
-			default:
-				return null;
-			}
-		}
-
-		public static enum Type {
-			NAME, GENDER, ALIVE, DESCRIPTION, MARKS;
-		}
-
 	}
 
 	public final class Mark implements Serializable {

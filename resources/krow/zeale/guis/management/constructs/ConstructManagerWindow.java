@@ -14,6 +14,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import kröw.libs.Construct;
+import kröw.libs.MindsetObject;
 import kröw.zeale.v1.program.core.Kröw;
 import kröw.zeale.v1.program.guis.Window;
 
@@ -137,14 +138,10 @@ public class ConstructManagerWindow extends Window {
 		refreshData();
 		constructs.setItems(Kröw.getDataManager().getConstructs().getConstructList());
 
-		nameTable.setCellValueFactory(
-				new Construct.ConstructCellValueFactory<>(Construct.ConstructCellValueFactory.Type.NAME));
-		genderTable.setCellValueFactory(
-				new Construct.ConstructCellValueFactory<>(Construct.ConstructCellValueFactory.Type.GENDER));
-		descriptionTable.setCellValueFactory(
-				new Construct.ConstructCellValueFactory<>(Construct.ConstructCellValueFactory.Type.DESCRIPTION));
-		lifeTable.setCellValueFactory(
-				new Construct.ConstructCellValueFactory<>(Construct.ConstructCellValueFactory.Type.ALIVE));
+		nameTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Name"));
+		genderTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Gender"));
+		descriptionTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Description"));
+		lifeTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Living"));
 
 	}
 

@@ -10,8 +10,6 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.TableColumn.CellDataFeatures;
-import javafx.util.Callback;
 import kröw.zeale.v1.program.core.DataManager;
 
 public class System extends MindsetObject {
@@ -104,36 +102,6 @@ public class System extends MindsetObject {
 
 	public void setDescription(final String description) {
 		this.description.set(description);
-	}
-
-	public static class SystemCellValueFactory<S extends System, T>
-			implements Callback<CellDataFeatures<S, T>, ObservableValue<T>> {
-
-		private final Type type;
-
-		public SystemCellValueFactory(final Type type) {
-			this.type = type;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public ObservableValue<T> call(final CellDataFeatures<S, T> param) {
-			switch (type) {
-			case NAME:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getName());
-			case DESCRIPTION:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getDescription());
-			case CREATION_DATE:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getCreationDate());
-			default:
-				return null;
-			}
-		}
-
-		public static enum Type {
-			NAME, DESCRIPTION, CREATION_DATE;
-		}
-
 	}
 
 }
