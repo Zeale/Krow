@@ -348,6 +348,8 @@ public class Construct extends MindsetObject {
 			return new ReadOnlyBooleanWrapper(gender);
 		else if (key.equalsIgnoreCase("Alive") || key.equalsIgnoreCase("Living"))
 			return new ReadOnlyBooleanWrapper(alive);
+		else if (key.equalsIgnoreCase("Description"))
+			return new ReadOnlyObjectWrapper<>(description.get());
 		return null;
 	}
 
