@@ -488,20 +488,66 @@ public class Construct extends MindsetObject {
 	 *
 	 */
 	public final class Mark implements Serializable {
+		/**
+		 * A description of this {@link Construct} at this specific Mk.
+		 */
 		private transient StringProperty description;
+		/**
+		 * Which Mk this {@link Mark} object represents.
+		 */
 		private transient StringProperty mark;
 
+		/**
+		 * Creates a {@link Mark} object given a specified description.
+		 *
+		 * @param description
+		 */
 		public Mark(final String description) {
 			marks.add(this);
 		}
 
+		/**
+		 * Creates a {@link Mark} object with a description and a
+		 * <code>mark</code> that portrays this object's mark number. For
+		 * example, if this was a {@link Construct}'s 8th mark, the {@code mark}
+		 * argument might be something like <code>8</code>. The program will
+		 * display this as "ConstructName Mk8" in the GUI.
+		 *
+		 * @param mark
+		 *            The name of the Mk that this {@link Mark} represents.
+		 * @param description
+		 *            A description of this {@link Construct} at the time of
+		 *            this {@link Mark}.
+		 */
 		public Mark(final String mark, final String description) {
 			this.description = new SimpleStringProperty(description);
 			this.mark = new SimpleStringProperty(mark);
 		}
 
+		/**
+		 * The Serial Version Unique Identifier of this object.
+		 */
 		private static final long serialVersionUID = 1L;
+		/**
+		 * This value is best described as the version of this class. It's used
+		 * for backwards compatibility when reading and writing objects. The
+		 * {@code trueSerialVersionUID} is read from a file <i>first</i> when
+		 * loading an object, then the program uses this version to decide what
+		 * values the file has and how to load it.
+		 */
+		private static final long trueSerialVersionUID = 1L;
 
+		/**
+		 * The {@code readObject} method of this class. Used for Serialization.
+		 *
+		 * @param is
+		 *            The {@link ObjectInputStream} as passed in via
+		 *            Serialization.
+		 * @throws IOException
+		 *             If an {@link IOException} occurs. Also needed to match
+		 *             the specified method signature of the
+		 *             <code>readObject</code> method used for Serialization.
+		 */
 		private void readObject(final ObjectInputStream is) throws IOException {
 			try {
 				description = new SimpleStringProperty((String) is.readObject());
@@ -512,6 +558,18 @@ public class Construct extends MindsetObject {
 
 		}
 
+		/**
+		 * The {@code writeObject} method of this class. It's used to save
+		 * objects via Serialization.
+		 *
+		 * @param os
+		 *            The {@link ObjectOutputStream} passed in via
+		 *            Serialization.
+		 * @throws IOException
+		 *             If an {@link IOException} occurs. Also needed to match
+		 *             the specified method signature of the
+		 *             <code>readObject</code> method used for Serialization.
+		 */
 		private void writeObject(final ObjectOutputStream os) throws IOException {
 			os.writeObject(description.get());
 			os.writeObject(mark.get());

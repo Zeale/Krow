@@ -17,21 +17,41 @@ public class Program extends MindsetObject {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see kröw.libs.MindsetObject#getExtension()
+	 */
 	@Override
 	String getExtension() {
 		return ".prgrm";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see kröw.libs.MindsetObject#getSaveDirectory()
+	 */
 	@Override
 	File getSaveDirectory() {
 		return DataManager.PROGRAM_SAVE_DIRECTORY;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see kröw.libs.MindsetObject#getFile()
+	 */
 	@Override
 	public File getFile() {
 		return new File(getSaveDirectory(), getName() + getExtension());
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see kröw.libs.MindsetObject#getProperty(java.lang.String)
+	 */
 	@Override
 	public ObservableValue<?> getProperty(final String key) {
 		if (key.equalsIgnoreCase("Name"))
