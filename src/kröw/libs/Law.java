@@ -12,6 +12,24 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import kröw.zeale.v1.program.core.DataManager;
 
+/**
+ * <p>
+ * This class represents a Law.
+ * <p>
+ * Property List:
+ *
+ * <ul>
+ * <li><b>Name</b> - The name of this {@link Law}.</li>
+ * <li><b>Rule</b> - The rule instated by this {@link Law}.</li>
+ * <li><b>Creation Date</b> - The {@link Date} that this {@link Law} was
+ * made.</li>
+ * <li><b>Description</b> - A description of this {@link Law}.</li>
+ * </ul>
+ *
+ *
+ * @author Zeale
+ *
+ */
 public class Law extends MindsetObject {
 
 	// Class fields

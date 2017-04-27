@@ -13,11 +13,31 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.TableColumn.CellDataFeatures;
-import javafx.util.Callback;
 import kröw.zeale.v1.program.core.DataManager;
 import kröw.zeale.v1.program.core.Kröw;
 
+/**
+ * <p>
+ * This class represents a Construct.
+ * <p>
+ * Property List:
+ * <ul>
+ * <li><b>Name</b> - The name of this {@link Construct}.</li>
+ * <li><b>Description</b> - The description of this {@link Construct}.</li>
+ * <li><b>Gender</b> - This {@link Construct}'s gender converted to a
+ * {@link String}. (Has a value of either <code>"Male"</code> or
+ * <code>"Female"</code>.)</li>
+ * <li><b>Raw Gender</b> - This {@link Construct}'s gender as a boolean.
+ * <code>true</code> is female, <code>false</code> is male.</li>
+ * <li><b>Living</b>/<b>Alive</b> - Whether or not this {@link Construct} is
+ * alive. (<code>true</code> if it's alive, <code>false</code> if it's
+ * dead.)</li>
+ * <li><b>Dead</b> - Whether or not this {@link Construct} is dead.(Outputs
+ * <code>true</code> if dead and <code>false</code> if alive.)</li><br>
+ *
+ * @author Zeale
+ *
+ */
 public class Construct extends MindsetObject {
 
 	/**
@@ -344,12 +364,17 @@ public class Construct extends MindsetObject {
 	public ObservableValue<?> getProperty(final String key) {
 		if (key.equalsIgnoreCase("Name"))
 			return new ReadOnlyObjectWrapper<>(name.get());
-		else if (key.equalsIgnoreCase("Gender"))
+		else if (key.equalsIgnoreCase("Raw Gender") || key.equalsIgnoreCase("Raw-Gender")
+				|| key.equalsIgnoreCase("RawGender"))
 			return new ReadOnlyBooleanWrapper(gender);
 		else if (key.equalsIgnoreCase("Alive") || key.equalsIgnoreCase("Living"))
 			return new ReadOnlyBooleanWrapper(alive);
 		else if (key.equalsIgnoreCase("Description"))
 			return new ReadOnlyObjectWrapper<>(description.get());
+		else if (key.equalsIgnoreCase("Dead"))
+			return new ReadOnlyBooleanWrapper(!alive);
+		else if (key.equalsIgnoreCase("Gender"))
+			return new ReadOnlyObjectWrapper<>(gender ? "Female" : "Male");
 		return null;
 	}
 
@@ -447,40 +472,6 @@ public class Construct extends MindsetObject {
 		return true;
 	}
 
-	public static class ConstructCellValueFactory<S extends Construct, T>
-			implements Callback<CellDataFeatures<S, T>, ObservableValue<T>> {
-
-		private final Type type;
-
-		public ConstructCellValueFactory(final Type type) {
-			this.type = type;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public ObservableValue<T> call(final CellDataFeatures<S, T> param) {
-			switch (type) {
-			case NAME:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getName());
-			case GENDER:
-				return new ReadOnlyObjectWrapper<>((T) (param.getValue().getGender() ? "Female" : "Male"));
-			case ALIVE:
-				return (ObservableValue<T>) new ReadOnlyBooleanWrapper(param.getValue().isAlive());
-			case DESCRIPTION:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getDescription());
-			case MARKS:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getMarks());
-			default:
-				return null;
-			}
-		}
-
-		public static enum Type {
-			NAME, GENDER, ALIVE, DESCRIPTION, MARKS;
-		}
-
-	}
-
 	/**
 	 * The representation of a {@link Construct}'s Mark as a class.
 	 *
@@ -571,9 +562,9 @@ public class Construct extends MindsetObject {
 		 *             <code>readObject</code> method used for Serialization.
 		 */
 		private void writeObject(final ObjectOutputStream os) throws IOException {
+			os.writeLong(Mark.trueSerialVersionUID);
 			os.writeObject(description.get());
 			os.writeObject(mark.get());
-			os.defaultWriteObject();
 		}
 
 		/**

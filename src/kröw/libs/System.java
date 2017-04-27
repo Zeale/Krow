@@ -13,6 +13,21 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import kröw.zeale.v1.program.core.DataManager;
 
+/**
+ * <p>
+ * This class represents a System.
+ * <p>
+ * <b>Property List:</b>
+ * <ul>
+ * <li><b>Name</b> - The name of this {@link System}.</li>
+ * <li><b>Description</b> - A description of this {@link System}.</li>
+ * <li><b>Creation Date</b> - The {@link Date} that this {@link System} was
+ * created.</li>
+ * </ul>
+ *
+ * @author Zeale
+ *
+ */
 public class System extends MindsetObject {
 
 	/**

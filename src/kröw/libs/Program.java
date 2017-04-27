@@ -6,6 +6,17 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import kröw.zeale.v1.program.core.DataManager;
 
+/**
+ * <p>
+ * This class represents a Program.
+ *
+ * <p>
+ * <i>Note: This class is not yet complete and will not function as
+ * expected.</i>
+ *
+ * @author Zeale
+ *
+ */
 public class Program extends MindsetObject {
 
 	public Program(final String name) {
@@ -19,7 +30,7 @@ public class Program extends MindsetObject {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see kröw.libs.MindsetObject#getExtension()
 	 */
 	@Override
@@ -29,7 +40,7 @@ public class Program extends MindsetObject {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see kröw.libs.MindsetObject#getSaveDirectory()
 	 */
 	@Override
@@ -39,7 +50,7 @@ public class Program extends MindsetObject {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see kröw.libs.MindsetObject#getFile()
 	 */
 	@Override
@@ -49,7 +60,7 @@ public class Program extends MindsetObject {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see kröw.libs.MindsetObject#getProperty(java.lang.String)
 	 */
 	@Override
