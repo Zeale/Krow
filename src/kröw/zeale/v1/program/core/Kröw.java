@@ -4,17 +4,30 @@ import java.util.Arrays;
 import java.util.List;
 
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.scene.text.Text;
-import kröw.libs.Construct;
-import kröw.zeale.v1.program.guis.Window;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import krow.zeale.guis.home.HomeWindow;
+import wolf.mindset.Construct;
+import wolf.mindset.DataManager;
+import wolf.mindset.MindsetObject;
+import wolf.zeale.Wolf;
+import wolf.zeale.guis.Window;
 
 /**
  * This class is the main class of the program.
  *
+ * The JVM loads up the JavaFX toolkit if the main class extends Application. If
+ * this class did not extend {@link Application}, the toolkit would not be
+ * loaded and the {@link #LIGHT_CROW} and {@link #DARK_CROW} images found below,
+ * could not be created during <code>clinit</code> (the <code>static</code>
+ * constructor).
+ *
  * @author Zeale
  *
  */
-public final class Kröw {
+public final class Kröw extends Application {
 
 	// Constructor
 	/**
@@ -31,6 +44,53 @@ public final class Kröw {
 			throw new Throwable("The class Kröw is not meant to be constructed.");
 	}
 
+	static {
+
+		Image dark = null, light = null;
+		try {
+			dark = new Image("/krow/zeale/DarkKröw.png");
+		} catch (final IllegalArgumentException e) {
+			System.err.println("The Dark Crow icon could not be loaded. Only the Light Crow Icon will be available.");
+
+		}
+
+		try {
+			light = new Image("krow/zeale/LightKröw.png");
+		} catch (final IllegalArgumentException e) {
+			if (dark == null)
+				System.err.println(
+						"The Light Crow icon could not be loaded either! The icons will be set to the default coffee mug.");
+			else
+				System.err
+						.println("The Light Crow icon could not be loaded. Only the Dark Crow icon will be available.");
+		}
+
+		DARK_CROW = dark;
+		LIGHT_CROW = light;
+	}
+
+	/**
+	 * <p>
+	 * {@link #LIGHT_CROW} - The light colored crow image that is used for this
+	 * {@link Application}'s icon. This image can be set as the program's icon
+	 * via the home window.
+	 * <p>
+	 * {@link #DARK_CROW} - The dark colored crow image that is used for this
+	 * {@link Application}'s icon. This image is the program's default icon.
+	 */
+	public static final Image LIGHT_CROW;
+
+	/**
+	 * <p>
+	 * {@link #LIGHT_CROW} - The light colored crow image that is used for this
+	 * {@link Application}'s icon. This image can be set as the program's icon
+	 * via the home window.
+	 * <p>
+	 * {@link #DARK_CROW} - The dark colored crow image that is used for this
+	 * {@link Application}'s icon. This image is the program's default icon.
+	 */
+	public static final Image DARK_CROW;
+
 	// Constants
 	/**
 	 * The name {@code Kröw}.
@@ -41,12 +101,7 @@ public final class Kröw {
 	 * The {@link DataManager} of the program. This manages data such as the
 	 * loaded {@link Construct}s.
 	 */
-	private static final DataManager DATA_MANAGER = DataManager.getDataManager();
-
-	/**
-	 * A static boolean which defines whether or not debug mode is on.
-	 */
-	public static boolean DEBUG_MODE = true;
+	private static final DataManager DATA_MANAGER = new DataManager();
 
 	// Public static methods
 	/**
@@ -155,19 +210,69 @@ public final class Kröw {
 
 		System.out.println("\n\n\n\n");
 		System.out.println("Loading data...\n");
-		DataManager.loadData();
+		Kröw.DATA_MANAGER.loadData();
 
 		if (args != null) {
 			final List<String> strings = Arrays.<String>asList(args);
 			if (!Kröw.containsIgnoreCase(strings, "-debug-mode") && !Kröw.containsIgnoreCase(strings, "-debug"))
-				Kröw.DEBUG_MODE = false;
-			if (Kröw.DEBUG_MODE)
+				Wolf.DEBUG_MODE = false;
+			if (Wolf.DEBUG_MODE)
 				System.out.println("\n\nDebug mode has been enabled...\n\n");
 			// If the Window class is loaded from somewhere other than this
 			// method, its static constructor causes a RuntimeException.
-			Application.launch(Window.LaunchImpl.class, args);
+			Application.launch(LaunchImpl.class, args);
 		}
 
+	}
+
+	/**
+	 * This method is overridden so that this class can extend
+	 * {@link Application}. The JVM loads up the JavaFX toolkit if the main
+	 * class extends Application. If this class did not extend
+	 * {@link Application}, the toolkit would not be loaded and the
+	 * {@link #LIGHT_CROW} and {@link #DARK_CROW} images could not be created in
+	 * the static constructor above.
+	 */
+	@Override
+	public void start(final Stage primaryStage) throws Exception {
+		return;
+	}
+
+	/**
+	 *
+	 * @author Zeale
+	 *
+	 * @Internal This is an internal class used to start the JavaFX Application.
+	 */
+	public static class LaunchImpl extends Application {
+		/*
+		 * (non-Javadoc)
+		 *
+		 * @see javafx.application.Application#start(javafx.stage.Stage)
+		 */
+		@Override
+		public void start(final Stage primaryStage) throws Exception {
+			Window.setStage_Impl(primaryStage);
+			Window.setScene(HomeWindow.class, "Home.fxml");
+			primaryStage.initStyle(StageStyle.UNDECORATED);
+			primaryStage.setTitle(Kröw.NAME);
+			if (Kröw.DARK_CROW != null)
+				primaryStage.getIcons().add(Kröw.DARK_CROW);
+			else if (Kröw.LIGHT_CROW != null)
+				primaryStage.getIcons().add(Kröw.LIGHT_CROW);
+			primaryStage.show();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 *
+		 * @see javafx.application.Application#stop()
+		 */
+		@Override
+		public void stop() throws Exception {
+			MindsetObject.saveObjects();
+			super.stop();
+		}
 	}
 
 }
