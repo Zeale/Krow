@@ -13,11 +13,31 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.TableColumn.CellDataFeatures;
-import javafx.util.Callback;
 import kröw.zeale.v1.program.core.DataManager;
 import kröw.zeale.v1.program.core.Kröw;
 
+/**
+ * <p>
+ * This class represents a Construct.
+ * <p>
+ * Property List:
+ * <ul>
+ * <li><b>Name</b> - The name of this {@link Construct}.</li>
+ * <li><b>Description</b> - The description of this {@link Construct}.</li>
+ * <li><b>Gender</b> - This {@link Construct}'s gender converted to a
+ * {@link String}. (Has a value of either <code>"Male"</code> or
+ * <code>"Female"</code>.)</li>
+ * <li><b>Raw Gender</b> - This {@link Construct}'s gender as a boolean.
+ * <code>true</code> is female, <code>false</code> is male.</li>
+ * <li><b>Living</b>/<b>Alive</b> - Whether or not this {@link Construct} is
+ * alive. (<code>true</code> if it's alive, <code>false</code> if it's
+ * dead.)</li>
+ * <li><b>Dead</b> - Whether or not this {@link Construct} is dead.(Outputs
+ * <code>true</code> if dead and <code>false</code> if alive.)</li><br>
+ *
+ * @author Zeale
+ *
+ */
 public class Construct extends MindsetObject {
 
 	/**
@@ -344,12 +364,17 @@ public class Construct extends MindsetObject {
 	public ObservableValue<?> getProperty(final String key) {
 		if (key.equalsIgnoreCase("Name"))
 			return new ReadOnlyObjectWrapper<>(name.get());
-		else if (key.equalsIgnoreCase("Gender"))
+		else if (key.equalsIgnoreCase("Raw Gender") || key.equalsIgnoreCase("Raw-Gender")
+				|| key.equalsIgnoreCase("RawGender"))
 			return new ReadOnlyBooleanWrapper(gender);
 		else if (key.equalsIgnoreCase("Alive") || key.equalsIgnoreCase("Living"))
 			return new ReadOnlyBooleanWrapper(alive);
 		else if (key.equalsIgnoreCase("Description"))
 			return new ReadOnlyObjectWrapper<>(description.get());
+		else if (key.equalsIgnoreCase("Dead"))
+			return new ReadOnlyBooleanWrapper(!alive);
+		else if (key.equalsIgnoreCase("Gender"))
+			return new ReadOnlyObjectWrapper<>(gender ? "Female" : "Male");
 		return null;
 	}
 
@@ -447,40 +472,6 @@ public class Construct extends MindsetObject {
 		return true;
 	}
 
-	public static class ConstructCellValueFactory<S extends Construct, T>
-			implements Callback<CellDataFeatures<S, T>, ObservableValue<T>> {
-
-		private final Type type;
-
-		public ConstructCellValueFactory(final Type type) {
-			this.type = type;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public ObservableValue<T> call(final CellDataFeatures<S, T> param) {
-			switch (type) {
-			case NAME:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getName());
-			case GENDER:
-				return new ReadOnlyObjectWrapper<>((T) (param.getValue().getGender() ? "Female" : "Male"));
-			case ALIVE:
-				return (ObservableValue<T>) new ReadOnlyBooleanWrapper(param.getValue().isAlive());
-			case DESCRIPTION:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getDescription());
-			case MARKS:
-				return new ReadOnlyObjectWrapper<>((T) param.getValue().getMarks());
-			default:
-				return null;
-			}
-		}
-
-		public static enum Type {
-			NAME, GENDER, ALIVE, DESCRIPTION, MARKS;
-		}
-
-	}
-
 	/**
 	 * The representation of a {@link Construct}'s Mark as a class.
 	 *
@@ -488,20 +479,66 @@ public class Construct extends MindsetObject {
 	 *
 	 */
 	public final class Mark implements Serializable {
+		/**
+		 * A description of this {@link Construct} at this specific Mk.
+		 */
 		private transient StringProperty description;
+		/**
+		 * Which Mk this {@link Mark} object represents.
+		 */
 		private transient StringProperty mark;
 
+		/**
+		 * Creates a {@link Mark} object given a specified description.
+		 *
+		 * @param description
+		 */
 		public Mark(final String description) {
 			marks.add(this);
 		}
 
+		/**
+		 * Creates a {@link Mark} object with a description and a
+		 * <code>mark</code> that portrays this object's mark number. For
+		 * example, if this was a {@link Construct}'s 8th mark, the {@code mark}
+		 * argument might be something like <code>8</code>. The program will
+		 * display this as "ConstructName Mk8" in the GUI.
+		 *
+		 * @param mark
+		 *            The name of the Mk that this {@link Mark} represents.
+		 * @param description
+		 *            A description of this {@link Construct} at the time of
+		 *            this {@link Mark}.
+		 */
 		public Mark(final String mark, final String description) {
 			this.description = new SimpleStringProperty(description);
 			this.mark = new SimpleStringProperty(mark);
 		}
 
+		/**
+		 * The Serial Version Unique Identifier of this object.
+		 */
 		private static final long serialVersionUID = 1L;
+		/**
+		 * This value is best described as the version of this class. It's used
+		 * for backwards compatibility when reading and writing objects. The
+		 * {@code trueSerialVersionUID} is read from a file <i>first</i> when
+		 * loading an object, then the program uses this version to decide what
+		 * values the file has and how to load it.
+		 */
+		private static final long trueSerialVersionUID = 1L;
 
+		/**
+		 * The {@code readObject} method of this class. Used for Serialization.
+		 *
+		 * @param is
+		 *            The {@link ObjectInputStream} as passed in via
+		 *            Serialization.
+		 * @throws IOException
+		 *             If an {@link IOException} occurs. Also needed to match
+		 *             the specified method signature of the
+		 *             <code>readObject</code> method used for Serialization.
+		 */
 		private void readObject(final ObjectInputStream is) throws IOException {
 			try {
 				description = new SimpleStringProperty((String) is.readObject());
@@ -512,10 +549,22 @@ public class Construct extends MindsetObject {
 
 		}
 
+		/**
+		 * The {@code writeObject} method of this class. It's used to save
+		 * objects via Serialization.
+		 *
+		 * @param os
+		 *            The {@link ObjectOutputStream} passed in via
+		 *            Serialization.
+		 * @throws IOException
+		 *             If an {@link IOException} occurs. Also needed to match
+		 *             the specified method signature of the
+		 *             <code>readObject</code> method used for Serialization.
+		 */
 		private void writeObject(final ObjectOutputStream os) throws IOException {
+			os.writeLong(Mark.trueSerialVersionUID);
 			os.writeObject(description.get());
 			os.writeObject(mark.get());
-			os.defaultWriteObject();
 		}
 
 		/**

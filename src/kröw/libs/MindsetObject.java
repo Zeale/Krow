@@ -8,9 +8,42 @@ import java.util.List;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TableView;
 import javafx.util.Callback;
 import kröw.zeale.v1.program.core.DataManager;
 
+/**
+ * <p>
+ * This class is at the top of the class hierarchy for objects immediately
+ * pertaining to the Construct Mindset. It contains methods that ease client
+ * code and would otherwise be duplicated throughout all Construct Mindset
+ * objects needlessly.
+ * <p>
+ * This class manages:
+ * <ul>
+ * <li>Naming</li>
+ * <li>Deletion and Saving</li>
+ * <li>TableView CellValueFactory management</li>
+ * </ul>
+ *
+ * <p>
+ * Names are simple fields with getters and setters that are set when creating a
+ * {@link MindsetObject} via the {@link #MindsetObject(String)} constructor.
+ * <p>
+ * {@link MindsetObject}s can be deleted using the {@link #delete()} method and
+ * are saved automatically when the program is closed.
+ * <p>
+ * The {@link MindsetObjectTableViewCellValueFactory} is used to display the
+ * properties of a {@link MindsetObject} in a {@link TableView}.
+ * {@link MindsetObjectTableViewCellValueFactory} are constructed with a
+ * <code>key</code> value which determines what value of the
+ * {@link MindsetObject} that the {@link MindsetObjectTableViewCellValueFactory}
+ * will display. See each individual {@link MindsetObject}'s subclass's for
+ * information on what <code>key</code>s are valid.
+ *
+ * @author Zeale
+ *
+ */
 public abstract class MindsetObject implements Serializable {
 
 	protected transient StringProperty name;
