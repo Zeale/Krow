@@ -5,7 +5,6 @@ import java.util.List;
 
 import javafx.application.Application;
 import javafx.scene.image.Image;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import krow.zeale.guis.home.HomeWindow;
@@ -28,21 +27,6 @@ import wolf.zeale.guis.Window;
  *
  */
 public final class Kröw extends Application {
-
-	// Constructor
-	/**
-	 * This constructor is meant to deny any construction of the class
-	 * {@link Kröw}.
-	 *
-	 * @param krow
-	 *            A {@link Kröw} object that has already been created.
-	 * @throws Throwable
-	 *             If you try to use this.
-	 */
-	private Kröw(final Kröw krow) throws Throwable {
-		if (!krow.equals(this))
-			throw new Throwable("The class Kröw is not meant to be constructed.");
-	}
 
 	static {
 
@@ -78,18 +62,7 @@ public final class Kröw extends Application {
 	 * {@link #DARK_CROW} - The dark colored crow image that is used for this
 	 * {@link Application}'s icon. This image is the program's default icon.
 	 */
-	public static final Image LIGHT_CROW;
-
-	/**
-	 * <p>
-	 * {@link #LIGHT_CROW} - The light colored crow image that is used for this
-	 * {@link Application}'s icon. This image can be set as the program's icon
-	 * via the home window.
-	 * <p>
-	 * {@link #DARK_CROW} - The dark colored crow image that is used for this
-	 * {@link Application}'s icon. This image is the program's default icon.
-	 */
-	public static final Image DARK_CROW;
+	public static final Image LIGHT_CROW, DARK_CROW;
 
 	// Constants
 	/**
@@ -145,50 +118,6 @@ public final class Kröw extends Application {
 		Kröw.start(args);
 	}
 
-	/**
-	 * A helper method used to split a {@link String} into an array of
-	 * {@link String}s. This will likely be moved to the upcoming API project.
-	 *
-	 * @param string
-	 *            The {@link String} to split.
-	 * @return An array containing separated, 1 character long {@link String}s
-	 *         that make up the original {@link String} passed in as an
-	 *         argument. Basically the same as {@link String#toCharArray()} but
-	 *         each <code>char</code> is a {@link String} in a {@link String}
-	 *         array.
-	 * @see #splitStringToTextArray(String) for more information. It does the
-	 *      same thing as this method but with {@link Text} nodes as an output
-	 *      rather than a {@link String} array.
-	 */
-	public static String[] splitStringToStringArray(final String string) {
-		final String[] strarr = new String[string.length()];
-		for (int i = 0; i < string.length(); i++)
-			strarr[i] = String.valueOf(string.charAt(i));
-		return strarr;
-	}
-
-	/**
-	 * A helper method used to split a {@link String} into an array of
-	 * {@link Text} nodes. This will likely be moved to the upcoming API
-	 * project, just like the {@link #splitStringToStringArray(String)}.
-	 *
-	 * @param string
-	 *            The {@link String} that will be split into an array of
-	 *            {@link Text} objects.
-	 * @return An array containing {@link Text} objects, each initialized with a
-	 *         character from the original given {@link String}, in the order
-	 *         that the characters of the {@link String} are.
-	 * @see #splitStringToStringArray(String) for more details. It does the
-	 *      exact same thing but the output is an array of {@link String}s,
-	 *      rather than an array of {@link Text} nodes.
-	 */
-	public static Text[] splitStringToTextArray(final String string) {
-		final Text[] textarr = new Text[string.length()];
-		for (int i = 0; i < string.length(); i++)
-			textarr[i] = new Text(String.valueOf(string.charAt(i)));
-		return textarr;
-	}
-
 	// Start method
 	/**
 	 * The start method of the program. This will load up and initialize the
@@ -220,59 +149,39 @@ public final class Kröw extends Application {
 				System.out.println("\n\nDebug mode has been enabled...\n\n");
 			// If the Window class is loaded from somewhere other than this
 			// method, its static constructor causes a RuntimeException.
-			Application.launch(LaunchImpl.class, args);
+
+			Application.launch(args);
 		}
 
 	}
 
-	/**
-	 * This method is overridden so that this class can extend
-	 * {@link Application}. The JVM loads up the JavaFX toolkit if the main
-	 * class extends Application. If this class did not extend
-	 * {@link Application}, the toolkit would not be loaded and the
-	 * {@link #LIGHT_CROW} and {@link #DARK_CROW} images could not be created in
-	 * the static constructor above.
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see javafx.application.Application#start(javafx.stage.Stage)
 	 */
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
-		return;
+		Window.setStage_Impl(primaryStage);
+		Window.setScene(HomeWindow.class, "Home.fxml");
+		primaryStage.initStyle(StageStyle.UNDECORATED);
+		primaryStage.setTitle(Kröw.NAME);
+		if (Kröw.DARK_CROW != null)
+			primaryStage.getIcons().add(Kröw.DARK_CROW);
+		else if (Kröw.LIGHT_CROW != null)
+			primaryStage.getIcons().add(Kröw.LIGHT_CROW);
+		primaryStage.show();
 	}
 
-	/**
+	/*
+	 * (non-Javadoc)
 	 *
-	 * @author Zeale
-	 *
-	 * @Internal This is an internal class used to start the JavaFX Application.
+	 * @see javafx.application.Application#stop()
 	 */
-	public static class LaunchImpl extends Application {
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see javafx.application.Application#start(javafx.stage.Stage)
-		 */
-		@Override
-		public void start(final Stage primaryStage) throws Exception {
-			Window.setStage_Impl(primaryStage);
-			Window.setScene(HomeWindow.class, "Home.fxml");
-			primaryStage.initStyle(StageStyle.UNDECORATED);
-			primaryStage.setTitle(Kröw.NAME);
-			if (Kröw.DARK_CROW != null)
-				primaryStage.getIcons().add(Kröw.DARK_CROW);
-			else if (Kröw.LIGHT_CROW != null)
-				primaryStage.getIcons().add(Kröw.LIGHT_CROW);
-			primaryStage.show();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see javafx.application.Application#stop()
-		 */
-		@Override
-		public void stop() throws Exception {
-			MindsetObject.saveObjects();
-			super.stop();
-		}
+	@Override
+	public void stop() throws Exception {
+		MindsetObject.saveObjects();
+		super.stop();
 	}
 
 }
