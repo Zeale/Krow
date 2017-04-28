@@ -28,10 +28,11 @@ import krow.zeale.guis.create.system.CreateSystemWindow;
 import krow.zeale.guis.management.constructs.ConstructManagerWindow;
 import krow.zeale.guis.management.laws.LawManagerWindow;
 import krow.zeale.pages.Pages;
-import kröw.libs.Construct;
-import kröw.libs.Law;
 import kröw.zeale.v1.program.core.Kröw;
-import kröw.zeale.v1.program.guis.Window;
+import wolf.mindset.Construct;
+import wolf.mindset.Law;
+import wolf.zeale.Wolf;
+import wolf.zeale.guis.Window;
 
 /**
  * <p>
@@ -131,16 +132,16 @@ public class HomeWindow extends Window {
 	 */
 	@FXML
 	private void onChangeIconRequested() {
-		if (Window.DARK_CROW == null || Window.LIGHT_CROW == null)
+		if (Kröw.DARK_CROW == null || Kröw.LIGHT_CROW == null)
 			return;
 		else {
 			final ObservableList<Image> icons = Window.getStage().getIcons();
-			if (icons.contains(Window.DARK_CROW)) {
-				icons.remove(Window.DARK_CROW);
-				icons.add(Window.LIGHT_CROW);
+			if (icons.contains(Kröw.DARK_CROW)) {
+				icons.remove(Kröw.DARK_CROW);
+				icons.add(Kröw.LIGHT_CROW);
 			} else {
-				icons.remove(Window.LIGHT_CROW);
-				icons.add(Window.DARK_CROW);
+				icons.remove(Kröw.LIGHT_CROW);
+				icons.add(Kröw.DARK_CROW);
 			}
 		}
 	}
@@ -163,7 +164,7 @@ public class HomeWindow extends Window {
 		} catch (final IOException e) {
 			System.err.println("Could not open up the Construct Creation Window.");
 
-			if (Kröw.DEBUG_MODE) {
+			if (Wolf.DEBUG_MODE) {
 				System.out.println("\n\n");
 				e.printStackTrace();
 			}
@@ -180,7 +181,7 @@ public class HomeWindow extends Window {
 		} catch (final Exception e) {
 			System.err.println("Could not open up the Law Creation Window.");
 
-			if (Kröw.DEBUG_MODE) {
+			if (Wolf.DEBUG_MODE) {
 				System.out.println("\n\n");
 				e.printStackTrace();
 			}
@@ -197,7 +198,7 @@ public class HomeWindow extends Window {
 		} catch (final IOException e) {
 			System.err.println("Could not open up the Policy Creation Window.");
 
-			if (Kröw.DEBUG_MODE) {
+			if (Wolf.DEBUG_MODE) {
 				System.out.println("\n\n");
 				e.printStackTrace();
 			}
@@ -214,7 +215,7 @@ public class HomeWindow extends Window {
 		} catch (final IOException e) {
 			System.err.println("Could not open up the System Creation Window.");
 
-			if (Kröw.DEBUG_MODE) {
+			if (Wolf.DEBUG_MODE) {
 				System.out.println("\n\n");
 				e.printStackTrace();
 			}
@@ -231,7 +232,7 @@ public class HomeWindow extends Window {
 			Window.setScene(ConstructManagerWindow.class, "ConstructManager.fxml");
 		} catch (final IOException e) {
 			System.err.println("Could not open up the Construct Manager Window.");
-			if (Kröw.DEBUG_MODE) {
+			if (Wolf.DEBUG_MODE) {
 				System.out.println("\n\n");
 				e.printStackTrace();
 			}
@@ -247,7 +248,7 @@ public class HomeWindow extends Window {
 			Window.setScene(LawManagerWindow.class, "LawManager.fxml");
 		} catch (final IOException e) {
 			System.err.println("Could not open up the Law Manager Window.");
-			if (Kröw.DEBUG_MODE) {
+			if (Wolf.DEBUG_MODE) {
 				System.out.println("\n\n");
 				e.printStackTrace();
 			}
@@ -261,7 +262,7 @@ public class HomeWindow extends Window {
 	 */
 	@FXML
 	private void onGoToPages() {
-		if (Kröw.DEBUG_MODE)
+		if (Wolf.DEBUG_MODE)
 			Pages.openPage(Kröw.getDataManager().getConstructs()
 					.get((int) (Math.random() * Kröw.getDataManager().getConstructs().size())));
 	}

@@ -13,10 +13,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import kröw.libs.Construct;
-import kröw.libs.MindsetObject;
 import kröw.zeale.v1.program.core.Kröw;
-import kröw.zeale.v1.program.guis.Window;
+import wolf.mindset.Construct;
+import wolf.mindset.MindsetObject;
+import wolf.zeale.guis.Window;
 
 /**
  * This class is the Controller for the <code>ConstructManager.fxml</code> file.

@@ -13,9 +13,9 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import kröw.libs.System;
 import kröw.zeale.v1.program.core.Kröw;
-import kröw.zeale.v1.program.guis.Window;
+import wolf.mindset.System;
+import wolf.zeale.guis.Window;
 
 /**
  * The Controller for the <code>CreateSystemWindow.fxml</code> {@link Scene}.
@@ -80,7 +80,7 @@ public class CreateSystemWindow extends Window {
 	private void onSystemCreated() {
 
 		creationDatePicker.getValue();
-		final kröw.libs.System syst = new kröw.libs.System(nameField.getText().isEmpty() ? "null" : nameField.getText(),
+		final wolf.mindset.System syst = new wolf.mindset.System(nameField.getText().isEmpty() ? "null" : nameField.getText(),
 				descriptionField.getText().isEmpty() ? "null" : descriptionField.getText(),
 				creationDatePicker.getValue() == null ? new Date()
 						: java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))));

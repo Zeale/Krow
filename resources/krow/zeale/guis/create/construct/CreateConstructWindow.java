@@ -9,9 +9,9 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import krow.zeale.guis.home.HomeWindow;
-import kröw.libs.Construct;
 import kröw.zeale.v1.program.core.Kröw;
-import kröw.zeale.v1.program.guis.Window;
+import wolf.mindset.Construct;
+import wolf.zeale.guis.Window;
 
 /**
  * <p>

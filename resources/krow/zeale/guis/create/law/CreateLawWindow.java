@@ -15,10 +15,10 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import krow.zeale.guis.home.HomeWindow;
-import kröw.libs.Construct;
-import kröw.libs.Law;
 import kröw.zeale.v1.program.core.Kröw;
-import kröw.zeale.v1.program.guis.Window;
+import wolf.mindset.Construct;
+import wolf.mindset.Law;
+import wolf.zeale.guis.Window;
 
 /**
  * This class is the Controller of the <code>CreateLawWindow.fxml</code> file.

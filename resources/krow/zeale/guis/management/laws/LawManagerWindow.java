@@ -14,10 +14,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import kröw.libs.Law;
-import kröw.libs.MindsetObject;
 import kröw.zeale.v1.program.core.Kröw;
-import kröw.zeale.v1.program.guis.Window;
+import wolf.mindset.Law;
+import wolf.mindset.MindsetObject;
+import wolf.zeale.guis.Window;
 
 /**
  * This class is the Controller for the <code>LawManager.fxml</code> file.
