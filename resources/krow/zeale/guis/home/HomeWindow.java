@@ -33,37 +33,102 @@ import kröw.libs.Law;
 import kröw.zeale.v1.program.core.Kröw;
 import kröw.zeale.v1.program.guis.Window;
 
+/**
+ * <p>
+ * The Home {@link Window} of the entire application.
+ * <p>
+ * This {@link Window} is opened automatically when the application is started.
+ *
+ * @author Zeale
+ *
+ * @Internal This is an internal class used for controlling the
+ *           <code>Home.fxml</code> file.
+ *
+ */
 public class HomeWindow extends Window {
 
+	/**
+	 * This is animated, color changing text that displays the amount of
+	 * {@link Construct}s that the user has.
+	 */
 	@FXML
 	private Text constructCount;
+	/**
+	 * A {@link Text} object with unchanging text that forever says
+	 * <i>constructs</i>. It is positioned right underneath
+	 * {@link #constructCount} and changes colors just like
+	 * {@link #constructCount} does.
+	 */
 	@FXML
 	private Text constructText;
 
+	/**
+	 * The central {@link AnchorPane}.
+	 */
 	@FXML
 	private AnchorPane centerPane;
 
+	/**
+	 * The lower {@link ScrollPane}.
+	 */
 	@FXML
 	private ScrollPane bottomPane;
 
+	/**
+	 * The {@link MenuBar} at the top of the {@link Window}.
+	 */
 	@FXML
 	private MenuBar menuBar;
 
+	/**
+	 * The {@link TableView} that renders {@link Construct}s and their data.
+	 */
 	@FXML
 	private TableView<Construct> constructs;
 
+	/**
+	 * The {@link TableView} that renders {@link Law}s and their data.
+	 */
 	@FXML
 	private TableView<Law> laws;
+	/**
+	 * <p>
+	 * {@link #constName} - The {@link TableColumn} that shows the names of all
+	 * the {@link Construct}s.
+	 * <p>
+	 * {@link #constDesc} - The {@link TableColumn} that shows a description for
+	 * all of the {@link Construct}s.
+	 */
 	@FXML
 	private TableColumn<Construct, String> constName, constDesc;
 
+	/**
+	 * <p>
+	 * {@link #lawName} - The {@link TableColumn} that shows the names of all
+	 * the {@link Law}s.
+	 * <p>
+	 * {@link #lawDesc} - The {@link TableColumn} that shows a description for
+	 * each {@link Law}.
+	 */
 	@FXML
 	private TableColumn<Law, String> lawName, lawDesc;
+	/**
+	 * The picture of the crow in the middle of the {@link Window}.
+	 */
 	@FXML
 	private ImageView krow;
 
+	/**
+	 * {@link FadeTransition}s used for the {@link #krow} image when the mouse
+	 * hovers over or off of it.
+	 */
 	private FadeTransition krowFadeInTransition, krowFadeOutTransition;
 
+	/**
+	 * This method is called when the user attempts to change the currently
+	 * displayed program icon. They can do this by selecting the <i>Options</i>
+	 * tab in the {@link MenuBar} and then selecting <i>Change Icon</i>.
+	 */
 	@FXML
 	private void onChangeIconRequested() {
 		if (Window.DARK_CROW == null || Window.LIGHT_CROW == null)
@@ -80,11 +145,17 @@ public class HomeWindow extends Window {
 		}
 	}
 
+	/**
+	 * Called when the user attempts to close the program.
+	 */
 	@FXML
 	private void onCloseRequested() {
 		Platform.exit();
 	}
 
+	/**
+	 * Called when the user goes to create a {@link Construct}.
+	 */
 	@FXML
 	private void onGoToCreateConstructWindow() {
 		try {
@@ -99,6 +170,9 @@ public class HomeWindow extends Window {
 		}
 	}
 
+	/**
+	 * Called when the user goes to create a {@link Law}.
+	 */
 	@FXML
 	private void onGoToCreateLawWindow() {
 		try {
@@ -130,6 +204,9 @@ public class HomeWindow extends Window {
 		}
 	}
 
+	/**
+	 * Called when the user goes to create a {@link System}.
+	 */
 	@FXML
 	private void onGoToCreateSystemWindow() {
 		try {
@@ -144,6 +221,10 @@ public class HomeWindow extends Window {
 		}
 	}
 
+	/**
+	 * Called when the user goes to the {@link Construct} management
+	 * {@link Window}.
+	 */
 	@FXML
 	private void onGoToManageConstructWindow() {
 		try {
@@ -157,6 +238,9 @@ public class HomeWindow extends Window {
 		}
 	}
 
+	/**
+	 * Called when the user goes to the {@link Law} management {@link Window}.
+	 */
 	@FXML
 	private void onGoToManageLawWindow() {
 		try {
@@ -170,6 +254,11 @@ public class HomeWindow extends Window {
 		}
 	}
 
+	/**
+	 * Called when the user tries to go to the {@link Pages} window. This only
+	 * works in debug mode, since the {@link Pages} API and feature is not yet
+	 * ready. At all.
+	 */
 	@FXML
 	private void onGoToPages() {
 		if (Kröw.DEBUG_MODE)
@@ -177,23 +266,39 @@ public class HomeWindow extends Window {
 					.get((int) (Math.random() * Kröw.getDataManager().getConstructs().size())));
 	}
 
+	/**
+	 * Called when the user's pointer hovers over the {@link #krow} image.
+	 */
 	@FXML
 	private void onMouseEnteredKrowImage() {
 		krowFadeInTransition.setFromValue(krow.getOpacity());
 		krowFadeInTransition.play();
 	}
 
+	/**
+	 * Called when the user's pointer exits the {@link #krow} image.
+	 */
 	@FXML
 	private void onMouseExitedKrowImage() {
 		krowFadeOutTransition.setFromValue(krow.getOpacity());
 		krowFadeOutTransition.play();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see kröw.zeale.v1.program.guis.Window#getWindowFile()
+	 */
 	@Override
 	public String getWindowFile() {
 		return "Home.fxml";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see kröw.zeale.v1.program.guis.Window#initialize()
+	 */
 	@Override
 	@SuppressWarnings("deprecation")
 	@FXML

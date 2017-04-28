@@ -358,13 +358,11 @@ public abstract class Window {
 	}
 
 	/**
-	 * @InternalAPI
-	 *
-	 * 				This class is an internal class used to start the JavaFX
-	 *              Application.
 	 *
 	 * @author Zeale
 	 *
+	 * @Internal This class is an internal class used to start the JavaFX
+	 *           Application.
 	 */
 	public static class LaunchImpl extends Application {
 		/*
@@ -392,7 +390,7 @@ public abstract class Window {
 		 */
 		@Override
 		public void stop() throws Exception {
-			final MindsetObjec	t.saveObjects();
+			MindsetObject.saveObjects();
 			super.stop();
 		}
 	}
