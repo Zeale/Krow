@@ -80,13 +80,14 @@ public class CreateSystemWindow extends Window {
 	private void onSystemCreated() {
 
 		creationDatePicker.getValue();
-		final wolf.mindset.System syst = new wolf.mindset.System(nameField.getText().isEmpty() ? "null" : nameField.getText(),
+		final wolf.mindset.System syst = new wolf.mindset.System(
+				nameField.getText().isEmpty() ? "null" : nameField.getText(),
 				descriptionField.getText().isEmpty() ? "null" : descriptionField.getText(),
 				creationDatePicker.getValue() == null ? new Date()
 						: java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))));
 
-		if (!Kröw.getDataManager().getSystems().contains(syst)) {
-			Kröw.getDataManager().getSystems().add(syst);
+		if (!Kröw.systems.contains(syst)) {
+			Kröw.systems.add(syst);
 			Window.setSceneToPreviousScene();
 		} else
 			java.lang.System.out.println("The law " + syst.getName() + " already exists!");

@@ -1,6 +1,12 @@
 package krow.zeale.guis.home;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectStreamClass;
+import java.util.List;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
@@ -21,6 +27,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import krow.zeale.guis.create.construct.CreateConstructWindow;
 import krow.zeale.guis.create.law.CreateLawWindow;
@@ -263,8 +270,8 @@ public class HomeWindow extends Window {
 	@FXML
 	private void onGoToPages() {
 		if (Wolf.DEBUG_MODE)
-			Pages.openPage(Kröw.getDataManager().getConstructs()
-					.get((int) (Math.random() * Kröw.getDataManager().getConstructs().size())));
+			Pages.openPage(Kröw.constructs.getObservableList()
+					.get((int) (Math.random() * Kröw.constructs.getObservableList().size())));
 	}
 
 	/**
@@ -283,6 +290,36 @@ public class HomeWindow extends Window {
 	private void onMouseExitedKrowImage() {
 		krowFadeOutTransition.setFromValue(krow.getOpacity());
 		krowFadeOutTransition.play();
+	}
+
+	@FXML
+	private void openImportFileWindow() {
+		final FileChooser chooser = new FileChooser();
+		chooser.setTitle("Import a Construct, Law, or any other object...");
+		final List<File> files = chooser.showOpenMultipleDialog(Window.getStage());
+		for (final File f : files)
+			try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(f)) {
+				@Override
+				protected ObjectStreamClass readClassDescriptor() throws IOException, ClassNotFoundException {
+					ObjectStreamClass resultClassDescriptor = super.readClassDescriptor();
+
+					if (resultClassDescriptor.getName().equals("kröw.libs.Construct"))
+						resultClassDescriptor = ObjectStreamClass.lookup(wolf.mindset.Construct.class);
+					else if (resultClassDescriptor.getName().equals("kröw.libs.System"))
+						resultClassDescriptor = ObjectStreamClass.lookup(wolf.mindset.System.class);
+					else if (resultClassDescriptor.getName().equals("kröw.libs.Law"))
+						resultClassDescriptor = ObjectStreamClass.lookup(wolf.mindset.Law.class);
+					return resultClassDescriptor;
+				}
+			};) {
+
+			} catch (final FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (final IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 
 	/*
@@ -329,8 +366,8 @@ public class HomeWindow extends Window {
 					"The tables used in the home screen have headers that can be moved around. This is not supported. Because of the version of Java you are running, some availability to stop those headers from being moved is no longer here. This is not a bad thing but be warned that reordering and dragging around table headers MAY cause visual issues or other effects.");
 		}
 
-		constructs.setItems(Kröw.getDataManager().getConstructs().getConstructList());
-		laws.setItems(Kröw.getDataManager().getLaws().getLawList());
+		constructs.setItems(Kröw.constructs.getObservableList());
+		laws.setItems(Kröw.laws.getObservableList());
 		constDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
 		constName.setCellValueFactory(new PropertyValueFactory<>("name"));
 		lawDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -340,7 +377,7 @@ public class HomeWindow extends Window {
 
 		// Now lets set up some timelines for animations...
 
-		constructCount.setText(String.valueOf(Kröw.getDataManager().getConstructs().size()));
+		constructCount.setText(String.valueOf(Kröw.constructs.getObservableList().size()));
 
 		final FillTransition constCountRed = new FillTransition(Duration.seconds(0.8), constructCount, Color.RED,
 				Color.GOLD),

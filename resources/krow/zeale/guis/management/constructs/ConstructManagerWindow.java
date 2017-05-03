@@ -9,6 +9,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -28,6 +29,8 @@ import wolf.zeale.guis.Window;
  *
  */
 public class ConstructManagerWindow extends Window {
+
+	private TabPane managePane;
 	/**
 	 * The {@link Window}'s {@link MenuBar} (at the top of the {@link Window}).
 	 */
@@ -112,8 +115,8 @@ public class ConstructManagerWindow extends Window {
 	 */
 	@FXML
 	private void onConstructsTableClicked() {
-		constructBeingEdited = Kröw.getDataManager().getConstructs()
-				.get(constructs.getFocusModel().getFocusedCell().getRow());
+
+		constructBeingEdited = Kröw.constructs.get(constructs.getFocusModel().getFocusedCell().getRow());
 		constructs.setVisible(false);
 
 		editNameField.setText(constructBeingEdited.getName());
@@ -121,12 +124,7 @@ public class ConstructManagerWindow extends Window {
 		editGenderField.setSelected(constructBeingEdited.getGender());
 		editLifeField.setSelected(constructBeingEdited.isAlive());
 
-		editDescriptionField.setVisible(true);
-		editGenderField.setVisible(true);
-		editLifeField.setVisible(true);
-		editNameField.setVisible(true);
-		editConstructDoneButton.setVisible(true);
-		deleteConstructButton.setVisible(true);
+		managePane.setVisible(true);
 
 	}
 
@@ -135,7 +133,7 @@ public class ConstructManagerWindow extends Window {
 	 */
 	@FXML
 	private void onDeleteConstruct() {
-		if (!Kröw.getDataManager().getConstructs().remove(constructBeingEdited))
+		if (!Kröw.constructs.remove(constructBeingEdited))
 			System.err.println("The construct " + constructBeingEdited.getName()
 					+ " could not be removed from the Construct list.....");
 		constructBeingEdited.delete();
@@ -152,12 +150,7 @@ public class ConstructManagerWindow extends Window {
 		constructBeingEdited.setName(editNameField.getText());
 		constructBeingEdited.setGender(editGenderField.isSelected());
 
-		editConstructDoneButton.setVisible(false);
-		editDescriptionField.setVisible(false);
-		editGenderField.setVisible(false);
-		editLifeField.setVisible(false);
-		editNameField.setVisible(false);
-		deleteConstructButton.setVisible(false);
+		managePane.setVisible(false);
 
 		refreshData();
 
@@ -184,18 +177,16 @@ public class ConstructManagerWindow extends Window {
 	 * to the program's current list of {@link Construct}s.
 	 */
 	private void refreshData() {
-		final ArrayList<Construct> constructs = new ArrayList<>(
-				Kröw.getDataManager().getConstructs().getConstructList());
-		Kröw.getDataManager().getConstructs().clear();
-		Kröw.getDataManager().getConstructs().addAll(constructs);
+		final ArrayList<Construct> constructs = new ArrayList<>(Kröw.constructs.getObservableList());
+		Kröw.constructs.clear();
+		Kröw.constructs.addAll(constructs);
 
 		ObservableList<PieChart.Data> list = FXCollections.observableArrayList(
-				new PieChart.Data("Males", Kröw.getDataManager().getConstructs().getMaleConstructs().size()),
-				new PieChart.Data("Females", Kröw.getDataManager().getConstructs().getFemaleConstructs().size()));
+				new PieChart.Data("Males", Kröw.getMaleConstructs().size()),
+				new PieChart.Data("Females", Kröw.getFemaleConstructs().size()));
 		genderPieChart.setData(list);
-		list = FXCollections.observableArrayList(
-				new PieChart.Data("Living", Kröw.getDataManager().getConstructs().getLivingConstructs().size()),
-				new PieChart.Data("Dead", Kröw.getDataManager().getConstructs().getDeadConstructs().size()));
+		list = FXCollections.observableArrayList(new PieChart.Data("Living", Kröw.getLivingConstructs().size()),
+				new PieChart.Data("Dead", Kröw.getDeadConstructs().size()));
 		lifePieChart.setData(list);
 	}
 
@@ -235,7 +226,7 @@ public class ConstructManagerWindow extends Window {
 		}
 
 		refreshData();
-		constructs.setItems(Kröw.getDataManager().getConstructs().getConstructList());
+		constructs.setItems(Kröw.constructs.getObservableList());
 
 		nameTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Name"));
 		genderTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Gender"));

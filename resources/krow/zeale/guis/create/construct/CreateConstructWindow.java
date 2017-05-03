@@ -28,6 +28,7 @@ import wolf.zeale.guis.Window;
  *
  */
 public class CreateConstructWindow extends Window {
+
 	/**
 	 * <p>
 	 * A {@link CheckBox} indicating the gender of the {@link Construct} that
@@ -40,6 +41,7 @@ public class CreateConstructWindow extends Window {
 	 */
 	@FXML
 	private CheckBox gender;
+
 	/**
 	 * <p>
 	 * A {@link CheckBox} indicating whether or not this {@link Construct} is
@@ -91,8 +93,8 @@ public class CreateConstructWindow extends Window {
 		if (description.isEmpty())
 			description = "null";
 		final Construct construct = new Construct(name, description, gender.isSelected(), alive.isSelected());
-		if (!Kröw.getDataManager().getConstructs().contains(construct)) {
-			Kröw.getDataManager().getConstructs().add(construct);
+		if (!Kröw.constructs.contains(construct)) {
+			Kröw.constructs.add(construct);
 			goBack();
 		} else
 			System.err.println("The Construct " + construct.getName() + " already exists!");

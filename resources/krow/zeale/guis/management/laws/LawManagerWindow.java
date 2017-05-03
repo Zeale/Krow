@@ -98,7 +98,7 @@ public class LawManagerWindow extends Window {
 	 */
 	@FXML
 	private void onDeleteLaw() {
-		if (!Kröw.getDataManager().getLaws().remove(lawBeingEdited))
+		if (!Kröw.laws.remove(lawBeingEdited))
 			System.err.println("The law " + lawBeingEdited.getName()
 					+ " could not be deleted from RAM. It should be deleted from the filesystem though.");
 		lawBeingEdited.delete();
@@ -147,7 +147,7 @@ public class LawManagerWindow extends Window {
 	 */
 	@FXML
 	private void onLawsTableClicked() {
-		lawBeingEdited = Kröw.getDataManager().getLaws().get(laws.getFocusModel().getFocusedCell().getRow());
+		lawBeingEdited = Kröw.laws.getObservableList().get(laws.getFocusModel().getFocusedCell().getRow());
 		laws.setVisible(false);
 
 		editNameField.setText(lawBeingEdited.getName());
@@ -171,9 +171,9 @@ public class LawManagerWindow extends Window {
 	 * {@link #laws} {@link TableView}.
 	 */
 	private void refreshData() {
-		final ArrayList<Law> laws = new ArrayList<>(Kröw.getDataManager().getLaws().getLawList());
-		Kröw.getDataManager().getLaws().clear();
-		Kröw.getDataManager().getLaws().addAll(laws);
+		final ArrayList<Law> laws = new ArrayList<>(Kröw.laws.getObservableList());
+		Kröw.laws.clear();
+		Kröw.laws.addAll(laws);
 	}
 
 	/*
@@ -212,7 +212,7 @@ public class LawManagerWindow extends Window {
 		}
 
 		refreshData();
-		laws.setItems(Kröw.getDataManager().getLaws().getLawList());
+		laws.setItems(Kröw.laws.getObservableList());
 
 		nameTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Name"));
 		dateTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Creation Date"));

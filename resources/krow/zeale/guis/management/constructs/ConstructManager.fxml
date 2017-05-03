@@ -28,7 +28,7 @@
    <center>
       <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <center>
-            <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="background" BorderPane.alignment="CENTER">
+            <AnchorPane>
                <children>
                   <TableView fx:id="constructs" onMouseClicked="#onConstructsTableClicked" prefHeight="768.0" prefWidth="696.0" styleClass="background">
                     <columns>
@@ -38,49 +38,62 @@
                         <TableColumn fx:id="descriptionTable" prefWidth="454.0" text="Description" />
                     </columns>
                   </TableView>
-                  <Button fx:id="editConstructDoneButton" layoutX="320.0" layoutY="627.0" mnemonicParsing="false" onAction="#onDoneEditingConstruct" text="Done" visible="false" />
-                  <TextField fx:id="editNameField" layoutX="255.0" layoutY="147.0" visible="false" />
-                  <TextArea fx:id="editDescriptionField" layoutX="249.0" layoutY="272.0" prefHeight="200.0" prefWidth="200.0" visible="false" />
-                  <CheckBox fx:id="editGenderField" layoutX="74.0" layoutY="96.0" mnemonicParsing="false" text="Female" visible="false">
-                     <textFill>
-                        <LinearGradient endX="1.0" endY="1.0">
-                           <stops>
-                              <Stop color="RED" />
-                              <Stop color="#860000" offset="1.0" />
-                           </stops>
-                        </LinearGradient>
-                     </textFill>
-                     <font>
-                        <Font name="System Bold" size="15.0" />
-                     </font>
-                  </CheckBox>
-                  <CheckBox fx:id="editLifeField" layoutX="74.0" layoutY="126.0" mnemonicParsing="false" text="Alive" visible="false">
-                     <font>
-                        <Font name="System Bold" size="15.0" />
-                     </font>
-                     <textFill>
-                        <LinearGradient endX="1.0" endY="1.0">
-                           <stops>
-                              <Stop color="RED" />
-                              <Stop color="#860000" offset="1.0" />
-                           </stops>
-                        </LinearGradient>
-                     </textFill>
-                  </CheckBox>
-                  <Button fx:id="deleteConstructButton" layoutX="582.0" layoutY="65.0" mnemonicParsing="false" onAction="#onDeleteConstruct" text="Delete" visible="false">
-                     <font>
-                        <Font name="System Bold" size="15.0" />
-                     </font>
-                     <textFill>
-                        <LinearGradient endX="1.0" endY="1.0">
-                           <stops>
-                              <Stop color="#ab0000" />
-                              <Stop color="RED" offset="1.0" />
-                           </stops>
-                        </LinearGradient>
-                     </textFill>
-                  </Button>
-               </children></AnchorPane>
+                  <TabPane prefHeight="697.0" prefWidth="694.0">
+                     <tabs>
+                        <Tab text="Construct">
+                           <content>
+                              <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="background" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <Button fx:id="editConstructDoneButton" layoutX="320.0" layoutY="627.0" mnemonicParsing="false" onAction="#onDoneEditingConstruct" text="Done" />
+                                    <TextField fx:id="editNameField" layoutX="255.0" layoutY="147.0" />
+                                    <TextArea fx:id="editDescriptionField" layoutX="249.0" layoutY="272.0" prefHeight="200.0" prefWidth="200.0" />
+                                    <CheckBox fx:id="editGenderField" layoutX="74.0" layoutY="96.0" mnemonicParsing="false" text="Female">
+                                       <textFill>
+                                          <LinearGradient endX="1.0" endY="1.0">
+                                             <stops>
+                                                <Stop color="RED" />
+                                                <Stop color="#860000" offset="1.0" />
+                                             </stops>
+                                          </LinearGradient>
+                                       </textFill>
+                                       <font>
+                                          <Font name="System Bold" size="15.0" />
+                                       </font>
+                                    </CheckBox>
+                                    <CheckBox fx:id="editLifeField" layoutX="74.0" layoutY="126.0" mnemonicParsing="false" text="Alive">
+                                       <font>
+                                          <Font name="System Bold" size="15.0" />
+                                       </font>
+                                       <textFill>
+                                          <LinearGradient endX="1.0" endY="1.0">
+                                             <stops>
+                                                <Stop color="RED" />
+                                                <Stop color="#860000" offset="1.0" />
+                                             </stops>
+                                          </LinearGradient>
+                                       </textFill>
+                                    </CheckBox>
+                                    <Button fx:id="deleteConstructButton" layoutX="582.0" layoutY="65.0" mnemonicParsing="false" onAction="#onDeleteConstruct" text="Delete">
+                                       <font>
+                                          <Font name="System Bold" size="15.0" />
+                                       </font>
+                                       <textFill>
+                                          <LinearGradient endX="1.0" endY="1.0">
+                                             <stops>
+                                                <Stop color="#ab0000" />
+                                                <Stop color="RED" offset="1.0" />
+                                             </stops>
+                                          </LinearGradient>
+                                       </textFill>
+                                    </Button>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </Tab>
+                     </tabs>
+                  </TabPane>
+               </children>
+            </AnchorPane>
          </center>
          <left>
             <AnchorPane prefHeight="768.0" prefWidth="262.0" styleClass="solid-background" BorderPane.alignment="CENTER">

@@ -114,8 +114,8 @@ public class CreateLawWindow extends Window {
 				ruleField.getText().isEmpty() ? "null" : ruleField.getText(), creationDatePicker.getValue() == null
 						? new Date() : java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))));
 
-		if (!Kröw.getDataManager().getLaws().contains(law)) {
-			Kröw.getDataManager().getLaws().add(law);
+		if (!Kröw.laws.contains(law)) {
+			Kröw.laws.add(law);
 			Window.setSceneToPreviousScene();
 		} else
 			System.out.println("The law " + law.getName() + " already exists!");
