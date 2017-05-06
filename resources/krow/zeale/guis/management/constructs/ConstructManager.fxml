@@ -250,7 +250,7 @@
          <right>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="solid-background" BorderPane.alignment="CENTER">
                <children>
-                  <PieChart id="LifeChart" fx:id="lifePieChart" layoutY="159.0" prefHeight="318.0" prefWidth="352.0" stylesheets="@LifePieChart.css" title="Living" />
+                  <PieChart id="LifeChart" fx:id="lifePieChart" layoutY="159.0" prefHeight="318.0" prefWidth="352.0" stylesheets="@LifePieChart.css" title="Life" />
                </children>
             </AnchorPane>
          </right>

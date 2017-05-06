@@ -18,6 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Construct;
+import wolf.mindset.Construct.Mark;
 import wolf.mindset.tables.TableViewable;
 import wolf.zeale.Wolf;
 import wolf.zeale.guis.Window;
@@ -186,6 +187,10 @@ public class ConstructManagerWindow extends Window {
 		clearMarkMakerEditor();
 		managePane.setVisible(false);
 		constructs.setVisible(true);
+		genderPieChart.setTitle("Gender");
+		lifePieChart.setTitle("Life");
+		updateConstructs();
+
 	}
 
 	@FXML
@@ -235,6 +240,12 @@ public class ConstructManagerWindow extends Window {
 		constructs.setVisible(false);
 		managePane.setVisible(true);
 
+		updateMarks();
+
+		genderPieChart.setTitle("Mark Genders");
+
+		lifePieChart.setTitle("Mark Life");
+
 	}
 
 	/**
@@ -274,7 +285,10 @@ public class ConstructManagerWindow extends Window {
 	 */
 	@FXML
 	private void onGoBackRequested() {
-		Window.setSceneToPreviousScene();
+		if (managePane.isVisible())
+			goBackToConstructTable();
+		else
+			Window.setSceneToPreviousScene();
 	}
 
 	/**
@@ -306,6 +320,27 @@ public class ConstructManagerWindow extends Window {
 		final List<Construct.Mark> mrks = new ArrayList<>(constructBeingEdited.getMarks());
 		markTable.getItems().clear();
 		markTable.getItems().addAll(mrks);
+
+		int dead = 0, living = 0, male = 0, female = 0;
+
+		for (final Mark mk : constructBeingEdited.getMarks()) {
+			if (mk.isAlive())
+				living++;
+			else
+				dead++;
+			if (mk.getRawGender())
+				female++;
+			else
+				male++;
+		}
+
+		ObservableList<PieChart.Data> list = FXCollections.observableArrayList(new PieChart.Data("Male Mks", male),
+				new PieChart.Data("Female Mks", female));
+		genderPieChart.setData(list);
+		list = FXCollections.observableArrayList(new PieChart.Data("Living Mks", living),
+				new PieChart.Data("Dead Mks", dead));
+		lifePieChart.setData(list);
+
 	}
 
 	/*
@@ -326,8 +361,6 @@ public class ConstructManagerWindow extends Window {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void initialize() {
-		super.initialize();
-
 		Window.setPaneDraggableByNode(menubar);
 
 		/*
