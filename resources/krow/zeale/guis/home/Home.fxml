@@ -91,7 +91,7 @@
                   <Image url="@../_resources/Kröw.png" />
                </image>
             </ImageView>
-            <MenuButton layoutX="268.0" layoutY="421.0" mnemonicParsing="false" text="Manage">
+            <MenuButton layoutX="257.0" layoutY="421.0" mnemonicParsing="false" text="Manage">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#onGoToManageConstructWindow" text="Constructs" />
                 <MenuItem mnemonicParsing="false" onAction="#onGoToManageLawWindow" text="Laws" />

@@ -49,7 +49,7 @@
                                           <Font name="System Bold" size="15.0" />
                                        </font></Button>
                                     <TextField fx:id="editNameField" layoutX="255.0" layoutY="147.0" />
-                                    <TextArea fx:id="editDescriptionField" layoutX="249.0" layoutY="272.0" prefHeight="200.0" prefWidth="200.0" />
+                                    <TextArea fx:id="editDescriptionField" layoutX="249.0" layoutY="272.0" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
                                     <CheckBox fx:id="editGenderField" layoutX="74.0" layoutY="96.0" mnemonicParsing="false" text="Female">
                                        <textFill>
                                           <LinearGradient endX="1.0" endY="1.0">
@@ -122,7 +122,7 @@
                                        <children>
                                           <Button fx:id="edit_markDone" layoutX="321.0" layoutY="624.0" mnemonicParsing="false" onAction="#doneEditingMark" text="Done" />
                                           <TextField fx:id="edit_markName" layoutX="255.0" layoutY="147.0" promptText="Mark Name" />
-                                          <TextArea fx:id="edit_markDesc" layoutX="249.0" layoutY="272.0" prefHeight="200.0" prefWidth="200.0" promptText="Mark Description" />
+                                          <TextArea fx:id="edit_markDesc" layoutX="249.0" layoutY="272.0" prefHeight="200.0" prefWidth="200.0" promptText="Mark Description" wrapText="true" />
                                           <CheckBox fx:id="edit_gBox" layoutX="74.0" layoutY="96.0" mnemonicParsing="false" text="Female">
                                              <font>
                                                 <Font name="System Bold" size="15.0" />
@@ -224,7 +224,7 @@
                                           </LinearGradient>
                                        </textFill>
                                     </CheckBox>
-                                    <TextArea fx:id="create_markDesc" layoutX="249.0" layoutY="272.0" prefHeight="200.0" prefWidth="200.0" promptText="Mark Description" />
+                                    <TextArea fx:id="create_markDesc" layoutX="249.0" layoutY="272.0" prefHeight="200.0" prefWidth="200.0" promptText="Mark Description" wrapText="true" />
                                     <TextField fx:id="create_markName" layoutX="255.0" layoutY="147.0" promptText="Mark Name" />
                                     <Button layoutX="308.0" layoutY="627.0" mnemonicParsing="false" onAction="#createMark" text="Done">
                                        <font>

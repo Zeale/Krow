@@ -20,11 +20,44 @@
 
 
 /*
+ * Buttons
+ * 
+ * This is defined up here so that it can be overridden below.
+ */
+.button {
+	-fx-background-color: linear-gradient(#1C1C1C 0.0%, #070707 15.0%, #070707 85.0%, #1C1C1C 100.0%);
+	-fx-border-radius: 3.5px;
+	-fx-border-width: 2.3px;
+	-fx-border-color: white;
+	-fx-text-fill: #A5A5A5;
+	-fx-font-weight: bold;
+}
+.button:armed {
+	-fx-border-color: red;
+	-fx-text-fill: #535353;
+}
+
+
+
+/*
+ * Textures for MenuButtons.
+ */
+ .menu-button {
+ 	-fx-background-color: linear-gradient(#1C1C1C 0.0%, #212121 14.0%, #212121 50.0%, #161616 100.0%);
+ 	-fx-text-fill: text-color;
+ }
+ .menu-button .context-menu {
+ 	-fx-background-color: black;
+ }
+
+
+
+/*
  * The menu at the top of the window.
  */
 .menu-bar {
 	-fx-font-weight: bold;
-	-fx-background-color: linear-gradient(#363636 25%, #252525 85%, #202020 100%);
+	-fx-background-color: linear-gradient(#363636 25.0%, #252525 85.0%, #202020 100.0%);
 }
 
 .menu-bar .menu:showing .context-menu {
@@ -53,6 +86,33 @@
 .menu-bar .menu:showing {
 	-fx-background-color: black;
 }
+.menu-bar .menu-button {
+	-fx-background-color: transparent;
+}
+
+
+
+/*
+ * Text Fields and Text Areas
+ */
+.text-field, .text-area {
+	-fx-background-color: black;
+	-fx-border-width: 2.5px;
+	-fx-border-color: white;
+	-fx-border-radius: 2.0px;
+	
+	-fx-highlight-fill: gray;
+	-fx-highlight-text-fill: gold;
+	-fx-font-weight: bold;
+	-fx-text-fill: #A5A5A5;
+}
+.text-area .scroll-pane .content {
+	-fx-background-color: black;
+}
+
+.text-field:focused, .text-area:focused {
+	-fx-border-color: text-color;
+}
 
 
 
@@ -60,7 +120,7 @@
  * Backgrounds for items in the background class.
  */
 .background {
-	-fx-background-color: linear-gradient(#1F1F1F 0%,#353535 5%);
+	-fx-background-color: linear-gradient(#1F1F1F 0.0%,#353535 5.0%);
 }
 .solid-background {
 	-fx-background-color: bg;
@@ -73,7 +133,7 @@
  */
 .cell {
 	-fx-background-color: #282828;
-	-fx-border-width: 1px 1px 0 1px;
+	-fx-border-width: 1.0px 1.0px 0.0 1.0px;
 	-fx-border-color: black;
 	-fx-text-fill: white;
 	-fx-font-weight: bold;
@@ -84,5 +144,5 @@
 }
 
 .table-view .column-header {
-	-fx-background-color: linear-gradient(#202020 25%, #252525 85%, #363636 100%);
+	-fx-background-color: linear-gradient(#202020 25.0%, #252525 85.0%, #363636 100.0%);
 }
