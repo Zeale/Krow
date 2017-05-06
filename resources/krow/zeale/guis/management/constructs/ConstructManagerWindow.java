@@ -1,5 +1,6 @@
 package krow.zeale.guis.management.constructs;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -306,14 +307,30 @@ public class ConstructManagerWindow extends Window {
 		Kröw.constructs.clear();
 		Kröw.constructs.addAll(constructs);
 
-		ObservableList<PieChart.Data> list = FXCollections.observableArrayList(
-				new PieChart.Data("Males", Kröw.getMaleConstructs().size()),
-				new PieChart.Data("Females", Kröw.getFemaleConstructs().size()));
-		genderPieChart.setData(list);
-		list = FXCollections.observableArrayList(new PieChart.Data("Living", Kröw.getLivingConstructs().size()),
-				new PieChart.Data("Dead", Kröw.getDeadConstructs().size()));
-		lifePieChart.setData(list);
+		final DecimalFormat dc = new DecimalFormat("0.##");
 
+		ObservableList<PieChart.Data> list = FXCollections
+				.observableArrayList(
+						new PieChart.Data("Males ("
+								+ dc.format((double) Kröw.getMaleConstructs().size()
+										/ (Kröw.getMaleConstructs().size() + Kröw.getFemaleConstructs().size()) * 100)
+								+ "%)", Kröw.getMaleConstructs().size()),
+						new PieChart.Data("Females ("
+								+ dc.format((double) Kröw.getFemaleConstructs().size()
+										/ (Kröw.getMaleConstructs().size() + Kröw.getFemaleConstructs().size()) * 100)
+								+ "%)", Kröw.getFemaleConstructs().size()));
+		genderPieChart.setData(list);
+		list = FXCollections
+				.observableArrayList(
+						new PieChart.Data("Living ("
+								+ dc.format((double) Kröw.getLivingConstructs().size()
+										/ (Kröw.getLivingConstructs().size() + Kröw.getDeadConstructs().size()) * 100)
+								+ "%)", Kröw.getLivingConstructs().size()),
+						new PieChart.Data("Dead ("
+								+ dc.format((double) Kröw.getDeadConstructs().size()
+										/ (Kröw.getLivingConstructs().size() + Kröw.getDeadConstructs().size()) * 100)
+								+ "%)", Kröw.getDeadConstructs().size()));
+		lifePieChart.setData(list);
 	}
 
 	private void updateMarks() {
@@ -334,11 +351,15 @@ public class ConstructManagerWindow extends Window {
 				male++;
 		}
 
-		ObservableList<PieChart.Data> list = FXCollections.observableArrayList(new PieChart.Data("Male Mks", male),
-				new PieChart.Data("Female Mks", female));
+		final DecimalFormat dc = new DecimalFormat("0.##");
+
+		ObservableList<PieChart.Data> list = FXCollections.observableArrayList(
+				new PieChart.Data("Male Mks (" + dc.format((double) male / (male + female) * 100) + "%)", male),
+				new PieChart.Data("Female Mks (" + dc.format((double) female / (female + male) * 100) + "%)", female));
 		genderPieChart.setData(list);
-		list = FXCollections.observableArrayList(new PieChart.Data("Living Mks", living),
-				new PieChart.Data("Dead Mks", dead));
+		list = FXCollections.observableArrayList(
+				new PieChart.Data("Living Mks (" + dc.format((double) living / (living + dead) * 100) + "%)", living),
+				new PieChart.Data("Dead Mks (" + dc.format((double) dead / (dead + living) * 100) + "%)", dead));
 		lifePieChart.setData(list);
 
 	}
