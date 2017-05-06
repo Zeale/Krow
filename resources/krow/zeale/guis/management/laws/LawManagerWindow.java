@@ -16,6 +16,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Law;
+import wolf.mindset.ObjectAlreadyExistsException;
 import wolf.mindset.tables.TableViewable;
 import wolf.zeale.guis.Window;
 
@@ -113,11 +114,17 @@ public class LawManagerWindow extends Window {
 	private void onDoneEditingLaw() {
 		lawBeingEdited
 				.setDescription(editDescriptionField.getText().isEmpty() ? "null" : editDescriptionField.getText());
-		lawBeingEdited.setName(editNameField.getText().isEmpty() ? "null" : editNameField.getText());
 		lawBeingEdited.setRule(editRuleField.getText().isEmpty() ? "null" : editRuleField.getText());
 		lawBeingEdited.setCreationDate(creationDatePicker.getValue() == null ? new Date()
 				: java.util.Date
 						.from(Instant.from(creationDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()))));
+		try {
+			if (!lawBeingEdited.getName().equals(editNameField.getText().isEmpty() ? "null" : editNameField.getText()))
+				lawBeingEdited.setName(editNameField.getText().isEmpty() ? "null" : editNameField.getText());
+		} catch (final ObjectAlreadyExistsException e) {
+			System.err.println("A Law with this name already exists.");
+			return;
+		}
 
 		editLawDoneButton.setVisible(false);
 		editDescriptionField.setVisible(false);

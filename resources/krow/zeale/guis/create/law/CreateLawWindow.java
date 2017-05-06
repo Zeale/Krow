@@ -18,6 +18,7 @@ import krow.zeale.guis.home.HomeWindow;
 import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Construct;
 import wolf.mindset.Law;
+import wolf.mindset.ObjectAlreadyExistsException;
 import wolf.zeale.guis.Window;
 
 /**
@@ -109,10 +110,17 @@ public class CreateLawWindow extends Window {
 	@FXML
 	private void onLawCreated() {
 
-		final Law law = new Law(nameField.getText().isEmpty() ? "null" : nameField.getText(),
-				descriptionField.getText().isEmpty() ? "null" : descriptionField.getText(),
-				ruleField.getText().isEmpty() ? "null" : ruleField.getText(), creationDatePicker.getValue() == null
-						? new Date() : java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))));
+		Law law;
+		try {
+			law = new Law(nameField.getText().isEmpty() ? "null" : nameField.getText(),
+					descriptionField.getText().isEmpty() ? "null" : descriptionField.getText(),
+					ruleField.getText().isEmpty() ? "null" : ruleField.getText(), creationDatePicker.getValue() == null
+							? new Date() : java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))));
+		} catch (final ObjectAlreadyExistsException e) {
+			System.err.println(
+					"The Law, " + (nameField.getText().isEmpty() ? "null" : nameField.getText()) + ", already exists.");
+			return;
+		}
 
 		if (!Kröw.laws.contains(law)) {
 			Kröw.laws.add(law);

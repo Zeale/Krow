@@ -20,6 +20,7 @@ import javafx.scene.layout.AnchorPane;
 import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Construct;
 import wolf.mindset.Construct.Mark;
+import wolf.mindset.ObjectAlreadyExistsException;
 import wolf.mindset.tables.TableViewable;
 import wolf.zeale.Wolf;
 import wolf.zeale.guis.Window;
@@ -268,8 +269,15 @@ public class ConstructManagerWindow extends Window {
 	private void onDoneEditingConstruct() {
 		constructBeingEdited.setAlive(editLifeField.isSelected());
 		constructBeingEdited.setDescription(editDescriptionField.getText());
-		constructBeingEdited.setName(editNameField.getText());
 		constructBeingEdited.setGender(editGenderField.isSelected());
+		try {
+			if (!constructBeingEdited.getName()
+					.equals(editNameField.getText().isEmpty() ? "null" : editNameField.getText()))
+				constructBeingEdited.setName(editNameField.getText());
+		} catch (final ObjectAlreadyExistsException e) {
+			System.err.println("A Construct with this name already exists.");
+			return;
+		}
 
 		managePane.setVisible(false);
 

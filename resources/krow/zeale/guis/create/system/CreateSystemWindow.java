@@ -14,6 +14,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import kröw.zeale.v1.program.core.Kröw;
+import wolf.mindset.ObjectAlreadyExistsException;
 import wolf.mindset.System;
 import wolf.zeale.guis.Window;
 
@@ -80,11 +81,16 @@ public class CreateSystemWindow extends Window {
 	private void onSystemCreated() {
 
 		creationDatePicker.getValue();
-		final wolf.mindset.System syst = new wolf.mindset.System(
-				nameField.getText().isEmpty() ? "null" : nameField.getText(),
-				descriptionField.getText().isEmpty() ? "null" : descriptionField.getText(),
-				creationDatePicker.getValue() == null ? new Date()
-						: java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))));
+		wolf.mindset.System syst;
+		try {
+			syst = new wolf.mindset.System(nameField.getText().isEmpty() ? "null" : nameField.getText(),
+					descriptionField.getText().isEmpty() ? "null" : descriptionField.getText(),
+					creationDatePicker.getValue() == null ? new Date()
+							: java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))));
+		} catch (final ObjectAlreadyExistsException e) {
+			java.lang.System.err.println("A System with this name already exists.");
+			return;
+		}
 
 		if (!Kröw.systems.contains(syst)) {
 			Kröw.systems.add(syst);

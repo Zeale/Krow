@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import krow.zeale.guis.home.HomeWindow;
 import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Construct;
+import wolf.mindset.ObjectAlreadyExistsException;
 import wolf.zeale.guis.Window;
 
 /**
@@ -87,17 +88,16 @@ public class CreateConstructWindow extends Window {
 	 */
 	@FXML
 	private void done() {
-		String name = nameField.getText(), description = descriptionField.getText();
-		if (name.isEmpty())
-			name = "null";
-		if (description.isEmpty())
-			description = "null";
-		final Construct construct = new Construct(name, description, gender.isSelected(), alive.isSelected());
-		if (!Kröw.constructs.contains(construct)) {
-			Kröw.constructs.add(construct);
-			goBack();
-		} else
-			System.err.println("The Construct " + construct.getName() + " already exists!");
+		final String name = nameField.getText(), description = descriptionField.getText();
+		Construct construct;
+		try {
+			construct = new Construct(name, description, gender.isSelected(), alive.isSelected());
+		} catch (final ObjectAlreadyExistsException e) {
+			System.err.println("The Construct, " + name + ", already exists!");
+			return;
+		}
+		Kröw.constructs.add(construct);
+		goBack();
 
 	}
 
