@@ -1,6 +1,7 @@
 package krow.zeale.guis.management.constructs;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,9 +15,11 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Construct;
-import wolf.mindset.MindsetObject;
+import wolf.mindset.tables.TableViewable;
+import wolf.zeale.Wolf;
 import wolf.zeale.guis.Window;
 
 /**
@@ -30,18 +33,35 @@ import wolf.zeale.guis.Window;
  */
 public class ConstructManagerWindow extends Window {
 
+	@FXML
+	private AnchorPane editMarkPane;
+
+	@FXML
+	private TableView<Construct.Mark> markTable;
+
+	@FXML
+	private CheckBox edit_gBox, edit_lBox;
+
+	@FXML
+	private Button edit_markDone, edit_deleteMarkButton;
+
+	@FXML
+	private TextField edit_markName;
+	@FXML
+	private TextArea edit_markDesc;
+	@FXML
 	private TabPane managePane;
 	/**
 	 * The {@link Window}'s {@link MenuBar} (at the top of the {@link Window}).
 	 */
 	@FXML
 	private MenuBar menubar;
-
 	/**
 	 * The {@link TableView} of the user's {@link Construct}s.
 	 */
 	@FXML
 	private TableView<Construct> constructs;
+
 	/**
 	 * <p>
 	 * {@link #nameTable} - The {@link TableColumn} that renders
@@ -71,18 +91,19 @@ public class ConstructManagerWindow extends Window {
 	 */
 	@FXML
 	private PieChart genderPieChart, lifePieChart;
-
 	/**
 	 * The {@link TextField} that shows up when the user attempts to edit a
 	 * {@link Construct} which changes the {@link Construct}'s name.
 	 */
 	@FXML
 	private TextField editNameField;
+
 	/**
 	 * The {@link TextArea} used for editing a {@link Construct}'s description.
 	 */
 	@FXML
 	private TextArea editDescriptionField;
+
 	/**
 	 * <p>
 	 * {@link #editLifeField} - The {@link CheckBox} used to change whether or
@@ -103,11 +124,93 @@ public class ConstructManagerWindow extends Window {
 	 */
 	@FXML
 	private Button editConstructDoneButton, deleteConstructButton;
-
 	/**
 	 * The {@link Construct} that is currently being edited by the user.
 	 */
 	private Construct constructBeingEdited;
+
+	private Construct.Mark markBeingEdited;
+	@FXML
+	private CheckBox create_lBox, create_gBox;
+	@FXML
+	private TextField create_markName;
+	@FXML
+	private TextArea create_markDesc;
+
+	@FXML
+	private TableColumn<Construct.Mark, String> markNameColumn, markDescriptionColumn, markGenderColumn, markLifeColumn;
+
+	@FXML
+	private void clearMarkMakerEditor() {
+		create_gBox.setSelected(false);
+		create_lBox.setSelected(false);
+		create_markDesc.setText("");
+		create_markName.setText("");
+	}
+
+	@FXML
+	private void createMark() {
+		constructBeingEdited.makeMark(create_markDesc.getText().isEmpty() ? "null" : create_markDesc.getText(),
+				create_gBox.isSelected(), create_lBox.isSelected(),
+				create_markName.getText().isEmpty() ? "null" : create_markName.getText());
+		updateMarks();
+		clearMarkMakerEditor();
+		managePane.getSelectionModel().select(1);
+	}
+
+	@FXML
+	private void deleteMark() {
+		constructBeingEdited.getMarks().remove(markBeingEdited);
+		editMarkPane.setVisible(false);
+		markTable.setVisible(true);
+		markBeingEdited = null;
+		updateMarks();
+	}
+
+	@FXML
+	private void doneEditingMark() {
+		markBeingEdited.setAlive(edit_lBox.isSelected());
+		markBeingEdited.setGender(edit_gBox.isSelected());
+		markBeingEdited.setDescription(edit_markDesc.getText());
+		markBeingEdited.setMark(edit_markName.getText());
+		markBeingEdited = null;
+		updateMarks();
+
+		editMarkPane.setVisible(false);
+		markTable.setVisible(true);
+
+	}
+
+	@FXML
+	private void goBackToConstructTable() {
+		clearMarkMakerEditor();
+		managePane.setVisible(false);
+		constructs.setVisible(true);
+	}
+
+	@FXML
+	private void goBackToMarkTable() {
+		clearMarkMakerEditor();
+		markTable.setVisible(true);
+		editMarkPane.setVisible(false);
+	}
+
+	@FXML
+	private void markTableClicked() {
+		final int mrk = markTable.getFocusModel().getFocusedCell().getRow();
+		if (mrk < 0) {
+			if (Wolf.DEBUG_MODE)
+				System.out.println("There are no Marks in this Construct for you to click.");
+			return;
+		}
+		markBeingEdited = constructBeingEdited.getMarks().get(mrk);
+		markTable.setVisible(false);
+		editMarkPane.setVisible(true);
+		edit_markDesc.setText(markBeingEdited.getDescription());
+		edit_markName.setText(markBeingEdited.getMark());
+		edit_gBox.setSelected(markBeingEdited.getRawGender());
+		edit_lBox.setSelected(markBeingEdited.isAlive());
+	}
 
 	/**
 	 * Called when a {@link Construct} in the {@link #constructs} table is
@@ -115,15 +218,21 @@ public class ConstructManagerWindow extends Window {
 	 */
 	@FXML
 	private void onConstructsTableClicked() {
-
-		constructBeingEdited = Kröw.constructs.get(constructs.getFocusModel().getFocusedCell().getRow());
-		constructs.setVisible(false);
+		final int cnstrct = constructs.getFocusModel().getFocusedCell().getRow();
+		if (cnstrct < 0) {
+			if (Wolf.DEBUG_MODE)
+				System.out.println("There are no Constructs for you to select...");
+			return;
+		}
+		constructBeingEdited = Kröw.constructs.get(cnstrct);
 
 		editNameField.setText(constructBeingEdited.getName());
 		editDescriptionField.setText(constructBeingEdited.getDescription());
 		editGenderField.setSelected(constructBeingEdited.getGender());
 		editLifeField.setSelected(constructBeingEdited.isAlive());
+		markTable.setItems(FXCollections.observableArrayList(constructBeingEdited.getMarks()));
 
+		constructs.setVisible(false);
 		managePane.setVisible(true);
 
 	}
@@ -152,9 +261,11 @@ public class ConstructManagerWindow extends Window {
 
 		managePane.setVisible(false);
 
-		refreshData();
+		updateConstructs();
 
 		constructs.setVisible(true);
+
+		constructBeingEdited = null;
 	}
 
 	/**
@@ -176,7 +287,7 @@ public class ConstructManagerWindow extends Window {
 	 * {@link Window} will update themselves to accommodate for any changes made
 	 * to the program's current list of {@link Construct}s.
 	 */
-	private void refreshData() {
+	private void updateConstructs() {
 		final ArrayList<Construct> constructs = new ArrayList<>(Kröw.constructs.getObservableList());
 		Kröw.constructs.clear();
 		Kröw.constructs.addAll(constructs);
@@ -188,6 +299,13 @@ public class ConstructManagerWindow extends Window {
 		list = FXCollections.observableArrayList(new PieChart.Data("Living", Kröw.getLivingConstructs().size()),
 				new PieChart.Data("Dead", Kröw.getDeadConstructs().size()));
 		lifePieChart.setData(list);
+
+	}
+
+	private void updateMarks() {
+		final List<Construct.Mark> mrks = new ArrayList<>(constructBeingEdited.getMarks());
+		markTable.getItems().clear();
+		markTable.getItems().addAll(mrks);
 	}
 
 	/*
@@ -225,14 +343,18 @@ public class ConstructManagerWindow extends Window {
 		} catch (final NoSuchMethodError e) {
 		}
 
-		refreshData();
+		updateConstructs();
 		constructs.setItems(Kröw.constructs.getObservableList());
 
-		nameTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Name"));
-		genderTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Gender"));
-		descriptionTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Description"));
-		lifeTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Living"));
+		nameTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Name"));
+		genderTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Gender"));
+		descriptionTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Description"));
+		lifeTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Living"));
 
+		markNameColumn.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Name"));
+		markDescriptionColumn.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Description"));
+		markGenderColumn.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Gender"));
+		markLifeColumn.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Living"));
 	}
 
 }

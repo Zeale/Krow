@@ -16,7 +16,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Law;
-import wolf.mindset.MindsetObject;
+import wolf.mindset.tables.TableViewable;
 import wolf.zeale.guis.Window;
 
 /**
@@ -214,10 +214,10 @@ public class LawManagerWindow extends Window {
 		refreshData();
 		laws.setItems(Kröw.laws.getObservableList());
 
-		nameTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Name"));
-		dateTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Creation Date"));
-		descriptionTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Description"));
-		ruleTable.setCellValueFactory(new MindsetObject.MindsetObjectTableViewCellValueFactory<>("Rules"));
+		nameTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Name"));
+		dateTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Creation Date"));
+		descriptionTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Description"));
+		ruleTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Rules"));
 
 	}
 

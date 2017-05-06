@@ -1,0 +1,30 @@
+.tab-pane .tab-header-area .tab-header-background {
+	-fx-background-color: #101010;
+}
+
+.tab-pane .tab-header-area .tab {
+	-fx-background-color: #000000;
+	-fx-fill: yellow;
+}
+
+.tab-pane .tab-header-area .tab .label {
+	-fx-text-fill: yellow;
+}
+
+.tab-pane:top *.tab-header-area {
+    -fx-background-insets: 10.0 10.0 10.0 10.0;
+    -fx-border-width: 0.0;
+    -fx-padding: 0.416667em 0.166667em 0.0em 0.5em;
+}
+
+.tab-pane .tab-content-area {
+	-fx-border-color: #101010;
+	-fx-border-width: 0.0 10.0px 10.0px 10.0px;
+	-fx-border-top-width: 0.0;
+	-fx-background-color: #353535;
+}
+
+.tab .tab-label {
+	-fx-text-fill: #ffcc00;
+	-fx-font-weight: bold;
+}

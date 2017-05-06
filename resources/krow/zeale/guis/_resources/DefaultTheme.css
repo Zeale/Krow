@@ -3,7 +3,7 @@
  */
 .root {
 	text-color: #C00;
-	bg: #1C1C1C;/* Background Color */
+	bg: #353535;/* Background Color */
 	bge: #0B3C24;/* Background Edge Color */
 }
 
@@ -63,7 +63,7 @@
 	-fx-background-color: linear-gradient(#1F1F1F 0%,#353535 5%);
 }
 .solid-background {
-	-fx-background-color: #353535;
+	-fx-background-color: bg;
 }
 
 
