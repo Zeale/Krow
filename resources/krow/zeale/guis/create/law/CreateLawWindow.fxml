@@ -9,12 +9,30 @@
    <center>
       <AnchorPane prefHeight="824.0" prefWidth="794.0" styleClass="background" BorderPane.alignment="CENTER">
          <children>
-            <TextField fx:id="nameField" layoutX="149.0" layoutY="76.0" promptText="Name" />
-            <TextArea fx:id="descriptionField" layoutX="150.0" layoutY="190.0" prefHeight="200.0" prefWidth="200.0" promptText="Description" wrapText="true" />
-            <Button layoutX="223.0" layoutY="410.0" mnemonicParsing="false" onAction="#onLawCreated" text="Done" />
-            <DatePicker fx:id="creationDatePicker" layoutX="172.0" layoutY="130.0" prefHeight="37.0" prefWidth="160.0" promptText="Date Created" />
-            <TextArea fx:id="ruleField" layoutX="150.0" layoutY="190.0" prefHeight="200.0" prefWidth="200.0" promptText="Rule" visible="false" wrapText="true" />
-            <Button fx:id="switchVisibilityButton" layoutX="30.0" layoutY="190.0" mnemonicParsing="false" onAction="#onWriteRuleRequested" text="Rule" />
+            <TextField fx:id="nameField" layoutX="149.0" layoutY="76.0" promptText="Name">
+               <tooltip>
+                  <Tooltip text="Write the name of your Law here" />
+               </tooltip></TextField>
+            <TextArea fx:id="descriptionField" layoutX="150.0" layoutY="190.0" prefHeight="200.0" prefWidth="200.0" promptText="Description" wrapText="true">
+               <tooltip>
+                  <Tooltip text="Put a description of your Law here" />
+               </tooltip></TextArea>
+            <Button layoutX="223.0" layoutY="410.0" mnemonicParsing="false" onAction="#onLawCreated" text="Done">
+               <tooltip>
+                  <Tooltip text="Click this to create your Law" />
+               </tooltip></Button>
+            <DatePicker fx:id="creationDatePicker" layoutX="172.0" layoutY="130.0" prefHeight="37.0" prefWidth="160.0" promptText="Date Created">
+               <tooltip>
+                  <Tooltip text="Use this to pick the date that your Law was made. If you type in a date manually, you can save times down to the nearest nanosecond." />
+               </tooltip></DatePicker>
+            <TextArea fx:id="ruleField" layoutX="150.0" layoutY="190.0" prefHeight="200.0" prefWidth="200.0" promptText="Rule" visible="false" wrapText="true">
+               <tooltip>
+                  <Tooltip text="List out the rules that your Law makes here. For example, if your Law said you couldn't sleep more than once a month, you'd write that here." />
+               </tooltip></TextArea>
+            <Button fx:id="switchVisibilityButton" layoutX="30.0" layoutY="190.0" mnemonicParsing="false" onAction="#onWriteRuleRequested" text="Rule">
+               <tooltip>
+                  <Tooltip text="This button switches between the Description box and the Rule box. Once you are done writing a description of your Law in the box to the right, you can click this button and then write the rules of this Law in the same place." />
+               </tooltip></Button>
          </children>
       </AnchorPane>
    </center>

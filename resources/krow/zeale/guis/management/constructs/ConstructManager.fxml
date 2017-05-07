@@ -17,12 +17,15 @@
    <top>
       <MenuBar fx:id="menubar" BorderPane.alignment="CENTER">
         <menus>
-          <Menu mnemonicParsing="false" text="Options">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#onGoBackRequested" text="Back" />
-            </items>
+          <Menu mnemonicParsing="false" text="Go...">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onGoBackRequested" text="Back" />
+               </items>
           </Menu>
         </menus>
+         <tooltip>
+            <Tooltip text="Menu" />
+         </tooltip>
       </MenuBar>
    </top>
    <center>
@@ -37,6 +40,9 @@
                         <TableColumn fx:id="genderTable" prefWidth="72.0" text="Gender" />
                         <TableColumn fx:id="descriptionTable" prefWidth="454.0" text="Description" />
                     </columns>
+                     <tooltip>
+                        <Tooltip text="A list of the Constructs you have..." />
+                     </tooltip>
                   </TableView>
                   <TabPane fx:id="managePane" layoutX="1.0" prefHeight="768.0" prefWidth="694.0" styleClass="solid-background" stylesheets="@EditPaneStyle.css" tabClosingPolicy="UNAVAILABLE" visible="false">
                      <tabs>
@@ -47,9 +53,18 @@
                                     <Button fx:id="editConstructDoneButton" layoutX="320.0" layoutY="627.0" mnemonicParsing="false" onAction="#onDoneEditingConstruct" text="Done">
                                        <font>
                                           <Font name="System Bold" size="15.0" />
-                                       </font></Button>
-                                    <TextField fx:id="editNameField" layoutX="255.0" layoutY="147.0" />
-                                    <TextArea fx:id="editDescriptionField" layoutX="249.0" layoutY="272.0" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
+                                       </font>
+                                       <tooltip>
+                                          <Tooltip text="Click this to apply your changes." />
+                                       </tooltip></Button>
+                                    <TextField fx:id="editNameField" layoutX="255.0" layoutY="147.0">
+                                       <tooltip>
+                                          <Tooltip text="This is this Construct's name" />
+                                       </tooltip></TextField>
+                                    <TextArea fx:id="editDescriptionField" layoutX="249.0" layoutY="272.0" prefHeight="200.0" prefWidth="200.0" wrapText="true">
+                                       <tooltip>
+                                          <Tooltip text="This is a description of this Construct" />
+                                       </tooltip></TextArea>
                                     <CheckBox fx:id="editGenderField" layoutX="74.0" layoutY="96.0" mnemonicParsing="false" text="Female">
                                        <textFill>
                                           <LinearGradient endX="1.0" endY="1.0">
@@ -62,6 +77,9 @@
                                        <font>
                                           <Font name="System Bold" size="15.0" />
                                        </font>
+                                       <tooltip>
+                                          <Tooltip text="This checkbox determines this Construct's gender. Selected = Female, Unselected = Male" />
+                                       </tooltip>
                                     </CheckBox>
                                     <CheckBox fx:id="editLifeField" layoutX="74.0" layoutY="126.0" mnemonicParsing="false" text="Alive">
                                        <font>
@@ -75,6 +93,9 @@
                                              </stops>
                                           </LinearGradient>
                                        </textFill>
+                                       <tooltip>
+                                          <Tooltip text="This checkbox determines whether or not this Construct is currently alive. Selected = Alive, Unselected = Dead" />
+                                       </tooltip>
                                     </CheckBox>
                                     <Button fx:id="deleteConstructButton" layoutX="582.0" layoutY="65.0" mnemonicParsing="false" onAction="#onDeleteConstruct" text="Delete">
                                        <font>
@@ -88,6 +109,9 @@
                                              </stops>
                                           </LinearGradient>
                                        </textFill>
+                                       <tooltip>
+                                          <Tooltip text="Click this to delete this Construct" />
+                                       </tooltip>
                                     </Button>
                                     <Button layoutX="24.0" layoutY="24.0" mnemonicParsing="false" onAction="#goBackToConstructTable" text="Back">
                                        <font>
@@ -101,10 +125,16 @@
                                              </stops>
                                           </LinearGradient>
                                        </textFill>
+                                       <tooltip>
+                                          <Tooltip text="Click this to go back to the table of Constructs..." />
+                                       </tooltip>
                                     </Button>
                                  </children>
                               </AnchorPane>
                            </content>
+                           <tooltip>
+                              <Tooltip text="Allows you to edit this Construct" />
+                           </tooltip>
                         </Tab>
                         <Tab closable="false" text="Marks">
                           <content>
@@ -117,12 +147,24 @@
                                           <TableColumn fx:id="markGenderColumn" editable="false" prefWidth="72.0" text="Gender" />
                                           <TableColumn fx:id="markDescriptionColumn" editable="false" prefWidth="443.0" text="Description" />
                                        </columns>
+                                       <tooltip>
+                                          <Tooltip text="A list of the Marks that this Construct has..." />
+                                       </tooltip>
                                     </TableView>
                                     <AnchorPane fx:id="editMarkPane" prefHeight="719.0" prefWidth="674.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
-                                          <Button fx:id="edit_markDone" layoutX="321.0" layoutY="624.0" mnemonicParsing="false" onAction="#doneEditingMark" text="Done" />
-                                          <TextField fx:id="edit_markName" layoutX="255.0" layoutY="147.0" promptText="Mark Name" />
-                                          <TextArea fx:id="edit_markDesc" layoutX="249.0" layoutY="272.0" prefHeight="200.0" prefWidth="200.0" promptText="Mark Description" wrapText="true" />
+                                          <Button fx:id="edit_markDone" layoutX="321.0" layoutY="624.0" mnemonicParsing="false" onAction="#doneEditingMark" text="Done">
+                                             <tooltip>
+                                                <Tooltip text="Click this to apply your changes" />
+                                             </tooltip></Button>
+                                          <TextField fx:id="edit_markName" layoutX="255.0" layoutY="147.0" promptText="Mark Name">
+                                             <tooltip>
+                                                <Tooltip text="This is this Mark's name" />
+                                             </tooltip></TextField>
+                                          <TextArea fx:id="edit_markDesc" layoutX="249.0" layoutY="272.0" prefHeight="200.0" prefWidth="200.0" promptText="Mark Description" wrapText="true">
+                                             <tooltip>
+                                                <Tooltip text="This is a description of this Mark" />
+                                             </tooltip></TextArea>
                                           <CheckBox fx:id="edit_gBox" layoutX="74.0" layoutY="96.0" mnemonicParsing="false" text="Female">
                                              <font>
                                                 <Font name="System Bold" size="15.0" />
@@ -135,6 +177,9 @@
                                                    </stops>
                                                 </LinearGradient>
                                              </textFill>
+                                             <tooltip>
+                                                <Tooltip text="This checkbox determines the gender of this Mark. Selected = Female, Unselected = Male" />
+                                             </tooltip>
                                           </CheckBox>
                                           <CheckBox fx:id="edit_lBox" layoutX="74.0" layoutY="126.0" mnemonicParsing="false" text="Alive">
                                              <font>
@@ -148,6 +193,9 @@
                                                    </stops>
                                                 </LinearGradient>
                                              </textFill>
+                                             <tooltip>
+                                                <Tooltip text="This checkbox determines whether or not this Mark was alive. Selected = Living, Unselected = Dead" />
+                                             </tooltip>
                                           </CheckBox>
                                           <Button fx:id="edit_deleteMarkButton" layoutX="582.0" layoutY="65.0" mnemonicParsing="false" onAction="#deleteMark" text="Delete">
                                              <font>
@@ -161,6 +209,9 @@
                                                    </stops>
                                                 </LinearGradient>
                                              </textFill>
+                                             <tooltip>
+                                                <Tooltip text="Click this to delete this Mark" />
+                                             </tooltip>
                                           </Button>
                                           <Button layoutX="24.0" layoutY="24.0" mnemonicParsing="false" onAction="#goBackToMarkTable" text="Back">
                                              <font>
@@ -174,12 +225,18 @@
                                                    </stops>
                                                 </LinearGradient>
                                              </textFill>
+                                             <tooltip>
+                                                <Tooltip text="Click this to go back to the table of Marks" />
+                                             </tooltip>
                                           </Button>
                                        </children>
                                     </AnchorPane>
                                  </children>
                               </AnchorPane>
                           </content>
+                           <tooltip>
+                              <Tooltip text="View and edit Marks here" />
+                           </tooltip>
                         </Tab>
                         <Tab text="Create Mark">
                           <content>
@@ -197,6 +254,9 @@
                                              </stops>
                                           </LinearGradient>
                                        </textFill>
+                                       <tooltip>
+                                          <Tooltip text="Click this to clear the input fields" />
+                                       </tooltip>
                                     </Button>
                                     <CheckBox fx:id="create_lBox" layoutX="74.0" layoutY="126.0" mnemonicParsing="false" text="Alive">
                                        <font>
@@ -210,6 +270,9 @@
                                              </stops>
                                           </LinearGradient>
                                        </textFill>
+                                       <tooltip>
+                                          <Tooltip text="This checkbox determines whether or not this Mark was alive. Selected = Living, Unselected = Dead" />
+                                       </tooltip>
                                     </CheckBox>
                                     <CheckBox fx:id="create_gBox" layoutX="74.0" layoutY="96.0" mnemonicParsing="false" text="Female">
                                        <font>
@@ -223,10 +286,19 @@
                                              </stops>
                                           </LinearGradient>
                                        </textFill>
+                                       <tooltip>
+                                          <Tooltip text="This checkbox determines the gender of this Mark. Selected = Female, Unselected = Male" />
+                                       </tooltip>
                                     </CheckBox>
-                                    <TextArea fx:id="create_markDesc" layoutX="249.0" layoutY="272.0" prefHeight="200.0" prefWidth="200.0" promptText="Mark Description" wrapText="true" />
-                                    <TextField fx:id="create_markName" layoutX="255.0" layoutY="147.0" promptText="Mark Name" />
-                                    <Button layoutX="308.0" layoutY="627.0" mnemonicParsing="false" onAction="#createMark" text="Done">
+                                    <TextArea fx:id="create_markDesc" layoutX="249.0" layoutY="272.0" prefHeight="200.0" prefWidth="200.0" promptText="Mark Description" wrapText="true">
+                                       <tooltip>
+                                          <Tooltip text="This is a description of this Mark" />
+                                       </tooltip></TextArea>
+                                    <TextField fx:id="create_markName" layoutX="255.0" layoutY="147.0" promptText="Mark Name">
+                                       <tooltip>
+                                          <Tooltip text="This is this Mark's name" />
+                                       </tooltip></TextField>
+                                    <Button layoutX="308.0" layoutY="627.0" mnemonicParsing="false" onAction="#createMark" text="Click this to create your Mark">
                                        <font>
                                           <Font name="System Bold" size="15.0" />
                                        </font>
@@ -234,6 +306,9 @@
                                  </children>
                               </AnchorPane>
                           </content>
+                           <tooltip>
+                              <Tooltip text="Create a Mark here" />
+                           </tooltip>
                         </Tab>
                      </tabs>
                   </TabPane>

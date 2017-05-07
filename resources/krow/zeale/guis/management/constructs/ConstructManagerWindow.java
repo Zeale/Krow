@@ -294,7 +294,7 @@ public class ConstructManagerWindow extends Window {
 	 */
 	@FXML
 	private void onGoBackRequested() {
-		if (managePane.isVisible())
+		if (!constructs.isVisible())
 			goBackToConstructTable();
 		else
 			Window.setSceneToPreviousScene();
