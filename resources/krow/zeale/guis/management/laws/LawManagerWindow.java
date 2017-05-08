@@ -14,6 +14,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Law;
 import wolf.mindset.ObjectAlreadyExistsException;
@@ -103,6 +104,7 @@ public class LawManagerWindow extends Window {
 			System.err.println("The law " + lawBeingEdited.getName()
 					+ " could not be deleted from RAM. It should be deleted from the filesystem though.");
 		lawBeingEdited.delete();
+		Window.spawnLabelAtMousePos("Deleted the law, " + lawBeingEdited.getName() + ", successfully", Color.GREEN);
 		onDoneEditingLaw();
 	}
 
@@ -123,8 +125,12 @@ public class LawManagerWindow extends Window {
 				lawBeingEdited.setName(editNameField.getText().isEmpty() ? "null" : editNameField.getText());
 		} catch (final ObjectAlreadyExistsException e) {
 			System.err.println("A Law with this name already exists.");
+			Window.spawnLabelAtMousePos("A Law with the name, " + editNameField.getText() + ", already exists.",
+					Color.RED);
 			return;
 		}
+
+		Window.spawnLabelAtMousePos("Edited the Law, " + lawBeingEdited.getName() + ", successfully", Color.GREEN);
 
 		editLawDoneButton.setVisible(false);
 		editDescriptionField.setVisible(false);

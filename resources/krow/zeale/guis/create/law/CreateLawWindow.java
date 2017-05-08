@@ -14,6 +14,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 import krow.zeale.guis.home.HomeWindow;
 import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Construct;
@@ -119,14 +120,14 @@ public class CreateLawWindow extends Window {
 		} catch (final ObjectAlreadyExistsException e) {
 			System.err.println(
 					"The Law, " + (nameField.getText().isEmpty() ? "null" : nameField.getText()) + ", already exists.");
+			Window.spawnLabelAtMousePos("The Law, " + (nameField.getText().isEmpty() ? "null" : nameField.getText())
+					+ ", already exists...", Color.RED);
 			return;
 		}
 
-		if (!Kröw.laws.contains(law)) {
-			Kröw.laws.add(law);
-			Window.setSceneToPreviousScene();
-		} else
-			System.out.println("The law " + law.getName() + " already exists!");
+		Kröw.laws.add(law);
+		Window.spawnLabelAtMousePos("Added the Law, " + law.getName() + ", successfully", Color.GREEN);
+		Window.setSceneToPreviousScene();
 	}
 
 	/**

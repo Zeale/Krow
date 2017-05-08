@@ -8,6 +8,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 import krow.zeale.guis.home.HomeWindow;
 import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Construct;
@@ -94,9 +95,11 @@ public class CreateConstructWindow extends Window {
 			construct = new Construct(name, description, gender.isSelected(), alive.isSelected());
 		} catch (final ObjectAlreadyExistsException e) {
 			System.err.println("The Construct, " + name + ", already exists!");
+			Window.spawnLabelAtMousePos("The Construct, " + name + ", already exists...", Color.RED);
 			return;
 		}
 		Kröw.constructs.add(construct);
+		Window.spawnLabelAtMousePos("Added the Construct, " + name + ", successfully", Color.GREEN);
 		goBack();
 
 	}

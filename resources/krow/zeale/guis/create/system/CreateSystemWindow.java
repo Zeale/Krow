@@ -13,6 +13,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.ObjectAlreadyExistsException;
 import wolf.mindset.System;
@@ -89,14 +90,14 @@ public class CreateSystemWindow extends Window {
 							: java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))));
 		} catch (final ObjectAlreadyExistsException e) {
 			java.lang.System.err.println("A System with this name already exists.");
+			Window.spawnLabelAtMousePos("The System, " + (nameField.getText().isEmpty() ? "null" : nameField.getText())
+					+ ", already exists...", Color.RED);
 			return;
 		}
 
-		if (!Kröw.systems.contains(syst)) {
-			Kröw.systems.add(syst);
-			Window.setSceneToPreviousScene();
-		} else
-			java.lang.System.out.println("The law " + syst.getName() + " already exists!");
+		Kröw.systems.add(syst);
+		Window.spawnLabelAtMousePos("Added the System, " + syst.getName() + ", successfully", Color.GREEN);
+		Window.setSceneToPreviousScene();
 	}
 
 	/*

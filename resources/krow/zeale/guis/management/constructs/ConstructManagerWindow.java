@@ -17,9 +17,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Construct;
 import wolf.mindset.Construct.Mark;
+import wolf.mindset.MindsetObject.MarkAlreadyExistsException;
 import wolf.mindset.ObjectAlreadyExistsException;
 import wolf.mindset.tables.TableViewable;
 import wolf.zeale.Wolf;
@@ -143,7 +145,6 @@ public class ConstructManagerWindow extends Window {
 	@FXML
 	private TableColumn<Construct.Mark, String> markNameColumn, markDescriptionColumn, markGenderColumn, markLifeColumn;
 
-	@FXML
 	private void clearMarkMakerEditor() {
 		create_gBox.setSelected(false);
 		create_lBox.setSelected(false);
@@ -156,6 +157,9 @@ public class ConstructManagerWindow extends Window {
 		constructBeingEdited.makeMark(create_markDesc.getText().isEmpty() ? "null" : create_markDesc.getText(),
 				create_gBox.isSelected(), create_lBox.isSelected(),
 				create_markName.getText().isEmpty() ? "null" : create_markName.getText());
+		Window.spawnLabelAtMousePos("Made the Mark, "
+				+ (create_markDesc.getText().isEmpty() ? "null" : create_markDesc.getText()) + " successfully",
+				Color.GREEN);
 		updateMarks();
 		clearMarkMakerEditor();
 		managePane.getSelectionModel().select(1);
@@ -172,11 +176,22 @@ public class ConstructManagerWindow extends Window {
 
 	@FXML
 	private void doneEditingMark() {
+
+		try {
+			markBeingEdited.setMark(edit_markName.getText());
+		} catch (final MarkAlreadyExistsException e) {
+			System.out.println("A Mark with the name, " + edit_markName.getText() + ", already exists...");
+			Window.spawnLabelAtMousePos("A Mark with the name, " + edit_markName.getText() + ", already exists...",
+					Color.RED);
+			return;
+		}
+
 		markBeingEdited.setAlive(edit_lBox.isSelected());
 		markBeingEdited.setGender(edit_gBox.isSelected());
 		markBeingEdited.setDescription(edit_markDesc.getText());
-		markBeingEdited.setMark(edit_markName.getText());
+
 		markBeingEdited = null;
+		Window.spawnLabelAtMousePos("Edited the Mark, " + edit_markName.getText() + ", successfully", Color.GREEN);
 		updateMarks();
 
 		editMarkPane.setVisible(false);
@@ -219,6 +234,12 @@ public class ConstructManagerWindow extends Window {
 		edit_lBox.setSelected(markBeingEdited.isAlive());
 	}
 
+	@FXML
+	private void onClearMarkMakerEditor() {
+		clearMarkMakerEditor();
+		Window.spawnLabelAtMousePos("Cleared GUI successfully", Color.GOLD);
+	}
+
 	/**
 	 * Called when a {@link Construct} in the {@link #constructs} table is
 	 * clicked.
@@ -238,6 +259,8 @@ public class ConstructManagerWindow extends Window {
 		editGenderField.setSelected(constructBeingEdited.getGender());
 		editLifeField.setSelected(constructBeingEdited.isAlive());
 		markTable.setItems(FXCollections.observableArrayList(constructBeingEdited.getMarks()));
+
+		Window.spawnLabelAtMousePos("Editing Construct, \"" + constructBeingEdited.getName() + "\".", Color.GOLD);
 
 		constructs.setVisible(false);
 		managePane.setVisible(true);
@@ -259,6 +282,7 @@ public class ConstructManagerWindow extends Window {
 			System.err.println("The construct " + constructBeingEdited.getName()
 					+ " could not be removed from the Construct list.....");
 		constructBeingEdited.delete();
+		Window.spawnLabelAtMousePos("Deleted the Construct, " + constructBeingEdited.getName() + ".", Color.GOLD);
 		onDoneEditingConstruct();
 	}
 
@@ -276,11 +300,14 @@ public class ConstructManagerWindow extends Window {
 				constructBeingEdited.setName(editNameField.getText());
 		} catch (final ObjectAlreadyExistsException e) {
 			System.err.println("A Construct with this name already exists.");
+			Window.spawnLabelAtMousePos(
+					"A Construct with the name, " + constructBeingEdited.getName() + ", already exists.", Color.RED);
 			return;
 		}
 
 		managePane.setVisible(false);
-
+		Window.spawnLabelAtMousePos("Successfully modified Construct, " + constructBeingEdited.getName() + ".",
+				Color.GREEN);
 		updateConstructs();
 
 		constructs.setVisible(true);

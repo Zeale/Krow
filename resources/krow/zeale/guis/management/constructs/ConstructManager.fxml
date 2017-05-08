@@ -242,7 +242,7 @@
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <Button layoutX="589.0" layoutY="65.0" mnemonicParsing="false" onAction="#clearMarkMakerEditor" text="Clear">
+                                    <Button layoutX="589.0" layoutY="65.0" mnemonicParsing="false" onAction="#onClearMarkMakerEditor" text="Clear">
                                        <font>
                                           <Font name="System Bold" size="15.0" />
                                        </font>
@@ -298,10 +298,13 @@
                                        <tooltip>
                                           <Tooltip text="This is this Mark's name" />
                                        </tooltip></TextField>
-                                    <Button layoutX="308.0" layoutY="627.0" mnemonicParsing="false" onAction="#createMark" text="Click this to create your Mark">
+                                    <Button layoutX="308.0" layoutY="627.0" mnemonicParsing="false" onAction="#createMark" text="Done">
                                        <font>
                                           <Font name="System Bold" size="15.0" />
                                        </font>
+                                       <tooltip>
+                                          <Tooltip text="Click this to create your Mark" />
+                                       </tooltip>
                                     </Button>
                                  </children>
                               </AnchorPane>
