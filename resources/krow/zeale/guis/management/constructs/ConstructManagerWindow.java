@@ -1,8 +1,6 @@
 package krow.zeale.guis.management.constructs;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,6 +23,7 @@ import wolf.mindset.MindsetObject.MarkAlreadyExistsException;
 import wolf.mindset.ObjectAlreadyExistsException;
 import wolf.mindset.tables.TableViewable;
 import wolf.zeale.Wolf;
+import wolf.zeale.collections.ObservableListWrapper;
 import wolf.zeale.guis.Window;
 
 /**
@@ -167,7 +166,7 @@ public class ConstructManagerWindow extends Window {
 
 	@FXML
 	private void deleteMark() {
-		constructBeingEdited.getMarks().remove(markBeingEdited);
+		System.out.println(constructBeingEdited.getMarks().remove(markBeingEdited));
 		editMarkPane.setVisible(false);
 		markTable.setVisible(true);
 		markBeingEdited = null;
@@ -252,13 +251,13 @@ public class ConstructManagerWindow extends Window {
 				System.out.println("There are no Constructs for you to select...");
 			return;
 		}
-		constructBeingEdited = Kröw.constructs.get(cnstrct);
+		constructBeingEdited = Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable().get(cnstrct);
 
 		editNameField.setText(constructBeingEdited.getName());
 		editDescriptionField.setText(constructBeingEdited.getDescription());
 		editGenderField.setSelected(constructBeingEdited.getGender());
 		editLifeField.setSelected(constructBeingEdited.isAlive());
-		markTable.setItems(FXCollections.observableArrayList(constructBeingEdited.getMarks()));
+		markTable.setItems(new ObservableListWrapper<>(constructBeingEdited.getMarks()));
 
 		Window.spawnLabelAtMousePos("Editing Construct, \"" + constructBeingEdited.getName() + "\".", Color.GOLD);
 
@@ -278,11 +277,9 @@ public class ConstructManagerWindow extends Window {
 	 */
 	@FXML
 	private void onDeleteConstruct() {
-		if (!Kröw.constructs.remove(constructBeingEdited))
-			System.err.println("The construct " + constructBeingEdited.getName()
-					+ " could not be removed from the Construct list.....");
 		constructBeingEdited.delete();
 		Window.spawnLabelAtMousePos("Deleted the Construct, " + constructBeingEdited.getName() + ".", Color.GOLD);
+		constructs.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getConstructs()));
 		onDoneEditingConstruct();
 	}
 
@@ -338,9 +335,6 @@ public class ConstructManagerWindow extends Window {
 	 * to the program's current list of {@link Construct}s.
 	 */
 	private void updateConstructs() {
-		final ArrayList<Construct> constructs = new ArrayList<>(Kröw.constructs.getObservableList());
-		Kröw.constructs.clear();
-		Kröw.constructs.addAll(constructs);
 
 		final DecimalFormat dc = new DecimalFormat("0.##");
 
@@ -366,12 +360,14 @@ public class ConstructManagerWindow extends Window {
 										/ (Kröw.getLivingConstructs().size() + Kröw.getDeadConstructs().size()) * 100)
 								+ "%)", Kröw.getDeadConstructs().size()));
 		lifePieChart.setData(list);
+
+		constructs.refresh();
 	}
 
 	private void updateMarks() {
-		final List<Construct.Mark> mrks = new ArrayList<>(constructBeingEdited.getMarks());
-		markTable.getItems().clear();
-		markTable.getItems().addAll(mrks);
+		if (constructBeingEdited != null)
+			markTable.setItems(new ObservableListWrapper<>(constructBeingEdited.getMarks()));
+		markTable.refresh();
 
 		int dead = 0, living = 0, male = 0, female = 0;
 
@@ -433,7 +429,7 @@ public class ConstructManagerWindow extends Window {
 		}
 
 		updateConstructs();
-		constructs.setItems(Kröw.constructs.getObservableList());
+		constructs.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getConstructs()));
 
 		nameTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Name"));
 		genderTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Gender"));

@@ -70,6 +70,14 @@
                <items>
                   <MenuItem mnemonicParsing="false" onAction="#onChangeIconRequested" text="Change Icon" />
                </items></Menu>
+            <Menu mnemonicParsing="false" text="File">
+              <items>
+                  <MenuItem mnemonicParsing="false" onAction="#restore" text="Restore" />
+                  <MenuItem mnemonicParsing="false" onAction="#importFile" text="Import" />
+                  <MenuItem mnemonicParsing="false" onAction="#exportFile" text="Export" />
+                  <MenuItem mnemonicParsing="false" onAction="#backup" text="Backup" />
+              </items>
+            </Menu>
 			</menus>
          <tooltip>
             <Tooltip text="This is the Home window of the application" />
@@ -112,7 +120,7 @@
 				<TableView fx:id="laws" focusTraversable="false" prefHeight="568.0" prefWidth="300.0" styleClass="side-tables" BorderPane.alignment="CENTER">
 					<columns>
 						<TableColumn fx:id="lawName" editable="false" maxWidth="150.0" minWidth="100.0" prefWidth="100.0" resizable="false" text="Law" />
-						<TableColumn fx:id="lawDesc" editable="false" maxWidth="900.0" minWidth="150.0" prefWidth="196.0" resizable="false" text="Description" />
+						<TableColumn fx:id="lawDesc" editable="false" maxWidth="900.0" minWidth="150.0" prefWidth="190.0" resizable="false" text="Description" />
 					</columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -126,7 +134,7 @@
 				<TableView fx:id="constructs" focusTraversable="false" prefHeight="568.0" prefWidth="300.0" styleClass="side-tables" BorderPane.alignment="CENTER">
 					<columns>
 						<TableColumn fx:id="constName" editable="false" maxWidth="150.0" minWidth="100.0" prefWidth="100.0" resizable="false" text="Construct" />
-						<TableColumn fx:id="constDesc" editable="false" maxWidth="900.0" minWidth="0.0" prefWidth="192.0" resizable="false" text="Description" />
+						<TableColumn fx:id="constDesc" editable="false" maxWidth="900.0" minWidth="0.0" prefWidth="191.0" resizable="false" text="Description" />
 					</columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

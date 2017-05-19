@@ -111,12 +111,13 @@ public class CreateLawWindow extends Window {
 	@FXML
 	private void onLawCreated() {
 
-		Law law;
 		try {
-			law = new Law(nameField.getText().isEmpty() ? "null" : nameField.getText(),
+			new Law(nameField.getText().isEmpty() ? "null" : nameField.getText(),
 					descriptionField.getText().isEmpty() ? "null" : descriptionField.getText(),
-					ruleField.getText().isEmpty() ? "null" : ruleField.getText(), creationDatePicker.getValue() == null
-							? new Date() : java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))));
+					ruleField.getText().isEmpty() ? "null" : ruleField.getText(),
+					creationDatePicker.getValue() == null ? new Date()
+							: java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))))
+									.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
 		} catch (final ObjectAlreadyExistsException e) {
 			System.err.println(
 					"The Law, " + (nameField.getText().isEmpty() ? "null" : nameField.getText()) + ", already exists.");
@@ -125,8 +126,9 @@ public class CreateLawWindow extends Window {
 			return;
 		}
 
-		Kröw.laws.add(law);
-		Window.spawnLabelAtMousePos("Added the Law, " + law.getName() + ", successfully", Color.GREEN);
+		Window.spawnLabelAtMousePos(
+				"Added the Law, " + (nameField.getText().isEmpty() ? "null" : nameField.getText()) + ", successfully",
+				Color.GREEN);
 		Window.setSceneToPreviousScene();
 	}
 

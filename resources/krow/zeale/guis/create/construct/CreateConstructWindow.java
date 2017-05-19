@@ -89,16 +89,16 @@ public class CreateConstructWindow extends Window {
 	 */
 	@FXML
 	private void done() {
-		final String name = nameField.getText(), description = descriptionField.getText();
-		Construct construct;
+		final String name = nameField.getText().isEmpty() ? "null" : nameField.getText(),
+				description = descriptionField.getText().isEmpty() ? "null" : descriptionField.getText();
 		try {
-			construct = new Construct(name, description, gender.isSelected(), alive.isSelected());
+			new Construct(name, description, gender.isSelected(), alive.isSelected()).getMindsetModel()
+					.attatch(Kröw.CONSTRUCT_MINDSET);
 		} catch (final ObjectAlreadyExistsException e) {
 			System.err.println("The Construct, " + name + ", already exists!");
 			Window.spawnLabelAtMousePos("The Construct, " + name + ", already exists...", Color.RED);
 			return;
 		}
-		Kröw.constructs.add(construct);
 		Window.spawnLabelAtMousePos("Added the Construct, " + name + ", successfully", Color.GREEN);
 		goBack();
 

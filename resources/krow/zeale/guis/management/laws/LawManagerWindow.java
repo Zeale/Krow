@@ -2,7 +2,6 @@ package krow.zeale.guis.management.laws;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
 
 import javafx.fxml.FXML;
@@ -19,6 +18,7 @@ import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Law;
 import wolf.mindset.ObjectAlreadyExistsException;
 import wolf.mindset.tables.TableViewable;
+import wolf.zeale.collections.ObservableListWrapper;
 import wolf.zeale.guis.Window;
 
 /**
@@ -100,11 +100,9 @@ public class LawManagerWindow extends Window {
 	 */
 	@FXML
 	private void onDeleteLaw() {
-		if (!Kröw.laws.remove(lawBeingEdited))
-			System.err.println("The law " + lawBeingEdited.getName()
-					+ " could not be deleted from RAM. It should be deleted from the filesystem though.");
 		lawBeingEdited.delete();
 		Window.spawnLabelAtMousePos("Deleted the law, " + lawBeingEdited.getName() + ", successfully", Color.GREEN);
+		laws.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getLaws()));
 		onDoneEditingLaw();
 	}
 
@@ -140,9 +138,8 @@ public class LawManagerWindow extends Window {
 		deleteLawButton.setVisible(false);
 		editRuleField.setVisible(false);
 
-		refreshData();
-
 		laws.setVisible(true);
+		laws.refresh();
 	}
 
 	/**
@@ -160,7 +157,8 @@ public class LawManagerWindow extends Window {
 	 */
 	@FXML
 	private void onLawsTableClicked() {
-		lawBeingEdited = Kröw.laws.getObservableList().get(laws.getFocusModel().getFocusedCell().getRow());
+		lawBeingEdited = Kröw.CONSTRUCT_MINDSET.getLawsUnmodifiable()
+				.get(laws.getFocusModel().getFocusedCell().getRow());
 		laws.setVisible(false);
 
 		editNameField.setText(lawBeingEdited.getName());
@@ -177,16 +175,6 @@ public class LawManagerWindow extends Window {
 		deleteLawButton.setVisible(true);
 		editRuleField.setVisible(true);
 
-	}
-
-	/**
-	 * A private helper method that refreshes the data displayed by the
-	 * {@link #laws} {@link TableView}.
-	 */
-	private void refreshData() {
-		final ArrayList<Law> laws = new ArrayList<>(Kröw.laws.getObservableList());
-		Kröw.laws.clear();
-		Kröw.laws.addAll(laws);
 	}
 
 	/*
@@ -224,8 +212,7 @@ public class LawManagerWindow extends Window {
 		} catch (final NoSuchMethodError e) {
 		}
 
-		refreshData();
-		laws.setItems(Kröw.laws.getObservableList());
+		laws.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getLaws()));
 
 		nameTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Name"));
 		dateTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Creation Date"));

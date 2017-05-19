@@ -39,6 +39,7 @@ import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Construct;
 import wolf.mindset.Law;
 import wolf.zeale.Wolf;
+import wolf.zeale.collections.ObservableListWrapper;
 import wolf.zeale.guis.Window;
 
 /**
@@ -99,6 +100,7 @@ public class HomeWindow extends Window {
 	 */
 	@FXML
 	private TableView<Law> laws;
+
 	/**
 	 * <p>
 	 * {@link #constName} - The {@link TableColumn} that shows the names of all
@@ -109,7 +111,6 @@ public class HomeWindow extends Window {
 	 */
 	@FXML
 	private TableColumn<Construct, String> constName, constDesc;
-
 	/**
 	 * <p>
 	 * {@link #lawName} - The {@link TableColumn} that shows the names of all
@@ -120,17 +121,39 @@ public class HomeWindow extends Window {
 	 */
 	@FXML
 	private TableColumn<Law, String> lawName, lawDesc;
+
 	/**
 	 * The picture of the crow in the middle of the {@link Window}.
 	 */
 	@FXML
 	private ImageView krow;
-
 	/**
 	 * {@link FadeTransition}s used for the {@link #krow} image when the mouse
 	 * hovers over or off of it.
 	 */
 	private FadeTransition krowFadeInTransition, krowFadeOutTransition;
+
+	{
+		if (HomeWindow.fileManager == null)
+			HomeWindow.fileManager = new FileManager();
+	}
+
+	private static FileManager fileManager;
+
+	@FXML
+	private void backup() {
+		HomeWindow.fileManager.show(HomeWindow.fileManager.BACKUP);
+	}
+
+	@FXML
+	private void exportFile() {
+		HomeWindow.fileManager.show(HomeWindow.fileManager.EXPORT);
+	}
+
+	@FXML
+	private void importFile() {
+		HomeWindow.fileManager.show();
+	}
 
 	/**
 	 * This method is called when the user attempts to change the currently
@@ -270,8 +293,8 @@ public class HomeWindow extends Window {
 	@FXML
 	private void onGoToPages() {
 		if (Wolf.DEBUG_MODE)
-			Pages.openPage(Kröw.constructs.getObservableList()
-					.get((int) (Math.random() * Kröw.constructs.getObservableList().size())));
+			Pages.openPage(Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable()
+					.get((int) (Math.random() * Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable().size())));
 	}
 
 	/**
@@ -314,12 +337,13 @@ public class HomeWindow extends Window {
 			};) {
 
 			} catch (final FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			} catch (final IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
+	}
+
+	@FXML
+	private void restore() {
+		HomeWindow.fileManager.show(HomeWindow.fileManager.RESTORE);
 	}
 
 	/*
@@ -366,8 +390,8 @@ public class HomeWindow extends Window {
 					"The tables used in the home screen have headers that can be moved around. This is not supported. Because of the version of Java you are running, some availability to stop those headers from being moved is no longer here. This is not a bad thing but be warned that reordering and dragging around table headers MAY cause visual issues or other effects.");
 		}
 
-		constructs.setItems(Kröw.constructs.getObservableList());
-		laws.setItems(Kröw.laws.getObservableList());
+		constructs.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getConstructs()));
+		laws.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getLaws()));
 		constDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
 		constName.setCellValueFactory(new PropertyValueFactory<>("name"));
 		lawDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
@@ -377,7 +401,7 @@ public class HomeWindow extends Window {
 
 		// Now lets set up some timelines for animations...
 
-		constructCount.setText(String.valueOf(Kröw.constructs.getObservableList().size()));
+		constructCount.setText(String.valueOf(Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable().size()));
 
 		final FillTransition constCountRed = new FillTransition(Duration.seconds(0.8), constructCount, Color.RED,
 				Color.GOLD),
@@ -407,6 +431,12 @@ public class HomeWindow extends Window {
 		krowFadeOutTransition = new FadeTransition(Duration.seconds(0.4), krow);
 		krowFadeOutTransition.setInterpolator(Interpolator.EASE_OUT);
 		krowFadeOutTransition.setToValue(0.1);
+	}
+
+	@Override
+	public void onRevertToThisWindow() {
+		constructs.refresh();
+		laws.refresh();
 	}
 
 }

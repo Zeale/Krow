@@ -16,10 +16,12 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import krow.zeale.guis.home.HomeWindow;
 import wolf.mindset.Construct;
+import wolf.mindset.ConstructMindset;
 import wolf.mindset.Law;
+import wolf.mindset.MindsetObject;
+import wolf.mindset.ObjectAlreadyExistsException;
 import wolf.zeale.Wolf;
 import wolf.zeale.guis.Window;
-import wolf.zeale.lists.ObservableNonDupeArrayListWrapper;
 
 /**
  * This class is the main class of the program.
@@ -34,6 +36,9 @@ import wolf.zeale.lists.ObservableNonDupeArrayListWrapper;
  *
  */
 public final class Kröw extends Application {
+
+	public final static ConstructMindset CONSTRUCT_MINDSET = new ConstructMindset();
+
 	public static final File KRÖW_HOME_DIRECTORY = new File(
 			java.lang.System.getProperty("user.home") + "/Appdata/Roaming/", Wolf.KROW_NAME);
 
@@ -41,24 +46,6 @@ public final class Kröw extends Application {
 			LICENSE_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "License.txt"),
 			CREDITS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Credits.txt"),
 			PLANS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Plans.txt");
-
-	/**
-	 * The list of loaded {@link Law}s.
-	 */
-	public final static ObservableNonDupeArrayListWrapper<Law> laws = new ObservableNonDupeArrayListWrapper<>();
-
-	/**
-	 * The list of {@link Construct}s that have been loaded in to the program.
-	 */
-	public final static ObservableNonDupeArrayListWrapper<Construct> constructs = new ObservableNonDupeArrayListWrapper<>();
-
-	/**
-	 * The list of {@link System}s.
-	 */
-	public final static ObservableNonDupeArrayListWrapper<wolf.mindset.System> systems = new ObservableNonDupeArrayListWrapper<>();
-	/**
-	 * The home directory of the application.
-	 */
 
 	static {
 		// Create the following folders if they don't already exist and catch
@@ -135,9 +122,16 @@ public final class Kröw extends Application {
 	 */
 	public static final String NAME = new String("Kröw");
 
+	public static Backup clear() {
+		final Backup b = new Backup();
+		for (final MindsetObject obj : Kröw.CONSTRUCT_MINDSET.getAllObjects())
+			obj.delete();
+		return b;
+	}
+
 	public static LinkedList<Construct> getDeadConstructs() {
 		final LinkedList<Construct> list = new LinkedList<>();
-		for (final Construct c : Kröw.constructs.getObservableList())
+		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
 			if (!c.isAlive())
 				list.add(c);
 		return list;
@@ -145,7 +139,7 @@ public final class Kröw extends Application {
 
 	public static LinkedList<Construct> getFemaleConstructs() {
 		final LinkedList<Construct> list = new LinkedList<>();
-		for (final Construct c : Kröw.constructs.getObservableList())
+		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
 			if (c.getGender())
 				list.add(c);
 		return list;
@@ -153,7 +147,7 @@ public final class Kröw extends Application {
 
 	public static LinkedList<Construct> getLivingConstructs() {
 		final LinkedList<Construct> list = new LinkedList<>();
-		for (final Construct c : Kröw.constructs.getObservableList())
+		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
 			if (c.isAlive())
 				list.add(c);
 		return list;
@@ -161,7 +155,7 @@ public final class Kröw extends Application {
 
 	public static LinkedList<Construct> getMaleConstructs() {
 		final LinkedList<Construct> list = new LinkedList<>();
-		for (final Construct c : Kröw.constructs.getObservableList())
+		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
 			if (!c.getGender())
 				list.add(c);
 		return list;
@@ -209,9 +203,13 @@ public final class Kröw extends Application {
 				}
 
 			for (final Construct c : loadedConstructs) {
-
+				try {
+					c.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
+				} catch (final ObjectAlreadyExistsException e) {
+					System.err.println("potato");
+				}
 				java.lang.System.out.println("   \n---Loaded the Construct " + c.getName() + " successfully.");
-				Kröw.constructs.add(c);
+
 				cons = true;
 			}
 			if (!cons)
@@ -230,7 +228,10 @@ public final class Kröw extends Application {
 				}
 			for (final Law l : loadedLaws) {
 				java.lang.System.out.println("   \n---Loaded the Law " + l.getName() + " successfully.");
-				Kröw.laws.add(l);
+				try {
+					l.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
+				} catch (final ObjectAlreadyExistsException e) {
+				}
 				lws = true;
 			}
 
@@ -250,7 +251,10 @@ public final class Kröw extends Application {
 					java.lang.System.err.println("An error occurred while loading a System.");
 				}
 			for (final wolf.mindset.System s : loadedSystems) {
-				Kröw.systems.add(s);
+				try {
+					s.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
+				} catch (final ObjectAlreadyExistsException e) {
+				}
 				systs = true;
 			}
 
@@ -258,6 +262,7 @@ public final class Kröw extends Application {
 				java.lang.System.err.println("No Systems were loaded!...");
 		}
 
+		Backup.loadBackupsFromSystem();
 	}
 
 	// Main method
@@ -272,19 +277,19 @@ public final class Kröw extends Application {
 	}
 
 	public static void saveObjects() {
-		for (final Construct c : Kröw.constructs.getObservableList())
+		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
 			try {
 				Wolf.saveObject(c, c.getFile(), OldVersionLoader.getOutputStream(c.getFile()));
 			} catch (final IOException e) {
 				System.err.println("Could not save the Construct " + c.getName());
 			}
-		for (final Law l : Kröw.laws.getObservableList())
+		for (final Law l : Kröw.CONSTRUCT_MINDSET.getLawsUnmodifiable())
 			try {
 				Wolf.saveObject(l, l.getFile(), OldVersionLoader.getOutputStream(l.getFile()));
 			} catch (final IOException e) {
 				System.err.println("Could not save the Law " + l.getName());
 			}
-		for (final wolf.mindset.System s : Kröw.systems.getObservableList())
+		for (final wolf.mindset.System s : Kröw.CONSTRUCT_MINDSET.getSystemsUnmodifiable())
 			try {
 				Wolf.saveObject(s, s.getFile(), OldVersionLoader.getOutputStream(s.getFile()));
 			} catch (final IOException e) {

@@ -1,0 +1,21 @@
+/*
+ * Cells when hovered over
+ */
+.cell:hover {
+	-fx-background-color: black;
+	-fx-text-fill: gold;
+}
+
+
+
+.table-view .column-header {
+	-fx-background-color: #050505;
+}
+
+.table-view .column-header .label {
+	-fx-text-fill: #ffcc00;
+}
+
+.table-view .column-header-background {
+	-fx-background-color: #050505;
+}

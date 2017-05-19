@@ -82,12 +82,12 @@ public class CreateSystemWindow extends Window {
 	private void onSystemCreated() {
 
 		creationDatePicker.getValue();
-		wolf.mindset.System syst;
 		try {
-			syst = new wolf.mindset.System(nameField.getText().isEmpty() ? "null" : nameField.getText(),
+			new wolf.mindset.System(nameField.getText().isEmpty() ? "null" : nameField.getText(),
 					descriptionField.getText().isEmpty() ? "null" : descriptionField.getText(),
 					creationDatePicker.getValue() == null ? new Date()
-							: java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))));
+							: java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))))
+									.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
 		} catch (final ObjectAlreadyExistsException e) {
 			java.lang.System.err.println("A System with this name already exists.");
 			Window.spawnLabelAtMousePos("The System, " + (nameField.getText().isEmpty() ? "null" : nameField.getText())
@@ -95,8 +95,8 @@ public class CreateSystemWindow extends Window {
 			return;
 		}
 
-		Kröw.systems.add(syst);
-		Window.spawnLabelAtMousePos("Added the System, " + syst.getName() + ", successfully", Color.GREEN);
+		Window.spawnLabelAtMousePos("Added the System, "
+				+ (nameField.getText().isEmpty() ? "null" : nameField.getText()) + ", successfully", Color.GREEN);
 		Window.setSceneToPreviousScene();
 	}
 
