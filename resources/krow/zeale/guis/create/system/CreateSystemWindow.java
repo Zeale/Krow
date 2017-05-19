@@ -81,7 +81,6 @@ public class CreateSystemWindow extends Window {
 	@FXML
 	private void onSystemCreated() {
 
-		creationDatePicker.getValue();
 		try {
 			new wolf.mindset.System(nameField.getText().isEmpty() ? "null" : nameField.getText(),
 					descriptionField.getText().isEmpty() ? "null" : descriptionField.getText(),

@@ -50,13 +50,18 @@ public class FileManager {
 		controller.layout.getSelectionModel().select(tab);
 	}
 
-	public void show() {
+	public boolean show() {
+		if (popup.isShowing())
+			return false;
 		popup.show();
+		return true;
 	}
 
-	public void show(final Tab tab) {
-		show();
+	public boolean show(final Tab tab) {
+		if (popup.isShowing())
+			return false;
 		setTab(tab);
+		return show();
 	}
 
 }
