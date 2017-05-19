@@ -144,18 +144,21 @@ public class HomeWindow extends Window {
 	private void backup() {
 		if (!HomeWindow.fileManager.show(HomeWindow.fileManager.BACKUP))
 			HomeWindow.fileManager.setTab(HomeWindow.fileManager.BACKUP);
+		HomeWindow.fileManager.toFront();
 	}
 
 	@FXML
 	private void exportFile() {
 		if (!HomeWindow.fileManager.show(HomeWindow.fileManager.EXPORT))
 			HomeWindow.fileManager.setTab(HomeWindow.fileManager.EXPORT);
+		HomeWindow.fileManager.toFront();
 	}
 
 	@FXML
 	private void importFile() {
 		if (!HomeWindow.fileManager.show(HomeWindow.fileManager.IMPORT))
 			HomeWindow.fileManager.setTab(HomeWindow.fileManager.IMPORT);
+		HomeWindow.fileManager.toFront();
 	}
 
 	/**
@@ -348,6 +351,7 @@ public class HomeWindow extends Window {
 	private void restore() {
 		if (!HomeWindow.fileManager.show(HomeWindow.fileManager.RESTORE))
 			HomeWindow.fileManager.setTab(HomeWindow.fileManager.RESTORE);
+		HomeWindow.fileManager.toFront();
 	}
 
 	/*

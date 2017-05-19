@@ -64,4 +64,12 @@ public class FileManager {
 		return show();
 	}
 
+	public void toBack() {
+		popup.toBack();
+	}
+
+	public void toFront() {
+		popup.toFront();
+	}
+
 }
