@@ -202,25 +202,36 @@ public class FileManagerControllerImpl {
 
 	@FXML
 	private void restoreTableClicked() {
+		// Allocate boolean variables
+		boolean clear = false, overwrite = false;
+		boolean backup = false;
 
-		boolean clear = false;
-		boolean overwrite = false;
-
+		// Build Alert dialog
 		final Alert dialog = new Alert(AlertType.CONFIRMATION);
 
 		final ButtonType buttonTypeYes = new ButtonType("Yes");
 		final ButtonType buttonTypeNo = new ButtonType("No");
 		dialog.getButtonTypes().setAll(buttonTypeNo, buttonTypeYes);
 
+		// Build & show "Are you sure?" question
 		dialog.setTitle("?");
-		dialog.setHeaderText("Are you sure?");
+		dialog.setContentText("Are you sure you want to continue?");
 		Optional<ButtonType> result = dialog.showAndWait();
 
 		if (!result.isPresent() || result.get() == buttonTypeNo)
 			return;
 
-		dialog.setHeaderText("");
-		dialog.setContentText("Do you want to clear your current data?");
+		// Build & show Backup question
+		dialog.setContentText("Do you want to backup your current data?");
+		result = dialog.showAndWait();
+
+		if (result.isPresent())
+			backup = result.get() == buttonTypeYes;
+		else
+			return;
+
+		// Build & show Clear question
+		dialog.setContentText("Do you want to clear your current data" + (backup ? " afterward the backup?" : "?"));
 		result = dialog.showAndWait();
 
 		if (result.isPresent())
@@ -228,22 +239,37 @@ public class FileManagerControllerImpl {
 		else
 			return;
 
-		dialog.setContentText("Do you want to backup your current data?");
-		result = dialog.showAndWait();
+		// If they aren't clearing their data, ask for overwriting
+		if (!clear) {
 
-		if (result.isPresent())
-			overwrite = result.get() == buttonTypeYes;
-		else
-			return;
+			dialog.setContentText("Do you want to overwrite your current data?");
+			result = dialog.showAndWait();
 
-		final Backup b = restoreTable.getFocusModel().getFocusedItem();
+			if (result.isPresent())
+				overwrite = result.get() == buttonTypeYes;
+			else
+				return;
 
-		if (b == null) {
-			Window.spawnLabelAtMousePos("There are no backups...", Color.PURPLE);
-			return;
 		}
 
-		b.restore(overwrite, clear);
+		// Select backup
+		final Backup b = restoreTable.getFocusModel().getFocusedItem();
+
+		// If no backups exist, b will be null.
+		if (b == null) {
+			Window.spawnLabelAtMousePos("There are no backups...", Color.PURPLE);
+			return; // Don't attempt restore if no backups exist
+		}
+
+		// Actually do the restore stuff
+		if (clear)
+			b.freshRestore(backup);
+		else
+			b.restore(overwrite, backup);
+
+		// Attempt to set the current stage to the HomeWindow to refresh its
+		// data. (This may be bad if they change windows with the FileManager
+		// open.
 		try {
 			Window.setScene(HomeWindow.class);
 		} catch (InstantiationException | IllegalAccessException | IOException e) {
