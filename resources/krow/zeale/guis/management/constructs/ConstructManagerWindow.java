@@ -153,9 +153,14 @@ public class ConstructManagerWindow extends Window {
 
 	@FXML
 	private void createMark() {
-		constructBeingEdited.makeMark(create_markDesc.getText().isEmpty() ? "null" : create_markDesc.getText(),
-				create_gBox.isSelected(), create_lBox.isSelected(),
-				create_markName.getText().isEmpty() ? "null" : create_markName.getText());
+		try {
+			constructBeingEdited.makeMark(create_markDesc.getText().isEmpty() ? "null" : create_markDesc.getText(),
+					create_gBox.isSelected(), create_lBox.isSelected(),
+					create_markName.getText().isEmpty() ? "null" : create_markName.getText());
+		} catch (final MarkAlreadyExistsException e) {
+			Window.spawnLabelAtMousePos("That Mark already exists...", Color.RED);
+			return;
+		}
 		Window.spawnLabelAtMousePos("Made the Mark, "
 				+ (create_markDesc.getText().isEmpty() ? "null" : create_markDesc.getText()) + " successfully",
 				Color.GREEN);
