@@ -1,7 +1,5 @@
 package krow.zeale.guis.create.system;
 
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -81,12 +79,11 @@ public class CreateSystemWindow extends Window {
 	@FXML
 	private void onSystemCreated() {
 
-		creationDatePicker.getValue();
 		try {
 			new wolf.mindset.System(nameField.getText().isEmpty() ? "null" : nameField.getText(),
 					descriptionField.getText().isEmpty() ? "null" : descriptionField.getText(),
 					creationDatePicker.getValue() == null ? new Date()
-							: java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))))
+							: Date.from(creationDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()))
 									.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
 		} catch (final ObjectAlreadyExistsException e) {
 			java.lang.System.err.println("A System with this name already exists.");

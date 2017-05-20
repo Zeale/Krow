@@ -85,6 +85,12 @@ public class Backup implements Serializable {
 		os.writeObject(mindsetObjects);
 	}
 
+	public Backup freshRestore(final boolean backup) {
+		final Backup b = Kröw.clear();
+		restore(true, true);
+		return b;
+	}
+
 	public Date getDateCreated() {
 		return date;
 	}
@@ -118,7 +124,11 @@ public class Backup implements Serializable {
 		return f;
 	}
 
-	public void restore(final boolean overwrite) {
+	public void restore(final boolean overwrite, final boolean backup) {
+		try {
+			new Backup().make();
+		} catch (final IOException e) {
+		}
 		for (final MindsetObject o : mindsetObjects)
 			try {
 				o.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
@@ -135,12 +145,6 @@ public class Backup implements Serializable {
 					System.err.println(
 							"The Object, " + e.getThrower().getName() + ", already exists. It could not be restored.");
 			}
-	}
-
-	public void restore(final boolean overwrite, final boolean clear) {
-		if (clear)
-			Kröw.clear();
-		restore(overwrite);
 	}
 
 }
