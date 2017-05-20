@@ -1,8 +1,6 @@
 package krow.zeale.guis.create.law;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -116,7 +114,7 @@ public class CreateLawWindow extends Window {
 					descriptionField.getText().isEmpty() ? "null" : descriptionField.getText(),
 					ruleField.getText().isEmpty() ? "null" : ruleField.getText(),
 					creationDatePicker.getValue() == null ? new Date()
-							: java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))))
+							: Date.from(creationDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()))
 									.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
 		} catch (final ObjectAlreadyExistsException e) {
 			System.err.println(
