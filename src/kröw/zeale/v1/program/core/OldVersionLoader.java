@@ -9,6 +9,9 @@ import java.io.InputStream;
 import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 
+import wolf.mindset.Construct;
+import wolf.mindset.Law;
+
 final class OldVersionLoader {
 
 	private OldVersionLoader() {
@@ -34,11 +37,11 @@ final class OldVersionLoader {
 			ObjectStreamClass resultClassDescriptor = super.readClassDescriptor();
 
 			if (resultClassDescriptor.getName().equals("kröw.libs.Construct"))
-				resultClassDescriptor = ObjectStreamClass.lookup(wolf.mindset.Construct.class);
+				resultClassDescriptor = ObjectStreamClass.lookup(Construct.class);
 			else if (resultClassDescriptor.getName().equals("kröw.libs.System"))
 				resultClassDescriptor = ObjectStreamClass.lookup(wolf.mindset.System.class);
 			else if (resultClassDescriptor.getName().equals("kröw.libs.Law"))
-				resultClassDescriptor = ObjectStreamClass.lookup(wolf.mindset.Law.class);
+				resultClassDescriptor = ObjectStreamClass.lookup(Law.class);
 			return resultClassDescriptor;
 		}
 
@@ -53,11 +56,11 @@ final class OldVersionLoader {
 		@Override
 		protected void writeClassDescriptor(ObjectStreamClass desc) throws IOException {
 			if (desc.getName().equals("kröw.libs.Construct"))
-				desc = ObjectStreamClass.lookup(wolf.mindset.Construct.class);
+				desc = ObjectStreamClass.lookup(Construct.class);
 			else if (desc.getName().equals("kröw.libs.System"))
 				desc = ObjectStreamClass.lookup(wolf.mindset.System.class);
 			else if (desc.getName().equals("kröw.libs.Law"))
-				desc = ObjectStreamClass.lookup(wolf.mindset.Law.class);
+				desc = ObjectStreamClass.lookup(Law.class);
 			super.writeClassDescriptor(desc);
 		}
 

@@ -296,7 +296,6 @@ public final class Kröw extends Application {
 			}
 	}
 
-	// Start method
 	/**
 	 * The start method of the program. This will load up and initialize the
 	 * entire program. Nothing else is needed. It can be called from a main
@@ -310,11 +309,6 @@ public final class Kröw extends Application {
 	 *            program arguments).
 	 */
 	public static void start(final String[] args) {
-
-		// This isn't fixing JavaFX's bad text textures but I'll keep it here...
-		System.setProperty("prism.lcdtext", "false");
-		System.setProperty("prism.text", "t2k");
-
 		System.out.println("\n\n\n\n");
 		System.out.println("Loading data...\n");
 		Kröw.loadData();
@@ -323,14 +317,10 @@ public final class Kröw extends Application {
 			final List<String> strings = Arrays.<String>asList(args);
 			if (Wolf.containsIgnoreCase(strings, "-debug-mode") || Wolf.containsIgnoreCase(strings, "-debug"))
 				Wolf.DEBUG_MODE = true;
-			if (Wolf.DEBUG_MODE)
-				System.out.println("\n\nDebug mode has been enabled...\n\n");
-			// If the Window class is loaded from somewhere other than this
-			// method, its static constructor causes a RuntimeException.
-
-			Application.launch(args);
 		}
-
+		if (Wolf.DEBUG_MODE)
+			System.out.println("\n\nDebug mode has been enabled...\n\n");
+		Application.launch(args);
 	}
 
 	/*

@@ -95,7 +95,7 @@ public class CreateConstructWindow extends Window {
 			new Construct(name, description, gender.isSelected(), alive.isSelected()).getMindsetModel()
 					.attatch(Kröw.CONSTRUCT_MINDSET);
 		} catch (final ObjectAlreadyExistsException e) {
-			System.err.println("The Construct, " + name + ", already exists!");
+			System.err.println("The Construct, " + name + ", already exists... It could not be added.");
 			Window.spawnLabelAtMousePos("The Construct, " + name + ", already exists...", Color.RED);
 			return;
 		}
@@ -122,6 +122,8 @@ public class CreateConstructWindow extends Window {
 		try {
 			Window.setScene(HomeWindow.class);
 		} catch (InstantiationException | IllegalAccessException | IOException e) {
+			e.printStackTrace();
+			Window.spawnLabelAtMousePos("An unknown error occurred.", Color.RED);
 		}
 	}
 
@@ -143,6 +145,5 @@ public class CreateConstructWindow extends Window {
 	@Override
 	public void initialize() {
 		Window.setPaneDraggableByNode(menuBar);
-
 	}
 }
