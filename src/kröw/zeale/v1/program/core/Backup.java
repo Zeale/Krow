@@ -55,7 +55,7 @@ public class Backup implements Serializable {
 
 		if (Backup.BACKUP_SAVE_DIRECTORY.listFiles() != null)
 			for (final File f : Backup.BACKUP_SAVE_DIRECTORY.listFiles())
-				try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(f))) {
+				try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(f));) {
 					Backup.loadedBackups.add((Backup) is.readObject());
 				} catch (final ClassNotFoundException e) {
 					System.err.println("The backup folder has an invalid backup: " + f.getName());
@@ -73,7 +73,7 @@ public class Backup implements Serializable {
 	}
 
 	private void readObject(final ObjectInputStream is) throws IOException, ClassNotFoundException {
-		if (is.readLong() == 1L) {
+		if (is.readLong() == Backup.trueSerialVersionUID) {
 			date = (Date) is.readObject();
 			mindsetObjects = (MindsetObject[]) is.readObject();
 		}
@@ -86,7 +86,7 @@ public class Backup implements Serializable {
 	}
 
 	public Backup freshRestore(final boolean backup) {
-		final Backup b = Kröw.clear();
+		final Backup b = Kröw.clearAllObjects();
 		restore(true, true);
 		return b;
 	}
