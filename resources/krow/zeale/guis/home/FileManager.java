@@ -109,10 +109,22 @@ public class FileManager {
 		stage.hide();
 	}
 
+	/**
+	 * Sets the currently showing {@link Tab} to the {@link Tab} specified.
+	 *
+	 * @param tab
+	 *            The {@link Tab} to show.
+	 */
 	public void setTab(final Tab tab) {
 		controller.layout.getSelectionModel().select(tab);
 	}
 
+	/**
+	 * Shows the FileManager's stage.
+	 *
+	 * @return If this {@link FileManager}'s visibility was changed to
+	 *         "showing", <code>false</code> otherwise.
+	 */
 	public boolean show() {
 		if (stage.isShowing())
 			return false;
@@ -120,17 +132,35 @@ public class FileManager {
 		return true;
 	}
 
+	/**
+	 * <p>
+	 * Shows this window and sets the current {@link Tab}.
+	 * <p>
+	 * If this window is already showing, the tab is not changed.
+	 *
+	 * @param tab
+	 *            The tab to show.
+	 * @return If this {@link FileManager}'s visibility was changed to
+	 *         "showing", <code>false</code> otherwise.
+	 */
 	public boolean show(final Tab tab) {
+		// Assert that the window is not showing.
 		if (stage.isShowing())
 			return false;
 		setTab(tab);
 		return show();
 	}
 
+	/**
+	 * Sends this window behind any other windows that it may be overlapping.
+	 */
 	public void toBack() {
 		stage.toBack();
 	}
 
+	/**
+	 * Sends this window infront of any windows that it may be overlapping.
+	 */
 	public void toFront() {
 		stage.toFront();
 	}
