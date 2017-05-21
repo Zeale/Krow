@@ -155,6 +155,11 @@ public class CreateLawWindow extends Window {
 		return "CreateLawWindow.fxml";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see wolf.zeale.guis.Window#initialize()
+	 */
 	@Override
 	public void initialize() {
 		Window.setPaneDraggableByNode(menuBar);

@@ -108,6 +108,11 @@ final class OldVersionLoader {
 			super(in);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 *
+		 * @see java.io.ObjectInputStream#readClassDescriptor()
+		 */
 		@Override
 		protected ObjectStreamClass readClassDescriptor() throws IOException, ClassNotFoundException {
 			// Get the loading object's current class
@@ -133,21 +138,56 @@ final class OldVersionLoader {
 
 	}
 
+	/**
+	 * This class is a 'hacked' {@link java.io.ObjectOutputStream}, much like
+	 * the {@link ObjectInputStream OldVersionLoader.ObjectInputStream} class.
+	 *
+	 * @author Zeale
+	 *
+	 */
 	private static class ObjectOutputStream extends java.io.ObjectOutputStream {
 
+		/**
+		 * Constructs a customized {@link java.io.ObjectOutputStream}.
+		 *
+		 * @param arg0
+		 *            The {@link OutputStream} to write to.
+		 * @throws IOException
+		 *             As specified by <br>
+		 *             {@link java.io.ObjectOutputStream#ObjectOutputStream(OutputStream)}.
+		 */
 		public ObjectOutputStream(final OutputStream arg0) throws IOException {
 			super(arg0);
 		}
 
+		/*
+		 * (non-Javadoc)
+		 *
+		 * @see java.io.ObjectOutputStream#writeClassDescriptor(java.io.
+		 * ObjectStreamClass)
+		 */
 		@Override
 		protected void writeClassDescriptor(ObjectStreamClass classDescriptor) throws IOException {
+			// Check the object's assigned class. If it is one of the
+			// following...
 			if (classDescriptor.getName().equals("kröw.libs.Construct"))
+				// Then change it to this.
 				classDescriptor = ObjectStreamClass.lookup(Construct.class);
+			// Repeat.
 			else if (classDescriptor.getName().equals("kröw.libs.System"))
 				classDescriptor = ObjectStreamClass.lookup(wolf.mindset.System.class);
+
 			else if (classDescriptor.getName().equals("kröw.libs.Law"))
 				classDescriptor = ObjectStreamClass.lookup(Law.class);
+
+			// Apply the change.
 			super.writeClassDescriptor(classDescriptor);
+			// Now Serialization will write the object to a file.
+
+			// With these changes, the object should be saved with the class we
+			// assigned it, (if we did change the class).
+
+			// Then when it's loaded, the object will be loaded
 		}
 
 	}
