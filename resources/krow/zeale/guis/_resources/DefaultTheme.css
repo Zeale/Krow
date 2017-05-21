@@ -3,7 +3,7 @@
  */
 .root {
 	text-color: #C00;
-	bg: #1C1C1C;/* Background Color */
+	bg: #353535;/* Background Color */
 	bge: #0B3C24;/* Background Edge Color */
 }
 
@@ -20,22 +20,82 @@
 
 
 /*
+ * Buttons
+ * 
+ * This is defined up here so that it can be overridden below.
+ */
+.button {
+	-fx-background-color: linear-gradient(#1C1C1C 0.0%, #070707 15.0%, #070707 85.0%, #1C1C1C 100.0%);
+	-fx-border-radius: 3.5px;
+	-fx-border-width: 2.3px;
+	-fx-border-color: white;
+	-fx-text-fill: #A5A5A5;
+	-fx-font-weight: bold;
+}
+
+.button:armed {
+	-fx-border-color: red;
+	-fx-text-fill: #535353;
+}
+
+
+/* Clear Button and Pop Button classes */
+.clear-button, .pop-button {
+	-fx-background-color: transparent;
+	-fx-border-color: black;
+	-fx-border-radius: 0.0px;
+}
+
+.pop-button {
+	-fx-border-width: 0.0 0.0 2.0px 2.0px;
+	-fx-background-color: #00000015;
+}
+
+.pop-button:armed {
+	-fx-border-color: black;
+	-fx-border-width: 2.0px 2.0px 0.0 0.0;
+	-fx-text-fill: #535353;
+	-fx-label-padding: 2.0px 2.0px 0.0 0.0;
+}
+
+
+
+
+
+/*
+ * Textures for MenuButtons.
+ */
+ .menu-button {
+ 	-fx-background-color: linear-gradient(#1C1C1C 0.0%, #212121 14.0%, #212121 50.0%, #161616 100.0%);
+ 	-fx-text-fill: text-color;
+ }
+ 
+ .menu-button .context-menu {
+ 	-fx-background-color: black;
+ }
+
+
+
+/*
  * The menu at the top of the window.
  */
 .menu-bar {
 	-fx-font-weight: bold;
-	-fx-background-color: linear-gradient(#363636 25%, #252525 85%, #202020 100%);
+	-fx-background-color: linear-gradient(#363636 25.0%, #252525 85.0%, #202020 100.0%);
 }
 
 .menu-bar .menu:showing .context-menu {
 	-fx-background-color: black;
 }
+
 .menu-bar .menu:showing .menu-item:focused {
 	-fx-background-color: gray;
 }
+
 .menu-bar .menu:showing .menu:showing {
 	-fx-background-color: darkgray;
 }
+
 .menu-bar .menu:showing .menu .context-menu {
 	-fx-background-color: black;
 }
@@ -47,11 +107,42 @@
 .menu-bar .label {
 	-fx-text-fill: text-color;
 }
+
 .menu-bar .menu:hover {
 	-fx-background-color: white;
 }
+
 .menu-bar .menu:showing {
 	-fx-background-color: black;
+}
+
+.menu-bar .menu-button {
+	-fx-background-color: transparent;
+}
+
+
+
+/*
+ * Text Fields and Text Areas
+ */
+.text-field, .text-area {
+	-fx-background-color: black;
+	-fx-border-width: 2.5px;
+	-fx-border-color: white;
+	-fx-border-radius: 2.0px;
+	
+	-fx-highlight-fill: gray;
+	-fx-highlight-text-fill: gold;
+	-fx-font-weight: bold;
+	-fx-text-fill: #A5A5A5;
+}
+
+.text-area .scroll-pane .content {
+	-fx-background-color: black;
+}
+
+.text-field:focused, .text-area:focused {
+	-fx-border-color: text-color;
 }
 
 
@@ -59,11 +150,12 @@
 /*
  * Backgrounds for items in the background class.
  */
-.background {
-	-fx-background-color: linear-gradient(#1F1F1F 0%,#353535 5%);
+.background, .background .viewport {
+	-fx-background-color: linear-gradient(#1F1F1F 0.0%,#353535 5.0%);
 }
-.solid-background {
-	-fx-background-color: #353535;
+
+.solid-background, .solid-background .viewport {
+	-fx-background-color: bg;
 }
 
 
@@ -73,16 +165,120 @@
  */
 .cell {
 	-fx-background-color: #282828;
-	-fx-border-width: 1px 1px 0 1px;
+	-fx-border-width: 1.0px 0.0 0.0 2.0px;
 	-fx-border-color: black;
 	-fx-text-fill: white;
 	-fx-font-weight: bold;
 }
+
 .cell:hover {
-	-fx-background-color: #FF4040;
-	-fx-text-fill: blue;
+	-fx-background-color: black;
+	-fx-text-fill: white;
+}
+
+.cell:first {
+	-fx-border-width: 0px 0px 0px 2px;
 }
 
 .table-view .column-header {
-	-fx-background-color: linear-gradient(#202020 25%, #252525 85%, #363636 100%);
+	-fx-background-color: linear-gradient(#202020 25.0%, #252525 85.0%, #363636 100.0%);
 }
+
+.table-view .column-header-background {
+	-fx-background-color: linear-gradient(#202020 25.0%, #252525 85.0%, #363636 100.0%);
+}
+
+.table-view {
+	-fx-background-color: bg;
+}
+
+
+
+/*
+ * Tabs and TabPanes
+ */
+ .tab-pane .tab-header-area .tab-header-background {
+	-fx-background-color: #101010;
+}
+
+.tab-pane .tab-header-area .tab {
+	-fx-background-color: #000000;
+	-fx-fill: yellow;
+}
+
+.tab-pane .tab-header-area .tab .label {
+	-fx-text-fill: yellow;
+}
+
+.tab-pane:top *.tab-header-area {
+    -fx-background-insets: 10.0 10.0 10.0 10.0;
+    -fx-border-width: 0.0;
+    -fx-padding: 0.416667em 0.166667em 0.0em 0.5em;
+}
+
+.tab-pane .tab-content-area {
+	-fx-background-color: #353535;
+}
+
+.tab .tab-label {
+	-fx-text-fill: #ffcc00;
+	-fx-font-weight: bold;
+}
+
+
+
+/*
+ * ScrollPanes
+ */
+.scroll-pane .corner {
+	-fx-background-color: black;
+}
+
+.scroll-pane {
+	-fx-background-color: black;
+}
+
+
+
+/*
+ * ScrollBars
+ */
+.scroll-bar:vertical .track, .scroll-bar:horizontal .track {
+	-fx-background-color: black;
+}
+
+.scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb {
+	-fx-background-color: #202020;
+}
+
+.scroll-bar:vertical .increment-button, .scroll-bar:vertical .decrement-button, .scroll-bar:horizontal .increment-button, .scroll-bar:horizontal .decrement-button {
+	-fx-background-color: #ffe100;
+}
+
+.scroll-bar:vertical .increment-button .increment-arrow, .scroll-bar:vertical .decrement-button .decrement-arrow, .scroll-bar:horizontal .increment-button .increment-arrow, .scroll-bar:horizontal .decrement-button .decrement-arrow {
+	-fx-background-color: black;
+}
+
+
+
+/*
+ * ListViews and ListCells
+ */
+ .list-view, .list-cell:odd {
+ 	-fx-background-color: #191919;
+ }
+ 
+ .list-cell {
+ 	-fx-border-color: black;
+ 	-fx-font-weight: bold;
+ 	-fx-text-fill: white;
+ 	-fx-border-width: 1.0px 1px 0px 1px;
+ }
+ 
+ .list-cell:hover {
+ 	-fx-background-color: #040404;
+ }
+ 
+ .list-cell:even {
+ 	-fx-background-color: #282828;
+ }

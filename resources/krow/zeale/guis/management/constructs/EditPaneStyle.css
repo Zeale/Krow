@@ -1,0 +1,4 @@
+.tab-pane .tab-content-area {
+	-fx-border-color: #101010;
+	-fx-border-width: 0.0 10.0px 10.0px 10.0px;
+}

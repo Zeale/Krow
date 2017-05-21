@@ -1,6 +1,5 @@
 package krow.zeale.guis.create.system;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -13,9 +12,11 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import kröw.libs.System;
+import javafx.scene.paint.Color;
 import kröw.zeale.v1.program.core.Kröw;
-import kröw.zeale.v1.program.guis.Window;
+import wolf.mindset.ObjectAlreadyExistsException;
+import wolf.mindset.System;
+import wolf.zeale.guis.Window;
 
 /**
  * The Controller for the <code>CreateSystemWindow.fxml</code> {@link Scene}.
@@ -79,17 +80,21 @@ public class CreateSystemWindow extends Window {
 	@FXML
 	private void onSystemCreated() {
 
-		creationDatePicker.getValue();
-		final kröw.libs.System syst = new kröw.libs.System(nameField.getText().isEmpty() ? "null" : nameField.getText(),
-				descriptionField.getText().isEmpty() ? "null" : descriptionField.getText(),
-				creationDatePicker.getValue() == null ? new Date()
-						: java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))));
+		final String name = nameField.getText().isEmpty() ? "null" : nameField.getText();
+		try {
+			final String text = descriptionField.getText();
+			final LocalDate value = creationDatePicker.getValue();
+			new wolf.mindset.System(name, text.isEmpty() ? "null" : text,
+					value == null ? new Date() : Date.from(value.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+							.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
+		} catch (final ObjectAlreadyExistsException e) {
+			java.lang.System.err.println("A System with this name already exists.");
+			Window.spawnLabelAtMousePos("The System, " + name + ", already exists...", Color.RED);
+			return;
+		}
 
-		if (!Kröw.getDataManager().getSystems().contains(syst)) {
-			Kröw.getDataManager().getSystems().add(syst);
-			Window.setSceneToPreviousScene();
-		} else
-			java.lang.System.out.println("The law " + syst.getName() + " already exists!");
+		Window.spawnLabelAtMousePos("Added the System, " + name + ", successfully", Color.GREEN);
+		Window.setSceneToPreviousScene();
 	}
 
 	/*

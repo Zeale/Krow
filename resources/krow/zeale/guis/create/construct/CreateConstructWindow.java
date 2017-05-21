@@ -8,10 +8,12 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 import krow.zeale.guis.home.HomeWindow;
-import kröw.libs.Construct;
 import kröw.zeale.v1.program.core.Kröw;
-import kröw.zeale.v1.program.guis.Window;
+import wolf.mindset.Construct;
+import wolf.mindset.ObjectAlreadyExistsException;
+import wolf.zeale.guis.Window;
 
 /**
  * <p>
@@ -28,6 +30,7 @@ import kröw.zeale.v1.program.guis.Window;
  *
  */
 public class CreateConstructWindow extends Window {
+
 	/**
 	 * <p>
 	 * A {@link CheckBox} indicating the gender of the {@link Construct} that
@@ -40,6 +43,7 @@ public class CreateConstructWindow extends Window {
 	 */
 	@FXML
 	private CheckBox gender;
+
 	/**
 	 * <p>
 	 * A {@link CheckBox} indicating whether or not this {@link Construct} is
@@ -85,17 +89,18 @@ public class CreateConstructWindow extends Window {
 	 */
 	@FXML
 	private void done() {
-		String name = nameField.getText(), description = descriptionField.getText();
-		if (name.isEmpty())
-			name = "null";
-		if (description.isEmpty())
-			description = "null";
-		final Construct construct = new Construct(name, description, gender.isSelected(), alive.isSelected());
-		if (!Kröw.getDataManager().getConstructs().contains(construct)) {
-			Kröw.getDataManager().getConstructs().add(construct);
-			goBack();
-		} else
-			System.err.println("The Construct " + construct.getName() + " already exists!");
+		final String name = nameField.getText().isEmpty() ? "null" : nameField.getText(),
+				description = descriptionField.getText().isEmpty() ? "null" : descriptionField.getText();
+		try {
+			new Construct(name, description, gender.isSelected(), alive.isSelected()).getMindsetModel()
+					.attatch(Kröw.CONSTRUCT_MINDSET);
+		} catch (final ObjectAlreadyExistsException e) {
+			System.err.println("The Construct, " + name + ", already exists... It could not be added.");
+			Window.spawnLabelAtMousePos("The Construct, " + name + ", already exists...", Color.RED);
+			return;
+		}
+		Window.spawnLabelAtMousePos("Added the Construct, " + name + ", successfully", Color.GREEN);
+		goBack();
 
 	}
 
@@ -117,6 +122,8 @@ public class CreateConstructWindow extends Window {
 		try {
 			Window.setScene(HomeWindow.class);
 		} catch (InstantiationException | IllegalAccessException | IOException e) {
+			e.printStackTrace();
+			Window.spawnLabelAtMousePos("An unknown error occurred.", Color.RED);
 		}
 	}
 
@@ -138,6 +145,5 @@ public class CreateConstructWindow extends Window {
 	@Override
 	public void initialize() {
 		Window.setPaneDraggableByNode(menuBar);
-
 	}
 }

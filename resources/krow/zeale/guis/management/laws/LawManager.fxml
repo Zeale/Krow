@@ -17,12 +17,14 @@
    <top>
       <MenuBar fx:id="menubar" BorderPane.alignment="CENTER">
         <menus>
-          <Menu mnemonicParsing="false" text="Options">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#onGoBackRequested" text="Back" />
-            </items>
-          </Menu>
+          <Menu mnemonicParsing="false" onAction="#onGoBackRequested" text="Go...">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Back" />
+               </items></Menu>
         </menus>
+         <tooltip>
+            <Tooltip text="Menu" />
+         </tooltip>
       </MenuBar>
    </top>
    <center>
@@ -37,10 +39,22 @@
                         <TableColumn fx:id="ruleTable" prefWidth="396.0" text="Rule" />
                         <TableColumn fx:id="descriptionTable" prefWidth="670.0" text="Description" />
                     </columns>
+                     <tooltip>
+                        <Tooltip text="This is a list of all of your Laws" />
+                     </tooltip>
                   </TableView>
-                  <Button fx:id="editLawDoneButton" layoutX="659.0" layoutY="625.0" mnemonicParsing="false" onAction="#onDoneEditingLaw" text="Done" visible="false" />
-                  <TextField fx:id="editNameField" layoutX="594.0" layoutY="145.0" promptText="Name" visible="false" />
-                  <TextArea fx:id="editDescriptionField" layoutX="459.0" layoutY="270.0" prefHeight="200.0" prefWidth="200.0" promptText="Description" visible="false" wrapText="true" />
+                  <Button fx:id="editLawDoneButton" layoutX="659.0" layoutY="625.0" mnemonicParsing="false" onAction="#onDoneEditingLaw" text="Done" visible="false">
+                     <tooltip>
+                        <Tooltip text="Click this to apply your changes" />
+                     </tooltip></Button>
+                  <TextField fx:id="editNameField" layoutX="594.0" layoutY="145.0" promptText="Name" visible="false">
+                     <tooltip>
+                        <Tooltip text="This is the name of this Law" />
+                     </tooltip></TextField>
+                  <TextArea fx:id="editDescriptionField" layoutX="459.0" layoutY="270.0" prefHeight="200.0" prefWidth="200.0" promptText="Description" visible="false" wrapText="true">
+                     <tooltip>
+                        <Tooltip text="This is a description of this Law" />
+                     </tooltip></TextArea>
                   <Button fx:id="deleteLawButton" layoutX="921.0" layoutY="86.0" mnemonicParsing="false" onAction="#onDeleteLaw" text="Delete" visible="false">
                      <font>
                         <Font name="System Bold" size="15.0" />
@@ -53,9 +67,18 @@
                            </stops>
                         </LinearGradient>
                      </textFill>
+                     <tooltip>
+                        <Tooltip text="Click this to delete this Law" />
+                     </tooltip>
                   </Button>
-                  <DatePicker fx:id="creationDatePicker" layoutX="579.0" layoutY="205.0" promptText="Date Created" visible="false" />
-                  <TextArea fx:id="editRuleField" layoutX="688.0" layoutY="269.0" prefHeight="200.0" prefWidth="200.0" promptText="Rules" visible="false" wrapText="true" />
+                  <DatePicker fx:id="creationDatePicker" layoutX="579.0" layoutY="205.0" promptText="Date Created" visible="false">
+                     <tooltip>
+                        <Tooltip text="Here you can pick the date that this Law was created. If you type in the date manually, you can set a time to the nearest nanosecond." />
+                     </tooltip></DatePicker>
+                  <TextArea fx:id="editRuleField" layoutX="688.0" layoutY="269.0" prefHeight="200.0" prefWidth="200.0" promptText="Rules" visible="false" wrapText="true">
+                     <tooltip>
+                        <Tooltip text="Here you can set the rule that this Law instates" />
+                     </tooltip></TextArea>
                </children></AnchorPane>
          </center>
       </BorderPane>

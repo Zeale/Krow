@@ -1,82 +1,274 @@
 package kröw.zeale.v1.program.core;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.filechooser.FileSystemView;
+
 import javafx.application.Application;
-import javafx.scene.text.Text;
-import kröw.libs.Construct;
-import kröw.zeale.v1.program.guis.Window;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import krow.zeale.guis.home.HomeWindow;
+import wolf.mindset.Construct;
+import wolf.mindset.ConstructMindset;
+import wolf.mindset.Law;
+import wolf.mindset.MindsetObject;
+import wolf.mindset.ObjectAlreadyExistsException;
+import wolf.zeale.Wolf;
+import wolf.zeale.guis.Window;
 
 /**
  * This class is the main class of the program.
  *
+ * The JVM loads up the JavaFX toolkit if the main class extends Application. If
+ * this class did not extend {@link Application}, the toolkit would not be
+ * loaded and the {@link #LIGHT_CROW} and {@link #DARK_CROW} images found below,
+ * could not be created during <code>clinit</code> (the <code>static</code>
+ * constructor).
+ *
  * @author Zeale
  *
  */
-public final class Kröw {
+public final class Kröw extends Application {
 
-	// Constructor
-	/**
-	 * This constructor is meant to deny any construction of the class
-	 * {@link Kröw}.
-	 *
-	 * @param krow
-	 *            A {@link Kröw} object that has already been created.
-	 * @throws Throwable
-	 *             If you try to use this.
-	 */
-	private Kröw(final Kröw krow) throws Throwable {
-		if (!krow.equals(this))
-			throw new Throwable("The class Kröw is not meant to be constructed.");
+	public final static ConstructMindset CONSTRUCT_MINDSET = new ConstructMindset();
+
+	public static final File KRÖW_HOME_DIRECTORY = new File(System.getProperty("user.home") + "/Appdata/Roaming/",
+			Wolf.KROW_NAME);
+
+	private static final File README_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Readme.txt"),
+			LICENSE_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "License.txt"),
+			CREDITS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Credits.txt"),
+			PLANS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Plans.txt");
+
+	static {
+		// Create the following folders if they don't already exist and catch
+		// any exceptions.
+		try {
+			Wolf.createFolder(Kröw.KRÖW_HOME_DIRECTORY);
+			Wolf.createFolder(Wolf.DATA_DIRECTORY);
+			Wolf.createFolder(Wolf.CONSTRUCT_SAVE_DIRECTORY);
+			Wolf.createFolder(Wolf.TASK_SAVE_DIRECTORY);
+			Wolf.createFolder(Wolf.PROGRAM_SAVE_DIRECTORY);
+			Wolf.createFolder(Wolf.SYSTEM_SAVE_DIRECTORY);
+			Wolf.createFolder(Wolf.LAW_SAVE_DIRECTORY);
+			if (!Kröw.README_FILE.exists())
+				Wolf.copyFileToDirectory(new File("resources/krow/zeale/readme.txt"), Kröw.KRÖW_HOME_DIRECTORY);
+			if (!Kröw.LICENSE_FILE.exists())
+				Wolf.copyFileToDirectory(new File("resources/krow/zeale/license.txt"), Kröw.KRÖW_HOME_DIRECTORY);
+			if (!Kröw.CREDITS_FILE.exists())
+				Wolf.copyFileToDirectory(new File("resources/krow/zeale/credits.txt"), Kröw.KRÖW_HOME_DIRECTORY);
+			if (!Kröw.PLANS_FILE.exists())
+				Wolf.copyFileToDirectory(new File("resources/krow/zeale/plans.txt"), Kröw.KRÖW_HOME_DIRECTORY);
+		} catch (final RuntimeException e) {
+			System.err.println(
+					"An exception occurred while trying to create or check some necessary directories. The program will print its errors and exit.");
+			System.out.println("\n\n");
+
+			e.printStackTrace();
+			System.exit(-1);
+		}
+
 	}
 
-	// Constants
+	static {
+
+		Image dark = null, light = null;
+		try {
+			dark = new Image("/krow/zeale/DarkKröw.png");
+		} catch (final IllegalArgumentException e) {
+			System.err.println("The Dark Crow icon could not be loaded. Only the Light Crow Icon will be available.");
+
+		}
+
+		try {
+			light = new Image("krow/zeale/LightKröw.png");
+		} catch (final IllegalArgumentException e) {
+			if (dark == null)
+				System.err.println(
+						"The Light Crow icon could not be loaded either! The icons will be set to the default coffee mug.");
+			else
+				System.err
+						.println("The Light Crow icon could not be loaded. Only the Dark Crow icon will be available.");
+		}
+
+		DARK_CROW = dark;
+		LIGHT_CROW = light;
+	}
+
+	/**
+	 * <p>
+	 * {@link #LIGHT_CROW} - The light colored crow image that is used for this
+	 * {@link Application}'s icon. This image can be set as the program's icon
+	 * via the home window.
+	 * <p>
+	 * {@link #DARK_CROW} - The dark colored crow image that is used for this
+	 * {@link Application}'s icon. This image is the program's default icon.
+	 */
+	public static final Image LIGHT_CROW, DARK_CROW;
+
 	/**
 	 * The name {@code Kröw}.
 	 */
 	public static final String NAME = new String("Kröw");
 
-	/**
-	 * The {@link DataManager} of the program. This manages data such as the
-	 * loaded {@link Construct}s.
-	 */
-	private static final DataManager DATA_MANAGER = DataManager.getDataManager();
+	public static Backup clearAllObjects() {
+		final Backup b = new Backup();
+		for (final MindsetObject obj : Kröw.CONSTRUCT_MINDSET.getAllObjects())
+			obj.delete();
+		return b;
+	}
 
-	/**
-	 * A static boolean which defines whether or not debug mode is on.
-	 */
-	public static boolean DEBUG_MODE = true;
+	public static ArrayList<Construct> getDeadConstructs() {
+		final ArrayList<Construct> list = new ArrayList<>();
+		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
+			if (!c.isAlive())
+				list.add(c);
+		return list;
+	}
 
-	// Public static methods
-	/**
-	 * A static helper method that checks if a {@link List} contains a given
-	 * {@link String}. The {@link List} must have been instantiated with a type
-	 * argument of {@link String}.
-	 *
-	 * @param list
-	 *            The {@link List} to check through.
-	 * @param string
-	 *            The {@link String} that will be checked for existence in the
-	 *            {@link List}
-	 * @return true if this {@link List} contains the given {@link String}
-	 *         ignoring case.
-	 */
-	public static boolean containsIgnoreCase(final List<String> list, final String string) {
-		for (final String s : list)
-			if (s.equalsIgnoreCase(string))
-				return true;
-		return false;
+	public static ArrayList<Construct> getFemaleConstructs() {
+		final ArrayList<Construct> list = new ArrayList<>();
+		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
+			if (c.getGender())
+				list.add(c);
+		return list;
+	}
+
+	public static ArrayList<Construct> getLivingConstructs() {
+		final ArrayList<Construct> list = new ArrayList<>();
+		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
+			if (c.isAlive())
+				list.add(c);
+		return list;
+	}
+
+	public static ArrayList<Construct> getMaleConstructs() {
+		final ArrayList<Construct> list = new ArrayList<>();
+		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
+			if (!c.getGender())
+				list.add(c);
+		return list;
 	}
 
 	/**
-	 * A getter for the {@link DataManager}.
-	 *
-	 * @return The {@link DataManager} of the current running instance of the
-	 *         program.
+	 * A static void method that loads data.
 	 */
-	public static DataManager getDataManager() {
-		return Kröw.DATA_MANAGER;
+	public static void loadData() {
+
+		final File[] oldFiles = new File(Kröw.KRÖW_HOME_DIRECTORY, "Data/Constructs").listFiles();
+
+		if (oldFiles != null)
+			TOP: for (final File f : oldFiles) {
+				for (final File f0 : Wolf.CONSTRUCT_SAVE_DIRECTORY.listFiles())
+					if (f0.getName().equals(f.getName())) {
+						final File f1 = new File(FileSystemView.getFileSystemView().getHomeDirectory(),
+								"Kröw/Constructs");
+						f1.mkdir();
+						try {
+							Files.move(f.toPath(), new File(f1, f.getName()).toPath(),
+									StandardCopyOption.REPLACE_EXISTING);
+						} catch (final IOException e) {
+							e.printStackTrace();
+						}
+						continue TOP;
+					}
+				try {
+					Files.move(f.toPath(), new File(Wolf.CONSTRUCT_SAVE_DIRECTORY, f.getName()).toPath(),
+							StandardCopyOption.REPLACE_EXISTING);
+				} catch (final IOException e) {
+					e.printStackTrace();
+				}
+			}
+		final File oldDataDir = new File(Kröw.KRÖW_HOME_DIRECTORY, "Data");
+		if (oldDataDir.exists())
+			Wolf.deleteDirectory(oldDataDir);
+
+		boolean cons = false;
+		boolean lws = false;
+		boolean systs = false;
+
+		// Construct Block
+		{
+			System.out.println("Now attempting to load Constructs from the file system.....");
+			for (final File f : Wolf.CONSTRUCT_SAVE_DIRECTORY.listFiles())
+				try {
+					final Construct c = (Construct) Wolf.loadObjectFromFile(OldVersionLoader.getInputStream(f));
+					c.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
+					System.out.println("   \n---Loaded the Construct " + c.getName() + " successfully.");
+					if (!cons)
+						cons = true;
+				} catch (final IOException e) {
+					System.err.println("An error occurred while loading a Construct.");
+				} catch (final ObjectAlreadyExistsException e) {
+					System.err.println("The Construct, " + e.getThrower().getName()
+							+ " already exists. It could not be loaded again.");
+				}
+
+			if (!cons)
+				System.err.println("No Constructs were loaded!...");
+
+		}
+
+		// Law Block
+		{
+			System.out.println("Now attempting to load Laws from the file system.....");
+			for (final File f : Wolf.LAW_SAVE_DIRECTORY.listFiles())
+				try {
+					final Law l = (Law) Wolf.loadObjectFromFile(OldVersionLoader.getInputStream(f));
+					l.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
+					System.out.println("   \n---Loaded the Law " + l.getName() + " successfully.");
+					if (!lws)
+						lws = true;
+				} catch (final IOException e) {
+					System.err.println("An error occurred while loading a Law.");
+				} catch (final ObjectAlreadyExistsException e) {
+					System.err.println(
+							"The Law, " + e.getThrower().getName() + " already exists. It could not be loaded again.");
+				}
+
+			if (!lws)
+				System.err.println("No Laws were loaded!...");
+
+		}
+
+		// System Block
+		{
+			System.out.println("Now attempting to load Systems from the file system.....");
+			for (final File f : Wolf.SYSTEM_SAVE_DIRECTORY.listFiles())
+				try {
+					final wolf.mindset.System s = (wolf.mindset.System) Wolf
+							.loadObjectFromFile(OldVersionLoader.getInputStream(f));
+					s.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
+					System.out.println("   \n---Loaded the System " + s.getName() + " successfully.");
+					if (!systs)
+						systs = true;
+				} catch (final IOException e) {
+					System.err.println("An error occurred while loading a System.");
+				} catch (final ObjectAlreadyExistsException e) {
+					System.err.println("The System, " + e.getThrower().getName()
+							+ " already exists. It could not be loaded again.");
+				}
+
+			if (!systs)
+				System.err.println("No Systems were loaded!...");
+
+		}
+
+		Backup.loadBackupsFromSystem();
+	}
+
+	public static MindsetObject loadMindsetObject(final File file)
+			throws ClassNotFoundException, FileNotFoundException, IOException {
+		return (MindsetObject) ((ObjectInputStream) OldVersionLoader.getInputStream(file)).readObject();
 	}
 
 	// Main method
@@ -90,51 +282,27 @@ public final class Kröw {
 		Kröw.start(args);
 	}
 
-	/**
-	 * A helper method used to split a {@link String} into an array of
-	 * {@link String}s. This will likely be moved to the upcoming API project.
-	 *
-	 * @param string
-	 *            The {@link String} to split.
-	 * @return An array containing separated, 1 character long {@link String}s
-	 *         that make up the original {@link String} passed in as an
-	 *         argument. Basically the same as {@link String#toCharArray()} but
-	 *         each <code>char</code> is a {@link String} in a {@link String}
-	 *         array.
-	 * @see #splitStringToTextArray(String) for more information. It does the
-	 *      same thing as this method but with {@link Text} nodes as an output
-	 *      rather than a {@link String} array.
-	 */
-	public static String[] splitStringToStringArray(final String string) {
-		final String[] strarr = new String[string.length()];
-		for (int i = 0; i < string.length(); i++)
-			strarr[i] = String.valueOf(string.charAt(i));
-		return strarr;
+	public static void saveObjects() {
+		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
+			try {
+				Wolf.saveObject(c, c.getFile(), OldVersionLoader.getOutputStream(c.getFile()));
+			} catch (final IOException e) {
+				System.err.println("Could not save the Construct " + c.getName());
+			}
+		for (final Law l : Kröw.CONSTRUCT_MINDSET.getLawsUnmodifiable())
+			try {
+				Wolf.saveObject(l, l.getFile(), OldVersionLoader.getOutputStream(l.getFile()));
+			} catch (final IOException e) {
+				System.err.println("Could not save the Law " + l.getName());
+			}
+		for (final wolf.mindset.System s : Kröw.CONSTRUCT_MINDSET.getSystemsUnmodifiable())
+			try {
+				Wolf.saveObject(s, s.getFile(), OldVersionLoader.getOutputStream(s.getFile()));
+			} catch (final IOException e) {
+				System.err.println("Could not save the System " + s.getName());
+			}
 	}
 
-	/**
-	 * A helper method used to split a {@link String} into an array of
-	 * {@link Text} nodes. This will likely be moved to the upcoming API
-	 * project, just like the {@link #splitStringToStringArray(String)}.
-	 *
-	 * @param string
-	 *            The {@link String} that will be split into an array of
-	 *            {@link Text} objects.
-	 * @return An array containing {@link Text} objects, each initialized with a
-	 *         character from the original given {@link String}, in the order
-	 *         that the characters of the {@link String} are.
-	 * @see #splitStringToStringArray(String) for more details. It does the
-	 *      exact same thing but the output is an array of {@link String}s,
-	 *      rather than an array of {@link Text} nodes.
-	 */
-	public static Text[] splitStringToTextArray(final String string) {
-		final Text[] textarr = new Text[string.length()];
-		for (int i = 0; i < string.length(); i++)
-			textarr[i] = new Text(String.valueOf(string.charAt(i)));
-		return textarr;
-	}
-
-	// Start method
 	/**
 	 * The start method of the program. This will load up and initialize the
 	 * entire program. Nothing else is needed. It can be called from a main
@@ -148,26 +316,46 @@ public final class Kröw {
 	 *            program arguments).
 	 */
 	public static void start(final String[] args) {
-
-		// This isn't fixing JavaFX's bad text textures but I'll keep it here...
-		System.setProperty("prism.lcdtext", "false");
-		System.setProperty("prism.text", "t2k");
-
 		System.out.println("\n\n\n\n");
 		System.out.println("Loading data...\n");
-		DataManager.loadData();
+		Kröw.loadData();
 
 		if (args != null) {
 			final List<String> strings = Arrays.<String>asList(args);
-			if (!Kröw.containsIgnoreCase(strings, "-debug-mode") && !Kröw.containsIgnoreCase(strings, "-debug"))
-				Kröw.DEBUG_MODE = false;
-			if (Kröw.DEBUG_MODE)
-				System.out.println("\n\nDebug mode has been enabled...\n\n");
-			// If the Window class is loaded from somewhere other than this
-			// method, its static constructor causes a RuntimeException.
-			Application.launch(Window.LaunchImpl.class, args);
+			if (Wolf.containsIgnoreCase(strings, "-debug-mode") || Wolf.containsIgnoreCase(strings, "-debug"))
+				Wolf.DEBUG_MODE = true;
 		}
-
+		if (Wolf.DEBUG_MODE)
+			System.out.println("\n\nDebug mode has been enabled...\n\n");
+		Application.launch(args);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see javafx.application.Application#start(javafx.stage.Stage)
+	 */
+	@Override
+	public void start(final Stage primaryStage) throws Exception {
+		Window.setStage_Impl(primaryStage);
+		Window.setScene(HomeWindow.class, "Home.fxml");
+		primaryStage.initStyle(StageStyle.UNDECORATED);
+		primaryStage.setTitle(Kröw.NAME);
+		if (Kröw.DARK_CROW != null)
+			primaryStage.getIcons().add(Kröw.DARK_CROW);
+		else if (Kröw.LIGHT_CROW != null)
+			primaryStage.getIcons().add(Kröw.LIGHT_CROW);
+		primaryStage.show();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see javafx.application.Application#stop()
+	 */
+	@Override
+	public void stop() throws Exception {
+		Kröw.saveObjects();
+		super.stop();
+	}
 }

@@ -8,9 +8,9 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Text;
 import krow.zeale.guis.home.HomeWindow;
-import kröw.libs.MindsetObject;
-import kröw.zeale.v1.program.core.Kröw;
-import kröw.zeale.v1.program.guis.Window;
+import wolf.mindset.MindsetObject;
+import wolf.zeale.Wolf;
+import wolf.zeale.guis.Window;
 
 public class Pages extends Window {
 
@@ -43,7 +43,7 @@ public class Pages extends Window {
 		try {
 			Window.setScene(HomeWindow.class, "Home.fxml");
 		} catch (final IOException e) {
-			if (Kröw.DEBUG_MODE)
+			if (Wolf.DEBUG_MODE)
 				e.printStackTrace();
 		}
 	}

@@ -1,7 +1,6 @@
 package krow.zeale.guis.create.law;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -14,11 +13,13 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.paint.Color;
 import krow.zeale.guis.home.HomeWindow;
-import kröw.libs.Construct;
-import kröw.libs.Law;
 import kröw.zeale.v1.program.core.Kröw;
-import kröw.zeale.v1.program.guis.Window;
+import wolf.mindset.Construct;
+import wolf.mindset.Law;
+import wolf.mindset.ObjectAlreadyExistsException;
+import wolf.zeale.guis.Window;
 
 /**
  * This class is the Controller of the <code>CreateLawWindow.fxml</code> file.
@@ -81,6 +82,8 @@ public class CreateLawWindow extends Window {
 		try {
 			Window.setScene(HomeWindow.class);
 		} catch (InstantiationException | IllegalAccessException | IOException e) {
+			e.printStackTrace();
+			Window.spawnLabelAtMousePos("An unkown error occurred.", Color.RED);
 		}
 	}
 
@@ -109,16 +112,22 @@ public class CreateLawWindow extends Window {
 	@FXML
 	private void onLawCreated() {
 
-		final Law law = new Law(nameField.getText().isEmpty() ? "null" : nameField.getText(),
-				descriptionField.getText().isEmpty() ? "null" : descriptionField.getText(),
-				ruleField.getText().isEmpty() ? "null" : ruleField.getText(), creationDatePicker.getValue() == null
-						? new Date() : java.util.Date.from(Instant.from(LocalDate.now(ZoneId.systemDefault()))));
+		final String name = nameField.getText().isEmpty() ? "null" : nameField.getText();
+		try {
+			final String description = descriptionField.getText();
+			final LocalDate date = creationDatePicker.getValue();
+			new Law(name, description.isEmpty() ? "null" : description,
+					ruleField.getText().isEmpty() ? "null" : ruleField.getText(),
+					date == null ? new Date() : Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+							.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
+		} catch (final ObjectAlreadyExistsException e) {
+			System.err.println("The Law, " + name + ", already exists.");
+			Window.spawnLabelAtMousePos("The Law, " + name + ", already exists...", Color.RED);
+			return;
+		}
 
-		if (!Kröw.getDataManager().getLaws().contains(law)) {
-			Kröw.getDataManager().getLaws().add(law);
-			Window.setSceneToPreviousScene();
-		} else
-			System.out.println("The law " + law.getName() + " already exists!");
+		Window.spawnLabelAtMousePos("Added the Law, " + name + ", successfully", Color.GREEN);
+		Window.setSceneToPreviousScene();
 	}
 
 	/**
@@ -128,9 +137,10 @@ public class CreateLawWindow extends Window {
 	 */
 	@FXML
 	private void onWriteRuleRequested() {
-		if (descriptionField.isVisible())
+		final boolean visible = descriptionField.isVisible();
+		if (visible)
 			switchVisibilityButton.setText("Description");
-		descriptionField.setVisible(!descriptionField.isVisible());
+		descriptionField.setVisible(!visible);
 		ruleField.setVisible(!ruleField.isVisible());
 
 	}
