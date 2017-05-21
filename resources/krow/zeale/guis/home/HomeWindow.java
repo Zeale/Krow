@@ -145,6 +145,7 @@ public class HomeWindow extends Window {
 		if (!HomeWindow.fileManager.show(HomeWindow.fileManager.BACKUP))
 			HomeWindow.fileManager.setTab(HomeWindow.fileManager.BACKUP);
 		HomeWindow.fileManager.toFront();
+		HomeWindow.fileManager.centerOnScreen();
 	}
 
 	@FXML
@@ -152,6 +153,7 @@ public class HomeWindow extends Window {
 		if (!HomeWindow.fileManager.show(HomeWindow.fileManager.EXPORT))
 			HomeWindow.fileManager.setTab(HomeWindow.fileManager.EXPORT);
 		HomeWindow.fileManager.toFront();
+		HomeWindow.fileManager.centerOnScreen();
 	}
 
 	@FXML
@@ -159,6 +161,7 @@ public class HomeWindow extends Window {
 		if (!HomeWindow.fileManager.show(HomeWindow.fileManager.IMPORT))
 			HomeWindow.fileManager.setTab(HomeWindow.fileManager.IMPORT);
 		HomeWindow.fileManager.toFront();
+		HomeWindow.fileManager.centerOnScreen();
 	}
 
 	/**
@@ -352,6 +355,7 @@ public class HomeWindow extends Window {
 		if (!HomeWindow.fileManager.show(HomeWindow.fileManager.RESTORE))
 			HomeWindow.fileManager.setTab(HomeWindow.fileManager.RESTORE);
 		HomeWindow.fileManager.toFront();
+		HomeWindow.fileManager.centerOnScreen();
 	}
 
 	/*

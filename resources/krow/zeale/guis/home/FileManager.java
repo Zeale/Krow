@@ -14,28 +14,31 @@ import wolf.zeale.guis.Window;
 
 public class FileManager {
 
-	private final Stage popup = new Stage();
+	private final Stage stage = new Stage();
 	private final FileManagerControllerImpl controller;
 	public final Tab IMPORT, EXPORT, BACKUP, RESTORE;
 
 	public FileManager() {
 		final FXMLLoader loader = new FXMLLoader(FileManager.class.getResource("FileManager.fxml"));
 		try {
-			popup.setScene(new Scene(loader.load()));
-			popup.initStyle(StageStyle.UNDECORATED);
+			stage.setScene(new Scene(loader.load()));
+			stage.initStyle(StageStyle.UNDECORATED);
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 		controller = loader.<FileManagerControllerImpl>getController();
-		Window.setPaneDraggableByNode(popup, controller.layout);
+		Window.setPaneDraggableByNode(stage, controller.layout);
 
 		IMPORT = controller.tabImport;
 		EXPORT = controller.tabExport;
 		BACKUP = controller.tabBackup;
 		RESTORE = controller.tabRestore;
-		controller.setCloseListener(popup::hide);
-		popup.centerOnScreen();
+		controller.setCloseListener(stage::hide);
+		stage.centerOnScreen();
+	}
 
+	public void centerOnScreen() {
+		stage.centerOnScreen();
 	}
 
 	public ObservableList<TreeItem<File>> getFiles() {
@@ -43,7 +46,7 @@ public class FileManager {
 	}
 
 	public void hide() {
-		popup.hide();
+		stage.hide();
 	}
 
 	public void setTab(final Tab tab) {
@@ -51,25 +54,25 @@ public class FileManager {
 	}
 
 	public boolean show() {
-		if (popup.isShowing())
+		if (stage.isShowing())
 			return false;
-		popup.show();
+		stage.show();
 		return true;
 	}
 
 	public boolean show(final Tab tab) {
-		if (popup.isShowing())
+		if (stage.isShowing())
 			return false;
 		setTab(tab);
 		return show();
 	}
 
 	public void toBack() {
-		popup.toBack();
+		stage.toBack();
 	}
 
 	public void toFront() {
-		popup.toFront();
+		stage.toFront();
 	}
 
 }

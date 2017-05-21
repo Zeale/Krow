@@ -1,7 +1,9 @@
 package kröw.zeale.v1.program.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -262,6 +264,11 @@ public final class Kröw extends Application {
 		}
 
 		Backup.loadBackupsFromSystem();
+	}
+
+	public static MindsetObject loadMindsetObject(final File file)
+			throws ClassNotFoundException, FileNotFoundException, IOException {
+		return (MindsetObject) ((ObjectInputStream) OldVersionLoader.getInputStream(file)).readObject();
 	}
 
 	// Main method
