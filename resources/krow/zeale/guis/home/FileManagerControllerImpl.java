@@ -263,9 +263,14 @@ public class FileManagerControllerImpl {
 		}
 
 		// Actually do the restore stuff
-		if (clear)
-			b.freshRestore(backup);
-		else
+		if (clear) {
+			final Backup newBackup = b.freshRestore();
+			if (backup)
+				try {
+					newBackup.make();
+				} catch (final IOException e1) {
+				}
+		} else
 			b.restore(overwrite, backup);
 
 		// Attempt to set the current stage to the HomeWindow to refresh its
