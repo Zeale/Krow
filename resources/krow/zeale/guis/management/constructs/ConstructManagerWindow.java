@@ -171,7 +171,7 @@ public class ConstructManagerWindow extends Window {
 
 	@FXML
 	private void deleteMark() {
-		System.out.println(constructBeingEdited.getMarks().remove(markBeingEdited));
+		constructBeingEdited.getMarks().remove(markBeingEdited);
 		editMarkPane.setVisible(false);
 		markTable.setVisible(true);
 		markBeingEdited = null;
@@ -343,27 +343,29 @@ public class ConstructManagerWindow extends Window {
 
 		final DecimalFormat dc = new DecimalFormat("0.##");
 
+		final int maleConstructCount = Kröw.getMaleConstructs().size();
+		final int femaleConstructCount = Kröw.getFemaleConstructs().size();
 		ObservableList<PieChart.Data> list = FXCollections
 				.observableArrayList(
 						new PieChart.Data("Males ("
-								+ dc.format((double) Kröw.getMaleConstructs().size()
-										/ (Kröw.getMaleConstructs().size() + Kröw.getFemaleConstructs().size()) * 100)
-								+ "%)", Kröw.getMaleConstructs().size()),
-						new PieChart.Data("Females ("
-								+ dc.format((double) Kröw.getFemaleConstructs().size()
-										/ (Kröw.getMaleConstructs().size() + Kröw.getFemaleConstructs().size()) * 100)
-								+ "%)", Kröw.getFemaleConstructs().size()));
+								+ dc.format(
+										(double) maleConstructCount / (maleConstructCount + femaleConstructCount) * 100)
+								+ "%)", maleConstructCount),
+						new PieChart.Data(
+								"Females (" + dc.format((double) femaleConstructCount
+										/ (maleConstructCount + femaleConstructCount) * 100) + "%)",
+								femaleConstructCount));
 		genderPieChart.setData(list);
-		list = FXCollections
-				.observableArrayList(
-						new PieChart.Data("Living ("
-								+ dc.format((double) Kröw.getLivingConstructs().size()
-										/ (Kröw.getLivingConstructs().size() + Kröw.getDeadConstructs().size()) * 100)
-								+ "%)", Kröw.getLivingConstructs().size()),
-						new PieChart.Data("Dead ("
-								+ dc.format((double) Kröw.getDeadConstructs().size()
-										/ (Kröw.getLivingConstructs().size() + Kröw.getDeadConstructs().size()) * 100)
-								+ "%)", Kröw.getDeadConstructs().size()));
+		final int livingConstructCount = Kröw.getLivingConstructs().size();
+		final int deadConstructCount = Kröw.getDeadConstructs().size();
+		list = FXCollections.observableArrayList(
+				new PieChart.Data("Living ("
+						+ dc.format((double) livingConstructCount / (livingConstructCount + deadConstructCount) * 100)
+						+ "%)", livingConstructCount),
+				new PieChart.Data(
+						"Dead (" + dc.format(
+								(double) deadConstructCount / (livingConstructCount + deadConstructCount) * 100) + "%)",
+						deadConstructCount));
 		lifePieChart.setData(list);
 
 		constructs.refresh();

@@ -1,12 +1,6 @@
 package krow.zeale.guis.home;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectStreamClass;
-import java.util.List;
 
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
@@ -27,7 +21,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import krow.zeale.guis.create.construct.CreateConstructWindow;
 import krow.zeale.guis.create.law.CreateLawWindow;
@@ -133,9 +126,8 @@ public class HomeWindow extends Window {
 	 */
 	private FadeTransition krowFadeInTransition, krowFadeOutTransition;
 
-	{
-		if (HomeWindow.fileManager == null)
-			HomeWindow.fileManager = new FileManager();
+	static {
+		HomeWindow.fileManager = new FileManager();
 	}
 
 	private static FileManager fileManager;
@@ -325,32 +317,6 @@ public class HomeWindow extends Window {
 	}
 
 	@FXML
-	private void openImportFileWindow() {
-		final FileChooser chooser = new FileChooser();
-		chooser.setTitle("Import a Construct, Law, or any other object...");
-		final List<File> files = chooser.showOpenMultipleDialog(Window.getStage());
-		for (final File f : files)
-			try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(f)) {
-				@Override
-				protected ObjectStreamClass readClassDescriptor() throws IOException, ClassNotFoundException {
-					ObjectStreamClass resultClassDescriptor = super.readClassDescriptor();
-
-					if (resultClassDescriptor.getName().equals("kröw.libs.Construct"))
-						resultClassDescriptor = ObjectStreamClass.lookup(wolf.mindset.Construct.class);
-					else if (resultClassDescriptor.getName().equals("kröw.libs.System"))
-						resultClassDescriptor = ObjectStreamClass.lookup(wolf.mindset.System.class);
-					else if (resultClassDescriptor.getName().equals("kröw.libs.Law"))
-						resultClassDescriptor = ObjectStreamClass.lookup(wolf.mindset.Law.class);
-					return resultClassDescriptor;
-				}
-			};) {
-
-			} catch (final FileNotFoundException e) {
-			} catch (final IOException e) {
-			}
-	}
-
-	@FXML
 	private void restore() {
 		if (!HomeWindow.fileManager.show(HomeWindow.fileManager.RESTORE))
 			HomeWindow.fileManager.setTab(HomeWindow.fileManager.RESTORE);
@@ -415,21 +381,21 @@ public class HomeWindow extends Window {
 
 		constructCount.setText(String.valueOf(Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable().size()));
 
-		final FillTransition constCountRed = new FillTransition(Duration.seconds(0.8), constructCount, Color.RED,
+		final Duration animationDuration = Duration.seconds(0.8);
+		final FillTransition constCountRed = new FillTransition(animationDuration, constructCount, Color.RED,
 				Color.GOLD),
-				constCountYellow = new FillTransition(Duration.seconds(0.8), constructCount, Color.GOLD, Color.GREEN),
-				constCountGreen = new FillTransition(Duration.seconds(0.8), constructCount, Color.GREEN, Color.BLUE),
-				constCountBlue = new FillTransition(Duration.seconds(0.8), constructCount, Color.BLUE, Color.RED);
+				constCountYellow = new FillTransition(animationDuration, constructCount, Color.GOLD, Color.GREEN),
+				constCountGreen = new FillTransition(animationDuration, constructCount, Color.GREEN, Color.BLUE),
+				constCountBlue = new FillTransition(animationDuration, constructCount, Color.BLUE, Color.RED);
 		final SequentialTransition constructCountSequence = new SequentialTransition(constCountRed, constCountYellow,
 				constCountGreen, constCountBlue);
 		constructCountSequence.setCycleCount(Animation.INDEFINITE);
 		constructCountSequence.play();
 
-		final FillTransition constTextRed = new FillTransition(Duration.seconds(0.8), constructText, Color.RED,
-				Color.GOLD),
-				constTextYellow = new FillTransition(Duration.seconds(0.8), constructText, Color.GOLD, Color.GREEN),
-				constTextGreen = new FillTransition(Duration.seconds(0.8), constructText, Color.GREEN, Color.BLUE),
-				constTextBlue = new FillTransition(Duration.seconds(0.8), constructText, Color.BLUE, Color.RED);
+		final FillTransition constTextRed = new FillTransition(animationDuration, constructText, Color.RED, Color.GOLD),
+				constTextYellow = new FillTransition(animationDuration, constructText, Color.GOLD, Color.GREEN),
+				constTextGreen = new FillTransition(animationDuration, constructText, Color.GREEN, Color.BLUE),
+				constTextBlue = new FillTransition(animationDuration, constructText, Color.BLUE, Color.RED);
 		final SequentialTransition constructTextSequence = new SequentialTransition(constTextRed, constTextYellow,
 				constTextGreen, constTextBlue);
 		constructTextSequence.setCycleCount(Animation.INDEFINITE);

@@ -1,6 +1,7 @@
 package krow.zeale.guis.management.laws;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -112,23 +113,25 @@ public class LawManagerWindow extends Window {
 	 */
 	@FXML
 	private void onDoneEditingLaw() {
-		lawBeingEdited
-				.setDescription(editDescriptionField.getText().isEmpty() ? "null" : editDescriptionField.getText());
-		lawBeingEdited.setRule(editRuleField.getText().isEmpty() ? "null" : editRuleField.getText());
-		lawBeingEdited.setCreationDate(creationDatePicker.getValue() == null ? new Date()
-				: java.util.Date
-						.from(Instant.from(creationDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()))));
+		final String description = editDescriptionField.getText();
+		lawBeingEdited.setDescription(description.isEmpty() ? "null" : description);
+		final String rule = editRuleField.getText();
+		lawBeingEdited.setRule(rule.isEmpty() ? "null" : rule);
+		final LocalDate creationDate = creationDatePicker.getValue();
+		lawBeingEdited.setCreationDate(creationDate == null ? new Date()
+				: java.util.Date.from(Instant.from(creationDate.atStartOfDay(ZoneId.systemDefault()))));
+		final String currentName = lawBeingEdited.getName();
+		final String newName = editNameField.getText();
 		try {
-			if (!lawBeingEdited.getName().equals(editNameField.getText().isEmpty() ? "null" : editNameField.getText()))
-				lawBeingEdited.setName(editNameField.getText().isEmpty() ? "null" : editNameField.getText());
+			if (!currentName.equals(newName.isEmpty() ? "null" : newName))
+				lawBeingEdited.setName(newName.isEmpty() ? "null" : newName);
 		} catch (final ObjectAlreadyExistsException e) {
 			System.err.println("A Law with this name already exists.");
-			Window.spawnLabelAtMousePos("A Law with the name, " + editNameField.getText() + ", already exists.",
-					Color.RED);
+			Window.spawnLabelAtMousePos("A Law with the name, " + newName + ", already exists.", Color.RED);
 			return;
 		}
 
-		Window.spawnLabelAtMousePos("Edited the Law, " + lawBeingEdited.getName() + ", successfully", Color.GREEN);
+		Window.spawnLabelAtMousePos("Edited the Law, " + currentName + ", successfully", Color.GREEN);
 
 		editLawDoneButton.setVisible(false);
 		editDescriptionField.setVisible(false);
@@ -159,13 +162,14 @@ public class LawManagerWindow extends Window {
 	private void onLawsTableClicked() {
 		lawBeingEdited = Kröw.CONSTRUCT_MINDSET.getLawsUnmodifiable()
 				.get(laws.getFocusModel().getFocusedCell().getRow());
-		laws.setVisible(false);
 
 		editNameField.setText(lawBeingEdited.getName());
 		editDescriptionField.setText(lawBeingEdited.getDescription());
 		editRuleField.setText(lawBeingEdited.getRule());
 		creationDatePicker
 				.setValue(lawBeingEdited.getCreationDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+
+		laws.setVisible(false);
 
 		editDescriptionField.setVisible(true);
 		creationDatePicker.setVisible(true);
