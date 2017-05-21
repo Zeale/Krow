@@ -1,11 +1,13 @@
 package kröw.zeale.v1.program.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.filechooser.FileSystemView;
@@ -39,8 +41,8 @@ public final class Kröw extends Application {
 
 	public final static ConstructMindset CONSTRUCT_MINDSET = new ConstructMindset();
 
-	public static final File KRÖW_HOME_DIRECTORY = new File(
-			java.lang.System.getProperty("user.home") + "/Appdata/Roaming/", Wolf.KROW_NAME);
+	public static final File KRÖW_HOME_DIRECTORY = new File(System.getProperty("user.home") + "/Appdata/Roaming/",
+			Wolf.KROW_NAME);
 
 	private static final File README_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Readme.txt"),
 			LICENSE_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "License.txt"),
@@ -67,15 +69,12 @@ public final class Kröw extends Application {
 			if (!Kröw.PLANS_FILE.exists())
 				Wolf.copyFileToDirectory(new File("resources/krow/zeale/plans.txt"), Kröw.KRÖW_HOME_DIRECTORY);
 		} catch (final RuntimeException e) {
-			java.lang.System.err.println(
+			System.err.println(
 					"An exception occurred while trying to create or check some necessary directories. The program will print its errors and exit.");
-			java.lang.System.out.println("\n\n");
+			System.out.println("\n\n");
 
 			e.printStackTrace();
-			java.lang.System.exit(-1);
-			final float a = 4;
-			if (a == a)
-				java.lang.System.out.println(5);
+			System.exit(-1);
 		}
 
 	}
@@ -116,45 +115,44 @@ public final class Kröw extends Application {
 	 */
 	public static final Image LIGHT_CROW, DARK_CROW;
 
-	// Constants
 	/**
 	 * The name {@code Kröw}.
 	 */
 	public static final String NAME = new String("Kröw");
 
-	public static Backup clear() {
+	public static Backup clearAllObjects() {
 		final Backup b = new Backup();
 		for (final MindsetObject obj : Kröw.CONSTRUCT_MINDSET.getAllObjects())
 			obj.delete();
 		return b;
 	}
 
-	public static LinkedList<Construct> getDeadConstructs() {
-		final LinkedList<Construct> list = new LinkedList<>();
+	public static ArrayList<Construct> getDeadConstructs() {
+		final ArrayList<Construct> list = new ArrayList<>();
 		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
 			if (!c.isAlive())
 				list.add(c);
 		return list;
 	}
 
-	public static LinkedList<Construct> getFemaleConstructs() {
-		final LinkedList<Construct> list = new LinkedList<>();
+	public static ArrayList<Construct> getFemaleConstructs() {
+		final ArrayList<Construct> list = new ArrayList<>();
 		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
 			if (c.getGender())
 				list.add(c);
 		return list;
 	}
 
-	public static LinkedList<Construct> getLivingConstructs() {
-		final LinkedList<Construct> list = new LinkedList<>();
+	public static ArrayList<Construct> getLivingConstructs() {
+		final ArrayList<Construct> list = new ArrayList<>();
 		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
 			if (c.isAlive())
 				list.add(c);
 		return list;
 	}
 
-	public static LinkedList<Construct> getMaleConstructs() {
-		final LinkedList<Construct> list = new LinkedList<>();
+	public static ArrayList<Construct> getMaleConstructs() {
+		final ArrayList<Construct> list = new ArrayList<>();
 		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
 			if (!c.getGender())
 				list.add(c);
@@ -166,8 +164,10 @@ public final class Kröw extends Application {
 	 */
 	public static void loadData() {
 
-		if (new File(Kröw.KRÖW_HOME_DIRECTORY, "Data").exists()) {
-			TOP: for (final File f : new File(Kröw.KRÖW_HOME_DIRECTORY, "Data/Constructs").listFiles()) {
+		final File[] oldFiles = new File(Kröw.KRÖW_HOME_DIRECTORY, "Data/Constructs").listFiles();
+
+		if (oldFiles != null)
+			TOP: for (final File f : oldFiles) {
 				for (final File f0 : Wolf.CONSTRUCT_SAVE_DIRECTORY.listFiles())
 					if (f0.getName().equals(f.getName())) {
 						final File f1 = new File(FileSystemView.getFileSystemView().getHomeDirectory(),
@@ -188,81 +188,87 @@ public final class Kröw extends Application {
 					e.printStackTrace();
 				}
 			}
-			Wolf.deleteDirectory(new File(Kröw.KRÖW_HOME_DIRECTORY, "Data"));
-		}
-		boolean cons = false, lws = false, systs = false;
+		final File oldDataDir = new File(Kröw.KRÖW_HOME_DIRECTORY, "Data");
+		if (oldDataDir.exists())
+			Wolf.deleteDirectory(oldDataDir);
 
-		{// Construct Block.
-			java.lang.System.out.println("Now loading Constructs from the file system.....");
-			final List<Construct> loadedConstructs = new LinkedList<>();
+		boolean cons = false;
+		boolean lws = false;
+		boolean systs = false;
+
+		// Construct Block
+		{
+			System.out.println("Now attempting to load Constructs from the file system.....");
 			for (final File f : Wolf.CONSTRUCT_SAVE_DIRECTORY.listFiles())
 				try {
-					loadedConstructs.add(Wolf.loadObjectFromFile(OldVersionLoader.getInputStream(f)));
-				} catch (final IOException e) {
-					java.lang.System.err.println("An error occurred while loading a Construct.");
-				}
-
-			for (final Construct c : loadedConstructs) {
-				try {
+					final Construct c = (Construct) Wolf.loadObjectFromFile(OldVersionLoader.getInputStream(f));
 					c.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
+					System.out.println("   \n---Loaded the Construct " + c.getName() + " successfully.");
+					if (!cons)
+						cons = true;
+				} catch (final IOException e) {
+					System.err.println("An error occurred while loading a Construct.");
 				} catch (final ObjectAlreadyExistsException e) {
-					System.err.println("potato");
+					System.err.println("The Construct, " + e.getThrower().getName()
+							+ " already exists. It could not be loaded again.");
 				}
-				java.lang.System.out.println("   \n---Loaded the Construct " + c.getName() + " successfully.");
 
-				cons = true;
-			}
 			if (!cons)
-				java.lang.System.err.println("No Constructs were loaded!...");
+				System.err.println("No Constructs were loaded!...");
 
 		}
 
+		// Law Block
 		{
-			java.lang.System.out.println("\n\nNow loading Laws from the file system.....");
-			final List<Law> loadedLaws = new LinkedList<>();
+			System.out.println("Now attempting to load Laws from the file system.....");
 			for (final File f : Wolf.LAW_SAVE_DIRECTORY.listFiles())
 				try {
-					loadedLaws.add(Wolf.loadObjectFromFile(OldVersionLoader.getInputStream(f)));
-				} catch (final IOException e) {
-					java.lang.System.err.println("An error occurred while loading a Law.");
-				}
-			for (final Law l : loadedLaws) {
-				java.lang.System.out.println("   \n---Loaded the Law " + l.getName() + " successfully.");
-				try {
+					final Law l = (Law) Wolf.loadObjectFromFile(OldVersionLoader.getInputStream(f));
 					l.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
+					System.out.println("   \n---Loaded the Law " + l.getName() + " successfully.");
+					if (!lws)
+						lws = true;
+				} catch (final IOException e) {
+					System.err.println("An error occurred while loading a Law.");
 				} catch (final ObjectAlreadyExistsException e) {
+					System.err.println(
+							"The Law, " + e.getThrower().getName() + " already exists. It could not be loaded again.");
 				}
-				lws = true;
-			}
 
 			if (!lws)
-				java.lang.System.err.println("No Laws were loaded!...");
+				System.err.println("No Laws were loaded!...");
 
 		}
 
+		// System Block
 		{
-
-			java.lang.System.out.println("\n\nNow loading Systems from the file system.....");
-			final List<wolf.mindset.System> loadedSystems = new LinkedList<>();
+			System.out.println("Now attempting to load Systems from the file system.....");
 			for (final File f : Wolf.SYSTEM_SAVE_DIRECTORY.listFiles())
 				try {
-					loadedSystems.add(Wolf.loadObjectFromFile(OldVersionLoader.getInputStream(f)));
-				} catch (final IOException e) {
-					java.lang.System.err.println("An error occurred while loading a System.");
-				}
-			for (final wolf.mindset.System s : loadedSystems) {
-				try {
+					final wolf.mindset.System s = (wolf.mindset.System) Wolf
+							.loadObjectFromFile(OldVersionLoader.getInputStream(f));
 					s.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
+					System.out.println("   \n---Loaded the System " + s.getName() + " successfully.");
+					if (!systs)
+						systs = true;
+				} catch (final IOException e) {
+					System.err.println("An error occurred while loading a System.");
 				} catch (final ObjectAlreadyExistsException e) {
+					System.err.println("The System, " + e.getThrower().getName()
+							+ " already exists. It could not be loaded again.");
 				}
-				systs = true;
-			}
 
 			if (!systs)
-				java.lang.System.err.println("No Systems were loaded!...");
+				System.err.println("No Systems were loaded!...");
+
 		}
 
 		Backup.loadBackupsFromSystem();
+	}
+
+	public static MindsetObject loadMindsetObject(final File file)
+			throws ClassNotFoundException, FileNotFoundException, IOException {
+		return (MindsetObject) ((ObjectInputStream) OldVersionLoader.getInputStream(file)).readObject();
 	}
 
 	// Main method
@@ -297,7 +303,6 @@ public final class Kröw extends Application {
 			}
 	}
 
-	// Start method
 	/**
 	 * The start method of the program. This will load up and initialize the
 	 * entire program. Nothing else is needed. It can be called from a main
@@ -311,11 +316,6 @@ public final class Kröw extends Application {
 	 *            program arguments).
 	 */
 	public static void start(final String[] args) {
-
-		// This isn't fixing JavaFX's bad text textures but I'll keep it here...
-		System.setProperty("prism.lcdtext", "false");
-		System.setProperty("prism.text", "t2k");
-
 		System.out.println("\n\n\n\n");
 		System.out.println("Loading data...\n");
 		Kröw.loadData();
@@ -324,14 +324,10 @@ public final class Kröw extends Application {
 			final List<String> strings = Arrays.<String>asList(args);
 			if (Wolf.containsIgnoreCase(strings, "-debug-mode") || Wolf.containsIgnoreCase(strings, "-debug"))
 				Wolf.DEBUG_MODE = true;
-			if (Wolf.DEBUG_MODE)
-				System.out.println("\n\nDebug mode has been enabled...\n\n");
-			// If the Window class is loaded from somewhere other than this
-			// method, its static constructor causes a RuntimeException.
-
-			Application.launch(args);
 		}
-
+		if (Wolf.DEBUG_MODE)
+			System.out.println("\n\nDebug mode has been enabled...\n\n");
+		Application.launch(args);
 	}
 
 	/*

@@ -1,10 +1,8 @@
 package krow.zeale.guis.home;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,7 +25,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
@@ -69,7 +66,7 @@ public class FileManagerControllerImpl {
 	private TableView<Backup> backupTable, restoreTable;
 
 	@FXML
-	private CheckBox replace;// TODO Style via CSS
+	private CheckBox replace;
 
 	@FXML
 	Region fileDropRegion;
@@ -92,6 +89,7 @@ public class FileManagerControllerImpl {
 	@FXML
 	private void close() {
 		closeListener.run();
+		exportDirectory = null;
 	}
 
 	@FXML
@@ -100,7 +98,7 @@ public class FileManagerControllerImpl {
 		try {
 			backup.make();
 		} catch (final IOException e) {
-			Window.spawnLabelAtMousePos("Backup Failure", Color.DARKRED);
+			Window.spawnLabelAtMousePos("Backup Failure", Color.RED);
 			if (Wolf.DEBUG_MODE) {
 				System.out.println("\n\n");
 				e.printStackTrace();
@@ -132,14 +130,17 @@ public class FileManagerControllerImpl {
 
 	@FXML
 	private void exportSelectedObjects() {
-		if (exportDirectory == null)
+		if (exportDirectory == null) {
 			Window.spawnLabelAtMousePos("You haven't selected an export directory.", Color.RED);
+			return;
+		}
 		boolean exported = false;
 		for (final MindsetObjectCheckBoxWrapper m : list)
 			if (m.checked.get())
 				try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(
 						new File(exportDirectory, "[" + m.object.getType() + "]" + m.object.getName())))) {
-					exported = true;
+					if (!exported)
+						exported = true;
 					os.writeObject(m.object);
 				} catch (final IOException e) {
 					System.out.println("The Object, " + m.object.getName() + ", could not be saved.");
@@ -167,8 +168,8 @@ public class FileManagerControllerImpl {
 			return;
 		}
 		for (final File f : files)
-			try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(f))) {
-				final MindsetObject object = (MindsetObject) is.readObject();
+			try {
+				final MindsetObject object = Kröw.loadMindsetObject(f);
 				object.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
 			} catch (final IOException e) {
 				System.err.println(
@@ -262,14 +263,20 @@ public class FileManagerControllerImpl {
 		}
 
 		// Actually do the restore stuff
-		if (clear)
-			b.freshRestore(backup);
-		else
+		if (clear) {
+			final Backup newBackup = b.freshRestore();
+			if (backup)
+				try {
+					newBackup.make();
+				} catch (final IOException e1) {
+				}
+		} else
 			b.restore(overwrite, backup);
 
 		// Attempt to set the current stage to the HomeWindow to refresh its
-		// data. (This may be bad if they change windows with the FileManager
-		// open.
+		// data. (This may be bad if the user changes windows with the
+		// FileManager
+		// open.)
 		try {
 			Window.setScene(HomeWindow.class);
 		} catch (InstantiationException | IllegalAccessException | IOException e) {
@@ -302,8 +309,6 @@ public class FileManagerControllerImpl {
 					}
 		});
 
-		// TODO Set exportTableSelectColumn's onClick() event
-
 		exportTable.setOnMouseClicked(event -> {
 
 			final int index = exportTable.getFocusModel().getFocusedIndex();
@@ -334,24 +339,16 @@ public class FileManagerControllerImpl {
 		backupTable.setItems(Backup.getObservableBackupList());
 		backupDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(
 				new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(param.getValue().getDateCreated())));
-		backupSizeColumn.setCellValueFactory(
-				param -> new ReadOnlyObjectWrapper<>(Long.toString(param.getValue().getSize()) + "B"));
+		backupSizeColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getSize() + "B"));
 		backupObjectCountColumn.setCellValueFactory(
 				param -> new ReadOnlyObjectWrapper<>(Integer.toString(param.getValue().getObjectCount())));
 
 		restoreTable.setItems(Backup.getObservableBackupList());
 		restoreDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(
 				new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(param.getValue().getDateCreated())));
-		restoreSizeColumn.setCellValueFactory(
-				param -> new ReadOnlyObjectWrapper<>(Long.toString(param.getValue().getSize()) + "B"));
+		restoreSizeColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getSize() + "B"));
 		restoreObjectCountColumn.setCellValueFactory(
 				param -> new ReadOnlyObjectWrapper<>(Integer.toString(param.getValue().getObjectCount())));
-
-		final DropShadow ds = new DropShadow(0.2, Color.BLACK);
-
-		// Doesn't work
-		layout.setEffect(ds);
-
 	}
 
 	public void setCloseListener(final Runnable closeListener) {

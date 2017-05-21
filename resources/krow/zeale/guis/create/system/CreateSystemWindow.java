@@ -1,5 +1,6 @@
 package krow.zeale.guis.create.system;
 
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -79,21 +80,20 @@ public class CreateSystemWindow extends Window {
 	@FXML
 	private void onSystemCreated() {
 
+		final String name = nameField.getText().isEmpty() ? "null" : nameField.getText();
 		try {
-			new wolf.mindset.System(nameField.getText().isEmpty() ? "null" : nameField.getText(),
-					descriptionField.getText().isEmpty() ? "null" : descriptionField.getText(),
-					creationDatePicker.getValue() == null ? new Date()
-							: Date.from(creationDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()))
-									.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
+			final String text = descriptionField.getText();
+			final LocalDate value = creationDatePicker.getValue();
+			new wolf.mindset.System(name, text.isEmpty() ? "null" : text,
+					value == null ? new Date() : Date.from(value.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+							.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
 		} catch (final ObjectAlreadyExistsException e) {
 			java.lang.System.err.println("A System with this name already exists.");
-			Window.spawnLabelAtMousePos("The System, " + (nameField.getText().isEmpty() ? "null" : nameField.getText())
-					+ ", already exists...", Color.RED);
+			Window.spawnLabelAtMousePos("The System, " + name + ", already exists...", Color.RED);
 			return;
 		}
 
-		Window.spawnLabelAtMousePos("Added the System, "
-				+ (nameField.getText().isEmpty() ? "null" : nameField.getText()) + ", successfully", Color.GREEN);
+		Window.spawnLabelAtMousePos("Added the System, " + name + ", successfully", Color.GREEN);
 		Window.setSceneToPreviousScene();
 	}
 

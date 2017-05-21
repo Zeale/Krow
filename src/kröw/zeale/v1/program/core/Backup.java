@@ -21,15 +21,15 @@ import wolf.zeale.collections.ObservableListWrapper;
 
 public class Backup implements Serializable {
 
-	private Date date = Date.from(Instant.now(Clock.systemDefaultZone()));;
+	private Date creationDate = Date.from(Instant.now(Clock.systemDefaultZone()));;
 	private MindsetObject[] mindsetObjects;
 
 	public Backup() {
-		final Object[] objects = Kröw.CONSTRUCT_MINDSET.getAllObjects().toArray();
-		final MindsetObject[] arr = new MindsetObject[objects.length];
+		final Object[] mindsetObjects = Kröw.CONSTRUCT_MINDSET.getAllObjects().toArray();
+		final MindsetObject[] arr = new MindsetObject[mindsetObjects.length];
 		for (int i = 0; i < arr.length; i++)
-			arr[i] = (MindsetObject) objects[i];
-		mindsetObjects = arr;
+			arr[i] = (MindsetObject) mindsetObjects[i];
+		this.mindsetObjects = arr;
 	}
 
 	public Backup(final MindsetObject... mindsetObjects) {
@@ -38,7 +38,7 @@ public class Backup implements Serializable {
 
 	public static final File BACKUP_SAVE_DIRECTORY = new File(Wolf.DATA_DIRECTORY, "Backups");
 
-	private final static ObservableList<Backup> loadedBackups = new ObservableListWrapper<>(new ArrayList<>());
+	private final static ObservableList<Backup> LOADED_BACKUPS = new ObservableListWrapper<>(new ArrayList<>());
 
 	private static final long trueSerialVersionUID = 1L;
 
@@ -55,8 +55,8 @@ public class Backup implements Serializable {
 
 		if (Backup.BACKUP_SAVE_DIRECTORY.listFiles() != null)
 			for (final File f : Backup.BACKUP_SAVE_DIRECTORY.listFiles())
-				try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(f))) {
-					Backup.loadedBackups.add((Backup) is.readObject());
+				try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(f));) {
+					Backup.LOADED_BACKUPS.add((Backup) is.readObject());
 				} catch (final ClassNotFoundException e) {
 					System.err.println("The backup folder has an invalid backup: " + f.getName());
 					System.err.println("\t• The backup is not a readable object.");
@@ -69,35 +69,35 @@ public class Backup implements Serializable {
 	}
 
 	public static ObservableList<Backup> getObservableBackupList() {
-		return Backup.loadedBackups;
+		return Backup.LOADED_BACKUPS;
 	}
 
 	private void readObject(final ObjectInputStream is) throws IOException, ClassNotFoundException {
-		if (is.readLong() == 1L) {
-			date = (Date) is.readObject();
+		if (is.readLong() == Backup.trueSerialVersionUID) {
+			creationDate = (Date) is.readObject();
 			mindsetObjects = (MindsetObject[]) is.readObject();
 		}
 	}
 
 	private void writeObject(final ObjectOutputStream os) throws IOException {
 		os.writeLong(Backup.trueSerialVersionUID);
-		os.writeObject(date);
+		os.writeObject(creationDate);
 		os.writeObject(mindsetObjects);
 	}
 
-	public Backup freshRestore(final boolean backup) {
-		final Backup b = Kröw.clear();
-		restore(true, true);
-		return b;
+	public Backup freshRestore() {
+		final Backup backup = Kröw.clearAllObjects();
+		restore(true, false);
+		return backup;
 	}
 
 	public Date getDateCreated() {
-		return date;
+		return creationDate;
 	}
 
 	public File getFile() {
 		return new File(Backup.BACKUP_SAVE_DIRECTORY,
-				"Backup_" + new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(date) + ".krbu");
+				"Backup_" + new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(creationDate) + ".krbu");
 	}
 
 	public int getObjectCount() {
@@ -114,36 +114,37 @@ public class Backup implements Serializable {
 	}
 
 	public File make() throws IOException {
-		final File f = getFile();
-		if (!f.createNewFile())
-			return f;
-		final ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(f));
+		final File file = getFile();
+		if (!file.createNewFile())
+			return file;
+		final ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(file));
 		os.writeObject(this);
 		os.close();
-		Backup.loadedBackups.add(this);
-		return f;
+		Backup.LOADED_BACKUPS.add(this);
+		return file;
 	}
 
 	public void restore(final boolean overwrite, final boolean backup) {
-		try {
-			new Backup().make();
-		} catch (final IOException e) {
-		}
+		if (backup)
+			try {
+				new Backup().make();
+			} catch (final IOException e) {
+			}
 		for (final MindsetObject o : mindsetObjects)
 			try {
 				o.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
 			} catch (final ObjectAlreadyExistsException e) {
+				final String name = e.getThrower().getName();
 				if (overwrite) {
-					System.err.println("The Object, " + e.getThrower().getName()
-							+ ", already exists. The existing copy is being overwritten.");
+					System.err.println(
+							"The Object, " + name + ", already exists. The existing copy is being overwritten.");
 					e.getVictim().delete();
 					try {
 						e.getThrower().getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
 					} catch (final ObjectAlreadyExistsException e1) {
 					}
 				} else
-					System.err.println(
-							"The Object, " + e.getThrower().getName() + ", already exists. It could not be restored.");
+					System.err.println("The Object, " + name + ", already exists. It could not be restored.");
 			}
 	}
 
