@@ -43,55 +43,156 @@ import wolf.zeale.guis.Window;
  */
 public class FileManagerControllerImpl {
 
+	/**
+	 * A callback that will be executed when the user requests to close this
+	 * window.
+	 */
 	private Runnable closeListener;
 
+	/**
+	 * A {@link TreeView} that stores all the files that the user attempts to
+	 * input.
+	 */
 	@FXML
-	TreeView<File> selectedFileViewer;
+	TreeView<File> importedFileTreeView;
 
+	/**
+	 * The {@link TableView} of all exportable objects.
+	 */
 	@FXML
 	private TableView<MindsetObjectCheckBoxWrapper> exportTable;
+	/**
+	 * <p>
+	 * {@link TableColumn}s that are put in {@link #exportTable}.
+	 * <p>
+	 * {@link #exportTableNameColumn} - The {@link TableColumn} that shows names
+	 * of {@link MindsetObject}s in the {@link #exportTable}.
+	 * <p>
+	 * {@link #exportTableTypeColumn} - The {@link TableColumn} that shows types
+	 * of {@link MindsetObject}s in the {@link #exportTable}.
+	 */
 	@FXML
 	private TableColumn<MindsetObjectCheckBoxWrapper, String> exportTableTypeColumn, exportTableNameColumn;
+	/**
+	 * <p>
+	 * A {@link TableColumn} that allows the user to select whether or not they
+	 * want to export a {@link MindsetObject}.
+	 */
 	@FXML
 	private TableColumn<MindsetObjectCheckBoxWrapper, Boolean> exportTableSelectColumn;
 
+	/**
+	 * The Tabs of this window.
+	 */
 	@FXML
 	Tab tabImport, tabExport, tabBackup, tabRestore;
 
+	/**
+	 * <p>
+	 * {@link #backupDateColumn} - The {@link TableColumn} that shows the date
+	 * of a backup's creation in the {@link #tabBackup backup tab}.
+	 * <p>
+	 * {@link #backupSizeColumn} - The {@link TableColumn} that shows the size
+	 * of each backup in the {@link #tabBackup backup tab}.
+	 * <p>
+	 * {@link #backupObjectCountColumn} - The {@link TableColumn} that shows the
+	 * amount of objects in each backup in the {@link #tabBackup backup tab}.
+	 * <p>
+	 * {@link #restoreDateColumn} - The {@link TableColumn} that shows the date
+	 * a backup was made in the {@link #tabRestore restore tab}.
+	 * <p>
+	 * {@link #restoreSizeColumn} - The {@link TableColumn} that shows the size
+	 * of a backup in the {@link #tabRestore restore tab}.
+	 * <p>
+	 * {@link #restoreObjectCountColumn} - The {@link TableColumn} that shows
+	 * the amount of objects in each backup in the {@link #tabRestore restore
+	 * tab}.
+	 *
+	 */
 	@FXML
 	private TableColumn<Backup, String> backupDateColumn, backupSizeColumn, backupObjectCountColumn, restoreDateColumn,
 			restoreSizeColumn, restoreObjectCountColumn;
 
+	/**
+	 * <p>
+	 * {@link #backupTable} - A {@link TableView} that shows all the backups
+	 * that the user has made. This is located in the {@link #tabBackup backup
+	 * tab}.
+	 * <p>
+	 * {@link #restoreTable} - A {@link TableView} that shows the loaded
+	 * backups, (much like the {@link #backupTable}), but can be clicked to
+	 * perform a restore. When a user clicks on this table, a backup is
+	 * retrieved from the focused cell and its
+	 * {@link Backup#restore(boolean, boolean) restore(boolean, boolean)} method
+	 * is called. (Its {@link Backup#freshRestore() freshRestore()} method may
+	 * be called under certain circumstances. See {@link #restoreTableClicked()
+	 * its onClick event handler} for more details.)
+	 */
 	@FXML
 	private TableView<Backup> backupTable, restoreTable;
 
+	/**
+	 * This {@link CheckBox} governs whether imported objects will replace
+	 * existing objects. It is found in the {@link #tabImport import tab}.
+	 */
 	@FXML
 	private CheckBox replace;
 
+	/**
+	 * An area in the {@link #tabImport import tab} where the user can drag and
+	 * drop files. These files can then be imported.
+	 */
 	@FXML
 	Region fileDropRegion;
 
+	/**
+	 * The root of a {@link FileManager}'s scene. All of a {@link FileManager}'s
+	 * other nodes are wrapped by this or a node inside this.
+	 */
 	@FXML
 	TabPane layout;
 
+	/**
+	 * A list of {@link MindsetObject} wrappers. This is what is stored in the
+	 * export table. This was made a list of wrappers so that
+	 */
 	private final ObservableListWrapper<MindsetObjectCheckBoxWrapper> list = new ObservableListWrapper<>(
 			new ArrayList<>());
 
 	private File exportDirectory;
 
+	/**
+	 * <p>
+	 * The directory that the {@link DirectoryChooser} will start in when the
+	 * user attempts to choose a directory to export objects to.
+	 * <p>
+	 * This variable is modified when the user {@link #exportFolderSelected()
+	 * chooses a directory}.
+	 */
 	private static File initialDirectory = new File("C:/");
 
+	/**
+	 * Clears all the items in the {@link #tabImport import tab}'s
+	 * {@link #importedFileTreeView file viewer}.
+	 */
 	@FXML
 	private void clearTree() {
-		selectedFileViewer.getRoot().getChildren().clear();
+		importedFileTreeView.getRoot().getChildren().clear();
 	}
 
+	/**
+	 * Called when the user attempts to close the program.
+	 */
 	@FXML
 	private void close() {
 		closeListener.run();
 		exportDirectory = null;
 	}
 
+	/**
+	 * This method is called when the user attemtps to create a {@link Backup}
+	 * of their data.
+	 */
 	@FXML
 	private void createBackup() {
 		final Backup backup = new Backup();
@@ -161,7 +262,7 @@ public class FileManagerControllerImpl {
 	@FXML
 	private void importSelectedFiles() {
 		final List<File> files = new ArrayList<>();
-		for (final TreeItem<File> ti : selectedFileViewer.getRoot().getChildren())
+		for (final TreeItem<File> ti : importedFileTreeView.getRoot().getChildren())
 			files.add(ti.getValue());
 		if (files.isEmpty()) {
 			Window.spawnLabelAtMousePos("There are no selected files...", Color.RED);
@@ -290,7 +391,7 @@ public class FileManagerControllerImpl {
 	}
 
 	public void initialize() {
-		selectedFileViewer.setRoot(new TreeItem<>());
+		importedFileTreeView.setRoot(new TreeItem<>());
 		fileDropRegion.setOnDragOver(event -> {
 			if (event.getGestureSource() != fileDropRegion && event.getGestureSource() != fileDropRegion
 					&& event.getDragboard().hasFiles())
@@ -302,10 +403,10 @@ public class FileManagerControllerImpl {
 			if (event.getDragboard().hasFiles())
 				for (final File f0 : event.getDragboard().getFiles())
 					FileLoop: for (final File f1 : Wolf.getAllFilesFromDirectory(f0)) {
-						for (final TreeItem<File> ti : selectedFileViewer.getRoot().getChildren())
+						for (final TreeItem<File> ti : importedFileTreeView.getRoot().getChildren())
 							if (ti.getValue().equals(f1))
 								continue FileLoop;
-						selectedFileViewer.getRoot().getChildren().add(new TreeItem<>(f1));
+						importedFileTreeView.getRoot().getChildren().add(new TreeItem<>(f1));
 					}
 		});
 

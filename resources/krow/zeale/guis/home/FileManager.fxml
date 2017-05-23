@@ -19,7 +19,7 @@
             <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
                   <Region fx:id="fileDropRegion" layoutY="1.0" prefHeight="450.0" prefWidth="519.0" styleClass="solid-background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  <TreeView fx:id="selectedFileViewer" focusTraversable="false" layoutY="238.0" prefHeight="211.0" prefWidth="519.0" showRoot="false" />
+                  <TreeView fx:id="importedFileTreeView" focusTraversable="false" layoutY="238.0" prefHeight="211.0" prefWidth="519.0" showRoot="false" />
                   <Button id="CornerButton" focusTraversable="false" layoutX="458.0" layoutY="14.0" mnemonicParsing="false" onAction="#close" styleClass="pop-button" text="Close" />
                   <Label layoutX="209.0" layoutY="120.0" text="Drop Files Here">
                      <font>

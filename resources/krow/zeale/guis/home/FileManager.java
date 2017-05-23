@@ -99,7 +99,7 @@ public class FileManager {
 	 *         containing all the given files by the user.
 	 */
 	public ObservableList<TreeItem<File>> getFiles() {
-		return controller.selectedFileViewer.getTreeItem(0).getChildren();
+		return controller.importedFileTreeView.getTreeItem(0).getChildren();
 	}
 
 	/**
