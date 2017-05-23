@@ -207,12 +207,20 @@ public class FileManagerControllerImpl {
 		}
 	}
 
+	/**
+	 * This method deselects any selected objects in the {@link #tabExport
+	 * exportTab}.
+	 */
 	@FXML
 	private void deselectAllExportableItems() {
 		for (final MindsetObjectCheckBoxWrapper m : list)
 			m.checked.set(false);
 	}
 
+	/**
+	 * This method is called when the user attempts to select a folder to export
+	 * their selected objects to in the {@link #tabExport export tab}.
+	 */
 	@FXML
 	private void exportFolderSelected() {
 		final DirectoryChooser chooser = new DirectoryChooser();
@@ -229,6 +237,9 @@ public class FileManagerControllerImpl {
 		exportDirectory = FileManagerControllerImpl.initialDirectory = dir;
 	}
 
+	/**
+	 * This method exports the objects that have been selected by the user.
+	 */
 	@FXML
 	private void exportSelectedObjects() {
 		if (exportDirectory == null) {
@@ -259,6 +270,10 @@ public class FileManagerControllerImpl {
 		Window.spawnLabelAtMousePos("Successfully exported the selected objects.", Color.GREEN);
 	}
 
+	/**
+	 * This method imports the files in the {@link #importedFileTreeView
+	 * 'imported files' TreeView}.
+	 */
 	@FXML
 	private void importSelectedFiles() {
 		final List<File> files = new ArrayList<>();
@@ -302,11 +317,16 @@ public class FileManagerControllerImpl {
 		}
 	}
 
+	/**
+	 * This method is called when the user clicks on a backup in the
+	 * {@link #restoreTable}. When this happens, the program will show its
+	 * confirmation dialog and option dialogs to allow the user to customize
+	 * their restore.
+	 */
 	@FXML
 	private void restoreTableClicked() {
 		// Allocate boolean variables
-		boolean clear = false, overwrite = false;
-		boolean backup = false;
+		boolean clear = false, overwrite = false, backup = false;
 
 		// Build Alert dialog
 		final Alert dialog = new Alert(AlertType.CONFIRMATION);
@@ -384,6 +404,10 @@ public class FileManagerControllerImpl {
 		}
 	}
 
+	/**
+	 * This method selects all items that can be exported in the
+	 * {@link #tabExport export tab}.
+	 */
 	@FXML
 	private void selectAllExportableItems() {
 		for (final MindsetObjectCheckBoxWrapper m : list)
@@ -452,28 +476,95 @@ public class FileManagerControllerImpl {
 				param -> new ReadOnlyObjectWrapper<>(Integer.toString(param.getValue().getObjectCount())));
 	}
 
+	/**
+	 * Sets this {@link FileManagerControllerImpl}'s close listener. The given
+	 * listener, and only the listener, is called when the user attempts to
+	 * close this window.
+	 *
+	 * @param closeListener
+	 *            The {@link Runnable} instance that will be invoked when the
+	 *            user attempts to close this window.
+	 */
 	public void setCloseListener(final Runnable closeListener) {
 		this.closeListener = closeListener;
 	}
 
+	/**
+	 * A {@link MindsetObject} wrapper used by the
+	 * {@link FileManagerControllerImpl#tabExport FileManagerControllerImpl's
+	 * export tab} to show {@link CheckBox}es that can be selected in its
+	 * {@link FileManagerControllerImpl#exportTable export table}.
+	 *
+	 * @author Zeale
+	 *
+	 */
 	public class MindsetObjectCheckBoxWrapper {
 
+		/**
+		 * The object that this {@link MindsetObjectCheckBoxWrapper} wraps.
+		 */
 		private final MindsetObject object;
+		/**
+		 * Whether or not the {@link CheckBox} that is rendered for this
+		 * {@link MindsetObjectCheckBoxWrapper} is selected.
+		 */
 		private final BooleanProperty checked;
 
+		/**
+		 * Constructs a {@link MindsetObjectCheckBoxWrapper} using the given
+		 * parameters.
+		 *
+		 * @param object
+		 *            The {@link MindsetObject} that this wrapper will hold.
+		 * @param checked
+		 *            Whether or not {@code object} is selected in the
+		 *            {@link FileManagerControllerImpl#exportTableSelectColumn
+		 *            export table's select column}.
+		 */
 		private MindsetObjectCheckBoxWrapper(final MindsetObject object, final BooleanProperty checked) {
 			this.object = object;
 			this.checked = checked;
 		}
 
+		/**
+		 * <p>
+		 * Returns this {@link MindsetObjectCheckBoxWrapper}'s {@link #checked}
+		 * property.
+		 * <p>
+		 * The {@link #checked} property represents whether or not this
+		 * {@link MindsetObjectCheckBoxWrapper}'s {@link #object} is selected in
+		 * the {@link FileManagerControllerImpl}'s
+		 * {@link FileManagerControllerImpl#exportTableSelectColumn export
+		 * select column}.
+		 *
+		 * @return A {@link BooleanProperty} which represents whether or not
+		 *         {@link #object} is selected.
+		 */
 		public BooleanProperty checkedProperty() {
 			return checked;
 		}
 
+		/**
+		 * A getter for whether or not {@link #object} is selected in the
+		 * {@link FileManagerControllerImpl}'s
+		 * {@link FileManagerControllerImpl#exportTableSelectColumn export
+		 * select column}.
+		 *
+		 * @return A boolean of whether or not {@link #object} is selected.
+		 */
 		public boolean getChecked() {
 			return checked.get();
 		}
 
+		/**
+		 * Sets whether or not {@link #object} is selected in the
+		 * {@link FileManagerControllerImpl}'s
+		 * {@link FileManagerControllerImpl#exportTableSelectColumn export
+		 * select column}.
+		 *
+		 * @param checked
+		 *            Whether or not {@link #object} is selected.
+		 */
 		public void setChecked(final boolean checked) {
 			this.checked.set(checked);
 		}
