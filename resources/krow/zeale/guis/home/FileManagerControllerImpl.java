@@ -14,6 +14,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -43,55 +44,156 @@ import wolf.zeale.guis.Window;
  */
 public class FileManagerControllerImpl {
 
+	/**
+	 * A callback that will be executed when the user requests to close this
+	 * window.
+	 */
 	private Runnable closeListener;
 
+	/**
+	 * A {@link TreeView} that stores all the files that the user attempts to
+	 * input.
+	 */
 	@FXML
-	TreeView<File> selectedFileViewer;
+	TreeView<File> importedFileTreeView;
 
+	/**
+	 * The {@link TableView} of all exportable objects.
+	 */
 	@FXML
 	private TableView<MindsetObjectCheckBoxWrapper> exportTable;
+	/**
+	 * <p>
+	 * {@link TableColumn}s that are put in {@link #exportTable}.
+	 * <p>
+	 * {@link #exportTableNameColumn} - The {@link TableColumn} that shows names
+	 * of {@link MindsetObject}s in the {@link #exportTable}.
+	 * <p>
+	 * {@link #exportTableTypeColumn} - The {@link TableColumn} that shows types
+	 * of {@link MindsetObject}s in the {@link #exportTable}.
+	 */
 	@FXML
 	private TableColumn<MindsetObjectCheckBoxWrapper, String> exportTableTypeColumn, exportTableNameColumn;
+	/**
+	 * <p>
+	 * A {@link TableColumn} that allows the user to select whether or not they
+	 * want to export a {@link MindsetObject}.
+	 */
 	@FXML
 	private TableColumn<MindsetObjectCheckBoxWrapper, Boolean> exportTableSelectColumn;
 
+	/**
+	 * The Tabs of this window.
+	 */
 	@FXML
 	Tab tabImport, tabExport, tabBackup, tabRestore;
 
+	/**
+	 * <p>
+	 * {@link #backupDateColumn} - The {@link TableColumn} that shows the date
+	 * of a backup's creation in the {@link #tabBackup backup tab}.
+	 * <p>
+	 * {@link #backupSizeColumn} - The {@link TableColumn} that shows the size
+	 * of each backup in the {@link #tabBackup backup tab}.
+	 * <p>
+	 * {@link #backupObjectCountColumn} - The {@link TableColumn} that shows the
+	 * amount of objects in each backup in the {@link #tabBackup backup tab}.
+	 * <p>
+	 * {@link #restoreDateColumn} - The {@link TableColumn} that shows the date
+	 * a backup was made in the {@link #tabRestore restore tab}.
+	 * <p>
+	 * {@link #restoreSizeColumn} - The {@link TableColumn} that shows the size
+	 * of a backup in the {@link #tabRestore restore tab}.
+	 * <p>
+	 * {@link #restoreObjectCountColumn} - The {@link TableColumn} that shows
+	 * the amount of objects in each backup in the {@link #tabRestore restore
+	 * tab}.
+	 *
+	 */
 	@FXML
 	private TableColumn<Backup, String> backupDateColumn, backupSizeColumn, backupObjectCountColumn, restoreDateColumn,
 			restoreSizeColumn, restoreObjectCountColumn;
 
+	/**
+	 * <p>
+	 * {@link #backupTable} - A {@link TableView} that shows all the backups
+	 * that the user has made. This is located in the {@link #tabBackup backup
+	 * tab}.
+	 * <p>
+	 * {@link #restoreTable} - A {@link TableView} that shows the loaded
+	 * backups, (much like the {@link #backupTable}), but can be clicked to
+	 * perform a restore. When a user clicks on this table, a backup is
+	 * retrieved from the focused cell and its
+	 * {@link Backup#restore(boolean, boolean) restore(boolean, boolean)} method
+	 * is called. (Its {@link Backup#freshRestore() freshRestore()} method may
+	 * be called under certain circumstances. See {@link #restoreTableClicked()
+	 * its onClick event handler} for more details.)
+	 */
 	@FXML
 	private TableView<Backup> backupTable, restoreTable;
 
+	/**
+	 * This {@link CheckBox} governs whether imported objects will replace
+	 * existing objects. It is found in the {@link #tabImport import tab}.
+	 */
 	@FXML
 	private CheckBox replace;
 
+	/**
+	 * An area in the {@link #tabImport import tab} where the user can drag and
+	 * drop files. These files can then be imported.
+	 */
 	@FXML
 	Region fileDropRegion;
 
+	/**
+	 * The root of a {@link FileManager}'s scene. All of a {@link FileManager}'s
+	 * other nodes are wrapped by this or a node inside this.
+	 */
 	@FXML
 	TabPane layout;
 
+	/**
+	 * A list of {@link MindsetObject} wrappers. This is what is stored in the
+	 * export table. This was made a list of wrappers so that
+	 */
 	private final ObservableListWrapper<MindsetObjectCheckBoxWrapper> list = new ObservableListWrapper<>(
 			new ArrayList<>());
 
 	private File exportDirectory;
 
+	/**
+	 * <p>
+	 * The directory that the {@link DirectoryChooser} will start in when the
+	 * user attempts to choose a directory to export objects to.
+	 * <p>
+	 * This variable is modified when the user {@link #exportFolderSelected()
+	 * chooses a directory}.
+	 */
 	private static File initialDirectory = new File("C:/");
 
+	/**
+	 * Clears all the items in the {@link #tabImport import tab}'s
+	 * {@link #importedFileTreeView file viewer}.
+	 */
 	@FXML
 	private void clearTree() {
-		selectedFileViewer.getRoot().getChildren().clear();
+		importedFileTreeView.getRoot().getChildren().clear();
 	}
 
+	/**
+	 * Called when the user attempts to close the program.
+	 */
 	@FXML
 	private void close() {
 		closeListener.run();
 		exportDirectory = null;
 	}
 
+	/**
+	 * This method is called when the user attemtps to create a {@link Backup}
+	 * of their data.
+	 */
 	@FXML
 	private void createBackup() {
 		final Backup backup = new Backup();
@@ -106,12 +208,20 @@ public class FileManagerControllerImpl {
 		}
 	}
 
+	/**
+	 * This method deselects any selected objects in the {@link #tabExport
+	 * exportTab}.
+	 */
 	@FXML
 	private void deselectAllExportableItems() {
 		for (final MindsetObjectCheckBoxWrapper m : list)
 			m.checked.set(false);
 	}
 
+	/**
+	 * This method is called when the user attempts to select a folder to export
+	 * their selected objects to in the {@link #tabExport export tab}.
+	 */
 	@FXML
 	private void exportFolderSelected() {
 		final DirectoryChooser chooser = new DirectoryChooser();
@@ -128,6 +238,9 @@ public class FileManagerControllerImpl {
 		exportDirectory = FileManagerControllerImpl.initialDirectory = dir;
 	}
 
+	/**
+	 * This method exports the objects that have been selected by the user.
+	 */
 	@FXML
 	private void exportSelectedObjects() {
 		if (exportDirectory == null) {
@@ -158,10 +271,14 @@ public class FileManagerControllerImpl {
 		Window.spawnLabelAtMousePos("Successfully exported the selected objects.", Color.GREEN);
 	}
 
+	/**
+	 * This method imports the files in the {@link #importedFileTreeView
+	 * 'imported files' TreeView}.
+	 */
 	@FXML
 	private void importSelectedFiles() {
 		final List<File> files = new ArrayList<>();
-		for (final TreeItem<File> ti : selectedFileViewer.getRoot().getChildren())
+		for (final TreeItem<File> ti : importedFileTreeView.getRoot().getChildren())
 			files.add(ti.getValue());
 		if (files.isEmpty()) {
 			Window.spawnLabelAtMousePos("There are no selected files...", Color.RED);
@@ -201,11 +318,16 @@ public class FileManagerControllerImpl {
 		}
 	}
 
+	/**
+	 * This method is called when the user clicks on a backup in the
+	 * {@link #restoreTable}. When this happens, the program will show its
+	 * confirmation dialog and option dialogs to allow the user to customize
+	 * their restore.
+	 */
 	@FXML
 	private void restoreTableClicked() {
 		// Allocate boolean variables
-		boolean clear = false, overwrite = false;
-		boolean backup = false;
+		boolean clear = false, overwrite = false, backup = false;
 
 		// Build Alert dialog
 		final Alert dialog = new Alert(AlertType.CONFIRMATION);
@@ -283,14 +405,23 @@ public class FileManagerControllerImpl {
 		}
 	}
 
+	/**
+	 * This method selects all items that can be exported in the
+	 * {@link #tabExport export tab}.
+	 */
 	@FXML
 	private void selectAllExportableItems() {
 		for (final MindsetObjectCheckBoxWrapper m : list)
 			m.checked.set(true);
 	}
 
+	/**
+	 * The JavaFX initialize method. JavaFX automatically calls this method once
+	 * all injectable fields are set. This allows us to set properties of
+	 * {@link Node}s here.
+	 */
 	public void initialize() {
-		selectedFileViewer.setRoot(new TreeItem<>());
+		importedFileTreeView.setRoot(new TreeItem<>());
 		fileDropRegion.setOnDragOver(event -> {
 			if (event.getGestureSource() != fileDropRegion && event.getGestureSource() != fileDropRegion
 					&& event.getDragboard().hasFiles())
@@ -302,10 +433,10 @@ public class FileManagerControllerImpl {
 			if (event.getDragboard().hasFiles())
 				for (final File f0 : event.getDragboard().getFiles())
 					FileLoop: for (final File f1 : Wolf.getAllFilesFromDirectory(f0)) {
-						for (final TreeItem<File> ti : selectedFileViewer.getRoot().getChildren())
+						for (final TreeItem<File> ti : importedFileTreeView.getRoot().getChildren())
 							if (ti.getValue().equals(f1))
 								continue FileLoop;
-						selectedFileViewer.getRoot().getChildren().add(new TreeItem<>(f1));
+						importedFileTreeView.getRoot().getChildren().add(new TreeItem<>(f1));
 					}
 		});
 
@@ -351,28 +482,95 @@ public class FileManagerControllerImpl {
 				param -> new ReadOnlyObjectWrapper<>(Integer.toString(param.getValue().getObjectCount())));
 	}
 
+	/**
+	 * Sets this {@link FileManagerControllerImpl}'s close listener. The given
+	 * listener, and only the listener, is called when the user attempts to
+	 * close this window.
+	 *
+	 * @param closeListener
+	 *            The {@link Runnable} instance that will be invoked when the
+	 *            user attempts to close this window.
+	 */
 	public void setCloseListener(final Runnable closeListener) {
 		this.closeListener = closeListener;
 	}
 
+	/**
+	 * A {@link MindsetObject} wrapper used by the
+	 * {@link FileManagerControllerImpl#tabExport FileManagerControllerImpl's
+	 * export tab} to show {@link CheckBox}es that can be selected in its
+	 * {@link FileManagerControllerImpl#exportTable export table}.
+	 *
+	 * @author Zeale
+	 *
+	 */
 	public class MindsetObjectCheckBoxWrapper {
 
+		/**
+		 * The object that this {@link MindsetObjectCheckBoxWrapper} wraps.
+		 */
 		private final MindsetObject object;
+		/**
+		 * Whether or not the {@link CheckBox} that is rendered for this
+		 * {@link MindsetObjectCheckBoxWrapper} is selected.
+		 */
 		private final BooleanProperty checked;
 
+		/**
+		 * Constructs a {@link MindsetObjectCheckBoxWrapper} using the given
+		 * parameters.
+		 *
+		 * @param object
+		 *            The {@link MindsetObject} that this wrapper will hold.
+		 * @param checked
+		 *            Whether or not {@code object} is selected in the
+		 *            {@link FileManagerControllerImpl#exportTableSelectColumn
+		 *            export table's select column}.
+		 */
 		private MindsetObjectCheckBoxWrapper(final MindsetObject object, final BooleanProperty checked) {
 			this.object = object;
 			this.checked = checked;
 		}
 
+		/**
+		 * <p>
+		 * Returns this {@link MindsetObjectCheckBoxWrapper}'s {@link #checked}
+		 * property.
+		 * <p>
+		 * The {@link #checked} property represents whether or not this
+		 * {@link MindsetObjectCheckBoxWrapper}'s {@link #object} is selected in
+		 * the {@link FileManagerControllerImpl}'s
+		 * {@link FileManagerControllerImpl#exportTableSelectColumn export
+		 * select column}.
+		 *
+		 * @return A {@link BooleanProperty} which represents whether or not
+		 *         {@link #object} is selected.
+		 */
 		public BooleanProperty checkedProperty() {
 			return checked;
 		}
 
+		/**
+		 * A getter for whether or not {@link #object} is selected in the
+		 * {@link FileManagerControllerImpl}'s
+		 * {@link FileManagerControllerImpl#exportTableSelectColumn export
+		 * select column}.
+		 *
+		 * @return A boolean of whether or not {@link #object} is selected.
+		 */
 		public boolean getChecked() {
 			return checked.get();
 		}
 
+		/**
+		 * Sets whether or not {@link #object} is selected in the
+		 * {@link FileManagerControllerImpl}'s
+		 * {@link FileManagerControllerImpl#exportTableSelectColumn export
+		 * select column}.
+		 *
+		 * @param checked
+		 *            Whether or not {@link #object} is selected.
+		 */
 		public void setChecked(final boolean checked) {
 			this.checked.set(checked);
 		}

@@ -39,11 +39,21 @@ import wolf.zeale.guis.Window;
  */
 public final class Kröw extends Application {
 
+	/**
+	 * The {@link ConstructMindset} object of {@link Kröw}. This tracks all of
+	 * {@link Kröw}'s {@link MindsetObject}s.
+	 */
 	public final static ConstructMindset CONSTRUCT_MINDSET = new ConstructMindset();
 
+	/**
+	 * The Home directory of the {@link Kröw} application.
+	 */
 	public static final File KRÖW_HOME_DIRECTORY = new File(System.getProperty("user.home") + "/Appdata/Roaming/",
 			Wolf.KROW_NAME);
 
+	/**
+	 * Files created in the {@link #KRÖW_HOME_DIRECTORY}.
+	 */
 	private static final File README_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Readme.txt"),
 			LICENSE_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "License.txt"),
 			CREDITS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Credits.txt"),
@@ -60,6 +70,7 @@ public final class Kröw extends Application {
 			Wolf.createFolder(Wolf.PROGRAM_SAVE_DIRECTORY);
 			Wolf.createFolder(Wolf.SYSTEM_SAVE_DIRECTORY);
 			Wolf.createFolder(Wolf.LAW_SAVE_DIRECTORY);
+			Wolf.createFolder(Backup.BACKUP_SAVE_DIRECTORY);
 			if (!Kröw.README_FILE.exists())
 				Wolf.copyFileToDirectory(new File("resources/krow/zeale/readme.txt"), Kröw.KRÖW_HOME_DIRECTORY);
 			if (!Kröw.LICENSE_FILE.exists())
@@ -112,6 +123,7 @@ public final class Kröw extends Application {
 	 * <p>
 	 * {@link #DARK_CROW} - The dark colored crow image that is used for this
 	 * {@link Application}'s icon. This image is the program's default icon.
+	 *
 	 */
 	public static final Image LIGHT_CROW, DARK_CROW;
 
@@ -120,6 +132,11 @@ public final class Kröw extends Application {
 	 */
 	public static final String NAME = new String("Kröw");
 
+	/**
+	 * Clears all the objects in this program.
+	 *
+	 * @return A {@link Backup} made prior to the clear.
+	 */
 	public static Backup clearAllObjects() {
 		final Backup b = new Backup();
 		for (final MindsetObject obj : Kröw.CONSTRUCT_MINDSET.getAllObjects())
@@ -127,6 +144,10 @@ public final class Kröw extends Application {
 		return b;
 	}
 
+	/**
+	 * @return An {@link ArrayList} of all the dead {@link Construct}s managed
+	 *         by this program.
+	 */
 	public static ArrayList<Construct> getDeadConstructs() {
 		final ArrayList<Construct> list = new ArrayList<>();
 		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
@@ -135,6 +156,10 @@ public final class Kröw extends Application {
 		return list;
 	}
 
+	/**
+	 * @return An {@link ArrayList} of all the female {@link Construct}s managed
+	 *         by this program.
+	 */
 	public static ArrayList<Construct> getFemaleConstructs() {
 		final ArrayList<Construct> list = new ArrayList<>();
 		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
@@ -143,6 +168,10 @@ public final class Kröw extends Application {
 		return list;
 	}
 
+	/**
+	 * @return An {@link ArrayList} of all the living {@link Construct}s managed
+	 *         by this program.
+	 */
 	public static ArrayList<Construct> getLivingConstructs() {
 		final ArrayList<Construct> list = new ArrayList<>();
 		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
@@ -151,6 +180,10 @@ public final class Kröw extends Application {
 		return list;
 	}
 
+	/**
+	 * @return An {@link ArrayList} of all the male {@link Construct}s managed
+	 *         by this program.
+	 */
 	public static ArrayList<Construct> getMaleConstructs() {
 		final ArrayList<Construct> list = new ArrayList<>();
 		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
@@ -266,12 +299,24 @@ public final class Kröw extends Application {
 		Backup.loadBackupsFromSystem();
 	}
 
+	/**
+	 * Loads a {@link MindsetObject} from the given {@code file} and returns it.
+	 *
+	 * @param file
+	 *            The {@link File} to load the object from.
+	 * @return The Object that was loaded.
+	 * @throws ClassNotFoundException
+	 *             As specified by {@link ObjectInputStream#readObject()}.
+	 * @throws FileNotFoundException
+	 *             As specified by {@link ObjectInputStream#readObject()}.
+	 * @throws IOException
+	 *             As specified by {@link ObjectInputStream#readObject()}.
+	 */
 	public static MindsetObject loadMindsetObject(final File file)
 			throws ClassNotFoundException, FileNotFoundException, IOException {
 		return (MindsetObject) ((ObjectInputStream) OldVersionLoader.getInputStream(file)).readObject();
 	}
 
-	// Main method
 	/**
 	 * The main method.
 	 *

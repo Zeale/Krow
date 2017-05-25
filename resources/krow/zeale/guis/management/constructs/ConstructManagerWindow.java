@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -43,9 +44,17 @@ public class ConstructManagerWindow extends Window {
 	@FXML
 	private TableView<Construct.Mark> markTable;
 
+	/**
+	 * {@link CheckBox}es that allows the user to change a {@link Mark construct
+	 * mark}'s life or gender.
+	 */
 	@FXML
 	private CheckBox edit_gBox, edit_lBox;
 
+	/**
+	 * {@link Button}s that allow the user to delete a {@link Mark construct
+	 * mark} or finish editing it.
+	 */
 	@FXML
 	private Button edit_markDone, edit_deleteMarkButton;
 
@@ -53,6 +62,10 @@ public class ConstructManagerWindow extends Window {
 	private TextField edit_markName;
 	@FXML
 	private TextArea edit_markDesc;
+	/**
+	 * The pane that holds all the editing nodes and functionality of this
+	 * window.
+	 */
 	@FXML
 	private TabPane managePane;
 	/**
@@ -133,7 +146,15 @@ public class ConstructManagerWindow extends Window {
 	 */
 	private Construct constructBeingEdited;
 
+	/**
+	 * The {@link Mark} that is currently being exited by the user.
+	 */
 	private Construct.Mark markBeingEdited;
+
+	/**
+	 * {@link CheckBox}es that determine a {@link Mark}'s life/gender when
+	 * creating a {@link Mark}.
+	 */
 	@FXML
 	private CheckBox create_lBox, create_gBox;
 	@FXML
@@ -144,6 +165,9 @@ public class ConstructManagerWindow extends Window {
 	@FXML
 	private TableColumn<Construct.Mark, String> markNameColumn, markDescriptionColumn, markGenderColumn, markLifeColumn;
 
+	/**
+	 * Clears all the values in the pane where the user creates a {@link Mark}.
+	 */
 	private void clearMarkMakerEditor() {
 		create_gBox.setSelected(false);
 		create_lBox.setSelected(false);
@@ -151,6 +175,9 @@ public class ConstructManagerWindow extends Window {
 		create_markName.setText("");
 	}
 
+	/**
+	 * Creates a {@link Mark} using the values that the user has specified.
+	 */
 	@FXML
 	private void createMark() {
 		try {
@@ -169,6 +196,9 @@ public class ConstructManagerWindow extends Window {
 		managePane.getSelectionModel().select(1);
 	}
 
+	/**
+	 * Deletes the selected {@link Mark}.
+	 */
 	@FXML
 	private void deleteMark() {
 		constructBeingEdited.getMarks().remove(markBeingEdited);
@@ -178,6 +208,9 @@ public class ConstructManagerWindow extends Window {
 		updateMarks();
 	}
 
+	/**
+	 * Called when the user is done editing a {@link Mark}.
+	 */
 	@FXML
 	private void doneEditingMark() {
 
@@ -203,6 +236,9 @@ public class ConstructManagerWindow extends Window {
 
 	}
 
+	/**
+	 * Called when the user attempts to go back to the Construct table.
+	 */
 	@FXML
 	private void goBackToConstructTable() {
 		clearMarkMakerEditor();
@@ -214,6 +250,9 @@ public class ConstructManagerWindow extends Window {
 
 	}
 
+	/**
+	 * Called when the user attempts to go back to the {@link Mark} table.
+	 */
 	@FXML
 	private void goBackToMarkTable() {
 		clearMarkMakerEditor();
@@ -221,6 +260,10 @@ public class ConstructManagerWindow extends Window {
 		editMarkPane.setVisible(false);
 	}
 
+	/**
+	 * Called when the {@link #markTable} is clicked. Doing so will select the
+	 * clicked {@link Mark}.
+	 */
 	@FXML
 	private void markTableClicked() {
 		final int mrk = markTable.getFocusModel().getFocusedCell().getRow();
@@ -238,6 +281,9 @@ public class ConstructManagerWindow extends Window {
 		edit_lBox.setSelected(markBeingEdited.isAlive());
 	}
 
+	/**
+	 * Called when the user attempts to clear the data in the create mark pane.
+	 */
 	@FXML
 	private void onClearMarkMakerEditor() {
 		clearMarkMakerEditor();
@@ -371,6 +417,10 @@ public class ConstructManagerWindow extends Window {
 		constructs.refresh();
 	}
 
+	/**
+	 * Refreshes the {@link Node}s that display data pertaining to
+	 * {@link Mark}s.
+	 */
 	private void updateMarks() {
 		if (constructBeingEdited != null)
 			markTable.setItems(new ObservableListWrapper<>(constructBeingEdited.getMarks()));
