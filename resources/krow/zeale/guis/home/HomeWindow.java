@@ -10,6 +10,7 @@ import javafx.animation.SequentialTransition;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
@@ -130,8 +131,41 @@ public class HomeWindow extends Window {
 		HomeWindow.fileManager = new FileManager();
 	}
 
+	/**
+	 * <p>
+	 * The {@link FileManager} which is opened when the user selects any of the
+	 * {@link Button}'s under the <code>File</code> tab in the {@link #menuBar}.
+	 * <p>
+	 * Each {@link Button} under the <code>File</code> tab will call its
+	 * corresponding method when clicked. These methods will then do what they
+	 * need and then call this {@link FileManager}'s {@link FileManager#show()
+	 * show()} or {@link FileManager#show(javafx.scene.control.Tab)
+	 * show(javafx.scene.control.Tab)} method.
+	 * <p>
+	 * The methods that will open this {@link FileManager}:
+	 * <ul>
+	 * <li>{@link #backup()}</li>
+	 * <li>{@link #exportFile()}</li>
+	 * <li>{@link #importFile()}</li>
+	 * <li>{@link #restore()}</li>
+	 * </ul>
+	 *
+	 */
 	private static FileManager fileManager;
 
+	/**
+	 * <p>
+	 * Called when the user presses the <code>Backup</code> button in the
+	 * {@link #menuBar} under the <code>File</code> tab.
+	 * <p>
+	 * If the {@link #fileManager} is not showing, this method will show it and
+	 * set its currently selected tab to {@link FileManager#BACKUP}. If the
+	 * {@link #fileManager} is showing, this method will simply change its
+	 * selected tab to {@link FileManager#BACKUP}.
+	 * <p>
+	 * This method will then pull the {@link #fileManager} in front of other
+	 * applications and center it on the screen.
+	 */
 	@FXML
 	private void backup() {
 		if (!HomeWindow.fileManager.show(HomeWindow.fileManager.BACKUP))
@@ -140,6 +174,19 @@ public class HomeWindow extends Window {
 		HomeWindow.fileManager.centerOnScreen();
 	}
 
+	/**
+	 * <p>
+	 * Called when the user presses the <code>Export</code> button in the
+	 * {@link #menuBar} under the <code>File</code> tab.
+	 * <p>
+	 * If the {@link #fileManager} is not showing, this method will show it and
+	 * set its currently selected tab to {@link FileManager#EXPORT}. If the
+	 * {@link #fileManager} is showing, this method will simply change its
+	 * selected tab to {@link FileManager#EXPORT}.
+	 * <p>
+	 * This method will then pull the {@link #fileManager} in front of other
+	 * applications and center it on the screen.
+	 */
 	@FXML
 	private void exportFile() {
 		if (!HomeWindow.fileManager.show(HomeWindow.fileManager.EXPORT))
@@ -148,6 +195,19 @@ public class HomeWindow extends Window {
 		HomeWindow.fileManager.centerOnScreen();
 	}
 
+	/**
+	 * <p>
+	 * Called when the user presses the <code>Import</code> button in the
+	 * {@link #menuBar} under the <code>File</code> tab.
+	 * <p>
+	 * If the {@link #fileManager} is not showing, this method will show it and
+	 * set its currently selected tab to {@link FileManager#IMPORT}. If the
+	 * {@link #fileManager} is showing, this method will simply change its
+	 * selected tab to {@link FileManager#IMPORT}.
+	 * <p>
+	 * This method will then pull the {@link #fileManager} in front of other
+	 * applications and center it on the screen.
+	 */
 	@FXML
 	private void importFile() {
 		if (!HomeWindow.fileManager.show(HomeWindow.fileManager.IMPORT))
@@ -316,6 +376,19 @@ public class HomeWindow extends Window {
 		krowFadeOutTransition.play();
 	}
 
+	/**
+	 * <p>
+	 * Called when the user presses the <code>Restore</code> button in the
+	 * {@link #menuBar} under the <code>File</code> tab.
+	 * <p>
+	 * If the {@link #fileManager} is not showing, this method will show it and
+	 * set its currently selected tab to {@link FileManager#RESTORE}. If the
+	 * {@link #fileManager} is showing, this method will simply change its
+	 * selected tab to {@link FileManager#RESTORE}.
+	 * <p>
+	 * This method will then pull the {@link #fileManager} in front of other
+	 * applications and center it on the screen.
+	 */
 	@FXML
 	private void restore() {
 		if (!HomeWindow.fileManager.show(HomeWindow.fileManager.RESTORE))
@@ -411,6 +484,11 @@ public class HomeWindow extends Window {
 		krowFadeOutTransition.setToValue(0.1);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see wolf.zeale.guis.Window#onRevertToThisWindow()
+	 */
 	@Override
 	public void onRevertToThisWindow() {
 		constructs.refresh();

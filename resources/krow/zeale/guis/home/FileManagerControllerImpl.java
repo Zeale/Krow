@@ -14,6 +14,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -414,6 +415,11 @@ public class FileManagerControllerImpl {
 			m.checked.set(true);
 	}
 
+	/**
+	 * The JavaFX initialize method. JavaFX automatically calls this method once
+	 * all injectable fields are set. This allows us to set properties of
+	 * {@link Node}s here.
+	 */
 	public void initialize() {
 		importedFileTreeView.setRoot(new TreeItem<>());
 		fileDropRegion.setOnDragOver(event -> {
