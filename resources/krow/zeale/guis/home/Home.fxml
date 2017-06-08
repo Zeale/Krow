@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import java.net.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
@@ -95,8 +96,11 @@
             </Text>
             <ImageView fx:id="krow" fitHeight="128.0" fitWidth="128.0" layoutX="240.0" layoutY="220.0" onMouseEntered="#onMouseEnteredKrowImage" onMouseExited="#onMouseExitedKrowImage" opacity="0.1" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../_resources/Kröw.png" />
+                  <Image url="@../../Kröw_hd.png" />
                </image>
+               <effect>
+                  <DropShadow blurType="GAUSSIAN" height="70.76" radius="35.6575" spread="0.23" width="73.87" />
+               </effect>
             </ImageView>
             <MenuButton layoutX="257.0" layoutY="421.0" mnemonicParsing="false" text="Manage">
               <items>
