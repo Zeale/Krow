@@ -45,23 +45,114 @@ import wolf.zeale.guis.Window;
 public class FileManagerControllerImpl {
 
 	/**
+	 * A {@link MindsetObject} wrapper used by the
+	 * {@link FileManagerControllerImpl#tabExport FileManagerControllerImpl's
+	 * export tab} to show {@link CheckBox}es that can be selected in its
+	 * {@link FileManagerControllerImpl#exportTable export table}.
+	 *
+	 * @author Zeale
+	 *
+	 */
+	public class MindsetObjectCheckBoxWrapper {
+
+		/**
+		 * The object that this {@link MindsetObjectCheckBoxWrapper} wraps.
+		 */
+		private final MindsetObject object;
+		/**
+		 * Whether or not the {@link CheckBox} that is rendered for this
+		 * {@link MindsetObjectCheckBoxWrapper} is selected.
+		 */
+		private final BooleanProperty checked;
+
+		/**
+		 * Constructs a {@link MindsetObjectCheckBoxWrapper} using the given
+		 * parameters.
+		 *
+		 * @param object
+		 *            The {@link MindsetObject} that this wrapper will hold.
+		 * @param checked
+		 *            Whether or not {@code object} is selected in the
+		 *            {@link FileManagerControllerImpl#exportTableSelectColumn
+		 *            export table's select column}.
+		 */
+		private MindsetObjectCheckBoxWrapper(final MindsetObject object, final BooleanProperty checked) {
+			this.object = object;
+			this.checked = checked;
+		}
+
+		/**
+		 * <p>
+		 * Returns this {@link MindsetObjectCheckBoxWrapper}'s {@link #checked}
+		 * property.
+		 * <p>
+		 * The {@link #checked} property represents whether or not this
+		 * {@link MindsetObjectCheckBoxWrapper}'s {@link #object} is selected in
+		 * the {@link FileManagerControllerImpl}'s
+		 * {@link FileManagerControllerImpl#exportTableSelectColumn export
+		 * select column}.
+		 *
+		 * @return A {@link BooleanProperty} which represents whether or not
+		 *         {@link #object} is selected.
+		 */
+		public BooleanProperty checkedProperty() {
+			return checked;
+		}
+
+		/**
+		 * A getter for whether or not {@link #object} is selected in the
+		 * {@link FileManagerControllerImpl}'s
+		 * {@link FileManagerControllerImpl#exportTableSelectColumn export
+		 * select column}.
+		 *
+		 * @return A boolean of whether or not {@link #object} is selected.
+		 */
+		public boolean getChecked() {
+			return checked.get();
+		}
+
+		/**
+		 * Sets whether or not {@link #object} is selected in the
+		 * {@link FileManagerControllerImpl}'s
+		 * {@link FileManagerControllerImpl#exportTableSelectColumn export
+		 * select column}.
+		 *
+		 * @param checked
+		 *            Whether or not {@link #object} is selected.
+		 */
+		public void setChecked(final boolean checked) {
+			this.checked.set(checked);
+		}
+
+	}
+
+	/**
+	 * <p>
+	 * The directory that the {@link DirectoryChooser} will start in when the
+	 * user attempts to choose a directory to export objects to.
+	 * <p>
+	 * This variable is modified when the user {@link #exportFolderSelected()
+	 * chooses a directory}.
+	 */
+	private static File initialDirectory = new File("C:/");
+
+	/**
 	 * A callback that will be executed when the user requests to close this
 	 * window.
 	 */
 	private Runnable closeListener;
-
 	/**
 	 * A {@link TreeView} that stores all the files that the user attempts to
 	 * input.
 	 */
 	@FXML
 	TreeView<File> importedFileTreeView;
-
 	/**
 	 * The {@link TableView} of all exportable objects.
 	 */
 	@FXML
 	private TableView<MindsetObjectCheckBoxWrapper> exportTable;
+
 	/**
 	 * <p>
 	 * {@link TableColumn}s that are put in {@link #exportTable}.
@@ -74,6 +165,7 @@ public class FileManagerControllerImpl {
 	 */
 	@FXML
 	private TableColumn<MindsetObjectCheckBoxWrapper, String> exportTableTypeColumn, exportTableNameColumn;
+
 	/**
 	 * <p>
 	 * A {@link TableColumn} that allows the user to select whether or not they
@@ -162,15 +254,7 @@ public class FileManagerControllerImpl {
 
 	private File exportDirectory;
 
-	/**
-	 * <p>
-	 * The directory that the {@link DirectoryChooser} will start in when the
-	 * user attempts to choose a directory to export objects to.
-	 * <p>
-	 * This variable is modified when the user {@link #exportFolderSelected()
-	 * chooses a directory}.
-	 */
-	private static File initialDirectory = new File("C:/");
+	private boolean hasBeenShown;
 
 	/**
 	 * Clears all the items in the {@link #tabImport import tab}'s
@@ -319,6 +403,93 @@ public class FileManagerControllerImpl {
 	}
 
 	/**
+	 * The JavaFX initialize method. JavaFX automatically calls this method once
+	 * all injectable fields are set. This allows us to set properties of
+	 * {@link Node}s here.
+	 */
+	public void initialize() {
+
+		// The following block should only run once for this object.
+		if (!hasBeenShown) {
+			// We set our event listener.
+			Kröw.CONSTRUCT_MINDSET.addChangeEventListener(event -> {
+				// Each time the event is called, we refresh the list using this
+				// complex trash.
+
+				// JavaFX's TableView.refresh() method isn't working, so we have
+				// to literally make a new list.
+				final ObservableListWrapper<MindsetObjectCheckBoxWrapper> list = new ObservableListWrapper<>(
+						new ArrayList<>());
+				for (final MindsetObject o : Kröw.CONSTRUCT_MINDSET.getAllObjects())
+					list.add(new MindsetObjectCheckBoxWrapper(o, new SimpleBooleanProperty(false)));
+
+				exportTable.setItems(list);
+			});
+			hasBeenShown = true;
+		}
+
+		importedFileTreeView.setRoot(new TreeItem<>());
+		fileDropRegion.setOnDragOver(event -> {
+			if (event.getGestureSource() != fileDropRegion && event.getGestureSource() != fileDropRegion
+					&& event.getDragboard().hasFiles())
+				event.acceptTransferModes(TransferMode.COPY);
+			event.consume();
+		});
+
+		fileDropRegion.setOnDragDropped(event -> {
+			if (event.getDragboard().hasFiles())
+				for (final File f0 : event.getDragboard().getFiles())
+					FileLoop: for (final File f1 : Wolf.getAllFilesFromDirectory(f0)) {
+						for (final TreeItem<File> ti : importedFileTreeView.getRoot().getChildren())
+							if (ti.getValue().equals(f1))
+								continue FileLoop;
+						importedFileTreeView.getRoot().getChildren().add(new TreeItem<>(f1));
+					}
+		});
+
+		exportTable.setOnMouseClicked(event -> {
+
+			final int index = exportTable.getFocusModel().getFocusedIndex();
+			if (index == -1)
+				Window.spawnLabelAtMousePos("There is nothing to select...", Color.PURPLE);
+			final ObservableValue<Boolean> value = exportTableSelectColumn.getCellObservableValue(index);
+			((BooleanProperty) value).set(!value.getValue());
+		});
+
+		for (final MindsetObject o : Kröw.CONSTRUCT_MINDSET.getAllObjects())
+			list.add(new MindsetObjectCheckBoxWrapper(o, new SimpleBooleanProperty(false)));
+
+		exportTable.setItems(list);
+		exportTableNameColumn
+				.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().object.getName()));
+		exportTableSelectColumn.setCellFactory(param -> new CheckBoxTableCell<>(param1 -> {
+			return list.get(param1).checked;
+		}));
+
+		exportTableSelectColumn.setCellValueFactory(param -> {
+			return param.getValue().checked;
+		});
+		exportTableSelectColumn.setEditable(true);
+		exportTable.setEditable(true);
+		exportTableTypeColumn
+				.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().object.getType()));
+
+		backupTable.setItems(Backup.getObservableBackupList());
+		backupDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(
+				new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(param.getValue().getDateCreated())));
+		backupSizeColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getSize() + "B"));
+		backupObjectCountColumn.setCellValueFactory(
+				param -> new ReadOnlyObjectWrapper<>(Integer.toString(param.getValue().getObjectCount())));
+
+		restoreTable.setItems(Backup.getObservableBackupList());
+		restoreDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(
+				new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(param.getValue().getDateCreated())));
+		restoreSizeColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getSize() + "B"));
+		restoreObjectCountColumn.setCellValueFactory(
+				param -> new ReadOnlyObjectWrapper<>(Integer.toString(param.getValue().getObjectCount())));
+	}
+
+	/**
 	 * This method is called when the user clicks on a backup in the
 	 * {@link #restoreTable}. When this happens, the program will show its
 	 * confirmation dialog and option dialogs to allow the user to customize
@@ -416,73 +587,6 @@ public class FileManagerControllerImpl {
 	}
 
 	/**
-	 * The JavaFX initialize method. JavaFX automatically calls this method once
-	 * all injectable fields are set. This allows us to set properties of
-	 * {@link Node}s here.
-	 */
-	public void initialize() {
-		importedFileTreeView.setRoot(new TreeItem<>());
-		fileDropRegion.setOnDragOver(event -> {
-			if (event.getGestureSource() != fileDropRegion && event.getGestureSource() != fileDropRegion
-					&& event.getDragboard().hasFiles())
-				event.acceptTransferModes(TransferMode.COPY);
-			event.consume();
-		});
-
-		fileDropRegion.setOnDragDropped(event -> {
-			if (event.getDragboard().hasFiles())
-				for (final File f0 : event.getDragboard().getFiles())
-					FileLoop: for (final File f1 : Wolf.getAllFilesFromDirectory(f0)) {
-						for (final TreeItem<File> ti : importedFileTreeView.getRoot().getChildren())
-							if (ti.getValue().equals(f1))
-								continue FileLoop;
-						importedFileTreeView.getRoot().getChildren().add(new TreeItem<>(f1));
-					}
-		});
-
-		exportTable.setOnMouseClicked(event -> {
-
-			final int index = exportTable.getFocusModel().getFocusedIndex();
-			if (index == -1)
-				Window.spawnLabelAtMousePos("There is nothing to select...", Color.PURPLE);
-			final ObservableValue<Boolean> value = exportTableSelectColumn.getCellObservableValue(index);
-			((BooleanProperty) value).set(!value.getValue());
-		});
-
-		for (final MindsetObject o : Kröw.CONSTRUCT_MINDSET.getAllObjects())
-			list.add(new MindsetObjectCheckBoxWrapper(o, new SimpleBooleanProperty(false)));
-
-		exportTable.setItems(list);
-		exportTableNameColumn
-				.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().object.getName()));
-		exportTableSelectColumn.setCellFactory(param -> new CheckBoxTableCell<>(param1 -> {
-			return list.get(param1).checked;
-		}));
-
-		exportTableSelectColumn.setCellValueFactory(param -> {
-			return param.getValue().checked;
-		});
-		exportTableSelectColumn.setEditable(true);
-		exportTable.setEditable(true);
-		exportTableTypeColumn
-				.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().object.getType()));
-
-		backupTable.setItems(Backup.getObservableBackupList());
-		backupDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(
-				new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(param.getValue().getDateCreated())));
-		backupSizeColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getSize() + "B"));
-		backupObjectCountColumn.setCellValueFactory(
-				param -> new ReadOnlyObjectWrapper<>(Integer.toString(param.getValue().getObjectCount())));
-
-		restoreTable.setItems(Backup.getObservableBackupList());
-		restoreDateColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(
-				new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(param.getValue().getDateCreated())));
-		restoreSizeColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().getSize() + "B"));
-		restoreObjectCountColumn.setCellValueFactory(
-				param -> new ReadOnlyObjectWrapper<>(Integer.toString(param.getValue().getObjectCount())));
-	}
-
-	/**
 	 * Sets this {@link FileManagerControllerImpl}'s close listener. The given
 	 * listener, and only the listener, is called when the user attempts to
 	 * close this window.
@@ -493,88 +597,6 @@ public class FileManagerControllerImpl {
 	 */
 	public void setCloseListener(final Runnable closeListener) {
 		this.closeListener = closeListener;
-	}
-
-	/**
-	 * A {@link MindsetObject} wrapper used by the
-	 * {@link FileManagerControllerImpl#tabExport FileManagerControllerImpl's
-	 * export tab} to show {@link CheckBox}es that can be selected in its
-	 * {@link FileManagerControllerImpl#exportTable export table}.
-	 *
-	 * @author Zeale
-	 *
-	 */
-	public class MindsetObjectCheckBoxWrapper {
-
-		/**
-		 * The object that this {@link MindsetObjectCheckBoxWrapper} wraps.
-		 */
-		private final MindsetObject object;
-		/**
-		 * Whether or not the {@link CheckBox} that is rendered for this
-		 * {@link MindsetObjectCheckBoxWrapper} is selected.
-		 */
-		private final BooleanProperty checked;
-
-		/**
-		 * Constructs a {@link MindsetObjectCheckBoxWrapper} using the given
-		 * parameters.
-		 *
-		 * @param object
-		 *            The {@link MindsetObject} that this wrapper will hold.
-		 * @param checked
-		 *            Whether or not {@code object} is selected in the
-		 *            {@link FileManagerControllerImpl#exportTableSelectColumn
-		 *            export table's select column}.
-		 */
-		private MindsetObjectCheckBoxWrapper(final MindsetObject object, final BooleanProperty checked) {
-			this.object = object;
-			this.checked = checked;
-		}
-
-		/**
-		 * <p>
-		 * Returns this {@link MindsetObjectCheckBoxWrapper}'s {@link #checked}
-		 * property.
-		 * <p>
-		 * The {@link #checked} property represents whether or not this
-		 * {@link MindsetObjectCheckBoxWrapper}'s {@link #object} is selected in
-		 * the {@link FileManagerControllerImpl}'s
-		 * {@link FileManagerControllerImpl#exportTableSelectColumn export
-		 * select column}.
-		 *
-		 * @return A {@link BooleanProperty} which represents whether or not
-		 *         {@link #object} is selected.
-		 */
-		public BooleanProperty checkedProperty() {
-			return checked;
-		}
-
-		/**
-		 * A getter for whether or not {@link #object} is selected in the
-		 * {@link FileManagerControllerImpl}'s
-		 * {@link FileManagerControllerImpl#exportTableSelectColumn export
-		 * select column}.
-		 *
-		 * @return A boolean of whether or not {@link #object} is selected.
-		 */
-		public boolean getChecked() {
-			return checked.get();
-		}
-
-		/**
-		 * Sets whether or not {@link #object} is selected in the
-		 * {@link FileManagerControllerImpl}'s
-		 * {@link FileManagerControllerImpl#exportTableSelectColumn export
-		 * select column}.
-		 *
-		 * @param checked
-		 *            Whether or not {@link #object} is selected.
-		 */
-		public void setChecked(final boolean checked) {
-			this.checked.set(checked);
-		}
-
 	}
 
 }
