@@ -66,10 +66,6 @@
 						<MenuItem mnemonicParsing="false" text="• Mindset" />
 					</items>
 				</Menu>
-				<Menu mnemonicParsing="false" text="Options">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onChangeIconRequested" text="Change Icon" />
-               </items></Menu>
             <Menu mnemonicParsing="false" text="File">
               <items>
                   <MenuItem mnemonicParsing="false" onAction="#restore" text="Restore" />

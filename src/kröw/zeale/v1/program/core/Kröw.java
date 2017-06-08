@@ -30,9 +30,9 @@ import wolf.zeale.guis.Window;
  *
  * The JVM loads up the JavaFX toolkit if the main class extends Application. If
  * this class did not extend {@link Application}, the toolkit would not be
- * loaded and the {@link #LIGHT_CROW} and {@link #DARK_CROW} images found below,
- * could not be created during <code>clinit</code> (the <code>static</code>
- * constructor).
+ * loaded and the {@link #IMG_LIGHT_CROW} and {@link #IMG_DARK_CROW} images
+ * found below, could not be created during <code>clinit</code> (the
+ * <code>static</code> constructor).
  *
  * @author Zeale
  *
@@ -92,40 +92,39 @@ public final class Kröw extends Application {
 
 	static {
 
-		Image dark = null, light = null;
+		Image dark = null, light = null, kröw = null;
 		try {
 			dark = new Image("/krow/zeale/DarkKröw.png");
 		} catch (final IllegalArgumentException e) {
-			System.err.println("The Dark Crow icon could not be loaded. Only the Light Crow Icon will be available.");
-
 		}
 
 		try {
 			light = new Image("krow/zeale/LightKröw.png");
 		} catch (final IllegalArgumentException e) {
-			if (dark == null)
-				System.err.println(
-						"The Light Crow icon could not be loaded either! The icons will be set to the default coffee mug.");
-			else
-				System.err
-						.println("The Light Crow icon could not be loaded. Only the Dark Crow icon will be available.");
 		}
 
-		DARK_CROW = dark;
-		LIGHT_CROW = light;
+		try {
+			kröw = new Image("krow/zeale/Kröw.png");
+		} catch (final IllegalArgumentException e) {
+		}
+
+		IMG_DARK_CROW = dark;
+		IMG_LIGHT_CROW = light;
+		IMG_KRÖW = kröw;
 	}
 
 	/**
 	 * <p>
-	 * {@link #LIGHT_CROW} - The light colored crow image that is used for this
-	 * {@link Application}'s icon. This image can be set as the program's icon
-	 * via the home window.
+	 * {@link #IMG_LIGHT_CROW} - The light colored crow image that is used for
+	 * this {@link Application}'s icon. This image can be set as the program's
+	 * icon via the home window.
 	 * <p>
-	 * {@link #DARK_CROW} - The dark colored crow image that is used for this
-	 * {@link Application}'s icon. This image is the program's default icon.
+	 * {@link #IMG_DARK_CROW} - The dark colored crow image that is used for
+	 * this {@link Application}'s icon. This image is the program's default
+	 * icon.
 	 *
 	 */
-	public static final Image LIGHT_CROW, DARK_CROW;
+	public static final Image IMG_LIGHT_CROW, IMG_DARK_CROW, IMG_KRÖW;
 
 	/**
 	 * The name {@code Kröw}.
@@ -386,10 +385,8 @@ public final class Kröw extends Application {
 		Window.setScene(HomeWindow.class, "Home.fxml");
 		primaryStage.initStyle(StageStyle.UNDECORATED);
 		primaryStage.setTitle(Kröw.NAME);
-		if (Kröw.DARK_CROW != null)
-			primaryStage.getIcons().add(Kröw.DARK_CROW);
-		else if (Kröw.LIGHT_CROW != null)
-			primaryStage.getIcons().add(Kröw.LIGHT_CROW);
+		if (Kröw.IMG_KRÖW != null)
+			primaryStage.getIcons().add(Kröw.IMG_KRÖW);
 		primaryStage.show();
 	}
 

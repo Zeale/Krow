@@ -8,7 +8,6 @@ import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.SequentialTransition;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
@@ -16,7 +15,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -50,12 +48,38 @@ import wolf.zeale.guis.Window;
  */
 public class HomeWindow extends Window {
 
+	static {
+		HomeWindow.fileManager = new FileManager();
+	}
+	/**
+	 * <p>
+	 * The {@link FileManager} which is opened when the user selects any of the
+	 * {@link Button}'s under the <code>File</code> tab in the {@link #menuBar}.
+	 * <p>
+	 * Each {@link Button} under the <code>File</code> tab will call its
+	 * corresponding method when clicked. These methods will then do what they
+	 * need and then call this {@link FileManager}'s {@link FileManager#show()
+	 * show()} or {@link FileManager#show(javafx.scene.control.Tab)
+	 * show(javafx.scene.control.Tab)} method.
+	 * <p>
+	 * The methods that will open this {@link FileManager}:
+	 * <ul>
+	 * <li>{@link #backup()}</li>
+	 * <li>{@link #exportFile()}</li>
+	 * <li>{@link #importFile()}</li>
+	 * <li>{@link #restore()}</li>
+	 * </ul>
+	 *
+	 */
+	private static FileManager fileManager;
+
 	/**
 	 * This is animated, color changing text that displays the amount of
 	 * {@link Construct}s that the user has.
 	 */
 	@FXML
 	private Text constructCount;
+
 	/**
 	 * A {@link Text} object with unchanging text that forever says
 	 * <i>constructs</i>. It is positioned right underneath
@@ -88,7 +112,6 @@ public class HomeWindow extends Window {
 	 */
 	@FXML
 	private TableView<Construct> constructs;
-
 	/**
 	 * The {@link TableView} that renders {@link Law}s and their data.
 	 */
@@ -121,37 +144,12 @@ public class HomeWindow extends Window {
 	 */
 	@FXML
 	private ImageView krow;
+
 	/**
 	 * {@link FadeTransition}s used for the {@link #krow} image when the mouse
 	 * hovers over or off of it.
 	 */
 	private FadeTransition krowFadeInTransition, krowFadeOutTransition;
-
-	static {
-		HomeWindow.fileManager = new FileManager();
-	}
-
-	/**
-	 * <p>
-	 * The {@link FileManager} which is opened when the user selects any of the
-	 * {@link Button}'s under the <code>File</code> tab in the {@link #menuBar}.
-	 * <p>
-	 * Each {@link Button} under the <code>File</code> tab will call its
-	 * corresponding method when clicked. These methods will then do what they
-	 * need and then call this {@link FileManager}'s {@link FileManager#show()
-	 * show()} or {@link FileManager#show(javafx.scene.control.Tab)
-	 * show(javafx.scene.control.Tab)} method.
-	 * <p>
-	 * The methods that will open this {@link FileManager}:
-	 * <ul>
-	 * <li>{@link #backup()}</li>
-	 * <li>{@link #exportFile()}</li>
-	 * <li>{@link #importFile()}</li>
-	 * <li>{@link #restore()}</li>
-	 * </ul>
-	 *
-	 */
-	private static FileManager fileManager;
 
 	/**
 	 * <p>
@@ -195,6 +193,16 @@ public class HomeWindow extends Window {
 		HomeWindow.fileManager.centerOnScreen();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see kröw.zeale.v1.program.guis.Window#getWindowFile()
+	 */
+	@Override
+	public String getWindowFile() {
+		return "Home.fxml";
+	}
+
 	/**
 	 * <p>
 	 * Called when the user presses the <code>Import</code> button in the
@@ -216,25 +224,81 @@ public class HomeWindow extends Window {
 		HomeWindow.fileManager.centerOnScreen();
 	}
 
-	/**
-	 * This method is called when the user attempts to change the currently
-	 * displayed program icon. They can do this by selecting the <i>Options</i>
-	 * tab in the {@link MenuBar} and then selecting <i>Change Icon</i>.
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see kröw.zeale.v1.program.guis.Window#initialize()
 	 */
+	@Override
+	@SuppressWarnings("deprecation")
 	@FXML
-	private void onChangeIconRequested() {
-		if (Kröw.DARK_CROW == null || Kröw.LIGHT_CROW == null)
-			return;
-		else {
-			final ObservableList<Image> icons = Window.getStage().getIcons();
-			if (icons.contains(Kröw.DARK_CROW)) {
-				icons.remove(Kröw.DARK_CROW);
-				icons.add(Kröw.LIGHT_CROW);
-			} else {
-				icons.remove(Kröw.LIGHT_CROW);
-				icons.add(Kröw.DARK_CROW);
-			}
+	public void initialize() {
+
+		// The window can now be dragged around the screen by the Menu Bar.
+		Window.setPaneDraggableByNode(menuBar);
+		Window.setPaneDraggableByNode(krow);
+
+		/*
+		 * "If it's not intended for use then add a workaround..."
+		 *
+		 * ~ Zeale
+		 *
+		 * Here I'm calling a deprecated method because the JavaFX APIs didn't
+		 * have a more simple way to make table columns non-reorderable.
+		 * <strike>These may or may not work, but it's worth a shot.</strike>
+		 * These do work... :)
+		 */
+		try {
+			constDesc.impl_setReorderable(false);
+			constName.impl_setReorderable(false);
+			lawDesc.impl_setReorderable(false);
+			lawName.impl_setReorderable(false);
+		} catch (final NoSuchMethodError e) {
+			System.err.println(
+					"The tables used in the home screen have headers that can be moved around. This is not supported. Because of the version of Java you are running, some availability to stop those headers from being moved is no longer here. This is not a bad thing but be warned that reordering and dragging around table headers MAY cause visual issues or other effects.");
 		}
+
+		constructs.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getConstructs()));
+		laws.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getLaws()));
+		constDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
+		constName.setCellValueFactory(new PropertyValueFactory<>("name"));
+		lawDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
+		lawName.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+		constructCount.setTextAlignment(TextAlignment.CENTER);
+
+		// Now lets set up some timelines for animations...
+
+		constructCount.setText(String.valueOf(Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable().size()));
+
+		final Duration animationDuration = Duration.seconds(0.8);
+		final FillTransition constCountRed = new FillTransition(animationDuration, constructCount, Color.RED,
+				Color.GOLD),
+				constCountYellow = new FillTransition(animationDuration, constructCount, Color.GOLD, Color.GREEN),
+				constCountGreen = new FillTransition(animationDuration, constructCount, Color.GREEN, Color.BLUE),
+				constCountBlue = new FillTransition(animationDuration, constructCount, Color.BLUE, Color.RED);
+		final SequentialTransition constructCountSequence = new SequentialTransition(constCountRed, constCountYellow,
+				constCountGreen, constCountBlue);
+		constructCountSequence.setCycleCount(Animation.INDEFINITE);
+		constructCountSequence.play();
+
+		final FillTransition constTextRed = new FillTransition(animationDuration, constructText, Color.RED, Color.GOLD),
+				constTextYellow = new FillTransition(animationDuration, constructText, Color.GOLD, Color.GREEN),
+				constTextGreen = new FillTransition(animationDuration, constructText, Color.GREEN, Color.BLUE),
+				constTextBlue = new FillTransition(animationDuration, constructText, Color.BLUE, Color.RED);
+		final SequentialTransition constructTextSequence = new SequentialTransition(constTextRed, constTextYellow,
+				constTextGreen, constTextBlue);
+		constructTextSequence.setCycleCount(Animation.INDEFINITE);
+		constructTextSequence.play();
+
+		// Krow image
+		krowFadeInTransition = new FadeTransition(Duration.seconds(0.4), krow);
+		krowFadeInTransition.setInterpolator(Interpolator.EASE_OUT);
+		krowFadeInTransition.setToValue(1);
+
+		krowFadeOutTransition = new FadeTransition(Duration.seconds(0.4), krow);
+		krowFadeOutTransition.setInterpolator(Interpolator.EASE_OUT);
+		krowFadeOutTransition.setToValue(0.1);
 	}
 
 	/**
@@ -376,6 +440,17 @@ public class HomeWindow extends Window {
 		krowFadeOutTransition.play();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see wolf.zeale.guis.Window#onRevertToThisWindow()
+	 */
+	@Override
+	public void onRevertToThisWindow() {
+		constructs.refresh();
+		laws.refresh();
+	}
+
 	/**
 	 * <p>
 	 * Called when the user presses the <code>Restore</code> button in the
@@ -395,104 +470,6 @@ public class HomeWindow extends Window {
 			HomeWindow.fileManager.setTab(HomeWindow.fileManager.RESTORE);
 		HomeWindow.fileManager.toFront();
 		HomeWindow.fileManager.centerOnScreen();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see kröw.zeale.v1.program.guis.Window#getWindowFile()
-	 */
-	@Override
-	public String getWindowFile() {
-		return "Home.fxml";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see kröw.zeale.v1.program.guis.Window#initialize()
-	 */
-	@Override
-	@SuppressWarnings("deprecation")
-	@FXML
-	public void initialize() {
-
-		// The window can now be dragged around the screen by the Menu Bar.
-		Window.setPaneDraggableByNode(menuBar);
-		Window.setPaneDraggableByNode(krow);
-
-		/*
-		 * "If it's not intended for use then add a workaround..."
-		 *
-		 * ~ Zeale
-		 *
-		 * Here I'm calling a deprecated method because the JavaFX APIs didn't
-		 * have a more simple way to make table columns non-reorderable.
-		 * <strike>These may or may not work, but it's worth a shot.</strike>
-		 * These do work... :)
-		 */
-		try {
-			constDesc.impl_setReorderable(false);
-			constName.impl_setReorderable(false);
-			lawDesc.impl_setReorderable(false);
-			lawName.impl_setReorderable(false);
-		} catch (final NoSuchMethodError e) {
-			System.err.println(
-					"The tables used in the home screen have headers that can be moved around. This is not supported. Because of the version of Java you are running, some availability to stop those headers from being moved is no longer here. This is not a bad thing but be warned that reordering and dragging around table headers MAY cause visual issues or other effects.");
-		}
-
-		constructs.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getConstructs()));
-		laws.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getLaws()));
-		constDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
-		constName.setCellValueFactory(new PropertyValueFactory<>("name"));
-		lawDesc.setCellValueFactory(new PropertyValueFactory<>("description"));
-		lawName.setCellValueFactory(new PropertyValueFactory<>("name"));
-
-		constructCount.setTextAlignment(TextAlignment.CENTER);
-
-		// Now lets set up some timelines for animations...
-
-		constructCount.setText(String.valueOf(Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable().size()));
-
-		final Duration animationDuration = Duration.seconds(0.8);
-		final FillTransition constCountRed = new FillTransition(animationDuration, constructCount, Color.RED,
-				Color.GOLD),
-				constCountYellow = new FillTransition(animationDuration, constructCount, Color.GOLD, Color.GREEN),
-				constCountGreen = new FillTransition(animationDuration, constructCount, Color.GREEN, Color.BLUE),
-				constCountBlue = new FillTransition(animationDuration, constructCount, Color.BLUE, Color.RED);
-		final SequentialTransition constructCountSequence = new SequentialTransition(constCountRed, constCountYellow,
-				constCountGreen, constCountBlue);
-		constructCountSequence.setCycleCount(Animation.INDEFINITE);
-		constructCountSequence.play();
-
-		final FillTransition constTextRed = new FillTransition(animationDuration, constructText, Color.RED, Color.GOLD),
-				constTextYellow = new FillTransition(animationDuration, constructText, Color.GOLD, Color.GREEN),
-				constTextGreen = new FillTransition(animationDuration, constructText, Color.GREEN, Color.BLUE),
-				constTextBlue = new FillTransition(animationDuration, constructText, Color.BLUE, Color.RED);
-		final SequentialTransition constructTextSequence = new SequentialTransition(constTextRed, constTextYellow,
-				constTextGreen, constTextBlue);
-		constructTextSequence.setCycleCount(Animation.INDEFINITE);
-		constructTextSequence.play();
-
-		// Krow image
-		krowFadeInTransition = new FadeTransition(Duration.seconds(0.4), krow);
-		krowFadeInTransition.setInterpolator(Interpolator.EASE_OUT);
-		krowFadeInTransition.setToValue(1);
-
-		krowFadeOutTransition = new FadeTransition(Duration.seconds(0.4), krow);
-		krowFadeOutTransition.setInterpolator(Interpolator.EASE_OUT);
-		krowFadeOutTransition.setToValue(0.1);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see wolf.zeale.guis.Window#onRevertToThisWindow()
-	 */
-	@Override
-	public void onRevertToThisWindow() {
-		constructs.refresh();
-		laws.refresh();
 	}
 
 }
