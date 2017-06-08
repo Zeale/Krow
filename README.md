@@ -1,5 +1,6 @@
-# Krow
-> *A construct mindset documentation program.*
+<h1 align="center">Krow</h1>
+<a href="https://github.com/Zeale/Krow"><p align="center"><img width="64px" height="64px" src="https://github.com/Zeale/Krow/blob/master/resources/krow/zeale/Kr%C3%B6w_hd.png"></img></p></a>
+
 
 A somewhat simplistic (not really), GUI based program used for documenting the **Construct Mindset**.
 
