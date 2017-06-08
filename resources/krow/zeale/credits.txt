@@ -1,12 +1,13 @@
 This is a credits file m8. It contains credits for whoever made this program.
 
-  • The Program - Zeale
+  • The program - Zeale
   • The black crow icons - SirEatsALot
   • The white crow icon - Zeale & SirEatsALot
+  • The red, green, and blue icon - Zeale
 
 
 
-Websites:
+"Websites" :
   Zeale - https://github.com/Zeale/
   SirEatsALot - https://github.com/SirEatsALotOff
 
