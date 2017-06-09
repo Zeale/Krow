@@ -245,13 +245,6 @@ public class FileManagerControllerImpl {
 	@FXML
 	TabPane layout;
 
-	/**
-	 * A list of {@link MindsetObject} wrappers. This is what is stored in the
-	 * export table. This was made a list of wrappers so that
-	 */
-	private final ObservableListWrapper<MindsetObjectCheckBoxWrapper> list = new ObservableListWrapper<>(
-			new ArrayList<>());
-
 	private File exportDirectory;
 
 	private boolean hasBeenShown;
@@ -298,7 +291,7 @@ public class FileManagerControllerImpl {
 	 */
 	@FXML
 	private void deselectAllExportableItems() {
-		for (final MindsetObjectCheckBoxWrapper m : list)
+		for (final MindsetObjectCheckBoxWrapper m : exportTable.getItems())
 			m.checked.set(false);
 	}
 
@@ -332,7 +325,7 @@ public class FileManagerControllerImpl {
 			return;
 		}
 		boolean exported = false;
-		for (final MindsetObjectCheckBoxWrapper m : list)
+		for (final MindsetObjectCheckBoxWrapper m : exportTable.getItems())
 			if (m.checked.get())
 				try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(
 						new File(exportDirectory, "[" + m.object.getType() + "]" + m.object.getName())))) {
@@ -418,6 +411,7 @@ public class FileManagerControllerImpl {
 
 				// JavaFX's TableView.refresh() method isn't working, so we have
 				// to literally make a new list.
+
 				final ObservableListWrapper<MindsetObjectCheckBoxWrapper> list = new ObservableListWrapper<>(
 						new ArrayList<>());
 				for (final MindsetObject o : Kröw.CONSTRUCT_MINDSET.getAllObjects())
@@ -457,13 +451,13 @@ public class FileManagerControllerImpl {
 		});
 
 		for (final MindsetObject o : Kröw.CONSTRUCT_MINDSET.getAllObjects())
-			list.add(new MindsetObjectCheckBoxWrapper(o, new SimpleBooleanProperty(false)));
+			exportTable.getItems().add(new MindsetObjectCheckBoxWrapper(o, new SimpleBooleanProperty(false)));
 
-		exportTable.setItems(list);
+		exportTable.setItems(exportTable.getItems());
 		exportTableNameColumn
 				.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue().object.getName()));
 		exportTableSelectColumn.setCellFactory(param -> new CheckBoxTableCell<>(param1 -> {
-			return list.get(param1).checked;
+			return exportTable.getItems().get(param1).checked;
 		}));
 
 		exportTableSelectColumn.setCellValueFactory(param -> {
@@ -582,7 +576,7 @@ public class FileManagerControllerImpl {
 	 */
 	@FXML
 	private void selectAllExportableItems() {
-		for (final MindsetObjectCheckBoxWrapper m : list)
+		for (final MindsetObjectCheckBoxWrapper m : exportTable.getItems())
 			m.checked.set(true);
 	}
 
