@@ -2,7 +2,7 @@
 <a href="https://github.com/Zeale/Krow"><p align="center"><img width="64px" height="64px" src="https://github.com/Zeale/Krow/blob/master/resources/krow/zeale/Kr%C3%B6w_hd.png"></img></p></a>
 
 
-A somewhat simplistic (not really), GUI based program used for documenting the **Construct Mindset**.
+A simple GUI based program used for documenting Constructs (amongst other things).
 
 Features:
    1. Documenting functions for Constructs, Laws, and Systems.
