@@ -9,6 +9,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import krow.zeale.guis.create.CreateWindow;
 import krow.zeale.guis.home.HomeWindow;
 import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Construct;
@@ -29,7 +30,7 @@ import wolf.zeale.guis.Window;
  *           be used apart from it.
  *
  */
-public class CreateConstructWindow extends Window {
+public class CreateConstructWindow extends CreateWindow {
 
 	/**
 	 * <p>
@@ -75,11 +76,22 @@ public class CreateConstructWindow extends Window {
 	private MenuBar menuBar;
 
 	/**
+	 * Called when the user attempts to go back to the previous {@link Window}
+	 * by clicking the "back" button in the {@link #menuBar}.
+	 */
+	@Override
+	@FXML
+	protected void _event_back() {
+		Window.setSceneToPreviousScene();
+	}
+
+	/**
 	 * Called when the user attempts to close the {@link Window} via the Close
 	 * button in the {@link #menuBar}.
 	 */
+	@Override
 	@FXML
-	private void close() {
+	protected void _event_close() {
 		Platform.exit();
 	}
 
@@ -87,8 +99,9 @@ public class CreateConstructWindow extends Window {
 	 * Called when the user clicks the "done" button in the GUI, to signify that
 	 * they are finished creating their {@link Construct}.
 	 */
+	@Override
 	@FXML
-	private void done() {
+	protected void _event_create() {
 		final String name = nameField.getText().isEmpty() ? "null" : nameField.getText(),
 				description = descriptionField.getText().isEmpty() ? "null" : descriptionField.getText();
 		try {
@@ -100,25 +113,17 @@ public class CreateConstructWindow extends Window {
 			return;
 		}
 		Window.spawnLabelAtMousePos("Added the Construct, " + name + ", successfully", Color.GREEN);
-		goBack();
+		_event_back();
 
-	}
-
-	/**
-	 * Called when the user attempts to go back to the previous {@link Window}
-	 * by clicking the "back" button in the {@link #menuBar}.
-	 */
-	@FXML
-	private void goBack() {
-		Window.setSceneToPreviousScene();
 	}
 
 	/**
 	 * Called when the user attempts to go to the {@link HomeWindow} by clicking
 	 * the "home" button in the {@link #menuBar}.
 	 */
+	@Override
 	@FXML
-	private void home() {
+	protected void _event_home() {
 		try {
 			Window.setScene(HomeWindow.class);
 		} catch (InstantiationException | IllegalAccessException | IOException e) {

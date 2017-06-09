@@ -14,6 +14,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import krow.zeale.guis.create.CreateWindow;
 import krow.zeale.guis.home.HomeWindow;
 import kröw.zeale.v1.program.core.Kröw;
 import wolf.mindset.Construct;
@@ -30,7 +31,7 @@ import wolf.zeale.guis.Window;
  *           used apart from it.
  *
  */
-public class CreateLawWindow extends Window {
+public class CreateLawWindow extends CreateWindow {
 
 	/**
 	 * The {@link MenuBar} at the top of the {@link Window}.
@@ -74,34 +75,22 @@ public class CreateLawWindow extends Window {
 	private DatePicker creationDatePicker;
 
 	/**
-	 * This method is called when the user attempts to go to the
-	 * {@link HomeWindow}.
+	 * This method is called when the user attempts to go back to the previous
+	 * {@link Window}.
 	 */
+	@Override
 	@FXML
-	private void home() {
-		try {
-			Window.setScene(HomeWindow.class);
-		} catch (InstantiationException | IllegalAccessException | IOException e) {
-			e.printStackTrace();
-			Window.spawnLabelAtMousePos("An unkown error occurred.", Color.RED);
-		}
+	protected void _event_back() {
+		Window.setSceneToPreviousScene();
 	}
 
 	/**
 	 * This method is called when the user attempts to close the program.
 	 */
+	@Override
 	@FXML
-	private void onClose() {
+	protected void _event_close() {
 		Platform.exit();
-	}
-
-	/**
-	 * This method is called when the user attempts to go back to the previous
-	 * {@link Window}.
-	 */
-	@FXML
-	private void onGoBack() {
-		Window.setSceneToPreviousScene();
 	}
 
 	/**
@@ -109,8 +98,9 @@ public class CreateLawWindow extends Window {
 	 * method creates a {@link Law} object with the specified information and
 	 * adds it to the {@link List} of stored {@link Law}s.
 	 */
+	@Override
 	@FXML
-	private void onLawCreated() {
+	protected void _event_create() {
 
 		final String name = nameField.getText().isEmpty() ? "null" : nameField.getText();
 		try {
@@ -131,18 +121,18 @@ public class CreateLawWindow extends Window {
 	}
 
 	/**
-	 * This method is called when the user presses the
-	 * {@link #switchVisibilityButton}. It switches the visibility of the
-	 * {@link #descriptionField} and the {@link #ruleField}.
+	 * This method is called when the user attempts to go to the
+	 * {@link HomeWindow}.
 	 */
+	@Override
 	@FXML
-	private void onWriteRuleRequested() {
-		final boolean visible = descriptionField.isVisible();
-		if (visible)
-			switchVisibilityButton.setText("Description");
-		descriptionField.setVisible(!visible);
-		ruleField.setVisible(!ruleField.isVisible());
-
+	protected void _event_home() {
+		try {
+			Window.setScene(HomeWindow.class);
+		} catch (InstantiationException | IllegalAccessException | IOException e) {
+			e.printStackTrace();
+			Window.spawnLabelAtMousePos("An unkown error occurred.", Color.RED);
+		}
 	}
 
 	/*
@@ -157,12 +147,27 @@ public class CreateLawWindow extends Window {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see wolf.zeale.guis.Window#initialize()
 	 */
 	@Override
 	public void initialize() {
 		Window.setPaneDraggableByNode(menuBar);
+	}
+
+	/**
+	 * This method is called when the user presses the
+	 * {@link #switchVisibilityButton}. It switches the visibility of the
+	 * {@link #descriptionField} and the {@link #ruleField}.
+	 */
+	@FXML
+	private void onWriteRuleRequested() {
+		final boolean visible = descriptionField.isVisible();
+		if (visible)
+			switchVisibilityButton.setText("Description");
+		descriptionField.setVisible(!visible);
+		ruleField.setVisible(!ruleField.isVisible());
+
 	}
 
 }

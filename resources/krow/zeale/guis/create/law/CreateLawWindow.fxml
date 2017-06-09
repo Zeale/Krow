@@ -17,7 +17,7 @@
                <tooltip>
                   <Tooltip text="Put a description of your Law here" />
                </tooltip></TextArea>
-            <Button layoutX="223.0" layoutY="410.0" mnemonicParsing="false" onAction="#onLawCreated" text="Done">
+            <Button layoutX="223.0" layoutY="410.0" mnemonicParsing="false" onAction="#_event_create" text="Done">
                <tooltip>
                   <Tooltip text="Click this to create your Law" />
                </tooltip></Button>
@@ -41,8 +41,9 @@
         <menus>
           <Menu mnemonicParsing="false" text="Options">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onGoBack" text="Back" />
-                  <MenuItem mnemonicParsing="false" onAction="#onClose" text="Close" />
+                  <MenuItem mnemonicParsing="false" onAction="#_event_home" text="Home" />
+                  <MenuItem mnemonicParsing="false" onAction="#_event_back" text="Back" />
+                  <MenuItem mnemonicParsing="false" onAction="#_event_close" text="Close" />
                </items>
           </Menu>
         </menus>
