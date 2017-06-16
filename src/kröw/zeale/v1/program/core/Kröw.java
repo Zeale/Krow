@@ -1,6 +1,7 @@
 package kröw.zeale.v1.program.core;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -368,6 +369,27 @@ public final class Kröw extends Application {
 			final List<String> strings = Arrays.<String>asList(args);
 			if (Wolf.containsIgnoreCase(strings, "-debug-mode") || Wolf.containsIgnoreCase(strings, "-debug"))
 				Wolf.DEBUG_MODE = true;
+			for (String s : strings)
+				if (s.startsWith("--import=") && s.length() > 9) {
+					String path = s.substring(9, s.length());
+					File f = new File(path);
+					try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(f))) {
+						MindsetObject obj = (MindsetObject) is.readObject();
+						obj.getMindsetModel().attatch(CONSTRUCT_MINDSET);
+
+					} catch (FileNotFoundException e) {
+						System.out.println("The input file, [91m" + path + "[0m, was not found...");
+					} catch (IOException e) {
+						System.out.println("There was an exception opening the file: " + f.getAbsolutePath());
+					} catch (ClassNotFoundException e) {
+						System.out.println("The file, [91m" + path + "[0m, is invalid.");
+					} catch (ClassCastException e) {
+						System.out.println("The file, [91m" + path + "[0m, is invalid.");
+					} catch (ObjectAlreadyExistsException e) {
+						System.err.println("The " + e.getThrower().getType() + ", " + e.getThrower().getName()
+								+ ", already exists. It could not be imported.");
+					}
+				}
 		}
 		if (Wolf.DEBUG_MODE)
 			System.out.println("\n\nDebug mode has been enabled...\n\n");
