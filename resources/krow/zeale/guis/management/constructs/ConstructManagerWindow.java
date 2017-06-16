@@ -331,7 +331,11 @@ public class ConstructManagerWindow extends Window {
 		constructBeingEdited.delete();
 		Window.spawnLabelAtMousePos("Deleted the Construct, " + constructBeingEdited.getName() + ".", Color.GOLD);
 		constructs.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getConstructs()));
-		onDoneEditingConstruct();
+
+		managePane.setVisible(false);
+		updateConstructs();
+		constructs.setVisible(true);
+		constructBeingEdited = null;
 	}
 
 	/**
