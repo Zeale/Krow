@@ -324,9 +324,10 @@ public class FileManagerControllerImpl {
 			Window.spawnLabelAtMousePos("You haven't selected an export directory.", Color.RED);
 			return;
 		}
-		boolean exported = false;
+		boolean exported = false, selected = false;
 		for (final MindsetObjectCheckBoxWrapper m : exportTable.getItems())
-			if (m.checked.get())
+			if (m.checked.get()) {
+				selected = true;
 				try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(
 						new File(exportDirectory, "[" + m.object.getType() + "]" + m.object.getName())))) {
 					if (!exported)
@@ -339,8 +340,13 @@ public class FileManagerControllerImpl {
 						e.printStackTrace();
 					}
 				}
-		if (!exported) {
+			}
+		if (!selected) {
 			Window.spawnLabelAtMousePos("Nothing is selected. What do you want me to export?", Color.WHITE);
+			return;
+		}
+		if (!exported) {
+			Window.spawnLabelAtMousePos("Couldn't export any files.", Color.DARKRED);
 			return;
 		}
 		exportDirectory = null;
