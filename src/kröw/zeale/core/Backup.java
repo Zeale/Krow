@@ -1,8 +1,6 @@
-package kröw.zeale.v1.program.core;
+package kröw.zeale.core;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -95,7 +93,7 @@ public class Backup implements Serializable {
 
 		if (Backup.BACKUP_SAVE_DIRECTORY.listFiles() != null)
 			for (final File f : Backup.BACKUP_SAVE_DIRECTORY.listFiles())
-				try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(f));) {
+				try (ObjectInputStream is = OldVersionLoader.getInputStream(f)) {
 					Backup.LOADED_BACKUPS.add((Backup) is.readObject());
 				} catch (final ClassNotFoundException e) {
 					System.err.println("The backup folder has an invalid backup: " + f.getName());
@@ -249,7 +247,7 @@ public class Backup implements Serializable {
 		final File file = getFile();
 		if (!file.createNewFile())
 			return file;
-		final ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(file));
+		final ObjectOutputStream os = OldVersionLoader.getOutputStream(file);
 		os.writeObject(this);
 		os.close();
 		Backup.LOADED_BACKUPS.add(this);

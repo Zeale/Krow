@@ -1,4 +1,4 @@
-package kröw.zeale.v1.program.core;
+package kröw.zeale.core;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -11,7 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import krow.zeale.guis.create.CreateWindow;
 import krow.zeale.guis.home.HomeWindow;
-import kröw.zeale.v1.program.core.Kröw;
+import kröw.zeale.core.Kröw;
 import wolf.mindset.Construct;
 import wolf.mindset.ObjectAlreadyExistsException;
 import wolf.zeale.guis.Window;

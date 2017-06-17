@@ -13,7 +13,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import kröw.zeale.v1.program.core.Kröw;
+import kröw.zeale.core.Kröw;
 import wolf.mindset.ObjectAlreadyExistsException;
 import wolf.mindset.System;
 import wolf.zeale.guis.Window;

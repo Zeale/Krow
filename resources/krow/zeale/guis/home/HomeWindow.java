@@ -27,7 +27,7 @@ import krow.zeale.guis.create.system.CreateSystemWindow;
 import krow.zeale.guis.management.constructs.ConstructManagerWindow;
 import krow.zeale.guis.management.laws.LawManagerWindow;
 import krow.zeale.pages.Pages;
-import kröw.zeale.v1.program.core.Kröw;
+import kröw.zeale.core.Kröw;
 import wolf.mindset.Construct;
 import wolf.mindset.Law;
 import wolf.zeale.Wolf;

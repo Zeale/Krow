@@ -1,4 +1,4 @@
-package kröw.zeale.v1.program.core;
+package kröw.zeale.core;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -131,6 +131,9 @@ final class OldVersionLoader {
 			else if (objectClassDescriptior.getName().equals("kröw.libs.Law"))
 				objectClassDescriptior = ObjectStreamClass.lookup(Law.class);
 
+			else if (objectClassDescriptior.getName().equals("kröw.zeale.v1.program.core.Backup"))
+				objectClassDescriptior = ObjectStreamClass.lookup(Backup.class);
+
 			// Return the object's class whether it was modified by us, or not.
 			// (Note that this isn't an actual class object.)
 			return objectClassDescriptior;
@@ -179,6 +182,9 @@ final class OldVersionLoader {
 
 			else if (classDescriptor.getName().equals("kröw.libs.Law"))
 				classDescriptor = ObjectStreamClass.lookup(Law.class);
+
+			else if (classDescriptor.getName().equals("kröw.zeale.v1.program.core.Backup"))
+				classDescriptor = ObjectStreamClass.lookup(Backup.class);
 
 			// Apply the change.
 			super.writeClassDescriptor(classDescriptor);
