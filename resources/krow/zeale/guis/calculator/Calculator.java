@@ -1,6 +1,9 @@
 package krow.zeale.guis.calculator;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -14,6 +17,7 @@ public class Calculator {
 	private Stage stage = new Stage();
 	@SuppressWarnings("unused")
 	private CalculatorController controller;
+	private Parser parser = new Parser();
 
 	public Calculator() {
 		FXMLLoader loader = new FXMLLoader(Calculator.class.getResource("Calculator.fxml"));
@@ -109,6 +113,35 @@ public class Calculator {
 	public static Calculator open() {
 		calculator.stage.show();
 		return calculator;
+	}
+
+	public double calculate() {
+		double result = parser.parseAndEval(controller.getEquation());
+		controller.setEquation(Double.toString(result));
+		return result;
+	}
+
+	public class Parser {
+
+		private class ParsedEquation {
+
+		}
+
+		private HashMap<String, ParsedEquation> parsedEquations = new HashMap<>();
+
+		public void parse(String equation, String equationName) {
+			// TODO Implement
+		}
+
+		public Set<String> getEquationNameList() {
+			return parsedEquations.keySet();
+		}
+
+		public double parseAndEval(String equation) {
+			// TODO Implement
+			return 0;
+		}
+
 	}
 
 }
