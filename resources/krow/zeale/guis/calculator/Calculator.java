@@ -129,19 +129,39 @@ public class Calculator {
 
 		private HashMap<String, ParsedEquation> parsedEquations = new HashMap<>();
 
-		public void parse(String equation, String equationName) {
+		public synchronized void parse(String equation, String equationName) {
 			// TODO Implement
+		}
+
+		public void evaluate(String equationName) {
+
 		}
 
 		public Set<String> getEquationNameList() {
 			return parsedEquations.keySet();
 		}
 
-		public double parseAndEval(String equation) {
+		public synchronized double parseAndEval(String equation) {
 			// TODO Implement
 			return 0;
 		}
 
+		private volatile String equation;
+		private int position;
+		
+		private char getNextChar(){
+			return equation.charAt(position+1);
+		}
+		private char getCurrChar(){
+			return equation.charAt(position);
+		}
+		private char nextChar(){
+			return equation.charAt(++position);
+		}
+		private void reset(){
+			position=0;
+		}
+		
 	}
 
 }
