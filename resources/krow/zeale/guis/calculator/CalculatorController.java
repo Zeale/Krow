@@ -10,5 +10,14 @@ import javafx.scene.control.TextField;
  *
  */
 public class CalculatorController {
-	@FXML private TextField outputField;
+	@FXML
+	private TextField outputField;
+
+	String getEquation() {
+		return outputField.getText();
+	}
+
+	void setEquation(String equation) {
+		outputField.setText(equation);
+	}
 }
