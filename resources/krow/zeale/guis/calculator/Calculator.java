@@ -23,6 +23,15 @@ public class Calculator {
 		} // Prints "Invalid equation"
 		System.out.println(p.evaluate("5+15.3")); // Prints 20.3
 		System.out.println(p.evaluate("13.91231+1.32918")); // Prints 15.241489999999999
+		// Operations with more than +
+		System.out.println(p.evaluate("5/2")); // Prints 2.5
+
+		// Calculation goes from right to left, so this prints correctly even
+		// though order of operations is not supported yet...
+		System.out.println(p.evaluate("4+5/6")); // Prints 4.833333333333333
+		// This however, does not.
+		System.out.println(p.evaluate("4/2+6")); // Prints 0.5
+
 	}
 
 	private Stage stage = new Stage();
@@ -150,6 +159,52 @@ public class Calculator {
 			private Element nextElement;
 
 			public static interface Operation {
+
+				final Operation ADD = new Operation() {
+
+					@Override
+					public double evaluate(double input1, double input2) {
+						return input1 + input2;
+					}
+
+				};
+
+				final Operation NONE = new Operation() {
+
+					@Override
+					public double evaluate(double input1, double input2) {
+						return input1;
+					}
+
+				};
+
+				final Operation SUBTRACT = new Operation() {
+
+					@Override
+					public double evaluate(double input1, double input2) {
+						return input1 - input2;
+					}
+
+				};
+
+				final Operation MULTIPLY = new Operation() {
+
+					@Override
+					public double evaluate(double input1, double input2) {
+						return input1 * input2;
+					}
+
+				};
+
+				final Operation DIVIDE = new Operation() {
+
+					@Override
+					public double evaluate(double input1, double input2) {
+						return input1 / input2;
+					}
+
+				};
+
 				double evaluate(double input1, double input2);
 
 				public static Operation getOperation(char c) {
@@ -157,9 +212,17 @@ public class Calculator {
 						throw new NumberFormatException();
 					switch (c) {
 					case '+':
-						return Add.ADD;
+						return ADD;
+					case '-':
+						return SUBTRACT;
+					case '*':
+					case 'x':
+						return MULTIPLY;
+					case '/':
+					case '�':
+						return DIVIDE;
 					default:
-						return Add.ADD;
+						return NONE;
 					}
 				}
 
@@ -167,17 +230,6 @@ public class Calculator {
 					return getOperation(c.charAt(0));
 				}
 
-				static class Add implements Operation {
-
-					public final static Add ADD = new Add();
-
-					@Override
-					public double evaluate(double input1, double input2) {
-
-						return input1 + input2;
-					}
-
-				}
 				// TODO Add other operations here.
 			}
 
