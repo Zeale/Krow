@@ -283,7 +283,7 @@ public class Calculator {
 		}
 
 		private static boolean isOperator(char c) {
-			return c == '+' || c == '-' || c == '*' || c == '/';
+			return c == '+' || c == '-' || c == '*' || c == '/' || c == 'x' || c == '�';
 		}
 
 		private static boolean isOperator(String c) {
