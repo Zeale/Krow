@@ -1,6 +1,8 @@
 package krow.zeale.guis.calculator;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,6 +14,9 @@ public class Calculator {
 	private static Calculator calculator;// TODO Fix
 
 	public static void main(String[] args) {
+
+		System.out.println();
+
 		// TEST method; used to test Parser's evaluate method.
 		Parser p = new Parser();
 		System.out.println(p.evaluate("1+1")); // Prints 2.0
@@ -27,14 +32,15 @@ public class Calculator {
 		// Operations with more than +
 		System.out.println(p.evaluate("5/2")); // Prints 2.5
 
-		// Calculation goes from right to left, so this prints correctly even
-		// though order of operations is not supported yet...
+		// Now supports the common order of operations. :D
 		System.out.println(p.evaluate("4+5/6")); // Prints 4.833333333333333
-		// This however, does not.
-		System.out.println(p.evaluate("4/2+6")); // Prints 0.5
+		// This prints correctly...
+		System.out.println(p.evaluate("4/2+6")); // Prints 8.0
 
 		// Powers
 		System.out.println(p.evaluate("4^2"));
+
+		System.out.println(p.evaluate("5+2^3/4")); // Prints 7.0
 
 	}
 
@@ -146,157 +152,266 @@ public class Calculator {
 
 	public static class Parser {
 
-		private static interface Element {
-			public double evaluate();
-		}
+		private class Equation extends ArrayList<Object> {
+			private boolean started;
 
-		@SuppressWarnings("unused")
-		private static class Number implements Element {
-
-			public void chain(Operation operation, Element nextElement) {
-				this.operation = operation;
-				this.nextElement = nextElement;
-			}
-
-			private double value;
-			private Operation operation;
-			private Element nextElement;
-
-			public static interface Operation {
-
-				final Operation ADD = new Operation() {
-
-					@Override
-					public double evaluate(double input1, double input2) {
-						return input1 + input2;
-					}
-
-				};
-
-				final Operation NONE = new Operation() {
-
-					@Override
-					public double evaluate(double input1, double input2) {
-						return input1;
-					}
-
-				};
-
-				final Operation SUBTRACT = new Operation() {
-
-					@Override
-					public double evaluate(double input1, double input2) {
-						return input1 - input2;
-					}
-
-				};
-
-				final Operation MULTIPLY = new Operation() {
-
-					@Override
-					public double evaluate(double input1, double input2) {
-						return input1 * input2;
-					}
-
-				};
-
-				final Operation DIVIDE = new Operation() {
-
-					@Override
-					public double evaluate(double input1, double input2) {
-						return input1 / input2;
-					}
-
-				};
-
-				final Operation POWER = new Operation() {
-
-					@Override
-					public double evaluate(double input1, double input2) {
-						return Math.pow(input1, input2);
-					}
-				};
-
-				double evaluate(double input1, double input2);
-
-				public static Operation getOperation(char c) {
-					if (!isOperator(c))
-						throw new NumberFormatException();
-					switch (c) {
-					case '+':
-						return ADD;
-					case '-':
-						return SUBTRACT;
-					case '*':
-					case 'x':
-						return MULTIPLY;
-					case '/':
-					case 'ï¿½':
-						return DIVIDE;
-					case '^':
-						return POWER;
-					default:
-						return NONE;
-					}
-				}
-
-				public static Operation getOperation(String c) {
-					return getOperation(c.charAt(0));
-				}
-
-			}
-
-			public Number(double value) {
-				this.value = value;
-			}
-
-			public Number(double value, Operation operation, Element nextElement) {
-				this.value = value;
-				this.operation = operation;
-				this.nextElement = nextElement;
+			@Override
+			public boolean add(Object e) {
+				throw new UnsupportedOperationException();
 			}
 
 			@Override
-			public double evaluate() {
-				if (!(operation == null || nextElement == null)) {
-					return operation.evaluate(value, nextElement.evaluate());
-				}
-				return value;
+			public void add(int index, Object element) {
+				throw new UnsupportedOperationException();
 			}
 
+			@Override
+			public boolean addAll(Collection<? extends Object> c) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public boolean addAll(int index, Collection<? extends Object> c) {
+				throw new UnsupportedOperationException();
+			}
+
+			public void start(Element element) {
+				if (started)
+					throw new UnsupportedOperationException();
+				super.add(element);
+				started = true;
+			}
+
+			public void add(Operation operation, Element element) {
+				if (!started)
+					throw new UnsupportedOperationException();
+				super.add(operation);
+				super.add(element);
+			}
+
+			public double evaluate() {
+
+				for (byte precedence = 3; precedence >= 0; precedence--)
+					for (int i = 2; i < size() && i > 0; i += 2)
+						if (((Operation) get(--i)).getPrecedence() == precedence) {
+							popin(new Element.Number(((Operation) remove(i))
+									.evaluate(((Element) remove(--i)).evaluate(), ((Element) remove(i)).evaluate())),
+									i);
+							i -= 2;
+						} else
+							i++;
+
+				return ((Element.Number) get(0)).evaluate();
+			}
+
+			private void popin(Element element, int location) {
+				super.add(location, element);
+			}
+
+			private void popin(Operation operation, int location) {
+				super.add(location, operation);
+			}
+		}
+
+		private static interface Operation {
+
+			default byte getPrecedence() {
+				return 3;
+			}
+
+			final Operation ADD = new Operation() {
+				@Override
+				public byte getPrecedence() {
+					return 0;
+				}
+
+				@Override
+				public double evaluate(double input1, double input2) {
+					return input1 + input2;
+				}
+
+			};
+
+			final Operation NONE = new Operation() {
+
+				@Override
+				public double evaluate(double input1, double input2) {
+					return input1;
+				}
+
+			};
+
+			final Operation SUBTRACT = new Operation() {
+				@Override
+				public byte getPrecedence() {
+					return 0;
+				}
+
+				@Override
+				public double evaluate(double input1, double input2) {
+					return input1 - input2;
+				}
+
+			};
+
+			final Operation MULTIPLY = new Operation() {
+				@Override
+				public byte getPrecedence() {
+					return 1;
+				}
+
+				@Override
+				public double evaluate(double input1, double input2) {
+					return input1 * input2;
+				}
+
+			};
+
+			final Operation DIVIDE = new Operation() {
+				@Override
+				public byte getPrecedence() {
+					return 1;
+				}
+
+				@Override
+				public double evaluate(double input1, double input2) {
+					return input1 / input2;
+				}
+
+			};
+
+			final Operation POWER = new Operation() {
+				@Override
+				public byte getPrecedence() {
+					return 2;
+				}
+
+				@Override
+				public double evaluate(double input1, double input2) {
+					return Math.pow(input1, input2);
+				}
+			};
+
+			double evaluate(double input1, double input2);
+
+			public static Operation getOperation(char c) {
+				if (!isOperator(c))
+					throw new NumberFormatException();
+				switch (c) {
+				case '+':
+					return ADD;
+				case '-':
+					return SUBTRACT;
+				case '*':
+				case 'x':
+					return MULTIPLY;
+				case '/':
+				case '÷':
+					return DIVIDE;
+				case '^':
+					return POWER;
+				default:
+					return NONE;
+				}
+			}
+
+			public static Operation getOperation(String c) {
+				return getOperation(c.charAt(0));
+			}
+
+		}
+
+		private static interface Element {
+			@SuppressWarnings("unused")
+			static class Number implements Element {
+
+				@Deprecated
+				public void chain(Operation operation, Element nextElement) {
+					this.operation = operation;
+					this.nextElement = nextElement;
+				}
+
+				private double value;
+				@Deprecated
+				private Operation operation;
+				@Deprecated
+				private Element nextElement;
+
+				public Number(double value) {
+					this.value = value;
+				}
+
+				@Deprecated
+				public Number(double value, Operation operation, Element nextElement) {
+					this.value = value;
+					this.operation = operation;
+					this.nextElement = nextElement;
+				}
+
+				@Override
+				public double evaluate() {
+					if (!(operation == null || nextElement == null)) {
+						return operation.evaluate(value, nextElement.evaluate());
+					}
+					return value;
+				}
+
+			}
+
+			public double evaluate();
 		}
 
 		public double evaluate(String equation) {
 			reset();
 			this.equation = equation;
-			Number n = new Number(getNumber()), currNumb = n;
+
+			Equation equ = new Equation();
+
+			equ.start(getNumber());
+
 			while (position < equation.length())
-				currNumb.chain(Number.Operation.getOperation(nextChar()), currNumb = new Number(getNumber()));
-			return n.evaluate();
+				equ.add(getOperation(), getNumber());
+
+			return equ.evaluate();
 		}
 
 		private volatile String equation;
 		private int position;
 
-		private double getNumber() {
-			if (!(isNumb(getCurrChar()) || getCurrChar().equals(".")))
+		private Element.Number getNumber() {
+			if (!isNumb(getCurrChar()))
 				throw new NumberFormatException();
+			// Forward length and backward length.
 			int flen = 0, blen = 0;
-			while (position + --blen > -1 && (equation.charAt(position + blen) == '.'
-					|| isNumb(String.valueOf(equation.charAt(position + blen)))))
+			while (position + --blen > -1 && isNumb(String.valueOf(equation.charAt(position + blen))))
 				;
 			blen++;
-			while (position + ++flen < equation.length() && (equation.charAt(position + flen) == '.'
-					|| isNumb(String.valueOf(equation.charAt(position + flen)))))
+			while (position + ++flen < equation.length() && isNumb(String.valueOf(equation.charAt(position + flen))))
 				;
 			double value = Double.valueOf(equation.substring(position + blen, position + flen));
 			position += flen;
-			return value;
+			return new Element.Number(value);
 
 		}
 
+		private Operation getOperation() {
+			if (isNumb(getCurrChar()))
+				throw new NumberFormatException();
+			// Forward length and backward length.
+			short flen = 0, blen = 0;
+			while (position + --blen > -1 && isOperator(equation.charAt(position + blen)))
+				;
+			blen++;
+			while (position + ++flen < equation.length() && isOperator(equation.charAt(position + flen)))
+				;
+			// For now each operation should be one character long.
+			Operation operation = Operation.getOperation(equation.substring(position + blen, position + flen));
+			position += flen;
+			return operation;
+		}
+
 		private static boolean isOperator(char c) {
-			return c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == 'x' || c == 'ï¿½';
+			return c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == 'x' || c == '÷';
 		}
 
 		private static boolean isOperator(String c) {
