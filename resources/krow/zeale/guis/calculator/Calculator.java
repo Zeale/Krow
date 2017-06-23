@@ -153,7 +153,7 @@ public class Calculator {
 				double evaluate(double input1, double input2);
 
 				public static Operation getOperation(char c) {
-					if (!isNumb(c))
+					if (!isOperator(c))
 						throw new NumberFormatException();
 					switch (c) {
 					case '+':
@@ -264,8 +264,13 @@ public class Calculator {
 			return equation.substring(position, position + 1);
 		}
 
+		/**
+		 * Increments the position <b>after</b> returning the current character.
+		 * 
+		 * @return The current char.
+		 */
 		private String nextChar() {
-			return equation.substring(++position, position + 1);
+			return equation.substring(position, position++ + 1);
 		}
 
 		private void reset() {
