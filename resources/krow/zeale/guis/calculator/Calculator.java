@@ -1,9 +1,6 @@
 package krow.zeale.guis.calculator;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,10 +9,23 @@ import javafx.stage.StageStyle;
 
 public class Calculator {
 
-	private static Calculator calculator = new Calculator();
+	private static Calculator calculator;// TODO Fix
+
+	public static void main(String[] args) {
+		// TEST method; used to test Parser's evaluate method.
+		Parser p = new Parser();
+		System.out.println(p.evaluate("1+1")); // Prints 2.0
+		System.out.println(p.evaluate("13+19")); // Prints 32.0
+		try {
+			System.out.println(p.evaluate("potato"));
+		} catch (NumberFormatException e) {
+			System.err.println("Invalid equation");
+		} // Prints "Invalid equation"
+		System.out.println(p.evaluate("5+15.3")); // Prints 20.3
+		System.out.println(p.evaluate("13.91231+1.32918")); // Prints 15.241489999999999
+	}
 
 	private Stage stage = new Stage();
-	@SuppressWarnings("unused")
 	private CalculatorController controller;
 	private Parser parser = new Parser();
 
@@ -116,52 +126,152 @@ public class Calculator {
 	}
 
 	public double calculate() {
-		double result = parser.parseAndEval(controller.getEquation());
+		double result = parser.evaluate(controller.getEquation());
 		controller.setEquation(Double.toString(result));
 		return result;
 	}
 
-	public class Parser {
+	public static class Parser {
 
-		private class ParsedEquation {
+		private static interface Element {
+			public double evaluate();
+		}
+
+		@SuppressWarnings("unused")
+		private static class Number implements Element {
+
+			public void chain(Operation operation, Element nextElement) {
+				this.operation = operation;
+				this.nextElement = nextElement;
+			}
+
+			private double value;
+			private Operation operation;
+			private Element nextElement;
+
+			public static interface Operation {
+				double evaluate(double input1, double input2);
+
+				public static Operation getOperation(char c) {
+					if (!isNumb(c))
+						throw new NumberFormatException();
+					switch (c) {
+					case '+':
+						return Add.ADD;
+					default:
+						return Add.ADD;
+					}
+				}
+
+				public static Operation getOperation(String c) {
+					return getOperation(c.charAt(0));
+				}
+
+				static class Add implements Operation {
+
+					public final static Add ADD = new Add();
+
+					@Override
+					public double evaluate(double input1, double input2) {
+
+						return input1 + input2;
+					}
+
+				}
+				// TODO Add other operations here.
+			}
+
+			public Number(double value) {
+				this.value = value;
+			}
+
+			public Number(double value, Operation operation, Element nextElement) {
+				this.value = value;
+				this.operation = operation;
+				this.nextElement = nextElement;
+			}
+
+			@Override
+			public double evaluate() {
+				if (!(operation == null || nextElement == null)) {
+					return operation.evaluate(value, nextElement.evaluate());
+				}
+				return value;
+			}
 
 		}
 
-		private HashMap<String, ParsedEquation> parsedEquations = new HashMap<>();
-
-		public synchronized void parse(String equation, String equationName) {
-			// TODO Implement
-		}
-
-		public void evaluate(String equationName) {
-
-		}
-
-		public Set<String> getEquationNameList() {
-			return parsedEquations.keySet();
-		}
-
-		public synchronized double parseAndEval(String equation) {
-			// TODO Implement
-			return 0;
+		public double evaluate(String equation) {
+			reset();
+			this.equation = equation;
+			Number n = new Number(getNumber()), currNumb = n;
+			while (position < equation.length())
+				currNumb.chain(Number.Operation.getOperation(nextChar()), currNumb = new Number(getNumber()));
+			return n.evaluate();
 		}
 
 		private volatile String equation;
 		private int position;
-		
-		private char getNextChar(){
-			return equation.charAt(position+1);
+
+		private double getNumber() {
+			if (!(isNumb(getCurrChar()) || getCurrChar().equals(".")))
+				throw new NumberFormatException();
+			int flen = 0, blen = 0;
+			while (position + --blen > -1 && (equation.charAt(position + blen) == '.'
+					|| isNumb(String.valueOf(equation.charAt(position + blen)))))
+				;
+			blen++;
+			while (position + ++flen < equation.length() && (equation.charAt(position + flen) == '.'
+					|| isNumb(String.valueOf(equation.charAt(position + flen)))))
+				;
+			double value = Double.valueOf(equation.substring(position + blen, position + flen));
+			position += flen;
+			return value;
+
 		}
-		private char getCurrChar(){
-			return equation.charAt(position);
+
+		private static boolean isOperator(char c) {
+			return c == '+' || c == '-' || c == '*' || c == '/';
 		}
-		private char nextChar(){
-			return equation.charAt(++position);
+
+		private static boolean isOperator(String c) {
+			return isOperator(c.charAt(0));
 		}
-		private void reset(){
-			position=0;
+
+		private static boolean isNumb(char c) {
+			return Character.isDigit(c) || c == '.';
 		}
-		
+
+		/**
+		 * Checks if the given character could be part of a number. All digits
+		 * and a decimal point will cause this function to return true if they
+		 * are passed into it.
+		 * 
+		 * @param c
+		 *            The <i><b>single character</b></i> to be tested.
+		 * @return <code>true</code> if <code>c</code> could be part of a
+		 *         number.
+		 */
+		private static boolean isNumb(String c) {
+			return isNumb(c.charAt(0));
+		}
+
+		private String getNextChar() {
+			return equation.substring(position + 1, position + 1);
+		}
+
+		private String getCurrChar() {
+			return equation.substring(position, position + 1);
+		}
+
+		private String nextChar() {
+			return equation.substring(++position, position + 1);
+		}
+
+		private void reset() {
+			position = 0;
+		}
+
 	}
 
 }
