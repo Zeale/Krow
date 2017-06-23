@@ -22,7 +22,8 @@ public class Calculator {
 			System.err.println("Invalid equation");
 		} // Prints "Invalid equation"
 		System.out.println(p.evaluate("5+15.3")); // Prints 20.3
-		System.out.println(p.evaluate("13.91231+1.32918")); // Prints 15.241489999999999
+		System.out.println(p.evaluate("13.91231+1.32918")); // Prints
+															// 15.241489999999999
 		// Operations with more than +
 		System.out.println(p.evaluate("5/2")); // Prints 2.5
 
@@ -31,6 +32,9 @@ public class Calculator {
 		System.out.println(p.evaluate("4+5/6")); // Prints 4.833333333333333
 		// This however, does not.
 		System.out.println(p.evaluate("4/2+6")); // Prints 0.5
+
+		// Powers
+		System.out.println(p.evaluate("4^2"));
 
 	}
 
@@ -205,6 +209,14 @@ public class Calculator {
 
 				};
 
+				final Operation POWER = new Operation() {
+
+					@Override
+					public double evaluate(double input1, double input2) {
+						return Math.pow(input1, input2);
+					}
+				};
+
 				double evaluate(double input1, double input2);
 
 				public static Operation getOperation(char c) {
@@ -221,6 +233,8 @@ public class Calculator {
 					case '/':
 					case '�':
 						return DIVIDE;
+					case '^':
+						return POWER;
 					default:
 						return NONE;
 					}
@@ -230,7 +244,6 @@ public class Calculator {
 					return getOperation(c.charAt(0));
 				}
 
-				// TODO Add other operations here.
 			}
 
 			public Number(double value) {
@@ -283,7 +296,7 @@ public class Calculator {
 		}
 
 		private static boolean isOperator(char c) {
-			return c == '+' || c == '-' || c == '*' || c == '/' || c == 'x' || c == '�';
+			return c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == 'x' || c == '�';
 		}
 
 		private static boolean isOperator(String c) {
