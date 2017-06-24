@@ -468,7 +468,7 @@ public class Calculator {
 		private Element.Function getFunction() {
 			if (!isFunc(getCurrChar()))
 				throw new NumberFormatException();
-			short flen = -1, blen = 0;
+			int flen = -1, blen = 0;
 			while (position + --blen > -1 && isFunc(equation.charAt(position + blen)))
 				;
 			blen++;
@@ -503,7 +503,7 @@ public class Calculator {
 			if (isNumb(getCurrChar()))
 				throw new NumberFormatException();
 			// Forward length and backward length.
-			short flen = 0, blen = 0;
+			int flen = 0, blen = 0;
 			while (position + --blen > -1 && isOperator(equation.charAt(position + blen)))
 				;
 			blen++;
