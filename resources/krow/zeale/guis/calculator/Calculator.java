@@ -11,7 +11,17 @@ import javafx.stage.StageStyle;
 
 public class Calculator {
 
-	private static Calculator calculator;// TODO Change
+	static {
+		/*
+		 * This static constructor is meant to prevent the below calculator
+		 * variable from being instantiated before we run our tests. The
+		 * instantiation throws an Exception.
+		 */
+		main(null);
+		System.exit(0);
+	}
+
+	private static Calculator calculator = new Calculator();
 
 	public static void main(String[] args) {
 
@@ -38,12 +48,13 @@ public class Calculator {
 
 		System.out.println(p.evaluate("5+2^3/4")); // Prints 7.0
 
-		// Now with log
-
+		// Now with log (using base e)
 		System.out.println(p.evaluate("log(1+1)")); // Prints 0.6931471805599453
 		System.out.println(Math.log(1 + 1)); // Also prints 0.6931471805599453
 		// (Since the calc's log function literally uses Math.log)
 
+		// New log10 function
+		System.out.println(p.evaluate("log10(1+2)"));
 	}
 
 	private Stage stage = new Stage();
@@ -201,7 +212,7 @@ public class Calculator {
 
 			public double evaluate() {
 
-				for (byte precedence = 3; precedence >= 0; precedence--)
+				for (byte precedence = 3; precedence > -1; precedence--)
 					for (int i = 2; i < size() && i > 0; i += 2)
 						if (((Operation) get(--i)).getPrecedence() == precedence) {
 							popin(new Element.Number(((Operation) remove(i))
@@ -210,7 +221,6 @@ public class Calculator {
 							i -= 2;
 						} else
 							i++;
-
 				return ((Element) get(0)).evaluate();
 			}
 
@@ -321,7 +331,7 @@ public class Calculator {
 				case '^':
 					return POWER;
 				default:
-					return NONE;
+					throw new NumberFormatException();
 				}
 			}
 
@@ -367,6 +377,10 @@ public class Calculator {
 					switch (name.toLowerCase()) {
 					case "log":
 						return new Log(input);
+					case "log10":
+						return new Log10(input);
+					case "loge":
+						return new Log(input);
 					default:
 						return null;
 					}
@@ -383,6 +397,18 @@ public class Calculator {
 						return Math.log(autoParse());
 					}
 
+				}
+
+				public static final class Log10 extends Function {
+
+					public Log10(String input) {
+						super(input);
+					}
+
+					@Override
+					public double evaluate() {
+						return Math.log10(autoParse());
+					}
 				}
 
 			}
@@ -431,8 +457,8 @@ public class Calculator {
 			this.equation = equation;
 
 			Equation equ = new Equation();
-			equ.start(getElement());
-
+			Element e = getElement();
+			equ.start(e);
 			while (position < equation.length()) {
 				equ.add(getOperation(), getElement());
 			}
@@ -464,26 +490,27 @@ public class Calculator {
 				throw new NumberFormatException();
 			if (isNumb())
 				return getNumber();
-			if (isFunc(getCurrChar()))
+			if (isFunc(position))
 				return getFunction();
-			return null;
+			throw new NumberFormatException();
 		}
 
 		private Element.Function getFunction() {
-			if (!isFunc(getCurrChar()))
+			if (!isFunc(position))
 				throw new NumberFormatException();
 			int flen = -1, blen = 0;
-			while (position + --blen > -1 && isFunc(equation.charAt(position + blen)))
+			while (position + --blen > -1 && isFunc(position + blen))
 				;
 			blen++;
-			while (position + ++flen < equation.length() && isFunc(equation.charAt(position + flen)))
+			while (position + ++flen < equation.length() && isFunc(position + flen))
 				;
-			String name = equation.substring(position + blen, position + flen - 1);
+			String name = equation.substring(position + blen, position + flen);
 			position += flen;// This covers the opening parenthesis as well as
 								// the function's name...
-			int posSubEquOpen = position;
+			int posSubEquOpen = ++position;
 
 			for (int parentheses = 1; parentheses > 0; nextChar()) {
+
 				if (position >= equation.length())
 					throw new UnmatchedParenthesisException();
 				else if (getCurrChar().equals("("))
@@ -494,12 +521,10 @@ public class Calculator {
 			return Element.Function.getFunction(name, equation.substring(posSubEquOpen, (position++) - 1));
 		}
 
-		private boolean isFunc(char c) {
-			return Character.isAlphabetic(c) || c == '(';
-		}
-
-		private boolean isFunc(String c) {
-			return isFunc(c.charAt(0));
+		private boolean isFunc(int pos) {
+			// TODO Implement an iteration technique once we add constants.
+			return !(isNumb(pos) || isOperator(equation.charAt(pos)) || equation.charAt(pos) == '('
+					|| equation.charAt(pos) == ')');
 		}
 
 		private Operation getOperation() {
