@@ -11,34 +11,38 @@ import javafx.stage.StageStyle;
 
 public class Calculator {
 
-	private static Calculator calculator;// TODO Fix
+	private static Calculator calculator;// TODO Change
 
 	public static void main(String[] args) {
 
 		// TEST method; used to test Parser's evaluate method.
 		Parser p = new Parser();
-		System.out.println(p.evaluate("1+1")); // Prints 2.0
+
+		System.out.println(p.evaluate("1+1"));// Prints 2.0
+
 		System.out.println(p.evaluate("13+19")); // Prints 32.0
 
 		System.out.println(p.evaluate("5+15.3")); // Prints 20.3
 		System.out.println(p.evaluate("13.91231+1.32918")); // Prints
 															// 15.241489999999999
-		// Operations with more than +
+		// Operations with more than just addition (+)
 		System.out.println(p.evaluate("5/2")); // Prints 2.5
 
 		// Now supports the common order of operations. :D
 		System.out.println(p.evaluate("4+5/6")); // Prints 4.833333333333333
-		// This prints correctly...
+		// This prints correctly as well
 		System.out.println(p.evaluate("4/2+6")); // Prints 8.0
 
 		// Powers
-		System.out.println(p.evaluate("4^2"));
+		System.out.println(p.evaluate("4^2")); // Prints 16.0
 
 		System.out.println(p.evaluate("5+2^3/4")); // Prints 7.0
 
 		// Now with log
 
-		System.out.println(p.evaluate("log(1+1)"));
+		System.out.println(p.evaluate("log(1+1)")); // Prints 0.6931471805599453
+		System.out.println(Math.log(1 + 1)); // Also prints 0.6931471805599453
+		// (Since the calc's log function literally uses Math.log)
 
 	}
 
@@ -427,11 +431,11 @@ public class Calculator {
 			this.equation = equation;
 
 			Equation equ = new Equation();
-
 			equ.start(getElement());
 
-			while (position < equation.length())
+			while (position < equation.length()) {
 				equ.add(getOperation(), getElement());
+			}
 
 			return equ.evaluate();
 		}
@@ -440,14 +444,14 @@ public class Calculator {
 		private int position;
 
 		private Element.Number getNumber() {
-			if (!isNumb(getCurrChar()))
+			if (!isNumb())
 				throw new NumberFormatException();
 			// Forward length and backward length.
 			int flen = 0, blen = 0;
-			while (position + --blen > -1 && isNumb(String.valueOf(equation.charAt(position + blen))))
+			while (position + --blen > -1 && isNumb(position + blen))
 				;
 			blen++;
-			while (position + ++flen < equation.length() && isNumb(String.valueOf(equation.charAt(position + flen))))
+			while (position + ++flen < equation.length() && isNumb(position + flen))
 				;
 			double value = Double.valueOf(equation.substring(position + blen, position + flen));
 			position += flen;
@@ -458,7 +462,7 @@ public class Calculator {
 		private Element getElement() {
 			if (isOperator(getCurrChar()))
 				throw new NumberFormatException();
-			if (isNumb(getCurrChar()))
+			if (isNumb())
 				return getNumber();
 			if (isFunc(getCurrChar()))
 				return getFunction();
@@ -480,7 +484,6 @@ public class Calculator {
 			int posSubEquOpen = position;
 
 			for (int parentheses = 1; parentheses > 0; nextChar()) {
-				System.out.println(position);
 				if (position >= equation.length())
 					throw new UnmatchedParenthesisException();
 				else if (getCurrChar().equals("("))
@@ -500,7 +503,7 @@ public class Calculator {
 		}
 
 		private Operation getOperation() {
-			if (isNumb(getCurrChar()))
+			if (isNumb())
 				throw new NumberFormatException();
 			// Forward length and backward length.
 			int flen = 0, blen = 0;
@@ -509,7 +512,8 @@ public class Calculator {
 			blen++;
 			while (position + ++flen < equation.length() && isOperator(equation.charAt(position + flen)))
 				;
-			// For now each operation should be one character long.
+			// For now each operation should be one character long, but better
+			// safe than sorry.
 			Operation operation = Operation.getOperation(equation.substring(position + blen, position + flen));
 			position += flen;
 			return operation;
@@ -523,22 +527,55 @@ public class Calculator {
 			return isOperator(c.charAt(0));
 		}
 
-		private static boolean isNumb(char c) {
-			return Character.isDigit(c) || c == '.';
+		private boolean isNumb(int position) {
+			if (position < 0 || position >= equation.length())
+				return false;
+			int flen = 0, blen = 0;
+			if (isOperator(equation.charAt(position)))
+				return false;
+			// Check behind the given position by iterating through each
+			// character.
+			while (position + --blen > -1) {
+				// Get the character at the current position.
+				char c = equation.charAt(position + blen);
+
+				if (Character.isDigit(c) || c == '.')// If its part of a numb
+					continue;
+				else if (c == 'x')// Both operator and part of func name
+					continue;
+				else if (Character.isAlphabetic(c) || c == '(')// It's a
+																// function.
+					return false;
+				else if (isOperator(c))// No letters behind the
+										// given position. Now to
+										// check infront.
+					break;
+			}
+			// Check infront of the given position...
+			while (true) {
+				if (!(position + ++flen < equation.length())) {
+					return true;
+				}
+				char c = equation.charAt(position + flen);
+
+				if (Character.isDigit(c) || c == '.')// If its part of a numb
+					continue;
+				else if (c == 'x')// Both an operator and part of func name; we
+									// can't determine anything with this.
+					continue;
+				else if (Character.isAlphabetic(c) || c == ')')// It's a
+																// function.
+					return false;
+				else if (isOperator(c))// No letters infront or
+										// behind the given
+										// position. This is
+										// definitely a number...
+					return true;
+			}
 		}
 
-		/**
-		 * Checks if the given character could be part of a number. All digits
-		 * and a decimal point will cause this function to return true if they
-		 * are passed into it.
-		 * 
-		 * @param c
-		 *            The <i><b>single character</b></i> to be tested.
-		 * @return <code>true</code> if <code>c</code> could be part of a
-		 *         number.
-		 */
-		private static boolean isNumb(String c) {
-			return isNumb(c.charAt(0));
+		private boolean isNumb() {
+			return isNumb(position);
 		}
 
 		private String getNextChar() {
