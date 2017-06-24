@@ -15,17 +15,11 @@ public class Calculator {
 
 	public static void main(String[] args) {
 
-		System.out.println();
-
 		// TEST method; used to test Parser's evaluate method.
 		Parser p = new Parser();
 		System.out.println(p.evaluate("1+1")); // Prints 2.0
 		System.out.println(p.evaluate("13+19")); // Prints 32.0
-		try {
-			System.out.println(p.evaluate("potato"));
-		} catch (NumberFormatException e) {
-			System.err.println("Invalid equation");
-		} // Prints "Invalid equation"
+
 		System.out.println(p.evaluate("5+15.3")); // Prints 20.3
 		System.out.println(p.evaluate("13.91231+1.32918")); // Prints
 															// 15.241489999999999
@@ -41,6 +35,10 @@ public class Calculator {
 		System.out.println(p.evaluate("4^2"));
 
 		System.out.println(p.evaluate("5+2^3/4")); // Prints 7.0
+
+		// Now with log
+
+		System.out.println(p.evaluate("log(1+1)"));
 
 	}
 
@@ -152,7 +150,15 @@ public class Calculator {
 
 	public static class Parser {
 
-		private class Equation extends ArrayList<Object> {
+		public class UnmatchedParenthesisException extends RuntimeException {
+
+		}
+
+		private static class Equation extends ArrayList<Object> {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 			private boolean started;
 
 			@Override
@@ -201,7 +207,7 @@ public class Calculator {
 						} else
 							i++;
 
-				return ((Element.Number) get(0)).evaluate();
+				return ((Element) get(0)).evaluate();
 			}
 
 			private void popin(Element element, int location) {
@@ -216,7 +222,7 @@ public class Calculator {
 		private static interface Operation {
 
 			default byte getPrecedence() {
-				return 3;
+				return 2;
 			}
 
 			final Operation ADD = new Operation() {
@@ -322,7 +328,61 @@ public class Calculator {
 		}
 
 		private static interface Element {
-			@SuppressWarnings("unused")
+			public static abstract class Function implements Element {
+
+				protected final String params;
+
+				public Function(String input) {
+					this.params = input;
+				}
+
+				/**
+				 * <p>
+				 * Automatically takes the string input and parses it using the
+				 * default parser. If your Function does not read its parameter
+				 * contents abnormally, you should use this method to evaluate
+				 * your parameters so you can read it as a number, rather than
+				 * parse it yourself as a String.
+				 * <p>
+				 * This method takes {@link #params} and parses it as a
+				 * mathematical equation. The result is returned.
+				 * <p>
+				 * {@link #params} isn't modified through this method so
+				 * repeated calls to {@link #autoParse()} should return the same
+				 * value. (So long as {@link #params} isn't modified
+				 * externally.)
+				 * 
+				 * @return The parsed value of {@link #params}. (Assuming that
+				 *         {@link #params} is a valid equation.)
+				 */
+				protected double autoParse() {
+					return new Parser().evaluate(params);
+				}
+
+				public static Function getFunction(String name, String input) {
+					switch (name.toLowerCase()) {
+					case "log":
+						return new Log(input);
+					default:
+						return null;
+					}
+				}
+
+				public static final class Log extends Function {
+
+					public Log(String input) {
+						super(input);
+					}
+
+					@Override
+					public double evaluate() {
+						return Math.log(autoParse());
+					}
+
+				}
+
+			}
+
 			static class Number implements Element {
 
 				@Deprecated
@@ -341,6 +401,7 @@ public class Calculator {
 					this.value = value;
 				}
 
+				@SuppressWarnings("unused")
 				@Deprecated
 				public Number(double value, Operation operation, Element nextElement) {
 					this.value = value;
@@ -367,10 +428,10 @@ public class Calculator {
 
 			Equation equ = new Equation();
 
-			equ.start(getNumber());
+			equ.start(getElement());
 
 			while (position < equation.length())
-				equ.add(getOperation(), getNumber());
+				equ.add(getOperation(), getElement());
 
 			return equ.evaluate();
 		}
@@ -392,6 +453,50 @@ public class Calculator {
 			position += flen;
 			return new Element.Number(value);
 
+		}
+
+		private Element getElement() {
+			if (isOperator(getCurrChar()))
+				throw new NumberFormatException();
+			if (isNumb(getCurrChar()))
+				return getNumber();
+			if (isFunc(getCurrChar()))
+				return getFunction();
+			return null;
+		}
+
+		private Element.Function getFunction() {
+			if (!isFunc(getCurrChar()))
+				throw new NumberFormatException();
+			short flen = -1, blen = 0;
+			while (position + --blen > -1 && isFunc(equation.charAt(position + blen)))
+				;
+			blen++;
+			while (position + ++flen < equation.length() && isFunc(equation.charAt(position + flen)))
+				;
+			String name = equation.substring(position + blen, position + flen - 1);
+			position += flen;// This covers the opening parenthesis as well as
+								// the function's name...
+			int posSubEquOpen = position;
+
+			for (int parentheses = 1; parentheses > 0; nextChar()) {
+				System.out.println(position);
+				if (position >= equation.length())
+					throw new UnmatchedParenthesisException();
+				else if (getCurrChar().equals("("))
+					parentheses++;
+				else if (getCurrChar().equals(")"))
+					parentheses--;
+			}
+			return Element.Function.getFunction(name, equation.substring(posSubEquOpen, (position++) - 1));
+		}
+
+		private boolean isFunc(char c) {
+			return Character.isAlphabetic(c) || c == '(';
+		}
+
+		private boolean isFunc(String c) {
+			return isFunc(c.charAt(0));
 		}
 
 		private Operation getOperation() {
@@ -450,7 +555,25 @@ public class Calculator {
 		 * @return The current char.
 		 */
 		private String nextChar() {
-			return equation.substring(position, position++ + 1);
+			return equation.substring(position, ++position);
+		}
+
+		/**
+		 * <p>
+		 * Much like the {@link #nextChar()} method, this method will return the
+		 * current character and move the pinhead (position) down to the
+		 * previous character.
+		 * 
+		 * 
+		 * 
+		 * @return
+		 */
+		private String previousChar() {
+			return equation.substring(position, position-- + 1);
+		}
+
+		private String getPreviousChar() {
+			return equation.substring(position - 1, position);
 		}
 
 		private void reset() {
