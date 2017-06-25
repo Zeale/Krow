@@ -54,7 +54,18 @@ public class Calculator {
 		// (Since the calc's log function literally uses Math.log)
 
 		// New log10 function
-		System.out.println(p.evaluate("log10(1+2)"));
+		System.out.println(p.evaluate("log10(1+2)")); // Prints
+														// 0.47712125471966244
+
+		// New Sqrt function
+		System.out.println(p.evaluate("sqrt(4^4)")); // Prints 16.0
+
+		// Mixed casing is supported for functions:
+		System.out.println(p.evaluate("sQrT(1024)")); // Prints 32.0
+
+		// Function nesting is also supported:
+		System.out.println(p.evaluate("SqRt(LoG(500))"));
+		// The above prints 2.4929115705179337, which is correct.
 	}
 
 	private Stage stage = new Stage();
@@ -381,6 +392,8 @@ public class Calculator {
 						return new Log10(input);
 					case "loge":
 						return new Log(input);
+					case "sqrt":
+						return new Sqrt(input);
 					default:
 						return null;
 					}
@@ -392,6 +405,13 @@ public class Calculator {
 						super(input);
 					}
 
+					/*
+					 * (non-Javadoc)
+					 * 
+					 * @see
+					 * krow.zeale.guis.calculator.Calculator.Parser.Element#
+					 * evaluate()
+					 */
 					@Override
 					public double evaluate() {
 						return Math.log(autoParse());
@@ -405,10 +425,37 @@ public class Calculator {
 						super(input);
 					}
 
+					/*
+					 * (non-Javadoc)
+					 * 
+					 * @see
+					 * krow.zeale.guis.calculator.Calculator.Parser.Element#
+					 * evaluate()
+					 */
 					@Override
 					public double evaluate() {
 						return Math.log10(autoParse());
 					}
+				}
+
+				public static final class Sqrt extends Function {
+
+					/*
+					 * (non-Javadoc)
+					 * 
+					 * @see
+					 * krow.zeale.guis.calculator.Calculator.Parser.Element#
+					 * evaluate()
+					 */
+					@Override
+					public double evaluate() {
+						return Math.sqrt(autoParse());
+					}
+
+					public Sqrt(String input) {
+						super(input);
+					}
+
 				}
 
 			}
