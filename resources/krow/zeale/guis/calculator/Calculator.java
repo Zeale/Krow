@@ -505,7 +505,7 @@ public class Calculator {
 				else if (getCurrChar().equals(")"))
 					parentheses--;
 			}
-			return Element.Function.getFunction(name, equation.substring(posSubEquOpen, (position++) - 1));
+			return Element.Function.getFunction(name, equation.substring(posSubEquOpen, (position) - 1));
 		}
 
 		private boolean isFunc(int pos) {
