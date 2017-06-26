@@ -20,4 +20,15 @@ public class CalculatorController {
 	void setEquation(String equation) {
 		outputField.setText(equation);
 	}
+
+	@FXML
+	private void _event_close() {
+		onClose.run();
+	}
+
+	private Runnable onClose;
+
+	public void setOnClose(Runnable onClose) {
+		this.onClose = onClose;
+	}
 }
