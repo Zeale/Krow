@@ -5,6 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextField;
+import krow.zeale.guis.calculator.Calculator.Parser.EmptyEquationException;
+import krow.zeale.guis.calculator.Calculator.Parser.UnmatchedParenthesisException;
 
 /**
  * The controller for the calculator window.
@@ -29,6 +31,7 @@ public class CalculatorController {
 	}
 
 	void setEquation(String equation) {
+		outputField.setStyle("-fx-text-fill: white;");
 		outputField.setText(equation);
 	}
 
@@ -45,7 +48,18 @@ public class CalculatorController {
 
 	@FXML
 	private void _event_evaluate() {
-		setEquation(String.valueOf(parser.evaluate(getEquation())));
+		try {
+			setEquation(String.valueOf(parser.evaluate(getEquation())));
+		} catch (EmptyEquationException e) {
+			setError("What do you want me to evaluate???...");
+		} catch (UnmatchedParenthesisException e) {
+			setError("There are an unequal amount of '(' and ')' characters...");
+		}
+	}
+
+	private void setError(String text) {
+		outputField.setStyle("-fx-text-fill: #C00;");
+		outputField.setText(text);
 	}
 
 	/**

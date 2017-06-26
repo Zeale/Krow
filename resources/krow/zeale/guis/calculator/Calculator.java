@@ -8,6 +8,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import krow.zeale.guis.calculator.Calculator.Parser.EmptyEquationException;
+import krow.zeale.guis.calculator.Calculator.Parser.UnmatchedParenthesisException;
 import wolf.zeale.guis.Window;
 
 public class Calculator {
@@ -103,7 +105,7 @@ public class Calculator {
 		stage.show();
 	}
 
-	public double calculate() {
+	public double calculate() throws EmptyEquationException, UnmatchedParenthesisException {
 		double result = parser.evaluate(controller.getEquation());
 		controller.setEquation(Double.toString(result));
 		return result;
@@ -111,7 +113,16 @@ public class Calculator {
 
 	public static class Parser {
 
-		public class UnmatchedParenthesisException extends RuntimeException {
+		public class EmptyEquationException extends Exception {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+		}
+
+		public class UnmatchedParenthesisException extends Exception {
 
 			/**
 			 * SVUID
@@ -161,7 +172,7 @@ public class Calculator {
 				super.add(element);
 			}
 
-			public double evaluate() {
+			public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
 
 				for (byte precedence = 3; precedence > -1; precedence--)
 					for (int i = 2; i < size() && i > 0; i += 2)
@@ -319,8 +330,12 @@ public class Calculator {
 				 * 
 				 * @return The parsed value of {@link #params}. (Assuming that
 				 *         {@link #params} is a valid equation.)
+				 * @throws UnmatchedParenthesisException
+				 *             Incase {@link #params} has unmatched parentheses
+				 * @throws EmptyEquationException
+				 *             Incase {@link #params} is empty.
 				 */
-				protected double autoParse() {
+				protected double autoParse() throws EmptyEquationException, UnmatchedParenthesisException {
 					return new Parser().evaluate(params);
 				}
 
@@ -353,7 +368,7 @@ public class Calculator {
 					 * evaluate()
 					 */
 					@Override
-					public double evaluate() {
+					public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
 						return Math.log(autoParse());
 					}
 
@@ -373,7 +388,7 @@ public class Calculator {
 					 * evaluate()
 					 */
 					@Override
-					public double evaluate() {
+					public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
 						return Math.log10(autoParse());
 					}
 				}
@@ -388,7 +403,7 @@ public class Calculator {
 					 * evaluate()
 					 */
 					@Override
-					public double evaluate() {
+					public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
 						return Math.sqrt(autoParse());
 					}
 
@@ -427,7 +442,7 @@ public class Calculator {
 				}
 
 				@Override
-				public double evaluate() {
+				public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
 					if (!(operation == null || nextElement == null)) {
 						return operation.evaluate(value, nextElement.evaluate());
 					}
@@ -436,10 +451,12 @@ public class Calculator {
 
 			}
 
-			public double evaluate();
+			public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException;
 		}
 
-		public double evaluate(String equation) {
+		public double evaluate(String equation) throws EmptyEquationException, UnmatchedParenthesisException {
+			if (equation.isEmpty())
+				throw new EmptyEquationException();
 			reset();
 			this.equation = equation;
 
@@ -472,7 +489,7 @@ public class Calculator {
 
 		}
 
-		private Element getElement() {
+		private Element getElement() throws UnmatchedParenthesisException {
 			if (isOperator(getCurrChar()))
 				throw new NumberFormatException();
 			if (isNumb())
@@ -482,7 +499,7 @@ public class Calculator {
 			throw new NumberFormatException();
 		}
 
-		private Element.Function getFunction() {
+		private Element.Function getFunction() throws UnmatchedParenthesisException {
 			if (!isFunc(position))
 				throw new NumberFormatException();
 			int flen = -1, blen = 0;
