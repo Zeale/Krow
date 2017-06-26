@@ -3,25 +3,10 @@ package krow.zeale.guis.calculator;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import krow.zeale.guis.calculator.exceptions.EmptyEquationException;
+import krow.zeale.guis.calculator.exceptions.UnmatchedParenthesisException;
+
 public class Parser {
-
-	public class EmptyEquationException extends Exception {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-	}
-
-	public class UnmatchedParenthesisException extends Exception {
-
-		/**
-		 * SVUID
-		 */
-		private static final long serialVersionUID = 1L;
-
-	}
 
 	private static class Equation extends ArrayList<Object> {
 		/**
