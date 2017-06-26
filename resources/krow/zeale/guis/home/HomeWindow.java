@@ -21,6 +21,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
+import krow.zeale.guis.calculator.Calculator;
 import krow.zeale.guis.create.construct.CreateConstructWindow;
 import krow.zeale.guis.create.law.CreateLawWindow;
 import krow.zeale.guis.create.system.CreateSystemWindow;
@@ -72,6 +73,8 @@ public class HomeWindow extends Window {
 	 *
 	 */
 	private static FileManager fileManager;
+
+	private static Calculator calculator = new Calculator();
 
 	/**
 	 * This is animated, color changing text that displays the amount of
@@ -191,6 +194,11 @@ public class HomeWindow extends Window {
 			HomeWindow.fileManager.setTab(HomeWindow.fileManager.EXPORT);
 		HomeWindow.fileManager.toFront();
 		HomeWindow.fileManager.centerOnScreen();
+	}
+
+	@FXML
+	private void _event_openCalculator() {
+		calculator.show();
 	}
 
 	/*

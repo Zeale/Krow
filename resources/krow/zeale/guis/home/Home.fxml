@@ -75,6 +75,11 @@
                   <MenuItem mnemonicParsing="false" onAction="#backup" text="Backup" />
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Tools">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#_event_openCalculator" text="Calculator" />
+              </items>
+            </Menu>
 			</menus>
          <tooltip>
             <Tooltip text="This is the Home window of the application" />
