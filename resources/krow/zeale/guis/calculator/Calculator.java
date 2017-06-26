@@ -26,6 +26,7 @@ public class Calculator {
 		}
 		controller = loader.<CalculatorController>getController();
 		controller.setOnClose(this::hide);
+		controller.setParser(parser);
 		Window.setPaneDraggableByNode(stage, stage.getScene().getRoot());
 		Window.setPaneDraggableByNode(stage, controller.menuBar);
 	}
