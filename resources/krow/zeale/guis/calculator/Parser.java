@@ -5,280 +5,6 @@ import krow.zeale.guis.calculator.exceptions.UnmatchedParenthesisException;
 
 public class Parser {
 
-	static interface Operation {
-
-		default byte getPrecedence() {
-			return 2;
-		}
-
-		final Parser.Operation ADD = new Operation() {
-			@Override
-			public byte getPrecedence() {
-				return 0;
-			}
-
-			@Override
-			public double evaluate(double input1, double input2) {
-				return input1 + input2;
-			}
-
-		};
-
-		final Parser.Operation NONE = new Operation() {
-
-			@Override
-			public double evaluate(double input1, double input2) {
-				return input1;
-			}
-
-		};
-
-		final Parser.Operation SUBTRACT = new Operation() {
-			@Override
-			public byte getPrecedence() {
-				return 0;
-			}
-
-			@Override
-			public double evaluate(double input1, double input2) {
-				return input1 - input2;
-			}
-
-		};
-
-		final Parser.Operation MULTIPLY = new Operation() {
-			@Override
-			public byte getPrecedence() {
-				return 1;
-			}
-
-			@Override
-			public double evaluate(double input1, double input2) {
-				return input1 * input2;
-			}
-
-		};
-
-		final Parser.Operation DIVIDE = new Operation() {
-			@Override
-			public byte getPrecedence() {
-				return 1;
-			}
-
-			@Override
-			public double evaluate(double input1, double input2) {
-				return input1 / input2;
-			}
-
-		};
-
-		final Parser.Operation POWER = new Operation() {
-			@Override
-			public byte getPrecedence() {
-				return 2;
-			}
-
-			@Override
-			public double evaluate(double input1, double input2) {
-				return Math.pow(input1, input2);
-			}
-		};
-
-		final Parser.Operation MODULUS = new Operation() {
-
-			@Override
-			public double evaluate(double input1, double input2) {
-				return input1 % input2;
-			}
-
-			@Override
-			public byte getPrecedence() {
-				return 1;
-			}
-		};
-
-		double evaluate(double input1, double input2);
-
-		public static Parser.Operation getOperation(char c) {
-			if (!isOperator(c))
-				throw new NumberFormatException();
-			switch (c) {
-			case '+':
-				return ADD;
-			case '-':
-				return SUBTRACT;
-			case '*':
-			case 'x':
-				return MULTIPLY;
-			case '/':
-			case '÷':
-				return DIVIDE;
-			case '^':
-				return POWER;
-			case '%':
-				return MODULUS;
-			default:
-				throw new NumberFormatException();
-			}
-		}
-
-		public static Parser.Operation getOperation(String c) {
-			return getOperation(c.charAt(0));
-		}
-
-	}
-
-	static interface Element {
-		public static abstract class Function implements Parser.Element {
-
-			protected final String params;
-
-			public Function(String input) {
-				this.params = input;
-			}
-
-			/**
-			 * <p>
-			 * Automatically takes the string input and parses it using the
-			 * default parser. If your Function does not read its parameter
-			 * contents abnormally, you should use this method to evaluate
-			 * your parameters so you can read it as a number, rather than
-			 * parse it yourself as a String.
-			 * <p>
-			 * This method takes {@link #params} and parses it as a
-			 * mathematical equation. The result is returned.
-			 * <p>
-			 * {@link #params} isn't modified through this method so
-			 * repeated calls to {@link #autoParse()} should return the same
-			 * value. (So long as {@link #params} isn't modified
-			 * externally.)
-			 * 
-			 * @return The parsed value of {@link #params}. (Assuming that
-			 *         {@link #params} is a valid equation.)
-			 * @throws UnmatchedParenthesisException
-			 *             Incase {@link #params} has unmatched parentheses
-			 * @throws EmptyEquationException
-			 *             Incase {@link #params} is empty.
-			 */
-			protected double autoParse() throws EmptyEquationException, UnmatchedParenthesisException {
-				return new Parser().evaluate(params);
-			}
-
-			public static Element.Function getFunction(String name, String input) {
-				switch (name.toLowerCase()) {
-				case "log":
-					return new Log(input);
-				case "log10":
-					return new Log10(input);
-				case "loge":
-					return new Log(input);
-				case "sqrt":
-					return new Sqrt(input);
-				default:
-					return null;
-				}
-			}
-
-			public static final class Log extends Element.Function {
-
-				public Log(String input) {
-					super(input);
-				}
-
-				/*
-				 * (non-Javadoc)
-				 * 
-				 * @see
-				 * krow.zeale.guis.calculator.Calculator.Parser.Element#
-				 * evaluate()
-				 */
-				@Override
-				public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
-					return Math.log(autoParse());
-				}
-
-			}
-
-			public static final class Log10 extends Element.Function {
-
-				public Log10(String input) {
-					super(input);
-				}
-
-				/*
-				 * (non-Javadoc)
-				 * 
-				 * @see
-				 * krow.zeale.guis.calculator.Calculator.Parser.Element#
-				 * evaluate()
-				 */
-				@Override
-				public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
-					return Math.log10(autoParse());
-				}
-			}
-
-			public static final class Sqrt extends Element.Function {
-
-				/*
-				 * (non-Javadoc)
-				 * 
-				 * @see
-				 * krow.zeale.guis.calculator.Calculator.Parser.Element#
-				 * evaluate()
-				 */
-				@Override
-				public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
-					return Math.sqrt(autoParse());
-				}
-
-				public Sqrt(String input) {
-					super(input);
-				}
-
-			}
-
-		}
-
-		static class Number implements Parser.Element {
-
-			@Deprecated
-			public void chain(Parser.Operation operation, Parser.Element nextElement) {
-				this.operation = operation;
-				this.nextElement = nextElement;
-			}
-
-			private double value;
-			@Deprecated
-			private Parser.Operation operation;
-			@Deprecated
-			private Parser.Element nextElement;
-
-			public Number(double value) {
-				this.value = value;
-			}
-
-			@SuppressWarnings("unused")
-			@Deprecated
-			public Number(double value, Parser.Operation operation, Parser.Element nextElement) {
-				this.value = value;
-				this.operation = operation;
-				this.nextElement = nextElement;
-			}
-
-			@Override
-			public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
-				if (!(operation == null || nextElement == null)) {
-					return operation.evaluate(value, nextElement.evaluate());
-				}
-				return value;
-			}
-
-		}
-
-		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException;
-	}
-
 	public double evaluate(String equation) throws EmptyEquationException, UnmatchedParenthesisException {
 		if (equation.isEmpty())
 			throw new EmptyEquationException();
@@ -286,7 +12,7 @@ public class Parser {
 		this.equation = equation;
 
 		Equation equ = new Equation();
-		Parser.Element e = getElement();
+		Element e = getElement();
 		equ.start(e);
 		while (position < equation.length()) {
 			equ.add(getOperation(), getElement());
@@ -314,7 +40,7 @@ public class Parser {
 
 	}
 
-	private Parser.Element getElement() throws UnmatchedParenthesisException {
+	private Element getElement() throws UnmatchedParenthesisException {
 		if (isOperator(getCurrChar()))
 			throw new NumberFormatException();
 		if (isNumb())
@@ -356,7 +82,7 @@ public class Parser {
 				|| equation.charAt(pos) == ')');
 	}
 
-	private Parser.Operation getOperation() {
+	private Operation getOperation() {
 		if (isNumb())
 			throw new NumberFormatException();
 		// Forward length and backward length.
@@ -368,12 +94,12 @@ public class Parser {
 			;
 		// For now each operation should be one character long, but better
 		// safe than sorry.
-		Parser.Operation operation = Operation.getOperation(equation.substring(position + blen, position + flen));
+		Operation operation = Operation.getOperation(equation.substring(position + blen, position + flen));
 		position += flen;
 		return operation;
 	}
 
-	private static boolean isOperator(char c) {
+	static boolean isOperator(char c) {
 		return c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == 'x' || c == '÷' || c == '%';
 	}
 
