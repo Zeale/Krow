@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import wolf.zeale.guis.Window;
 
 public class Calculator {
 
@@ -25,6 +26,8 @@ public class Calculator {
 		}
 		controller = loader.<CalculatorController>getController();
 		controller.setOnClose(this::hide);
+		Window.setPaneDraggableByNode(stage, stage.getScene().getRoot());
+		Window.setPaneDraggableByNode(stage, controller.menuBar);
 	}
 
 	public final double getHeight() {
