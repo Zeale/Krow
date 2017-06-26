@@ -37,4 +37,15 @@ public class CalculatorController {
 		this.onClose = onClose;
 	}
 
+	@FXML
+	private void _event_evaluate() {
+		setEquation(String.valueOf(parser.evaluate(getEquation())));
+	}
+
+	void setParser(Calculator.Parser parser) {
+		this.parser = parser;
+	}
+
+	private Calculator.Parser parser;
+
 }
