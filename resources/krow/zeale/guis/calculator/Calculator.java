@@ -11,63 +11,6 @@ import javafx.stage.StageStyle;
 
 public class Calculator {
 
-	static {
-		/*
-		 * This static constructor is meant to prevent the below calculator
-		 * variable from being instantiated before we run our tests. The
-		 * instantiation throws an Exception.
-		 */
-		main(null);
-		System.exit(0);
-	}
-
-	private static Calculator calculator = new Calculator();
-
-	public static void main(String[] args) {
-
-		// TEST method; used to test Parser's evaluate method.
-		Parser p = new Parser();
-
-		System.out.println(p.evaluate("1+1"));// Prints 2.0
-
-		System.out.println(p.evaluate("13+19")); // Prints 32.0
-
-		System.out.println(p.evaluate("5+15.3")); // Prints 20.3
-		System.out.println(p.evaluate("13.91231+1.32918")); // Prints
-															// 15.241489999999999
-		// Operations with more than just addition (+)
-		System.out.println(p.evaluate("5/2")); // Prints 2.5
-
-		// Now supports the common order of operations. :D
-		System.out.println(p.evaluate("4+5/6")); // Prints 4.833333333333333
-		// This prints correctly as well
-		System.out.println(p.evaluate("4/2+6")); // Prints 8.0
-
-		// Powers
-		System.out.println(p.evaluate("4^2")); // Prints 16.0
-
-		System.out.println(p.evaluate("5+2^3/4")); // Prints 7.0
-
-		// Now with log (using base e)
-		System.out.println(p.evaluate("log(1+1)")); // Prints 0.6931471805599453
-		System.out.println(Math.log(1 + 1)); // Also prints 0.6931471805599453
-		// (Since the calc's log function literally uses Math.log)
-
-		// New log10 function
-		System.out.println(p.evaluate("log10(1+2)")); // Prints
-														// 0.47712125471966244
-
-		// New Sqrt function
-		System.out.println(p.evaluate("sqrt(4^4)")); // Prints 16.0
-
-		// Mixed casing is supported for functions:
-		System.out.println(p.evaluate("sQrT(1024)")); // Prints 32.0
-
-		// Function nesting is also supported:
-		System.out.println(p.evaluate("SqRt(LoG(500))"));
-		// The above prints 2.4929115705179337, which is correct.
-	}
-
 	private Stage stage = new Stage();
 	private CalculatorController controller;
 	private Parser parser = new Parser();
@@ -131,10 +74,6 @@ public class Calculator {
 		stage.setFullScreen(value);
 	}
 
-	public final void setHeight(double value) {
-		stage.setHeight(value);
-	}
-
 	public final void setIconified(boolean value) {
 		stage.setIconified(value);
 	}
@@ -145,10 +84,6 @@ public class Calculator {
 
 	public final void setTitle(String value) {
 		stage.setTitle(value);
-	}
-
-	public final void setWidth(double value) {
-		stage.setWidth(value);
 	}
 
 	public final void setX(double value) {
@@ -163,11 +98,6 @@ public class Calculator {
 		stage.show();
 	}
 
-	public static Calculator open() {
-		calculator.stage.show();
-		return calculator;
-	}
-
 	public double calculate() {
 		double result = parser.evaluate(controller.getEquation());
 		controller.setEquation(Double.toString(result));
@@ -178,11 +108,16 @@ public class Calculator {
 
 		public class UnmatchedParenthesisException extends RuntimeException {
 
+			/**
+			 * SVUID
+			 */
+			private static final long serialVersionUID = 1L;
+
 		}
 
 		private static class Equation extends ArrayList<Object> {
 			/**
-			 * 
+			 * SVUID
 			 */
 			private static final long serialVersionUID = 1L;
 			private boolean started;
