@@ -52,7 +52,7 @@ class Equation extends ArrayList<Object> {
 		for (byte precedence = 3; precedence > -1; precedence--)
 			for (int i = 2; i < size() && i > 0; i += 2)
 				if (((Operation) get(--i)).getPrecedence() == precedence) {
-					popin(new Element.Number(((Operation) remove(i))
+					popin(new Number(((Operation) remove(i))
 							.evaluate(((Element) remove(--i)).evaluate(), ((Element) remove(i)).evaluate())),
 							i);
 					i -= 2;

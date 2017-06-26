@@ -24,7 +24,7 @@ public class Parser {
 	private volatile String equation;
 	private int position;
 
-	private Element.Number getNumber() {
+	private Number getNumber() {
 		if (!isNumb())
 			throw new NumberFormatException();
 		// Forward length and backward length.
@@ -36,7 +36,7 @@ public class Parser {
 			;
 		double value = Double.valueOf(equation.substring(position + blen, position + flen));
 		position += flen;
-		return new Element.Number(value);
+		return new Number(value);
 
 	}
 
@@ -50,7 +50,7 @@ public class Parser {
 		throw new NumberFormatException();
 	}
 
-	private Element.Function getFunction() throws UnmatchedParenthesisException {
+	private Function getFunction() throws UnmatchedParenthesisException {
 		if (!isFunc(position))
 			throw new NumberFormatException();
 		int flen = -1, blen = 0;
@@ -73,7 +73,7 @@ public class Parser {
 			else if (getCurrChar().equals(")"))
 				parentheses--;
 		}
-		return Element.Function.getFunction(name, equation.substring(posSubEquOpen, (position) - 1));
+		return Function.getFunction(name, equation.substring(posSubEquOpen, (position) - 1));
 	}
 
 	private boolean isFunc(int pos) {
