@@ -1,0 +1,8 @@
+.calculator-button {
+	-fx-background-color: #007c02;
+}
+
+.calculator-button:armed {
+	-fx-background-color: #006601;
+	-fx-effect: dropshadow(gaussian, black, 0, 0, 0, 0);
+}
