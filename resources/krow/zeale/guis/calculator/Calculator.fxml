@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import java.net.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
@@ -25,4 +26,8 @@
         </menus>
       </MenuBar>
    </top>
+   <stylesheets>
+      <URL value="@../_resources/DefaultTheme.css" />
+      <URL value="@Calculator.css" />
+   </stylesheets>
 </BorderPane>
