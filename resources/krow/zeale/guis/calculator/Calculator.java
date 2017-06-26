@@ -274,6 +274,19 @@ public class Calculator {
 				}
 			};
 
+			final Operation MODULUS = new Operation() {
+
+				@Override
+				public double evaluate(double input1, double input2) {
+					return input1 % input2;
+				}
+
+				@Override
+				public byte getPrecedence() {
+					return 1;
+				}
+			};
+
 			double evaluate(double input1, double input2);
 
 			public static Operation getOperation(char c) {
@@ -292,6 +305,8 @@ public class Calculator {
 					return DIVIDE;
 				case '^':
 					return POWER;
+				case '%':
+					return MODULUS;
 				default:
 					throw new NumberFormatException();
 				}
@@ -549,7 +564,7 @@ public class Calculator {
 		}
 
 		private static boolean isOperator(char c) {
-			return c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == 'x' || c == '÷';
+			return c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == 'x' || c == '÷' || c == '%';
 		}
 
 		private static boolean isOperator(String c) {
