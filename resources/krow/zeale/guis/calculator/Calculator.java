@@ -24,6 +24,7 @@ public class Calculator {
 			// This block should never run. Just like in the FileManager class.
 		}
 		controller = loader.<CalculatorController>getController();
+		controller.setOnClose(this::hide);
 	}
 
 	public final double getHeight() {
