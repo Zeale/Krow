@@ -5,39 +5,54 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane prefHeight="500.0" prefWidth="500.0" stylesheets="@../../_resources/DefaultTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="krow.zeale.guis.create.system.CreateSystemWindow">
-   <center>
-      <AnchorPane prefHeight="824.0" prefWidth="794.0" styleClass="background" BorderPane.alignment="CENTER">
-         <children>
-            <TextField fx:id="nameField" layoutX="157.0" layoutY="78.0" promptText="Name">
-               <tooltip>
-                  <Tooltip text="Write the name of your new System here" />
-               </tooltip></TextField>
-            <TextArea fx:id="descriptionField" layoutX="150.0" layoutY="190.0" prefHeight="200.0" prefWidth="200.0" promptText="Description" wrapText="true">
-               <tooltip>
-                  <Tooltip text="Give a short description of your System here" />
-               </tooltip></TextArea>
-            <Button fx:id="doneButton" layoutX="223.0" layoutY="410.0" mnemonicParsing="false" onAction="#onSystemCreated" text="Done">
-               <tooltip>
-                  <Tooltip text="Click this to create your System" />
-               </tooltip></Button>
-            <DatePicker fx:id="creationDatePicker" layoutX="177.0" layoutY="131.0" prefHeight="31.0" prefWidth="148.0" promptText="Creation Date">
-               <tooltip>
-                  <Tooltip text="Pick the date that your System was made here. If you type in your date manually, you can save values down to the nearest nanosecond" />
-               </tooltip></DatePicker>
-         </children>
-      </AnchorPane>
-   </center>
-   <top>
-      <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
-        <menus>
-          <Menu mnemonicParsing="false" text="Go...">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onGoBack" text="Back" />
-                  <MenuItem mnemonicParsing="false" onAction="#onClose" text="Close" />
-               </items>
-          </Menu>
-        </menus>
-      </MenuBar>
-   </top>
+<BorderPane prefHeight="500.0" prefWidth="500.0"
+	stylesheets="@../../_resources/DefaultTheme.css" xmlns="http://javafx.com/javafx/8"
+	xmlns:fx="http://javafx.com/fxml/1" fx:controller="krow.zeale.guis.create.system.CreateSystemWindow">
+	<center>
+		<AnchorPane prefHeight="824.0" prefWidth="794.0"
+			styleClass="background" BorderPane.alignment="CENTER">
+			<children>
+				<TextField fx:id="nameField" layoutX="157.0" layoutY="78.0"
+					promptText="Name">
+					<tooltip>
+						<Tooltip text="Write the name of your new System here" />
+					</tooltip>
+				</TextField>
+				<TextArea fx:id="descriptionField" layoutX="150.0" layoutY="190.0"
+					prefHeight="200.0" prefWidth="200.0" promptText="Description"
+					wrapText="true">
+					<tooltip>
+						<Tooltip text="Give a short description of your System here" />
+					</tooltip>
+				</TextArea>
+				<Button fx:id="doneButton" layoutX="223.0" layoutY="410.0"
+					mnemonicParsing="false" onAction="#onSystemCreated" text="Done">
+					<tooltip>
+						<Tooltip text="Click this to create your System" />
+					</tooltip>
+				</Button>
+				<DatePicker fx:id="creationDatePicker" layoutX="177.0"
+					layoutY="131.0" prefHeight="31.0" prefWidth="148.0" promptText="Creation Date">
+					<tooltip>
+						<Tooltip
+							text="Pick the date that your System was made here. If you type in your date manually, you can save values down to the nearest nanosecond" />
+					</tooltip>
+				</DatePicker>
+			</children>
+		</AnchorPane>
+	</center>
+	<top>
+		<MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
+			<menus>
+				<Menu mnemonicParsing="false" text="Go...">
+					<items>
+						<MenuItem mnemonicParsing="false" onAction="#onGoBack"
+							text="Back" />
+						<MenuItem mnemonicParsing="false" onAction="#onClose"
+							text="Close" />
+					</items>
+				</Menu>
+			</menus>
+		</MenuBar>
+	</top>
 </BorderPane>
