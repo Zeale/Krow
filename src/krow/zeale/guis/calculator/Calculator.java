@@ -6,7 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import kröw.zeale.math.Parser;
+import kröw.zeale.math.EquationParser;
 import kröw.zeale.math.exceptions.EmptyEquationException;
 import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 import wolf.zeale.guis.Window;
@@ -15,7 +15,7 @@ public class Calculator {
 
 	private Stage stage = new Stage();
 	private CalculatorController controller;
-	private Parser parser = new Parser();
+	private EquationParser parser = new EquationParser();
 
 	public Calculator() {
 		FXMLLoader loader = new FXMLLoader(Calculator.class.getResource("Calculator.fxml"));

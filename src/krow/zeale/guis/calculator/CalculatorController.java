@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextField;
-import kröw.zeale.math.Parser;
+import kröw.zeale.math.EquationParser;
 import kröw.zeale.math.exceptions.EmptyEquationException;
 import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 
@@ -87,10 +87,10 @@ public class CalculatorController {
 		concatEquation(((Button) e.getSource()).getText());
 	}
 
-	void setParser(Parser parser) {
+	void setParser(EquationParser parser) {
 		this.parser = parser;
 	}
 
-	private Parser parser;
+	private EquationParser parser;
 
 }

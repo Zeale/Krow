@@ -35,7 +35,7 @@ public abstract class Function implements Element {
 	 *             Incase {@link #params} is empty.
 	 */
 	protected double autoParse() throws EmptyEquationException, UnmatchedParenthesisException {
-		return new Parser().evaluate(params);
+		return new EquationParser().evaluate(params);
 	}
 
 	public static Function getFunction(String name, String input) {

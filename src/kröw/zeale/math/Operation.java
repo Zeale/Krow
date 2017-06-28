@@ -95,7 +95,7 @@ interface Operation {
 	double evaluate(double input1, double input2);
 
 	public static Operation getOperation(char c) {
-		if (!Parser.isOperator(c))
+		if (!EquationParser.isOperator(c))
 			throw new NumberFormatException();
 		switch (c) {
 		case '+':

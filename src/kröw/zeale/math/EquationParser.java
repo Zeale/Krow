@@ -3,7 +3,7 @@ package kröw.zeale.math;
 import kröw.zeale.math.exceptions.EmptyEquationException;
 import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 
-public class Parser {
+public class EquationParser {
 
 	public double evaluate(String equation) throws EmptyEquationException, UnmatchedParenthesisException {
 		if (equation.isEmpty())
