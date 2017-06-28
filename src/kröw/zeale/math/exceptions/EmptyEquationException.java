@@ -1,4 +1,4 @@
-package krow.zeale.guis.calculator.exceptions;
+package kröw.zeale.math.exceptions;
 
 public class EmptyEquationException extends Exception {
 

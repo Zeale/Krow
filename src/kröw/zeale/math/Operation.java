@@ -1,4 +1,4 @@
-package krow.zeale.guis.calculator;
+package kröw.zeale.math;
 
 interface Operation {
 

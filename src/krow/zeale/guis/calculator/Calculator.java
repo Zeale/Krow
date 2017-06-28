@@ -6,8 +6,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import krow.zeale.guis.calculator.exceptions.EmptyEquationException;
-import krow.zeale.guis.calculator.exceptions.UnmatchedParenthesisException;
+import kröw.zeale.math.Parser;
+import kröw.zeale.math.exceptions.EmptyEquationException;
+import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 import wolf.zeale.guis.Window;
 
 public class Calculator {

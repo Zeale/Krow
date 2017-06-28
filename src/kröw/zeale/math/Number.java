@@ -1,7 +1,7 @@
-package krow.zeale.guis.calculator;
+package kröw.zeale.math;
 
-import krow.zeale.guis.calculator.exceptions.EmptyEquationException;
-import krow.zeale.guis.calculator.exceptions.UnmatchedParenthesisException;
+import kröw.zeale.math.exceptions.EmptyEquationException;
+import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 
 public class Number implements Element {
 

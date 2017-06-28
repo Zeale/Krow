@@ -1,10 +1,10 @@
-package krow.zeale.guis.calculator;
+package kröw.zeale.math;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import krow.zeale.guis.calculator.exceptions.EmptyEquationException;
-import krow.zeale.guis.calculator.exceptions.UnmatchedParenthesisException;
+import kröw.zeale.math.exceptions.EmptyEquationException;
+import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 
 class Equation extends ArrayList<Object> {
 	/**

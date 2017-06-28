@@ -5,8 +5,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextField;
-import krow.zeale.guis.calculator.exceptions.EmptyEquationException;
-import krow.zeale.guis.calculator.exceptions.UnmatchedParenthesisException;
+import kröw.zeale.math.Parser;
+import kröw.zeale.math.exceptions.EmptyEquationException;
+import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 
 /**
  * The controller for the calculator window.
