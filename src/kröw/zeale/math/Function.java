@@ -54,6 +54,20 @@ public abstract class Function implements Element {
 		case "tan":
 		case "tangent":
 			return new Tangent(input);
+		case "atan":
+		case "arctangent":
+		case "arctan":
+			return new ArcTangent(input);
+		case "asin":
+		case "asine":
+		case "arcsine":
+			return new ArcSine(input);
+		case "acos":
+		case "arccos":
+		case "arcos":// Becuz someone will do it...
+		case "arccosine":
+		case "arcosine":
+			return new ArcCosine(input);
 		default:
 			return null;
 		}
@@ -122,7 +136,7 @@ public abstract class Function implements Element {
 		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
 			return Math.sin(autoParse());
 		}
-		
+
 	}
 
 	private static final class Cosine extends Function {
@@ -135,7 +149,7 @@ public abstract class Function implements Element {
 		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
 			return Math.cos(autoParse());
 		}
-		
+
 	}
 
 	private static final class Tangent extends Function {
@@ -148,7 +162,46 @@ public abstract class Function implements Element {
 		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
 			return Math.tan(autoParse());
 		}
-		
+
+	}
+
+	private static final class ArcTangent extends Function {
+
+		public ArcTangent(String input) {
+			super(input);
+		}
+
+		@Override
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+			return Math.atan(autoParse());
+		}
+
+	}
+
+	private static final class ArcSine extends Function {
+
+		public ArcSine(String input) {
+			super(input);
+		}
+
+		@Override
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+			return Math.asin(autoParse());
+		}
+
+	}
+
+	private static final class ArcCosine extends Function {
+
+		public ArcCosine(String input) {
+			super(input);
+		}
+
+		@Override
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+			return Math.acos(autoParse());
+		}
+
 	}
 
 }
