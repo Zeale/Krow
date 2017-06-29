@@ -39,13 +39,21 @@ public abstract class Function implements Element {
 	public static Function getFunction(String name, String input) {
 		switch (name.toLowerCase()) {
 		case "log":
+		case "loge":
 			return new Log(input);
 		case "log10":
 			return new Log10(input);
-		case "loge":
-			return new Log(input);
 		case "sqrt":
 			return new Sqrt(input);
+		case "sin":
+		case "sine":
+			return new Sine(input);
+		case "cosine":
+		case "cos":
+			return new Cosine(input);
+		case "tan":
+		case "tangent":
+			return new Tangent(input);
 		default:
 			return null;
 		}
@@ -102,6 +110,45 @@ public abstract class Function implements Element {
 			super(input);
 		}
 
+	}
+
+	private static final class Sine extends Function {
+
+		public Sine(String input) {
+			super(input);
+		}
+
+		@Override
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+			return Math.sin(autoParse());
+		}
+		
+	}
+
+	private static final class Cosine extends Function {
+
+		public Cosine(String input) {
+			super(input);
+		}
+
+		@Override
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+			return Math.cos(autoParse());
+		}
+		
+	}
+
+	private static final class Tangent extends Function {
+
+		public Tangent(String input) {
+			super(input);
+		}
+
+		@Override
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+			return Math.tan(autoParse());
+		}
+		
 	}
 
 }
