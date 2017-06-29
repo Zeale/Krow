@@ -13,19 +13,17 @@ public abstract class Function implements Element {
 
 	/**
 	 * <p>
-	 * Automatically takes the string input and parses it using the
-	 * default parser. If your Function does not read its parameter
-	 * contents abnormally, you should use this method to evaluate
-	 * your parameters so you can read it as a number, rather than
-	 * parse it yourself as a String.
+	 * Automatically takes the string input and parses it using the default
+	 * parser. If your Function does not read its parameter contents abnormally,
+	 * you should use this method to evaluate your parameters so you can read it
+	 * as a number, rather than parse it yourself as a String.
 	 * <p>
-	 * This method takes {@link #params} and parses it as a
-	 * mathematical equation. The result is returned.
+	 * This method takes {@link #params} and parses it as a mathematical
+	 * equation. The result is returned.
 	 * <p>
-	 * {@link #params} isn't modified through this method so
-	 * repeated calls to {@link #autoParse()} should return the same
-	 * value. (So long as {@link #params} isn't modified
-	 * externally.)
+	 * {@link #params} isn't modified through this method so repeated calls to
+	 * {@link #autoParse()} should return the same value. (So long as
+	 * {@link #params} isn't modified externally.)
 	 * 
 	 * @return The parsed value of {@link #params}. (Assuming that
 	 *         {@link #params} is a valid equation.)
@@ -53,7 +51,7 @@ public abstract class Function implements Element {
 		}
 	}
 
-	public static final class Log extends Function {
+	private static final class Log extends Function {
 
 		public Log(String input) {
 			super(input);
@@ -62,9 +60,7 @@ public abstract class Function implements Element {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * krow.zeale.guis.calculator.Calculator.Parser.Element#
-		 * evaluate()
+		 * @see krow.zeale.guis.calculator.Calculator.Parser.Element# evaluate()
 		 */
 		@Override
 		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
@@ -73,7 +69,7 @@ public abstract class Function implements Element {
 
 	}
 
-	public static final class Log10 extends Function {
+	private static final class Log10 extends Function {
 
 		public Log10(String input) {
 			super(input);
@@ -82,9 +78,7 @@ public abstract class Function implements Element {
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * krow.zeale.guis.calculator.Calculator.Parser.Element#
-		 * evaluate()
+		 * @see krow.zeale.guis.calculator.Calculator.Parser.Element# evaluate()
 		 */
 		@Override
 		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
@@ -92,14 +86,12 @@ public abstract class Function implements Element {
 		}
 	}
 
-	public static final class Sqrt extends Function {
+	private static final class Sqrt extends Function {
 
 		/*
 		 * (non-Javadoc)
 		 * 
-		 * @see
-		 * krow.zeale.guis.calculator.Calculator.Parser.Element#
-		 * evaluate()
+		 * @see krow.zeale.guis.calculator.Calculator.Parser.Element# evaluate()
 		 */
 		@Override
 		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
