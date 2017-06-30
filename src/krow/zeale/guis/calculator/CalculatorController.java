@@ -48,6 +48,11 @@ public class CalculatorController {
 	}
 
 	@FXML
+	private void _event_clear() {
+		outputField.clear();
+	}
+
+	@FXML
 	private void _event_evaluate() {
 		try {
 			setEquation(String.valueOf(parser.evaluate(getEquation())));
