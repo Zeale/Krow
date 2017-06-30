@@ -25,15 +25,18 @@ public class EquationParser {
 	private int position;
 
 	private Number getNumber() {
+		// TODO Fix up these methods...
 		if (!isNumb())
 			throw new NumberFormatException();
 		// Forward length and backward length.
 		int flen = 0, blen = 0;
-		while (position + --blen > -1 && isNumb(position + blen))
+		while (position + --blen > -1 && isNumb(
+				position + blen))/* This loop shouldn't be necessary... */
 			;
 		blen++;
 		while (position + ++flen < equation.length() && isNumb(position + flen))
 			;
+		/* The above needs to be worked on... */
 		double value = Double.valueOf(equation.substring(position + blen, position + flen));
 		position += flen;
 		return new Number(value);
@@ -85,6 +88,7 @@ public class EquationParser {
 	private Operation getOperation() {
 		if (isNumb())
 			throw new NumberFormatException();
+
 		// Forward length and backward length.
 		int flen = 0, blen = 0;
 		while (position + --blen > -1 && isOperator(equation.charAt(position + blen)))
@@ -178,12 +182,12 @@ public class EquationParser {
 	/**
 	 * <p>
 	 * Much like the {@link #nextChar()} method, this method will return the
-	 * current character and move the pinhead (position) down to the
-	 * previous character.
+	 * current character and move the pinhead (position) down to the previous
+	 * character.
 	 * 
 	 * 
 	 * 
-	 * @return
+	 * @return The current character.
 	 */
 	private String previousChar() {
 		return equation.substring(position, position-- + 1);
