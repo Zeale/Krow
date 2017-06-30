@@ -161,6 +161,16 @@
                                     <DropShadow spread="0.41" />
                                  </effect>
                               </Button>
+                              <Button focusTraversable="false" layoutX="297.0" layoutY="245.0" mnemonicParsing="false" onAction="#_event_operatorClicked" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text=")" textAlignment="CENTER">
+                                 <effect>
+                                    <DropShadow spread="0.41" />
+                                 </effect>
+                              </Button>
+                              <Button focusTraversable="false" layoutX="57.0" layoutY="245.0" mnemonicParsing="false" onAction="#_event_operatorClicked" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="(" textAlignment="CENTER">
+                                 <effect>
+                                    <DropShadow spread="0.41" />
+                                 </effect>
+                              </Button>
                            </children></AnchorPane>
                   </content>
                 </Tab>
