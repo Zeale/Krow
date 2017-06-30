@@ -7,161 +7,113 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane prefHeight="500.0" prefWidth="400.0" styleClass="solid-background"
-	xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="krow.zeale.guis.calculator.CalculatorController">
+<BorderPane prefHeight="500.0" prefWidth="400.0" styleClass="solid-background" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="krow.zeale.guis.calculator.CalculatorController">
 	<center>
 		<AnchorPane BorderPane.alignment="CENTER">
 			<children>
-				<TextField fx:id="outputField" layoutX="39.0" layoutY="61.0"
-					prefHeight="31.0" prefWidth="323.0" />
-				<Button focusTraversable="false" layoutX="83.0" layoutY="149.0"
-					mnemonicParsing="false" onAction="#_event_numberClicked"
-					prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="7" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="143.0" layoutY="149.0"
-					mnemonicParsing="false" onAction="#_event_numberClicked"
-					prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="8" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="203.0" layoutY="149.0"
-					mnemonicParsing="false" onAction="#_event_numberClicked"
-					prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="9" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="83.0" layoutY="205.0"
-					mnemonicParsing="false" onAction="#_event_numberClicked"
-					prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="4" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="143.0" layoutY="205.0"
-					mnemonicParsing="false" onAction="#_event_numberClicked"
-					prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="5" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="203.0" layoutY="205.0"
-					mnemonicParsing="false" onAction="#_event_numberClicked"
-					prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="6" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="83.0" layoutY="261.0"
-					mnemonicParsing="false" onAction="#_event_numberClicked"
-					prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="1" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="143.0" layoutY="261.0"
-					mnemonicParsing="false" onAction="#_event_numberClicked"
-					prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="2" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="203.0" layoutY="261.0"
-					mnemonicParsing="false" onAction="#_event_numberClicked"
-					prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="3" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="142.0" layoutY="317.0"
-					mnemonicParsing="false" onAction="#_event_numberClicked"
-					prefHeight="44.0" prefWidth="109.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="0" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="83.0" layoutY="317.0"
-					mnemonicParsing="false" prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="." textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="113.0" layoutY="389.0"
-					mnemonicParsing="false" onAction="#_event_evaluate" prefHeight="44.0"
-					prefWidth="109.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="=" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="286.0" layoutY="149.0"
-					mnemonicParsing="false" prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="÷" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="286.0" layoutY="205.0"
-					mnemonicParsing="false" prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="*" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="286.0" layoutY="261.0"
-					mnemonicParsing="false" prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="-" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="286.0" layoutY="317.0"
-					mnemonicParsing="false" prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="+" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
-				<Button focusTraversable="false" layoutX="286.0" layoutY="375.0"
-					mnemonicParsing="false" prefHeight="44.0" prefWidth="48.0"
-					style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;"
-					styleClass="calculator-button" text="^" textAlignment="CENTER">
-					<effect>
-						<DropShadow spread="0.41" />
-					</effect>
-				</Button>
+				<TextField fx:id="outputField" layoutX="39.0" layoutY="26.0" prefHeight="31.0" prefWidth="323.0" />
+            <TabPane focusTraversable="false" layoutX="7.0" layoutY="83.0" prefHeight="385.0" prefWidth="400.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="83.0">
+              <tabs>
+                <Tab closable="false" text="Basic">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                  				<Button focusTraversable="false" layoutX="48.0" layoutY="42.0" mnemonicParsing="false" onAction="#_event_numberClicked" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="7" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="110.0" layoutY="42.0" mnemonicParsing="false" onAction="#_event_numberClicked" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="8" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="174.0" layoutY="42.0" mnemonicParsing="false" onAction="#_event_numberClicked" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="9" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="48.0" layoutY="105.0" mnemonicParsing="false" onAction="#_event_numberClicked" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="4" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="110.0" layoutY="105.0" mnemonicParsing="false" onAction="#_event_numberClicked" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="5" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="174.0" layoutY="105.0" mnemonicParsing="false" onAction="#_event_numberClicked" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="6" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="48.0" layoutY="173.0" mnemonicParsing="false" onAction="#_event_numberClicked" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="1" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="110.0" layoutY="173.0" mnemonicParsing="false" onAction="#_event_numberClicked" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="2" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="174.0" layoutY="173.0" mnemonicParsing="false" onAction="#_event_numberClicked" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="3" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="18.0" layoutY="276.0" mnemonicParsing="false" onAction="#_event_numberClicked" prefHeight="44.0" prefWidth="109.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="0" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="282.0" layoutY="288.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="." textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="144.0" layoutY="276.0" mnemonicParsing="false" onAction="#_event_evaluate" prefHeight="44.0" prefWidth="109.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="=" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="282.0" layoutY="72.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="÷" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="282.0" layoutY="125.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="*" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="282.0" layoutY="180.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="-" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="282.0" layoutY="237.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="+" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                  				<Button focusTraversable="false" layoutX="282.0" layoutY="18.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="48.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="^" textAlignment="CENTER">
+                  					<effect>
+                  						<DropShadow spread="0.41" />
+                  					</effect>
+                  				</Button>
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </Tab>
+                <Tab closable="false" text="Functions">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  </content>
+                </Tab>
+              </tabs>
+            </TabPane>
 			</children>
 		</AnchorPane>
 	</center>
@@ -170,8 +122,7 @@
 			<menus>
 				<Menu mnemonicParsing="false" text="Calculator">
 					<items>
-						<MenuItem mnemonicParsing="false" onAction="#_event_close"
-							text="Close" />
+						<MenuItem mnemonicParsing="false" onAction="#_event_close" text="Close" />
 					</items>
 				</Menu>
 			</menus>
