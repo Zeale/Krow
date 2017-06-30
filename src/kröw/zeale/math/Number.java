@@ -3,7 +3,7 @@ package kröw.zeale.math;
 import kröw.zeale.math.exceptions.EmptyEquationException;
 import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 
-public class Number implements Element {
+class Number implements Element {
 
 	@Deprecated
 	public void chain(Operation operation, Element nextElement) {
@@ -21,7 +21,6 @@ public class Number implements Element {
 		this.value = value;
 	}
 
-	@SuppressWarnings("unused")
 	@Deprecated
 	public Number(double value, Operation operation, Element nextElement) {
 		this.value = value;

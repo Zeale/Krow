@@ -3,7 +3,7 @@ package kröw.zeale.math;
 import kröw.zeale.math.exceptions.EmptyEquationException;
 import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 
-public abstract class Function implements Element {
+abstract class Function implements Element {
 
 	protected final String params;
 
@@ -122,7 +122,7 @@ public abstract class Function implements Element {
 		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
 			return Math.sin(autoParse());
 		}
-		
+
 	}
 
 	private static final class Cosine extends Function {
@@ -135,7 +135,7 @@ public abstract class Function implements Element {
 		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
 			return Math.cos(autoParse());
 		}
-		
+
 	}
 
 	private static final class Tangent extends Function {
@@ -148,7 +148,7 @@ public abstract class Function implements Element {
 		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
 			return Math.tan(autoParse());
 		}
-		
+
 	}
 
 }
