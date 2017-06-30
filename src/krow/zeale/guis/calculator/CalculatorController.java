@@ -55,6 +55,8 @@ public class CalculatorController {
 			setError("What do you want me to evaluate???...");
 		} catch (UnmatchedParenthesisException e) {
 			setError("There are an unequal amount of '(' and ')' characters...");
+		} catch (Exception e) {
+			setError("Something went wrong...");
 		}
 	}
 
