@@ -53,6 +53,15 @@ public class CalculatorController {
 	}
 
 	@FXML
+	private void _event_backspace() {
+		String equation = getEquation();
+		int length = equation.length();
+		if (length <= 0)
+			return;
+		setEquation(equation.substring(0, length - 1));
+	}
+
+	@FXML
 	private void _event_evaluate() {
 		try {
 			setEquation(String.valueOf(parser.evaluate(getEquation())));

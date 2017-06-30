@@ -108,6 +108,11 @@
                                     <DropShadow spread="0.41" />
                                  </effect>
                               </Button>
+                              <Button focusTraversable="false" layoutX="258.0" layoutY="203.0" mnemonicParsing="false" onAction="#_event_backspace" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="BKSPC" textAlignment="CENTER">
+                                 <effect>
+                                    <DropShadow spread="0.41" />
+                                 </effect>
+                              </Button>
                            </children>
                         </AnchorPane>
                   </content>
