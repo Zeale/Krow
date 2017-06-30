@@ -87,6 +87,16 @@ public class CalculatorController {
 		concatEquation(((Button) e.getSource()).getText());
 	}
 
+	@FXML
+	private void _event_operatorClicked(ActionEvent e) {
+		concatEquation(((Button) e.getSource()).getText());
+	}
+
+	@FXML
+	private void _event_functionClicked(ActionEvent e) {
+		concatEquation((String) ((Button) e.getSource()).getText() + "(");
+	}
+
 	void setParser(EquationParser parser) {
 		this.parser = parser;
 	}
