@@ -126,17 +126,12 @@
                                     <DropShadow spread="0.41" />
                                  </effect>
                               </Button>
-                              <Button focusTraversable="false" layoutX="116.0" layoutY="21.0" mnemonicParsing="false" onAction="#_event_functionClicked" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="Log10" textAlignment="CENTER">
+                              <Button focusTraversable="false" layoutX="151.0" layoutY="21.0" mnemonicParsing="false" onAction="#_event_functionClicked" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="Log10" textAlignment="CENTER">
                                  <effect>
                                     <DropShadow spread="0.41" />
                                  </effect>
                               </Button>
-                              <Button focusTraversable="false" layoutX="215.0" layoutY="21.0" mnemonicParsing="false" onAction="#_event_functionClicked" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="Sqrt" textAlignment="CENTER">
-                                 <effect>
-                                    <DropShadow spread="0.41" />
-                                 </effect>
-                              </Button>
-                              <Button focusTraversable="false" layoutX="294.0" layoutY="21.0" mnemonicParsing="false" onAction="#_event_functionClicked" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="Sqrt" textAlignment="CENTER">
+                              <Button focusTraversable="false" layoutX="288.0" layoutY="21.0" mnemonicParsing="false" onAction="#_event_functionClicked" prefHeight="44.0" prefWidth="73.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="Sqrt" textAlignment="CENTER">
                                  <effect>
                                     <DropShadow spread="0.41" />
                                  </effect>
