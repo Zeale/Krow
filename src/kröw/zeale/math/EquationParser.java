@@ -29,15 +29,11 @@ public class EquationParser {
 		if (!isNumb())
 			throw new NumberFormatException();
 		// Forward length and backward length.
-		int flen = 0, blen = 0;
-		while (position + --blen > -1 && isNumb(
-				position + blen))/* This loop shouldn't be necessary... */
-			;
-		blen++;
+		int flen = 0;
 		while (position + ++flen < equation.length() && isNumb(position + flen))
 			;
 		/* The above needs to be worked on... */
-		double value = Double.valueOf(equation.substring(position + blen, position + flen));
+		double value = Double.valueOf(equation.substring(position, position + flen));
 		position += flen;
 		return new Number(value);
 
@@ -56,13 +52,11 @@ public class EquationParser {
 	private Function getFunction() throws UnmatchedParenthesisException {
 		if (!isFunc(position))
 			throw new NumberFormatException();
-		int flen = -1, blen = 0;
-		while (position + --blen > -1 && isFunc(position + blen))
-			;
-		blen++;
+		int flen = -1;
+		
 		while (position + ++flen < equation.length() && isFunc(position + flen))
 			;
-		String name = equation.substring(position + blen, position + flen);
+		String name = equation.substring(position, position + flen);
 		position += flen;// This covers the opening parenthesis as well as
 							// the function's name...
 		int posSubEquOpen = ++position;
@@ -90,15 +84,12 @@ public class EquationParser {
 			throw new NumberFormatException();
 
 		// Forward length and backward length.
-		int flen = 0, blen = 0;
-		while (position + --blen > -1 && isOperator(equation.charAt(position + blen)))
-			;
-		blen++;
+		int flen = 0;
 		while (position + ++flen < equation.length() && isOperator(equation.charAt(position + flen)))
 			;
 		// For now each operation should be one character long, but better
 		// safe than sorry.
-		Operation operation = Operation.getOperation(equation.substring(position + blen, position + flen));
+		Operation operation = Operation.getOperation(equation.substring(position, position + flen));
 		position += flen;
 		return operation;
 	}
