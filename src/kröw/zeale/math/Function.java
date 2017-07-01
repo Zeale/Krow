@@ -68,6 +68,8 @@ abstract class Function implements Element {
 		case "arccosine":
 		case "arcosine":
 			return new ArcCosine(input);
+		case "cbrt":
+			return new Cbrt(input);
 		default:
 			return null;
 		}
@@ -204,4 +206,16 @@ abstract class Function implements Element {
 
 	}
 
+	private static final class Cbrt extends Function {
+
+		public Cbrt(String input) {
+			super(input);
+		}
+
+		@Override
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+			return Math.cbrt(autoParse());
+		}
+
+	}
 }
