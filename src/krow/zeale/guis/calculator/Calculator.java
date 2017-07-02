@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import kröw.zeale.math.EquationParser;
 import kröw.zeale.math.exceptions.EmptyEquationException;
+import kröw.zeale.math.exceptions.IrregularCharacterException;
 import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 import wolf.zeale.guis.Window;
 
@@ -104,7 +105,8 @@ public class Calculator {
 		stage.show();
 	}
 
-	public double calculate() throws EmptyEquationException, UnmatchedParenthesisException {
+	public double calculate()
+			throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 		double result = parser.evaluate(controller.getEquation());
 		controller.setEquation(Double.toString(result));
 		return result;

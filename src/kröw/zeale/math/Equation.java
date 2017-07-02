@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import kröw.zeale.math.exceptions.EmptyEquationException;
+import kröw.zeale.math.exceptions.IrregularCharacterException;
 import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 
 class Equation extends ArrayList<Object> {
@@ -47,7 +48,7 @@ class Equation extends ArrayList<Object> {
 		super.add(element);
 	}
 
-	public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+	public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 
 		for (byte precedence = 3; precedence > -1; precedence--)
 			for (int i = 2; i < size() && i > 0; i += 2)

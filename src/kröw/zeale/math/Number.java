@@ -1,6 +1,7 @@
 package kröw.zeale.math;
 
 import kröw.zeale.math.exceptions.EmptyEquationException;
+import kröw.zeale.math.exceptions.IrregularCharacterException;
 import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 
 class Number implements Element {
@@ -29,7 +30,7 @@ class Number implements Element {
 	}
 
 	@Override
-	public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+	public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 		if (!(operation == null || nextElement == null)) {
 			return operation.evaluate(value, nextElement.evaluate());
 		}

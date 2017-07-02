@@ -1,11 +1,14 @@
 package kröw.zeale.math;
 
+import kröw.zeale.math.exceptions.DuplicateDecimalException;
 import kröw.zeale.math.exceptions.EmptyEquationException;
+import kröw.zeale.math.exceptions.IrregularCharacterException;
 import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 
 public class EquationParser {
 
-	public double evaluate(String equation) throws EmptyEquationException, UnmatchedParenthesisException {
+	public double evaluate(String equation)
+			throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 		if (equation.isEmpty())
 			throw new EmptyEquationException();
 		reset();
@@ -24,14 +27,22 @@ public class EquationParser {
 	private volatile String equation;
 	private int position;
 
-	private Number getNumber() {
+	private Number getNumber() throws IrregularCharacterException {
 		// TODO Fix up these methods...
 		if (!isNumb())
 			throw new NumberFormatException();
 		// Forward length and backward length.
 		int flen = 0;
-		while (position + ++flen < equation.length() && isNumb(position + flen))
-			;
+		char c;
+		boolean hasDecimal = false;
+		while (position + ++flen < equation.length() && isNumb((c = equation.charAt(position + flen))))
+			if (c == '.')
+				if (hasDecimal)
+					throw new DuplicateDecimalException("A duplicate decimal was found while parsing a number...",
+							equation, position + flen);
+				else
+					hasDecimal = true;
+
 		/* The above needs to be worked on... */
 		double value = Double.valueOf(equation.substring(position, position + flen));
 		position += flen;
@@ -39,7 +50,7 @@ public class EquationParser {
 
 	}
 
-	private Element getElement() throws UnmatchedParenthesisException {
+	private Element getElement() throws UnmatchedParenthesisException, IrregularCharacterException {
 		if (isOperator(getCurrChar()))
 			throw new NumberFormatException();
 		if (isNumb())
@@ -53,7 +64,7 @@ public class EquationParser {
 		if (!isFunc(position))
 			throw new NumberFormatException();
 		int flen = -1;
-		
+
 		while (position + ++flen < equation.length() && isFunc(position + flen))
 			;
 		String name = equation.substring(position, position + flen);
@@ -147,6 +158,10 @@ public class EquationParser {
 									// definitely a number...
 				return true;
 		}
+	}
+
+	private boolean isNumb(char c) {
+		return c == '.' || Character.isDigit(c);
 	}
 
 	private boolean isNumb() {

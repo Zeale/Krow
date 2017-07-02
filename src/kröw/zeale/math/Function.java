@@ -1,6 +1,7 @@
 package kröw.zeale.math;
 
 import kröw.zeale.math.exceptions.EmptyEquationException;
+import kröw.zeale.math.exceptions.IrregularCharacterException;
 import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 
 abstract class Function implements Element {
@@ -31,8 +32,12 @@ abstract class Function implements Element {
 	 *             Incase {@link #params} has unmatched parentheses
 	 * @throws EmptyEquationException
 	 *             Incase {@link #params} is empty.
+	 * @throws IrregularCharacterException
+	 *             Incase there is an irregularly placed character in the
+	 *             equation.
 	 */
-	protected double autoParse() throws EmptyEquationException, UnmatchedParenthesisException {
+	protected double autoParse()
+			throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 		return new EquationParser().evaluate(params);
 	}
 
@@ -87,7 +92,7 @@ abstract class Function implements Element {
 		 * @see krow.zeale.guis.calculator.Calculator.Parser.Element# evaluate()
 		 */
 		@Override
-		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 			return Math.log(autoParse());
 		}
 
@@ -105,7 +110,7 @@ abstract class Function implements Element {
 		 * @see krow.zeale.guis.calculator.Calculator.Parser.Element# evaluate()
 		 */
 		@Override
-		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 			return Math.log10(autoParse());
 		}
 	}
@@ -118,7 +123,7 @@ abstract class Function implements Element {
 		 * @see krow.zeale.guis.calculator.Calculator.Parser.Element# evaluate()
 		 */
 		@Override
-		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 			return Math.sqrt(autoParse());
 		}
 
@@ -135,7 +140,7 @@ abstract class Function implements Element {
 		}
 
 		@Override
-		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 			return Math.sin(autoParse());
 		}
 
@@ -148,7 +153,7 @@ abstract class Function implements Element {
 		}
 
 		@Override
-		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 			return Math.cos(autoParse());
 		}
 
@@ -161,7 +166,7 @@ abstract class Function implements Element {
 		}
 
 		@Override
-		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 			return Math.tan(autoParse());
 		}
 
@@ -174,7 +179,7 @@ abstract class Function implements Element {
 		}
 
 		@Override
-		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 			return Math.atan(autoParse());
 		}
 
@@ -187,7 +192,7 @@ abstract class Function implements Element {
 		}
 
 		@Override
-		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 			return Math.asin(autoParse());
 		}
 
@@ -200,7 +205,7 @@ abstract class Function implements Element {
 		}
 
 		@Override
-		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 			return Math.acos(autoParse());
 		}
 
@@ -213,7 +218,7 @@ abstract class Function implements Element {
 		}
 
 		@Override
-		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException {
+		public double evaluate() throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 			return Math.cbrt(autoParse());
 		}
 

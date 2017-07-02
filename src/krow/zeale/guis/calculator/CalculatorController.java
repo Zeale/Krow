@@ -6,7 +6,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextField;
 import kröw.zeale.math.EquationParser;
+import kröw.zeale.math.exceptions.DuplicateDecimalException;
 import kröw.zeale.math.exceptions.EmptyEquationException;
+import kröw.zeale.math.exceptions.IrregularCharacterException;
 import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 
 /**
@@ -69,6 +71,11 @@ public class CalculatorController {
 			setError("What do you want me to evaluate???...");
 		} catch (UnmatchedParenthesisException e) {
 			setError("There are an unequal amount of '(' and ')' characters...");
+		} catch (DuplicateDecimalException e) {
+			setError("There is a duplicate decimal in a number at position " + (e.getPosition() + 1)
+					+ " of the equation.");
+		} catch (IrregularCharacterException e) {
+			setError("The character at position " + e.getPosition() + " was unexpected.");
 		} catch (Exception e) {
 			setError("Something went wrong...");
 		}
