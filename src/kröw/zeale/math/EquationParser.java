@@ -13,7 +13,6 @@ public class EquationParser {
 			throw new EmptyEquationException();
 		reset();
 		this.equation = equation;
-
 		Equation equ = new Equation();
 		Element e = getElement();
 		equ.start(e);
@@ -29,13 +28,18 @@ public class EquationParser {
 
 	private Number getNumber() throws IrregularCharacterException {
 		// TODO Fix up these methods...
+
 		if (!isNumb())
 			throw new NumberFormatException();
+
 		// Forward length and backward length.
 		int flen = 0;
+		if (getCurrChar() == '-')
+			flen++;
+
 		char c;
 		boolean hasDecimal = false;
-		while (position + ++flen < equation.length() && isNumb((c = equation.charAt(position + flen))))
+		while (position + ++flen < equation.length() && isNumb(c = equation.charAt(position + flen)))
 			if (c == '.')
 				if (hasDecimal)
 					throw new DuplicateDecimalException("A duplicate decimal was found while parsing a number...",
@@ -51,7 +55,7 @@ public class EquationParser {
 	}
 
 	private Element getElement() throws UnmatchedParenthesisException, IrregularCharacterException {
-		if (isOperator(getCurrChar()))
+		if (isOperator(position))
 			throw new NumberFormatException();
 		if (isNumb())
 			return getNumber();
@@ -76,9 +80,9 @@ public class EquationParser {
 
 			if (position >= equation.length())
 				throw new UnmatchedParenthesisException();
-			else if (getCurrChar().equals("("))
+			else if (getCurrCharAsString().equals("("))
 				parentheses++;
-			else if (getCurrChar().equals(")"))
+			else if (getCurrCharAsString().equals(")"))
 				parentheses--;
 		}
 		return Function.getFunction(name, equation.substring(posSubEquOpen, (position) - 1));
@@ -86,8 +90,7 @@ public class EquationParser {
 
 	private boolean isFunc(int pos) {
 		// TODO Implement an iteration technique once we add constants.
-		return !(isNumb(pos) || isOperator(equation.charAt(pos)) || equation.charAt(pos) == '('
-				|| equation.charAt(pos) == ')');
+		return !(isNumb(pos) || isOperatorCharacter(pos) || equation.charAt(pos) == '(' || equation.charAt(pos) == ')');
 	}
 
 	private Operation getOperation() {
@@ -96,7 +99,7 @@ public class EquationParser {
 
 		// Forward length and backward length.
 		int flen = 0;
-		while (position + ++flen < equation.length() && isOperator(equation.charAt(position + flen)))
+		while (position + ++flen < equation.length() && isOperator(position + flen))
 			;
 		// For now each operation should be one character long, but better
 		// safe than sorry.
@@ -105,38 +108,22 @@ public class EquationParser {
 		return operation;
 	}
 
-	static boolean isOperator(char c) {
-		return c == '+' || c == '-' || c == '*' || c == '/' || c == '^' || c == 'x' || c == '÷' || c == '%';
-	}
-
-	private static boolean isOperator(String c) {
-		return isOperator(c.charAt(0));
-	}
-
 	private boolean isNumb(int position) {
 		if (position < 0 || position >= equation.length())
 			return false;
-		int flen = 0, blen = 0;
-		if (isOperator(equation.charAt(position)))
-			return false;
-		// Check behind the given position by iterating through each
-		// character.
-		while (position + --blen > -1) {
-			// Get the character at the current position.
-			char c = equation.charAt(position + blen);
 
-			if (Character.isDigit(c) || c == '.')// If its part of a numb
-				continue;
-			else if (c == 'x')// Both operator and part of func name
-				continue;
-			else if (Character.isAlphabetic(c) || c == '(')// It's a
-															// function.
+		int flen = 0;
+		if (isOperatorCharacter(position)) {
+			if (equation.charAt(position) == '-')
+				if (position != 0 && !isOperatorCharacter(position - 1))
+					return false;
+				else {
+					flen++;
+				}
+			else
 				return false;
-			else if (isOperator(c))// No letters behind the
-									// given position. Now to
-									// check infront.
-				break;
 		}
+
 		// Check infront of the given position...
 		while (true) {
 			if (!(position + ++flen < equation.length())) {
@@ -152,12 +139,19 @@ public class EquationParser {
 			else if (Character.isAlphabetic(c) || c == ')')// It's a
 															// function.
 				return false;
-			else if (isOperator(c))// No letters infront or
-									// behind the given
-									// position. This is
-									// definitely a number...
+			else if (isOperatorCharacter(position + flen))
 				return true;
 		}
+	}
+
+	public boolean isOperatorCharacter(int position) {
+		return Operation.getOperation(equation.charAt(position)) != null;
+	}
+
+	public boolean isOperator(int position) {
+		char c = equation.charAt(position);
+		return ((c == '+' || c == '-') && !(position == 0 || isOperator(position - 1))) || c == '*' || c == '/'
+				|| c == '^' || c == 'x' || c == '÷' || c == '%';
 	}
 
 	private boolean isNumb(char c) {
@@ -172,8 +166,12 @@ public class EquationParser {
 		return equation.substring(position + 1, position + 1);
 	}
 
-	private String getCurrChar() {
+	private String getCurrCharAsString() {
 		return equation.substring(position, position + 1);
+	}
+
+	private char getCurrChar() {
+		return equation.charAt(position);
 	}
 
 	/**

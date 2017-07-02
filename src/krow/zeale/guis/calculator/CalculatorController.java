@@ -10,6 +10,7 @@ import kröw.zeale.math.exceptions.DuplicateDecimalException;
 import kröw.zeale.math.exceptions.EmptyEquationException;
 import kröw.zeale.math.exceptions.IrregularCharacterException;
 import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
+import wolf.zeale.Wolf;
 
 /**
  * The controller for the calculator window.
@@ -69,15 +70,25 @@ public class CalculatorController {
 			setEquation(String.valueOf(parser.evaluate(getEquation())));
 		} catch (EmptyEquationException e) {
 			setError("What do you want me to evaluate???...");
+			if (Wolf.DEBUG_MODE)
+				e.printStackTrace();
 		} catch (UnmatchedParenthesisException e) {
 			setError("There are an unequal amount of '(' and ')' characters...");
+			if (Wolf.DEBUG_MODE)
+				e.printStackTrace();
 		} catch (DuplicateDecimalException e) {
 			setError("There is a duplicate decimal in a number at position " + (e.getPosition() + 1)
 					+ " of the equation.");
+			if (Wolf.DEBUG_MODE)
+				e.printStackTrace();
 		} catch (IrregularCharacterException e) {
 			setError("The character at position " + e.getPosition() + " was unexpected.");
+			if (Wolf.DEBUG_MODE)
+				e.printStackTrace();
 		} catch (Exception e) {
 			setError("Something went wrong...");
+			if (Wolf.DEBUG_MODE)
+				e.printStackTrace();
 		}
 	}
 

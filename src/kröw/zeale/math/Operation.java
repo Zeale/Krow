@@ -95,8 +95,6 @@ interface Operation {
 	double evaluate(double input1, double input2);
 
 	public static Operation getOperation(char c) {
-		if (!EquationParser.isOperator(c))
-			throw new NumberFormatException();
 		switch (c) {
 		case '+':
 			return ADD;
@@ -113,7 +111,7 @@ interface Operation {
 		case '%':
 			return MODULUS;
 		default:
-			throw new NumberFormatException();
+			return null;
 		}
 	}
 
