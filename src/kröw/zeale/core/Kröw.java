@@ -58,7 +58,8 @@ public final class Kröw extends Application {
 	private static final File README_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Readme.txt"),
 			LICENSE_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "License.txt"),
 			CREDITS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Credits.txt"),
-			PLANS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Plans.txt");
+			PLANS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Plans.txt"),
+			DATA_INCLUDES_FILE = new File(KRÖW_HOME_DIRECTORY, "includes.kcfg");
 
 	static {
 		// Create the following folders if they don't already exist and catch
@@ -80,6 +81,8 @@ public final class Kröw extends Application {
 				Wolf.copyFileToDirectory(new File("resources/krow/zeale/credits.txt"), Kröw.KRÖW_HOME_DIRECTORY);
 			if (!Kröw.PLANS_FILE.exists())
 				Wolf.copyFileToDirectory(new File("resources/krow/zeale/plans.txt"), Kröw.KRÖW_HOME_DIRECTORY);
+			if (!Kröw.DATA_INCLUDES_FILE.exists())
+				Wolf.copyFileToDirectory(new File("resources/krow/zeale/includes.kcfg"), KRÖW_HOME_DIRECTORY);
 		} catch (final RuntimeException e) {
 			System.err.println(
 					"An exception occurred while trying to create or check some necessary directories. The program will print its errors and exit.");
