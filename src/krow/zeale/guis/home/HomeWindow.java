@@ -148,11 +148,16 @@ public class HomeWindow extends Window {
 	@FXML
 	private ImageView krow;
 
+	@FXML
+	private Button secretButton;
+
 	/**
 	 * {@link FadeTransition}s used for the {@link #krow} image when the mouse
 	 * hovers over or off of it.
 	 */
 	private FadeTransition krowFadeInTransition, krowFadeOutTransition;
+
+	private FadeTransition secretButtonHoverInTransition, secretButtonHoverOutTransition;
 
 	/**
 	 * <p>
@@ -307,6 +312,15 @@ public class HomeWindow extends Window {
 		krowFadeOutTransition = new FadeTransition(Duration.seconds(0.4), krow);
 		krowFadeOutTransition.setInterpolator(Interpolator.EASE_OUT);
 		krowFadeOutTransition.setToValue(0.1);
+
+		// Secret button (This isn't here)
+		secretButtonHoverInTransition = new FadeTransition(Duration.seconds(0.20), secretButton);
+		secretButtonHoverInTransition.setInterpolator(Interpolator.EASE_BOTH);
+		secretButtonHoverInTransition.setToValue(0.2);
+
+		secretButtonHoverOutTransition = new FadeTransition(Duration.seconds(0.55), secretButton);
+		secretButtonHoverOutTransition.setInterpolator(Interpolator.EASE_BOTH);
+		secretButtonHoverOutTransition.setToValue(0);
 	}
 
 	/**
@@ -448,6 +462,18 @@ public class HomeWindow extends Window {
 		krowFadeOutTransition.play();
 	}
 
+	@FXML
+	private void _event_mouseEnteredSecretButton() {
+		secretButtonHoverInTransition.setFromValue(secretButton.getOpacity());
+		secretButtonHoverInTransition.play();
+	}
+
+	@FXML
+	private void _event_mouseExitedSecretButton() {
+		secretButtonHoverOutTransition.setFromValue(secretButton.getOpacity());
+		secretButtonHoverOutTransition.play();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -478,6 +504,11 @@ public class HomeWindow extends Window {
 			HomeWindow.fileManager.setTab(HomeWindow.fileManager.RESTORE);
 		HomeWindow.fileManager.toFront();
 		HomeWindow.fileManager.centerOnScreen();
+	}
+
+	@FXML
+	private void _event_secretButtonClicked() {
+
 	}
 
 }
