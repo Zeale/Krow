@@ -236,6 +236,16 @@ public class ConstructManagerWindow extends Window {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see kröw.zeale.v1.program.guis.Window#getWindowFile()
+	 */
+	@Override
+	public String getWindowFile() {
+		return "ConstructManager.fxml";
+	}
+
 	/**
 	 * Called when the user attempts to go back to the Construct table.
 	 */
@@ -258,6 +268,43 @@ public class ConstructManagerWindow extends Window {
 		clearMarkMakerEditor();
 		markTable.setVisible(true);
 		editMarkPane.setVisible(false);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see kröw.zeale.v1.program.guis.Window#initialize()
+	 */
+	@SuppressWarnings("deprecation")
+	@Override
+	public void initialize() {
+		Window.setPaneDraggableByNode(menubar);
+
+		/*
+		 * More deprecated methods with a catch block. The {@link
+		 * HomeWindow#initialize()} method contains a description and the
+		 * printed "error" of what happens when the NoSuchMethodError is thrown.
+		 */
+		try {
+			nameTable.impl_setReorderable(false);
+			genderTable.impl_setReorderable(false);
+			descriptionTable.impl_setReorderable(false);
+			lifeTable.impl_setReorderable(false);
+		} catch (final NoSuchMethodError e) {
+		}
+
+		updateConstructs();
+		constructs.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getConstructs()));
+
+		nameTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Name"));
+		genderTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Gender"));
+		descriptionTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Description"));
+		lifeTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Living"));
+
+		markNameColumn.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Name"));
+		markDescriptionColumn.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Description"));
+		markGenderColumn.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Gender"));
+		markLifeColumn.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Living"));
 	}
 
 	/**
@@ -454,53 +501,6 @@ public class ConstructManagerWindow extends Window {
 				new PieChart.Data("Dead Mks (" + dc.format((double) dead / (dead + living) * 100) + "%)", dead));
 		lifePieChart.setData(list);
 
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see kröw.zeale.v1.program.guis.Window#getWindowFile()
-	 */
-	@Override
-	public String getWindowFile() {
-		return "ConstructManager.fxml";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see kröw.zeale.v1.program.guis.Window#initialize()
-	 */
-	@SuppressWarnings("deprecation")
-	@Override
-	public void initialize() {
-		Window.setPaneDraggableByNode(menubar);
-
-		/*
-		 * More deprecated methods with a catch block. The {@link
-		 * HomeWindow#initialize()} method contains a description and the
-		 * printed "error" of what happens when the NoSuchMethodError is thrown.
-		 */
-		try {
-			nameTable.impl_setReorderable(false);
-			genderTable.impl_setReorderable(false);
-			descriptionTable.impl_setReorderable(false);
-			lifeTable.impl_setReorderable(false);
-		} catch (final NoSuchMethodError e) {
-		}
-
-		updateConstructs();
-		constructs.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getConstructs()));
-
-		nameTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Name"));
-		genderTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Gender"));
-		descriptionTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Description"));
-		lifeTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Living"));
-
-		markNameColumn.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Name"));
-		markDescriptionColumn.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Description"));
-		markGenderColumn.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Gender"));
-		markLifeColumn.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Living"));
 	}
 
 }

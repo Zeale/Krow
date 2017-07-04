@@ -25,63 +25,6 @@ import wolf.mindset.MindsetObject;
 final class OldVersionLoader {
 
 	/**
-	 * Prevent instantiation of this class.
-	 */
-	private OldVersionLoader() {
-
-	}
-
-	/**
-	 * Returns an {@link ObjectInputStream} which can be used to load previous
-	 * versions of {@link MindsetObject}s or current versions of
-	 * {@link MindsetObject}s. Loaded objects should be saved using this class's
-	 * {@link #getOutputStream(File)} output stream. Doing so will save the
-	 * object with the class of the newer version of {@link MindsetObject}, so
-	 * the saved files will be updated to the current version of the program.
-	 *
-	 * @param file
-	 *            The {@link File} to build the {@link ObjectInputStream} with.
-	 * @return A new {@link ObjectInputStream} which can backwards-compatibly
-	 *         load {@link MindsetObject}s. The stream will be built using the
-	 *         specified {@link File}.
-	 * @throws FileNotFoundException
-	 *             As specified by
-	 *             {@link FileInputStream#FileInputStream(File)}.
-	 * @throws IOException
-	 *             As specified by
-	 *             {@link java.io.ObjectInputStream#ObjectInputStream(InputStream)}.
-	 */
-	public static ObjectInputStream getInputStream(final File file) throws FileNotFoundException, IOException {
-		return new ObjectInputStream(new FileInputStream(file));
-	}
-
-	/**
-	 * <p>
-	 * Returns an {@link ObjectInputStream} which can safely save old versions
-	 * of {@link MindsetObject}s as well as current versions. This
-	 * {@link ObjectOutputStream} will save previous versions of objects as
-	 * objects of the current version. This means that an object of the version
-	 * <code>0.1</code> can be loaded with an {@link #getInputStream(File) Old
-	 * Input Stream} and then saved with this method's returned
-	 * <code>ObjectOutputStream</code> and the saved object will be an object of
-	 * the current version of this program, not version <code>0.1</code>.
-	 *
-	 * @param file
-	 *            The {@link File} to save the object to.
-	 * @return A new {@link ObjectOutputStream} which will change the version of
-	 *         old objects to that of the current version.
-	 * @throws FileNotFoundException
-	 *             As specified by
-	 *             {@link FileOutputStream#FileOutputStream(File)}.
-	 * @throws IOException
-	 *             As specified by
-	 *             {@link java.io.ObjectOutputStream#ObjectOutputStream(OutputStream)}.
-	 */
-	public static ObjectOutputStream getOutputStream(final File file) throws FileNotFoundException, IOException {
-		return new ObjectOutputStream(new FileOutputStream(file));
-	}
-
-	/**
 	 * This class is a 'hacked' {@link java.io.ObjectInputStream}. It checks the
 	 * given object's class descriptor and modifies it if it equals one of the
 	 * following:
@@ -195,6 +138,63 @@ final class OldVersionLoader {
 
 			// Then when it's loaded, the object will be loaded
 		}
+
+	}
+
+	/**
+	 * Returns an {@link ObjectInputStream} which can be used to load previous
+	 * versions of {@link MindsetObject}s or current versions of
+	 * {@link MindsetObject}s. Loaded objects should be saved using this class's
+	 * {@link #getOutputStream(File)} output stream. Doing so will save the
+	 * object with the class of the newer version of {@link MindsetObject}, so
+	 * the saved files will be updated to the current version of the program.
+	 *
+	 * @param file
+	 *            The {@link File} to build the {@link ObjectInputStream} with.
+	 * @return A new {@link ObjectInputStream} which can backwards-compatibly
+	 *         load {@link MindsetObject}s. The stream will be built using the
+	 *         specified {@link File}.
+	 * @throws FileNotFoundException
+	 *             As specified by
+	 *             {@link FileInputStream#FileInputStream(File)}.
+	 * @throws IOException
+	 *             As specified by
+	 *             {@link java.io.ObjectInputStream#ObjectInputStream(InputStream)}.
+	 */
+	public static ObjectInputStream getInputStream(final File file) throws FileNotFoundException, IOException {
+		return new ObjectInputStream(new FileInputStream(file));
+	}
+
+	/**
+	 * <p>
+	 * Returns an {@link ObjectInputStream} which can safely save old versions
+	 * of {@link MindsetObject}s as well as current versions. This
+	 * {@link ObjectOutputStream} will save previous versions of objects as
+	 * objects of the current version. This means that an object of the version
+	 * <code>0.1</code> can be loaded with an {@link #getInputStream(File) Old
+	 * Input Stream} and then saved with this method's returned
+	 * <code>ObjectOutputStream</code> and the saved object will be an object of
+	 * the current version of this program, not version <code>0.1</code>.
+	 *
+	 * @param file
+	 *            The {@link File} to save the object to.
+	 * @return A new {@link ObjectOutputStream} which will change the version of
+	 *         old objects to that of the current version.
+	 * @throws FileNotFoundException
+	 *             As specified by
+	 *             {@link FileOutputStream#FileOutputStream(File)}.
+	 * @throws IOException
+	 *             As specified by
+	 *             {@link java.io.ObjectOutputStream#ObjectOutputStream(OutputStream)}.
+	 */
+	public static ObjectOutputStream getOutputStream(final File file) throws FileNotFoundException, IOException {
+		return new ObjectOutputStream(new FileOutputStream(file));
+	}
+
+	/**
+	 * Prevent instantiation of this class.
+	 */
+	private OldVersionLoader() {
 
 	}
 

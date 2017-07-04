@@ -96,6 +96,50 @@ public class LawManagerWindow extends Window {
 	 */
 	private Law lawBeingEdited;
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see kröw.zeale.v1.program.guis.Window#getWindowFile()
+	 */
+	@Override
+	public String getWindowFile() {
+		return "LawManger.fxml";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see kröw.zeale.v1.program.guis.Window#initialize()
+	 */
+	@SuppressWarnings("deprecation")
+	@Override
+	public void initialize() {
+		super.initialize();
+
+		Window.setPaneDraggableByNode(menubar);
+
+		/*
+		 * More deprecated methods with a catch block. The {@link
+		 * HomeWindow#initialize()} method contains an answer to "why?" and the
+		 * printed "error" of what happens when the NoSuchMethodError is thrown.
+		 */
+		try {
+			nameTable.impl_setReorderable(false);
+			ruleTable.impl_setReorderable(false);
+			descriptionTable.impl_setReorderable(false);
+			dateTable.impl_setReorderable(false);
+		} catch (final NoSuchMethodError e) {
+		}
+
+		laws.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getLaws()));
+
+		nameTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Name"));
+		dateTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Creation Date"));
+		descriptionTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Description"));
+		ruleTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Rules"));
+
+	}
+
 	/**
 	 * Called when the user attempts to delete a {@link Law}.
 	 */
@@ -178,50 +222,6 @@ public class LawManagerWindow extends Window {
 		editLawDoneButton.setVisible(true);
 		deleteLawButton.setVisible(true);
 		editRuleField.setVisible(true);
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see kröw.zeale.v1.program.guis.Window#getWindowFile()
-	 */
-	@Override
-	public String getWindowFile() {
-		return "LawManger.fxml";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see kröw.zeale.v1.program.guis.Window#initialize()
-	 */
-	@SuppressWarnings("deprecation")
-	@Override
-	public void initialize() {
-		super.initialize();
-
-		Window.setPaneDraggableByNode(menubar);
-
-		/*
-		 * More deprecated methods with a catch block. The {@link
-		 * HomeWindow#initialize()} method contains an answer to "why?" and the
-		 * printed "error" of what happens when the NoSuchMethodError is thrown.
-		 */
-		try {
-			nameTable.impl_setReorderable(false);
-			ruleTable.impl_setReorderable(false);
-			descriptionTable.impl_setReorderable(false);
-			dateTable.impl_setReorderable(false);
-		} catch (final NoSuchMethodError e) {
-		}
-
-		laws.setItems(new ObservableListWrapper<>(Kröw.CONSTRUCT_MINDSET.getLaws()));
-
-		nameTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Name"));
-		dateTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Creation Date"));
-		descriptionTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Description"));
-		ruleTable.setCellValueFactory(new TableViewable.TableViewCellValueFactory<>("Rules"));
 
 	}
 

@@ -14,14 +14,6 @@ import wolf.zeale.guis.Window;
 
 public class Pages extends Window {
 
-	@FXML
-	private FlowPane centerPane;
-	@FXML
-	private FlowPane leftPane, rightPane;
-
-	@FXML
-	private MenuBar menuBar;
-
 	private static MindsetObject object;
 
 	public static void openNavigationPage() {
@@ -39,6 +31,20 @@ public class Pages extends Window {
 	}
 
 	@FXML
+	private FlowPane centerPane;
+
+	@FXML
+	private FlowPane leftPane, rightPane;
+
+	@FXML
+	private MenuBar menuBar;
+
+	@Override
+	public String getWindowFile() {
+		return "ObjectPage.fxml";
+	}
+
+	@FXML
 	private void goToNormalWindow() {
 		try {
 			Window.setScene(HomeWindow.class, "Home.fxml");
@@ -46,16 +52,6 @@ public class Pages extends Window {
 			if (Wolf.DEBUG_MODE)
 				e.printStackTrace();
 		}
-	}
-
-	@FXML
-	private void onCloseRequested() {
-		Platform.exit();
-	}
-
-	@Override
-	public String getWindowFile() {
-		return "ObjectPage.fxml";
 	}
 
 	@Override
@@ -67,5 +63,10 @@ public class Pages extends Window {
 		centerPane.getChildren().add(title);
 		Window.setPaneDraggableByNode(menuBar);
 
+	}
+
+	@FXML
+	private void onCloseRequested() {
+		Platform.exit();
 	}
 }

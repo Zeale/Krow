@@ -2,87 +2,76 @@ package kröw.zeale.math;
 
 interface Operation {
 
-	default byte getPrecedence() {
-		return 2;
-	}
-
 	final Operation ADD = new Operation() {
 		@Override
-		public byte getPrecedence() {
-			return 0;
-		}
-
-		@Override
-		public double evaluate(double input1, double input2) {
+		public double evaluate(final double input1, final double input2) {
 			return input1 + input2;
 		}
 
-	};
-
-	final Operation NONE = new Operation() {
-
-		@Override
-		public double evaluate(double input1, double input2) {
-			return input1;
-		}
-
-	};
-
-	final Operation SUBTRACT = new Operation() {
 		@Override
 		public byte getPrecedence() {
 			return 0;
 		}
 
+	};
+
+	final Operation NONE = (input1, input2) -> input1;
+
+	final Operation SUBTRACT = new Operation() {
 		@Override
-		public double evaluate(double input1, double input2) {
+		public double evaluate(final double input1, final double input2) {
 			return input1 - input2;
+		}
+
+		@Override
+		public byte getPrecedence() {
+			return 0;
 		}
 
 	};
 
 	final Operation MULTIPLY = new Operation() {
 		@Override
-		public byte getPrecedence() {
-			return 1;
+		public double evaluate(final double input1, final double input2) {
+			return input1 * input2;
 		}
 
 		@Override
-		public double evaluate(double input1, double input2) {
-			return input1 * input2;
+		public byte getPrecedence() {
+			return 1;
 		}
 
 	};
 
 	final Operation DIVIDE = new Operation() {
 		@Override
-		public byte getPrecedence() {
-			return 1;
+		public double evaluate(final double input1, final double input2) {
+			return input1 / input2;
 		}
 
 		@Override
-		public double evaluate(double input1, double input2) {
-			return input1 / input2;
+		public byte getPrecedence() {
+			return 1;
 		}
 
 	};
 
 	final Operation POWER = new Operation() {
 		@Override
-		public byte getPrecedence() {
-			return 2;
+		public double evaluate(final double input1, final double input2) {
+			return Math.pow(input1, input2);
 		}
 
 		@Override
-		public double evaluate(double input1, double input2) {
-			return Math.pow(input1, input2);
+		public byte getPrecedence() {
+			return 2;
 		}
 	};
 
 	final Operation MODULUS = new Operation() {
 
 		@Override
-		public double evaluate(double input1, double input2) {
+		public double evaluate(final double input1, final double input2) {
 			return input1 % input2;
 		}
 
@@ -92,9 +81,7 @@ interface Operation {
 		}
 	};
 
-	double evaluate(double input1, double input2);
-
-	public static Operation getOperation(char c) {
+	public static Operation getOperation(final char c) {
 		switch (c) {
 		case '+':
 			return ADD;
@@ -115,8 +102,14 @@ interface Operation {
 		}
 	}
 
-	public static Operation getOperation(String c) {
+	public static Operation getOperation(final String c) {
 		return getOperation(c.charAt(0));
+	}
+
+	double evaluate(double input1, double input2);
+
+	default byte getPrecedence() {
+		return 2;
 	}
 
 }

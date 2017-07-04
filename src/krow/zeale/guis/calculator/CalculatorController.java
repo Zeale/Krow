@@ -14,7 +14,7 @@ import wolf.zeale.Wolf;
 
 /**
  * The controller for the calculator window.
- * 
+ *
  * @author Zeale
  *
  */
@@ -26,37 +26,17 @@ public class CalculatorController {
 	@FXML
 	private TextField outputField;
 
-	String getEquation() {
-		return outputField.getText();
-	}
-
-	void concatEquation(String text) {
-		setEquation(getEquation() + text);
-	}
-
-	void setEquation(String equation) {
-		outputField.setStyle("-fx-text-fill: white;");
-		outputField.setText(equation);
-	}
-
-	@FXML
-	private void _event_close() {
-		onClose.run();
-	}
-
 	private Runnable onClose;
 
-	public void setOnClose(Runnable onClose) {
-		this.onClose = onClose;
-	}
+	private EquationParser parser;
 
 	@FXML
-	private void _event_cutDecimal() {
-		try {
-			setEquation("" + (int) Double.parseDouble(getEquation()));
-		} catch (NumberFormatException e) {
-			setError("The text couldn't be parsed as a number...");
-		}
+	private void _event_backspace() {
+		final String equation = getEquation();
+		final int length = equation.length();
+		if (length <= 0)
+			return;
+		setEquation(equation.substring(0, length - 1));
 	}
 
 	@FXML
@@ -65,45 +45,50 @@ public class CalculatorController {
 	}
 
 	@FXML
-	private void _event_backspace() {
-		String equation = getEquation();
-		int length = equation.length();
-		if (length <= 0)
-			return;
-		setEquation(equation.substring(0, length - 1));
+	private void _event_close() {
+		onClose.run();
+	}
+
+	@FXML
+	private void _event_cutDecimal() {
+		try {
+			setEquation("" + (int) Double.parseDouble(getEquation()));
+		} catch (final NumberFormatException e) {
+			setError("The text couldn't be parsed as a number...");
+		}
 	}
 
 	@FXML
 	private void _event_evaluate() {
 		try {
 			setEquation(String.valueOf(parser.evaluate(getEquation())));
-		} catch (EmptyEquationException e) {
+		} catch (final EmptyEquationException e) {
 			setError("What do you want me to evaluate???...");
 			if (Wolf.DEBUG_MODE)
 				e.printStackTrace();
-		} catch (UnmatchedParenthesisException e) {
+		} catch (final UnmatchedParenthesisException e) {
 			setError("There are an unequal amount of '(' and ')' characters...");
 			if (Wolf.DEBUG_MODE)
 				e.printStackTrace();
-		} catch (DuplicateDecimalException e) {
+		} catch (final DuplicateDecimalException e) {
 			setError("There is a duplicate decimal in a number at position " + (e.getPosition() + 1)
 					+ " of the equation.");
 			if (Wolf.DEBUG_MODE)
 				e.printStackTrace();
-		} catch (IrregularCharacterException e) {
+		} catch (final IrregularCharacterException e) {
 			setError("The character at position " + e.getPosition() + " was unexpected.");
 			if (Wolf.DEBUG_MODE)
 				e.printStackTrace();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			setError("Something went wrong...");
 			if (Wolf.DEBUG_MODE)
 				e.printStackTrace();
 		}
 	}
 
-	private void setError(String text) {
-		outputField.setStyle("-fx-text-fill: #C00;");
-		outputField.setText(text);
+	@FXML
+	private void _event_functionClicked(final ActionEvent e) {
+		concatEquation(((Button) e.getSource()).getText() + "(");
 	}
 
 	/**
@@ -120,30 +105,45 @@ public class CalculatorController {
 	 * dealt with later. Besides, I'd much rather have the parser support
 	 * different characters than have the GUI convert all characters to whatever
 	 * necessary, (assuming a conversion must be implemented for numbers...).
-	 * 
+	 *
 	 * @param e
 	 *            The {@link ActionEvent} used to get the source {@link Button}
 	 *            and its text.
 	 */
 	@FXML
-	private void _event_numberClicked(ActionEvent e) {
+	private void _event_numberClicked(final ActionEvent e) {
 		concatEquation(((Button) e.getSource()).getText());
 	}
 
 	@FXML
-	private void _event_operatorClicked(ActionEvent e) {
+	private void _event_operatorClicked(final ActionEvent e) {
 		concatEquation(((Button) e.getSource()).getText());
 	}
 
-	@FXML
-	private void _event_functionClicked(ActionEvent e) {
-		concatEquation((String) ((Button) e.getSource()).getText() + "(");
+	void concatEquation(final String text) {
+		setEquation(getEquation() + text);
 	}
 
-	void setParser(EquationParser parser) {
+	String getEquation() {
+		return outputField.getText();
+	}
+
+	void setEquation(final String equation) {
+		outputField.setStyle("-fx-text-fill: white;");
+		outputField.setText(equation);
+	}
+
+	private void setError(final String text) {
+		outputField.setStyle("-fx-text-fill: #C00;");
+		outputField.setText(text);
+	}
+
+	public void setOnClose(final Runnable onClose) {
+		this.onClose = onClose;
+	}
+
+	void setParser(final EquationParser parser) {
 		this.parser = parser;
 	}
-
-	private EquationParser parser;
 
 }

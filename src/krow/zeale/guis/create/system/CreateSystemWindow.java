@@ -55,6 +55,26 @@ public class CreateSystemWindow extends Window {
 	@FXML
 	private MenuBar menuBar;
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see kröw.zeale.v1.program.guis.Window#getWindowFile()
+	 */
+	@Override
+	public String getWindowFile() {
+		return "CreateSystemWindow.fxml";
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see kröw.zeale.v1.program.guis.Window#initialize()
+	 */
+	@Override
+	public void initialize() {
+		Window.setPaneDraggableByNode(menuBar);
+	}
+
 	/**
 	 * Called when the user attempts to close the program.
 	 */
@@ -95,26 +115,6 @@ public class CreateSystemWindow extends Window {
 
 		Window.spawnLabelAtMousePos("Added the System, " + name + ", successfully", Color.GREEN);
 		Window.setSceneToPreviousScene();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see kröw.zeale.v1.program.guis.Window#getWindowFile()
-	 */
-	@Override
-	public String getWindowFile() {
-		return "CreateSystemWindow.fxml";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see kröw.zeale.v1.program.guis.Window#initialize()
-	 */
-	@Override
-	public void initialize() {
-		Window.setPaneDraggableByNode(menuBar);
 	};
 
 }

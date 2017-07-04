@@ -7,13 +7,14 @@ public class IrregularCharacterException extends Exception {
 	private final int position;
 	private final String equation;
 
-	public IrregularCharacterException(char character, int position, String equation) {
+	public IrregularCharacterException(final char character, final int position, final String equation) {
 		this.character = character;
 		this.position = position;
 		this.equation = equation;
 	}
 
-	public IrregularCharacterException(String message, char character, int position, String equation) {
+	public IrregularCharacterException(final String message, final char character, final int position,
+			final String equation) {
 		super(message);
 		this.character = character;
 		this.position = position;
@@ -28,17 +29,17 @@ public class IrregularCharacterException extends Exception {
 	}
 
 	/**
-	 * @return the position
-	 */
-	public final int getPosition() {
-		return position;
-	}
-
-	/**
 	 * @return the equation
 	 */
 	public final String getEquation() {
 		return equation;
+	}
+
+	/**
+	 * @return the position
+	 */
+	public final int getPosition() {
+		return position;
 	}
 
 }

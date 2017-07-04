@@ -14,16 +14,16 @@ import wolf.zeale.guis.Window;
 
 public class Calculator {
 
-	private Stage stage = new Stage();
-	private CalculatorController controller;
-	private EquationParser parser = new EquationParser();
+	private final Stage stage = new Stage();
+	private final CalculatorController controller;
+	private final EquationParser parser = new EquationParser();
 
 	public Calculator() {
-		FXMLLoader loader = new FXMLLoader(Calculator.class.getResource("Calculator.fxml"));
+		final FXMLLoader loader = new FXMLLoader(Calculator.class.getResource("Calculator.fxml"));
 		try {
 			stage.setScene(new Scene(loader.load()));
 			stage.initStyle(StageStyle.UNDECORATED);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			// This block should never run. Just like in the FileManager class.
 		}
 		controller = loader.<CalculatorController>getController();
@@ -31,6 +31,13 @@ public class Calculator {
 		controller.setParser(parser);
 		Window.setPaneDraggableByNode(stage, stage.getScene().getRoot());
 		Window.setPaneDraggableByNode(stage, controller.menuBar);
+	}
+
+	public double calculate()
+			throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
+		final double result = parser.evaluate(controller.getEquation());
+		controller.setEquation(Double.toString(result));
+		return result;
 	}
 
 	public final double getHeight() {
@@ -77,39 +84,32 @@ public class Calculator {
 		return stage.isShowing();
 	}
 
-	public final void setFullScreen(boolean value) {
+	public final void setFullScreen(final boolean value) {
 		stage.setFullScreen(value);
 	}
 
-	public final void setIconified(boolean value) {
+	public final void setIconified(final boolean value) {
 		stage.setIconified(value);
 	}
 
-	public final void setMaximized(boolean value) {
+	public final void setMaximized(final boolean value) {
 		stage.setMaximized(value);
 	}
 
-	public final void setTitle(String value) {
+	public final void setTitle(final String value) {
 		stage.setTitle(value);
 	}
 
-	public final void setX(double value) {
+	public final void setX(final double value) {
 		stage.setX(value);
 	}
 
-	public final void setY(double value) {
+	public final void setY(final double value) {
 		stage.setY(value);
 	}
 
 	public final void show() {
 		stage.show();
-	}
-
-	public double calculate()
-			throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
-		double result = parser.evaluate(controller.getEquation());
-		controller.setEquation(Double.toString(result));
-		return result;
 	}
 
 }

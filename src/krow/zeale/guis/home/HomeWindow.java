@@ -159,6 +159,28 @@ public class HomeWindow extends Window {
 
 	private FadeTransition secretButtonHoverInTransition, secretButtonHoverOutTransition;
 
+	@FXML
+	private void _event_mouseEnteredSecretButton() {
+		secretButtonHoverInTransition.setFromValue(secretButton.getOpacity());
+		secretButtonHoverInTransition.play();
+	}
+
+	@FXML
+	private void _event_mouseExitedSecretButton() {
+		secretButtonHoverOutTransition.setFromValue(secretButton.getOpacity());
+		secretButtonHoverOutTransition.play();
+	}
+
+	@FXML
+	private void _event_openCalculator() {
+		calculator.show();
+	}
+
+	@FXML
+	private void _event_secretButtonClicked() {
+
+	}
+
 	/**
 	 * <p>
 	 * Called when the user presses the <code>Backup</code> button in the
@@ -199,11 +221,6 @@ public class HomeWindow extends Window {
 			HomeWindow.fileManager.setTab(HomeWindow.fileManager.EXPORT);
 		HomeWindow.fileManager.toFront();
 		HomeWindow.fileManager.centerOnScreen();
-	}
-
-	@FXML
-	private void _event_openCalculator() {
-		calculator.show();
 	}
 
 	/*
@@ -462,18 +479,6 @@ public class HomeWindow extends Window {
 		krowFadeOutTransition.play();
 	}
 
-	@FXML
-	private void _event_mouseEnteredSecretButton() {
-		secretButtonHoverInTransition.setFromValue(secretButton.getOpacity());
-		secretButtonHoverInTransition.play();
-	}
-
-	@FXML
-	private void _event_mouseExitedSecretButton() {
-		secretButtonHoverOutTransition.setFromValue(secretButton.getOpacity());
-		secretButtonHoverOutTransition.play();
-	}
-
 	/*
 	 * (non-Javadoc)
 	 *
@@ -504,11 +509,6 @@ public class HomeWindow extends Window {
 			HomeWindow.fileManager.setTab(HomeWindow.fileManager.RESTORE);
 		HomeWindow.fileManager.toFront();
 		HomeWindow.fileManager.centerOnScreen();
-	}
-
-	@FXML
-	private void _event_secretButtonClicked() {
-
 	}
 
 }

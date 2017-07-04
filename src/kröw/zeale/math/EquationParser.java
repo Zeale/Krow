@@ -7,24 +7,68 @@ import kröw.zeale.math.exceptions.UnmatchedParenthesisException;
 
 public class EquationParser {
 
-	public double evaluate(String equation)
+	private volatile String equation;
+
+	private int position;
+
+	public double evaluate(final String equation)
 			throws EmptyEquationException, UnmatchedParenthesisException, IrregularCharacterException {
 		if (equation.isEmpty())
 			throw new EmptyEquationException();
 		reset();
 		this.equation = equation;
-		Equation equ = new Equation();
-		Element e = getElement();
+		final Equation equ = new Equation();
+		final Element e = getElement();
 		equ.start(e);
-		while (position < equation.length()) {
+		while (position < equation.length())
 			equ.add(getOperation(), getElement());
-		}
 
 		return equ.evaluate();
 	}
 
-	private volatile String equation;
-	private int position;
+	private char getCurrChar() {
+		return equation.charAt(position);
+	}
+
+	private String getCurrCharAsString() {
+		return equation.substring(position, position + 1);
+	}
+
+	private Element getElement() throws UnmatchedParenthesisException, IrregularCharacterException {
+		if (isOperator(position))
+			throw new NumberFormatException();
+		if (isNumb())
+			return getNumber();
+		if (isFunc(position))
+			return getFunction();
+		throw new NumberFormatException();
+	}
+
+	private Function getFunction() throws UnmatchedParenthesisException {
+		if (!isFunc(position))
+			throw new NumberFormatException();
+		int flen = -1;
+
+		while (position + ++flen < equation.length() && isFunc(position + flen))
+			;
+		final String name = equation.substring(position, position + flen);
+		position += flen;// This covers the opening parenthesis as well as
+							// the function's name...
+		final int posSubEquOpen = ++position;
+
+		for (int parentheses = 1; parentheses > 0; nextChar())
+			if (position >= equation.length())
+				throw new UnmatchedParenthesisException();
+			else if (getCurrCharAsString().equals("("))
+				parentheses++;
+			else if (getCurrCharAsString().equals(")"))
+				parentheses--;
+		return Function.getFunction(name, equation.substring(posSubEquOpen, position - 1));
+	}
+
+	private String getNextChar() {
+		return equation.substring(position + 1, position + 1);
+	}
 
 	private Number getNumber() throws IrregularCharacterException {
 		// TODO Fix up these methods...
@@ -48,49 +92,10 @@ public class EquationParser {
 					hasDecimal = true;
 
 		/* The above needs to be worked on... */
-		double value = Double.valueOf(equation.substring(position, position + flen));
+		final double value = Double.valueOf(equation.substring(position, position + flen));
 		position += flen;
 		return new Number(value);
 
-	}
-
-	private Element getElement() throws UnmatchedParenthesisException, IrregularCharacterException {
-		if (isOperator(position))
-			throw new NumberFormatException();
-		if (isNumb())
-			return getNumber();
-		if (isFunc(position))
-			return getFunction();
-		throw new NumberFormatException();
-	}
-
-	private Function getFunction() throws UnmatchedParenthesisException {
-		if (!isFunc(position))
-			throw new NumberFormatException();
-		int flen = -1;
-
-		while (position + ++flen < equation.length() && isFunc(position + flen))
-			;
-		String name = equation.substring(position, position + flen);
-		position += flen;// This covers the opening parenthesis as well as
-							// the function's name...
-		int posSubEquOpen = ++position;
-
-		for (int parentheses = 1; parentheses > 0; nextChar()) {
-
-			if (position >= equation.length())
-				throw new UnmatchedParenthesisException();
-			else if (getCurrCharAsString().equals("("))
-				parentheses++;
-			else if (getCurrCharAsString().equals(")"))
-				parentheses--;
-		}
-		return Function.getFunction(name, equation.substring(posSubEquOpen, (position) - 1));
-	}
-
-	private boolean isFunc(int pos) {
-		// TODO Implement an iteration technique once we add constants.
-		return !(isNumb(pos) || isOperatorCharacter(pos) || equation.charAt(pos) == '(' || equation.charAt(pos) == ')');
 	}
 
 	private Operation getOperation() {
@@ -103,33 +108,47 @@ public class EquationParser {
 			;
 		// For now each operation should be one character long, but better
 		// safe than sorry.
-		Operation operation = Operation.getOperation(equation.substring(position, position + flen));
+		final Operation operation = Operation.getOperation(equation.substring(position, position + flen));
 		position += flen;
 		return operation;
 	}
 
-	private boolean isNumb(int position) {
+	private String getPreviousChar() {
+		return equation.substring(position - 1, position);
+	}
+
+	private boolean isFunc(final int pos) {
+		// TODO Implement an iteration technique once we add constants.
+		return !(isNumb(pos) || isOperatorCharacter(pos) || equation.charAt(pos) == '(' || equation.charAt(pos) == ')');
+	}
+
+	private boolean isNumb() {
+		return isNumb(position);
+	}
+
+	private boolean isNumb(final char c) {
+		return c == '.' || Character.isDigit(c);
+	}
+
+	private boolean isNumb(final int position) {
 		if (position < 0 || position >= equation.length())
 			return false;
 
 		int flen = 0;
-		if (isOperatorCharacter(position)) {
+		if (isOperatorCharacter(position))
 			if (equation.charAt(position) == '-')
 				if (position != 0 && !isOperatorCharacter(position - 1))
 					return false;
-				else {
+				else
 					flen++;
-				}
 			else
 				return false;
-		}
 
 		// Check infront of the given position...
 		while (true) {
-			if (!(position + ++flen < equation.length())) {
+			if (!(position + ++flen < equation.length()))
 				return true;
-			}
-			char c = equation.charAt(position + flen);
+			final char c = equation.charAt(position + flen);
 
 			if (Character.isDigit(c) || c == '.')// If its part of a numb
 				continue;
@@ -144,39 +163,19 @@ public class EquationParser {
 		}
 	}
 
-	public boolean isOperatorCharacter(int position) {
-		return Operation.getOperation(equation.charAt(position)) != null;
-	}
-
-	public boolean isOperator(int position) {
-		char c = equation.charAt(position);
-		return ((c == '+' || c == '-') && !(position == 0 || isOperator(position - 1))) || c == '*' || c == '/'
+	public boolean isOperator(final int position) {
+		final char c = equation.charAt(position);
+		return (c == '+' || c == '-') && !(position == 0 || isOperator(position - 1)) || c == '*' || c == '/'
 				|| c == '^' || c == 'x' || c == '÷' || c == '%';
 	}
 
-	private boolean isNumb(char c) {
-		return c == '.' || Character.isDigit(c);
-	}
-
-	private boolean isNumb() {
-		return isNumb(position);
-	}
-
-	private String getNextChar() {
-		return equation.substring(position + 1, position + 1);
-	}
-
-	private String getCurrCharAsString() {
-		return equation.substring(position, position + 1);
-	}
-
-	private char getCurrChar() {
-		return equation.charAt(position);
+	public boolean isOperatorCharacter(final int position) {
+		return Operation.getOperation(equation.charAt(position)) != null;
 	}
 
 	/**
 	 * Increments the position <b>after</b> returning the current character.
-	 * 
+	 *
 	 * @return The current char.
 	 */
 	private String nextChar() {
@@ -188,17 +187,13 @@ public class EquationParser {
 	 * Much like the {@link #nextChar()} method, this method will return the
 	 * current character and move the pinhead (position) down to the previous
 	 * character.
-	 * 
-	 * 
-	 * 
+	 *
+	 *
+	 *
 	 * @return The current character.
 	 */
 	private String previousChar() {
 		return equation.substring(position, position-- + 1);
-	}
-
-	private String getPreviousChar() {
-		return equation.substring(position - 1, position);
 	}
 
 	private void reset() {

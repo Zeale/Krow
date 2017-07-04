@@ -20,9 +20,65 @@ import wolf.zeale.collections.ObservableListWrapper;
 public class Backup implements Serializable {
 
 	/**
+	 * The System's save directory of {@link Backup}s.
+	 */
+	public static final File BACKUP_SAVE_DIRECTORY = new File(Wolf.DATA_DIRECTORY, "Backups");;
+	/**
+	 * An observable list of all {@link Backup}s that are kept track of.
+	 */
+	private final static ObservableList<Backup> LOADED_BACKUPS = new ObservableListWrapper<>(new ArrayList<>());
+
+	/**
+	 * The version of this class.
+	 */
+	private static final long trueSerialVersionUID = 1L;
+
+	/**
+	 * The Serial Version UID for this class. This should never change.
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Getter for {@link #LOADED_BACKUPS}. This returns {@link #LOADED_BACKUPS}
+	 * as it is.
+	 *
+	 * @return {@link #LOADED_BACKUPS}.
+	 */
+	public static ObservableList<Backup> getObservableBackupList() {
+		return Backup.LOADED_BACKUPS;
+	}
+
+	/**
+	 * This method is called when the program is loaded by the {@link Kröw}
+	 * class. It loads all the {@link Backup}s found in the
+	 * {@link #BACKUP_SAVE_DIRECTORY}.
+	 *
+	 * @internal This is an internal method.
+	 */
+	static void loadBackupsFromSystem() {
+
+		System.out.println("\n\nNow loading backups from the file system.");
+
+		if (Backup.BACKUP_SAVE_DIRECTORY.listFiles() != null)
+			for (final File f : Backup.BACKUP_SAVE_DIRECTORY.listFiles())
+				try (ObjectInputStream is = OldVersionLoader.getInputStream(f)) {
+					Backup.LOADED_BACKUPS.add((Backup) is.readObject());
+				} catch (final ClassNotFoundException e) {
+					System.err.println("The backup folder has an invalid backup: " + f.getName());
+					System.err.println("\t• The backup is not a readable object.");
+				} catch (final IOException e) {
+					System.err.println("The backup " + f.getName() + " could not be loaded.");
+				}
+		else
+			System.err.println("No backups found.");
+
+	}
+
+	/**
 	 * The date that this {@link Backup} was made.
 	 */
-	private Date creationDate = Date.from(Instant.now(Clock.systemDefaultZone()));;
+	private Date creationDate = Date.from(Instant.now(Clock.systemDefaultZone()));
+
 	/**
 	 * An array containing all the objects that this {@link Backup} stores.
 	 */
@@ -58,106 +114,6 @@ public class Backup implements Serializable {
 	 */
 	public Backup(final MindsetObject... mindsetObjects) {
 		this.mindsetObjects = mindsetObjects;
-	}
-
-	/**
-	 * The System's save directory of {@link Backup}s.
-	 */
-	public static final File BACKUP_SAVE_DIRECTORY = new File(Wolf.DATA_DIRECTORY, "Backups");
-
-	/**
-	 * An observable list of all {@link Backup}s that are kept track of.
-	 */
-	private final static ObservableList<Backup> LOADED_BACKUPS = new ObservableListWrapper<>(new ArrayList<>());
-
-	/**
-	 * The version of this class.
-	 */
-	private static final long trueSerialVersionUID = 1L;
-
-	/**
-	 * The Serial Version UID for this class. This should never change.
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * This method is called when the program is loaded by the {@link Kröw}
-	 * class. It loads all the {@link Backup}s found in the
-	 * {@link #BACKUP_SAVE_DIRECTORY}.
-	 *
-	 * @internal This is an internal method.
-	 */
-	static void loadBackupsFromSystem() {
-
-		System.out.println("\n\nNow loading backups from the file system.");
-
-		if (Backup.BACKUP_SAVE_DIRECTORY.listFiles() != null)
-			for (final File f : Backup.BACKUP_SAVE_DIRECTORY.listFiles())
-				try (ObjectInputStream is = OldVersionLoader.getInputStream(f)) {
-					Backup.LOADED_BACKUPS.add((Backup) is.readObject());
-				} catch (final ClassNotFoundException e) {
-					System.err.println("The backup folder has an invalid backup: " + f.getName());
-					System.err.println("\t• The backup is not a readable object.");
-				} catch (final IOException e) {
-					System.err.println("The backup " + f.getName() + " could not be loaded.");
-				}
-		else
-			System.err.println("No backups found.");
-
-	}
-
-	/**
-	 * Getter for {@link #LOADED_BACKUPS}. This returns {@link #LOADED_BACKUPS}
-	 * as it is.
-	 *
-	 * @return {@link #LOADED_BACKUPS}.
-	 */
-	public static ObservableList<Backup> getObservableBackupList() {
-		return Backup.LOADED_BACKUPS;
-	}
-
-	/**
-	 * <p>
-	 * The {@code readObject} method of this {@link Serializable} instance.
-	 *
-	 * @param is
-	 *            The {@link ObjectInputStream} used to read-in this
-	 *            {@link Backup}.
-	 * @throws IOException
-	 *             As specified by any of the input stream's reading methods.
-	 *             (For example, {@link ObjectInputStream#readLong() readLong()}
-	 *             or {@link ObjectInputStream#readObject() readObject()}.
-	 * @throws ClassNotFoundException
-	 *             As specified by any of the input stream's reading methods,
-	 *             such as {@link ObjectInputStream#readObject() readObject()}
-	 *             or {@link ObjectInputStream#readLong() readLong()}.
-	 * @internal This method is used for serialization and should be treated as
-	 *           if it were internal.
-	 */
-	private void readObject(final ObjectInputStream is) throws IOException, ClassNotFoundException {
-		if (is.readLong() == Backup.trueSerialVersionUID) {
-			creationDate = (Date) is.readObject();
-			mindsetObjects = (MindsetObject[]) is.readObject();
-		}
-	}
-
-	/**
-	 * <p>
-	 * The {@code writeObject} method of this {@link Serializable} instance.
-	 *
-	 * @param os
-	 *            The {@link ObjectOutputStream} used to save this
-	 *            {@link Backup} instance.
-	 * @throws IOException
-	 *             As specified by any of the {@link ObjectInputStream}'s write
-	 *             methods, such as {@link ObjectOutputStream#writeLong(long)
-	 *             writeLong()} or {@link ObjectOutputStream#writeObject(Object)
-	 *             writeObject()}.
-	 */
-	private void writeObject(final ObjectOutputStream os) throws IOException {
-		os.writeLong(Backup.trueSerialVersionUID);
-		os.writeObject(creationDate);
-		os.writeObject(mindsetObjects);
 	}
 
 	/**
@@ -255,6 +211,31 @@ public class Backup implements Serializable {
 	}
 
 	/**
+	 * <p>
+	 * The {@code readObject} method of this {@link Serializable} instance.
+	 *
+	 * @param is
+	 *            The {@link ObjectInputStream} used to read-in this
+	 *            {@link Backup}.
+	 * @throws IOException
+	 *             As specified by any of the input stream's reading methods.
+	 *             (For example, {@link ObjectInputStream#readLong() readLong()}
+	 *             or {@link ObjectInputStream#readObject() readObject()}.
+	 * @throws ClassNotFoundException
+	 *             As specified by any of the input stream's reading methods,
+	 *             such as {@link ObjectInputStream#readObject() readObject()}
+	 *             or {@link ObjectInputStream#readLong() readLong()}.
+	 * @internal This method is used for serialization and should be treated as
+	 *           if it were internal.
+	 */
+	private void readObject(final ObjectInputStream is) throws IOException, ClassNotFoundException {
+		if (is.readLong() == Backup.trueSerialVersionUID) {
+			creationDate = (Date) is.readObject();
+			mindsetObjects = (MindsetObject[]) is.readObject();
+		}
+	}
+
+	/**
 	 * Restores the {@link Kröw} program using this {@link Backup}.
 	 *
 	 * @param overwrite
@@ -285,6 +266,25 @@ public class Backup implements Serializable {
 				} else
 					System.err.println("The Object, " + name + ", already exists. It could not be restored.");
 			}
+	}
+
+	/**
+	 * <p>
+	 * The {@code writeObject} method of this {@link Serializable} instance.
+	 *
+	 * @param os
+	 *            The {@link ObjectOutputStream} used to save this
+	 *            {@link Backup} instance.
+	 * @throws IOException
+	 *             As specified by any of the {@link ObjectInputStream}'s write
+	 *             methods, such as {@link ObjectOutputStream#writeLong(long)
+	 *             writeLong()} or {@link ObjectOutputStream#writeObject(Object)
+	 *             writeObject()}.
+	 */
+	private void writeObject(final ObjectOutputStream os) throws IOException {
+		os.writeLong(Backup.trueSerialVersionUID);
+		os.writeObject(creationDate);
+		os.writeObject(mindsetObjects);
 	}
 
 }
