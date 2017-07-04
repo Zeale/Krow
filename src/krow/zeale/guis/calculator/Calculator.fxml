@@ -184,6 +184,19 @@
                            </children></AnchorPane>
                   </content>
                 </Tab>
+                  <Tab text="Extras">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <Button focusTraversable="false" layoutX="129.0" layoutY="151.0" mnemonicParsing="false" onAction="#_event_cutDecimal" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 20px; -fx-border-width: 0px;" styleClass="calculator-button" text="Cut Decimal" textAlignment="CENTER">
+                                 <effect>
+                                    <DropShadow spread="0.41" />
+                                 </effect>
+                              </Button>
+                           </children>
+                        </AnchorPane>
+                    </content>
+                  </Tab>
               </tabs>
             </TabPane>
 			</children>

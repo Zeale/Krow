@@ -51,6 +51,15 @@ public class CalculatorController {
 	}
 
 	@FXML
+	private void _event_cutDecimal() {
+		try {
+			setEquation("" + (int) Double.parseDouble(getEquation()));
+		} catch (NumberFormatException e) {
+			setError("The text couldn't be parsed as a number...");
+		}
+	}
+
+	@FXML
 	private void _event_clear() {
 		outputField.clear();
 	}
