@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml/1">
-	<!-- TODO Add Nodes -->
+<BorderPane stylesheets="@../guis/_resources/DefaultTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="krow.zeale.eggs.InstalledApps">
+   <center>
+      <AnchorPane fx:id="pane" focusTraversable="true" prefHeight="400.0" prefWidth="600.0" styleClass="solid-background" BorderPane.alignment="CENTER">
+         <children>
+            <TextField layoutX="207.0" layoutY="248.0" />
+         </children></AnchorPane>
+   </center>
 </BorderPane>
-

@@ -21,6 +21,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
+import krow.zeale.eggs.InstalledApps;
 import krow.zeale.guis.calculator.Calculator;
 import krow.zeale.guis.create.construct.CreateConstructWindow;
 import krow.zeale.guis.create.law.CreateLawWindow;
@@ -178,7 +179,14 @@ public class HomeWindow extends Window {
 
 	@FXML
 	private void _event_secretButtonClicked() {
-
+		try {
+			Window.setScene(InstalledApps.class);
+		} catch (InstantiationException | IllegalAccessException | IOException e) {
+			System.err.println("An error occurred.");
+			System.out.println("\n\n");
+			e.printStackTrace();
+			System.out.println("\n\n");
+		}
 	}
 
 	/**
