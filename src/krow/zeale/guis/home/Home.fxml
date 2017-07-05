@@ -38,33 +38,33 @@
 						<MenuItem mnemonicParsing="false" onAction="#onGoToCreateConstructWindow" text="• Construct" />
 						<MenuItem mnemonicParsing="false" text="• Program" />
 						<MenuItem mnemonicParsing="false" onAction="#onGoToCreateSystemWindow" text="• System" />
-						<SeparatorMenuItem mnemonicParsing="false" />
-						<MenuItem mnemonicParsing="false" text="• Family" />
-						<SeparatorMenuItem mnemonicParsing="false" />
-						<MenuItem mnemonicParsing="false" text="• Declaration" />
-						<SeparatorMenuItem mnemonicParsing="false" />
-						<MenuItem mnemonicParsing="false" onAction="#onGoToCreateLawWindow" text="• Law" />
-						<MenuItem mnemonicParsing="false" text="• Policy" />
-						<SeparatorMenuItem mnemonicParsing="false" />
-						<Menu mnemonicParsing="false" text="• Module">
+						<SeparatorMenuItem mnemonicParsing="false" visible="false" />
+						<MenuItem mnemonicParsing="false" text="• Family" visible="false" />
+						<SeparatorMenuItem mnemonicParsing="false" visible="false" />
+						<MenuItem mnemonicParsing="false" text="• Declaration" visible="false" />
+						<SeparatorMenuItem mnemonicParsing="false" visible="false" />
+						<MenuItem mnemonicParsing="false" onAction="#onGoToCreateLawWindow" text="• Law" visible="false" />
+						<MenuItem mnemonicParsing="false" text="• Policy" visible="false" />
+						<SeparatorMenuItem mnemonicParsing="false" visible="false" />
+						<Menu mnemonicParsing="false" text="• Module" visible="false">
 							<items>
 								<MenuItem mnemonicParsing="false" text="Create..." />
 								<MenuItem mnemonicParsing="false" text="• Patch" />
 							</items>
 						</Menu>
-						<SeparatorMenuItem mnemonicParsing="false" />
-						<MenuItem mnemonicParsing="false" text="• Area" />
-						<SeparatorMenuItem mnemonicParsing="false" />
-						<MenuItem mnemonicParsing="false" text="• Task" />
-						<MenuItem mnemonicParsing="false" text="• Event" />
-						<SeparatorMenuItem mnemonicParsing="false" />
-						<Menu mnemonicParsing="false" text="• Ruleset">
+						<SeparatorMenuItem mnemonicParsing="false" visible="false" />
+						<MenuItem mnemonicParsing="false" text="• Area" visible="false" />
+						<SeparatorMenuItem mnemonicParsing="false" visible="false" />
+						<MenuItem mnemonicParsing="false" text="• Task" visible="false" />
+						<MenuItem mnemonicParsing="false" text="• Event" visible="false" />
+						<SeparatorMenuItem mnemonicParsing="false" visible="false" />
+						<Menu mnemonicParsing="false" text="• Ruleset" visible="false">
 							<items>
 								<MenuItem mnemonicParsing="false" text="Blank Ruleset" />
 							</items>
 						</Menu>
-						<SeparatorMenuItem mnemonicParsing="false" />
-						<MenuItem mnemonicParsing="false" text="• Mindset" />
+						<SeparatorMenuItem mnemonicParsing="false" visible="false" />
+						<MenuItem mnemonicParsing="false" text="• Mindset" visible="false" />
 					</items>
 				</Menu>
 				<Menu mnemonicParsing="false" text="File">
