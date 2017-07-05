@@ -113,6 +113,11 @@
                                     <DropShadow spread="0.41" />
                                  </effect>
                               </Button>
+                              <Button focusTraversable="false" layoutX="59.0" layoutY="232.0" mnemonicParsing="false" onAction="#_event_cutDecimal" prefHeight="30.0" prefWidth="109.0" style="-fx-text-fill: #e27c00; -fx-font-weight: bold; -fx-font-size: 14px; -fx-border-width: 0px; -fx-background-color: #498fff;" styleClass="calculator-button" text="Cut Decimal" textAlignment="CENTER">
+                                 <effect>
+                                    <DropShadow spread="0.41" />
+                                 </effect>
+                              </Button>
                            </children>
                         </AnchorPane>
                   </content>
