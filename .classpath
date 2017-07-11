@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="resources"/>
+	<classpathentry kind="src" path="src/krow"/>
+	<classpathentry kind="src" path="src/zeale"/>
+	<classpathentry kind="src" path="src/wolf"/>
+	<classpathentry kind="src" path="src/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Wolf"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

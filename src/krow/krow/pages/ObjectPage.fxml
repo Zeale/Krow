@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane stylesheets="@../guis/_resources/DefaultTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="krow.pages.Pages">
+	<left>
+		<ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+			<content>
+				<FlowPane fx:id="leftPane" prefHeight="200.0" prefWidth="200.0" styleClass="solid-background" />
+			</content>
+		</ScrollPane>
+	</left>
+	<right>
+		<ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+			<content>
+				<FlowPane fx:id="rightPane" prefHeight="200.0" prefWidth="200.0" styleClass="solid-background" />
+			</content>
+		</ScrollPane>
+	</right>
+	<top>
+		<MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
+			<menus>
+				<Menu mnemonicParsing="false" text="Kröw">
+					<items>
+						<MenuItem mnemonicParsing="false" onAction="#onCloseRequested" text="Close" />
+						<MenuItem mnemonicParsing="false" onAction="#goToNormalWindow" text="Home" />
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="Edit">
+					<items>
+						<MenuItem mnemonicParsing="false" text="Modify" />
+						<MenuItem mnemonicParsing="false" text="Delete" />
+					</items>
+				</Menu>
+			</menus>
+		</MenuBar>
+	</top>
+	<center>
+		<FlowPane fx:id="centerPane" prefHeight="200.0" prefWidth="200.0" styleClass="solid-background" BorderPane.alignment="CENTER" />
+	</center>
+</BorderPane>
