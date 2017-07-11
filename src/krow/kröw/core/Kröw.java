@@ -407,7 +407,7 @@ public final class Kröw extends Application {
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
 		Window.setStage_Impl(primaryStage);
-		Window.setScene(HomeWindow.class, "Home.fxml");
+		Window.setScene(HomeWindow.class, "Home.fxml");// TODO Fix.
 		primaryStage.initStyle(StageStyle.UNDECORATED);
 		primaryStage.setTitle(Kröw.NAME);
 		if (Kröw.IMG_KRÖW != null)
