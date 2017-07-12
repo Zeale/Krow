@@ -58,21 +58,6 @@ public class Home extends Window {
 
 			views[i] = item;
 
-			transition.setOnFinished(new EventHandler<ActionEvent>() {
-
-				@Override
-				public void handle(ActionEvent event) {
-					// TODO Check if gone off screen
-					item.goal -= IMAGE_WIDTH + IMAGE_SPACING;
-					if (item.goal == 0)
-						return;// Wait for scroll
-					if (item.goal > 0)
-						transition.setByX(IMAGE_WIDTH + IMAGE_SPACING);
-					else
-						transition.setByX(-(IMAGE_WIDTH + IMAGE_SPACING));
-				}
-			});
-
 		}
 
 		horizontalScroll.setPrefWidth(Kröw.SCREEN_WIDTH);
@@ -97,19 +82,9 @@ public class Home extends Window {
 
 			@Override
 			public void handle(ScrollEvent event) {
-				double amount = event.getDeltaY() / event.getMultiplierY();
-				if (amount == 0)
-					return;
-				boolean forward = amount > 0;
-				// TODO Check if we'll go off the screen.
-				for (Item i : views) {
-					i.goal += amount * (IMAGE_SPACING + IMAGE_WIDTH);
-					if (forward)
-						i.transition.setByX(IMAGE_WIDTH + IMAGE_SPACING);
-					else
-						i.transition.setByX(-(IMAGE_WIDTH + IMAGE_SPACING));
-					i.transition.play();
-				}
+				for (double amount = event.getDeltaY() / event.getMultiplierY(); amount != 0; amount -= amount > 0 ? 1
+						: -1)
+					animate(amount > 0);
 			}
 		});
 		horizontalScroll.toFront();
@@ -124,6 +99,25 @@ public class Home extends Window {
 			this.image = image;
 			this.transition = transition;
 		}
+
+	}
+
+	public void animate(boolean forward) {
+		if (forward)
+			for (Item i : views) {
+				i.goal++;
+				i.transition.stop();
+				i.transition.setToX(i.goal * (IMAGE_SPACING + IMAGE_WIDTH));
+				i.transition.play();
+			}
+
+		else
+			for (Item i : views) {
+				i.goal--;
+				i.transition.stop();
+				i.transition.setToX(i.goal * (IMAGE_SPACING + IMAGE_WIDTH));
+				i.transition.play();
+			}
 
 	}
 
