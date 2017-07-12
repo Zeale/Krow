@@ -1,5 +1,7 @@
 package kröw.core;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,24 +16,27 @@ import java.util.List;
 import javax.swing.filechooser.FileSystemView;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import krow.guis.home.HomeWindow;
 import wolf.mindset.Construct;
 import wolf.mindset.ConstructMindset;
 import wolf.mindset.Law;
 import wolf.mindset.MindsetObject;
 import wolf.mindset.ObjectAlreadyExistsException;
 import wolf.zeale.Wolf;
-import wolf.zeale.guis.Window;
+import zeale.guis.Home;
 
 /**
  * This class is the main class of the program.
  *
  * The JVM loads up the JavaFX toolkit if the main class extends Application. If
  * this class did not extend {@link Application}, the toolkit would not be
- * loaded and the {@link #IMG_LIGHT_CROW} and {@link #IMG_DARK_CROW} images
+ * loaded and the {@link #IMAGE_LIGHT_CROW} and {@link #IMAGE_DARK_CROW} images
  * found below, could not be created during <code>clinit</code> (the
  * <code>static</code> constructor).
  *
@@ -40,17 +45,37 @@ import wolf.zeale.guis.Window;
  */
 public final class Kröw extends Application {
 
+	/*
+	 * Screen width and height
+	 */
+	public final static double SCREEN_HEIGHT, SCREEN_WIDTH;
+
+	static {
+		Dimension screenDimensions = Toolkit.getDefaultToolkit().getScreenSize();
+
+		SCREEN_HEIGHT = screenDimensions.getHeight();
+		SCREEN_WIDTH = screenDimensions.getWidth();
+	}
+
+	/*
+	 * Construct Mindset
+	 */
 	/**
 	 * The {@link ConstructMindset} object of {@link Kröw}. This tracks all of
 	 * {@link Kröw}'s {@link MindsetObject}s.
 	 */
 	public final static ConstructMindset CONSTRUCT_MINDSET = new ConstructMindset();
 
+	/*
+	 * Files and directories.
+	 */
 	/**
 	 * The Home directory of the {@link Kröw} application.
 	 */
 	public static final File KRÖW_HOME_DIRECTORY = new File(System.getProperty("user.home") + "/Appdata/Roaming/",
 			Wolf.KROW_NAME);
+
+	public static final File SETTINGS_FILE = new File(KRÖW_HOME_DIRECTORY, "settings.cnfg");
 
 	/**
 	 * Files created in the {@link #KRÖW_HOME_DIRECTORY}.
@@ -60,6 +85,24 @@ public final class Kröw extends Application {
 			CREDITS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Credits.txt"),
 			PLANS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Plans.txt"),
 			DATA_INCLUDES_FILE = new File(KRÖW_HOME_DIRECTORY, "includes.kcfg");
+
+	/**
+	 * <p>
+	 * {@link #IMAGE_LIGHT_CROW} - The light colored crow image that is used for
+	 * this {@link Application}'s icon. This image can be set as the program's
+	 * icon via the home window.
+	 * <p>
+	 * {@link #IMAGE_DARK_CROW} - The dark colored crow image that is used for
+	 * this {@link Application}'s icon. This image is the program's default
+	 * icon.
+	 *
+	 */
+	public static final Image IMAGE_LIGHT_CROW, IMAGE_DARK_CROW, IMAGE_KRÖW;
+
+	/**
+	 * The name {@code Kröw}.
+	 */
+	public static final String NAME = new String("Kröw");
 
 	static {
 		// Create the following folders if they don't already exist and catch
@@ -98,42 +141,28 @@ public final class Kröw extends Application {
 
 		Image dark = null, light = null, kröw = null;
 		try {
-			dark = new Image("/krow/DarkKröw.png");
+			dark = new Image("krow/zeale/DarkKröw.png");
+			System.err.println(dark);
 		} catch (final IllegalArgumentException e) {
+			e.printStackTrace();
 		}
 
 		try {
-			light = new Image("krow/LightKröw.png");
+			light = new Image("krow/zeale/LightKröw.png");
 		} catch (final IllegalArgumentException e) {
+			e.printStackTrace();
 		}
 
 		try {
-			kröw = new Image("krow/Kröw.png");
+			kröw = new Image("krow/zeale/Kröw_hd.png");
 		} catch (final IllegalArgumentException e) {
+			e.printStackTrace();
 		}
 
-		IMG_DARK_CROW = dark;
-		IMG_LIGHT_CROW = light;
-		IMG_KRÖW = kröw;
+		IMAGE_DARK_CROW = dark;
+		IMAGE_LIGHT_CROW = light;
+		IMAGE_KRÖW = kröw;
 	}
-
-	/**
-	 * <p>
-	 * {@link #IMG_LIGHT_CROW} - The light colored crow image that is used for
-	 * this {@link Application}'s icon. This image can be set as the program's
-	 * icon via the home window.
-	 * <p>
-	 * {@link #IMG_DARK_CROW} - The dark colored crow image that is used for
-	 * this {@link Application}'s icon. This image is the program's default
-	 * icon.
-	 *
-	 */
-	public static final Image IMG_LIGHT_CROW, IMG_DARK_CROW, IMG_KRÖW;
-
-	/**
-	 * The name {@code Kröw}.
-	 */
-	public static final String NAME = new String("Kröw");
 
 	/**
 	 * Clears all the objects in this program.
@@ -406,13 +435,18 @@ public final class Kröw extends Application {
 	 */
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
-		Window.setStage_Impl(primaryStage);
-		Window.setScene(HomeWindow.class, "Home.fxml");// TODO Fix.
-		primaryStage.initStyle(StageStyle.UNDECORATED);
+		Scene scene = new Scene(FXMLLoader.load(Home.class.getResource("Home.fxml")));
+		scene.setFill(Color.TRANSPARENT);
+
+		primaryStage.setScene(scene);
+		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.setTitle(Kröw.NAME);
-		if (Kröw.IMG_KRÖW != null)
-			primaryStage.getIcons().add(Kröw.IMG_KRÖW);
+		if (Kröw.IMAGE_KRÖW != null)
+			primaryStage.getIcons().add(Kröw.IMAGE_KRÖW);
+		primaryStage.setFullScreen(true);
+		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 		primaryStage.show();
+
 	}
 
 	/*
