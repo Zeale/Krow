@@ -3,7 +3,6 @@ package zeale.guis;
 import java.util.Random;
 
 import javafx.animation.TranslateTransition;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
@@ -20,7 +19,6 @@ public class Home extends Window {
 
 	private static int IMAGE_WIDTH = (int) ((double) 100 / 1920 * Kröw.SCREEN_WIDTH),
 			IMAGE_HEIGHT = (int) ((double) 100 / 1080 * Kröw.SCREEN_HEIGHT), IMAGE_SPACING = IMAGE_WIDTH / 2;
-
 	static {
 		BLANK_IMAGE.setFitHeight(IMAGE_HEIGHT);
 		BLANK_IMAGE.setFitWidth(IMAGE_WIDTH);
@@ -37,6 +35,7 @@ public class Home extends Window {
 	private VBox verticalScroll;
 
 	private Item[] views = new Item[14];
+	private short totalShift = (short) (views.length - 6);
 
 	@FXML
 	@Override
@@ -82,8 +81,19 @@ public class Home extends Window {
 
 			@Override
 			public void handle(ScrollEvent event) {
-				for (double amount = event.getDeltaY() / event.getMultiplierY(); amount != 0; amount -= amount > 0 ? 1
-						: -1)
+
+				double amount = event.getDeltaY() / event.getMultiplierY() > 0 ? 1 : -1;
+				if (amount + totalShift > views.length) {
+					amount = views.length - totalShift;
+					totalShift = (short) views.length;
+					return;// Omit below loop; it's useless.
+				} else if (amount + totalShift < 1) {
+					totalShift = 1;
+					return;// Omit below loop; it's useless.
+				} else {
+					totalShift += amount;
+				}
+				for (; amount != 0; amount -= amount > 0 ? 1 : -1)
 					animate(amount > 0);
 			}
 		});
