@@ -141,20 +141,19 @@ public final class Kröw extends Application {
 
 		Image dark = null, light = null, kröw = null;
 		try {
-			dark = new Image("krow/zeale/DarkKröw.png");
-			System.err.println(dark);
+			dark = new Image("krow/resources/DarkKröw.png");
 		} catch (final IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 
 		try {
-			light = new Image("krow/zeale/LightKröw.png");
+			light = new Image("krow/resources/LightKröw.png");
 		} catch (final IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 
 		try {
-			kröw = new Image("krow/zeale/Kröw_hd.png");
+			kröw = new Image("krow/resources/Kröw_hd.png");
 		} catch (final IllegalArgumentException e) {
 			e.printStackTrace();
 		}
