@@ -126,6 +126,8 @@ public class Home extends Window {
 		// Put this in front of the verticalScroll container.
 		horizontalScroll.toFront();
 
+		// TODO Fix all this stuff later.
+
 		// Now to add the default images to our horizontal scroll container.
 		ImageView constructs = new ImageView(CONSTRUCT_MENU_ICON);
 		constructs.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -133,17 +135,32 @@ public class Home extends Window {
 			public void handle(MouseEvent event) {
 				// TODO Open the construct management window once we've made it.
 				// For now, we'll print some crap.
-				System.out.println("Clicked");
+				System.out.println("Clicked C");
 
 				// If you tried to click the image and received no console
 				// output,
 				// then do keep in mind that JavaFX will only register clicks
 				// that are located at a non-transparent area of the image.
+
+			}
+		});
+
+		ImageView krow = new ImageView(Kröw.IMAGE_KRÖW);
+		// This code assures that clicking in a transparent portion of the image
+		// will still cause a click to be registered by the event handler.
+		krow.setPickOnBounds(true);
+		// Event handler
+		krow.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				System.out.println("Clicked Krow");
 			}
 		});
 
 		// Testing the dummy positioning images.
-		addImage(new ImageView(Kröw.IMAGE_KRÖW));
+		addImage(krow);
+
 		addImage(constructs);
 
 	}
