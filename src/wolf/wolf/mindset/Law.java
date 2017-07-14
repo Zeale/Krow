@@ -32,6 +32,32 @@ import wolf.zeale.Wolf;
  *
  */
 public final class Law extends MindsetObject implements TableViewable {
+	public static final String TYPE = "Law";
+
+	// SerialVersionUIDs (for saving and reading objects)
+	/**
+	 * The Serial Version Unique Identifier for this class. This should never
+	 * change. The {@link #trueSerialVersionUID} is incremented when this class
+	 * is updated to signify different versions and different read/write
+	 * operation necessities.
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * The actual version of this class. When this class, (specifically the
+	 * structure of this object), is modified in such a way that the read and
+	 * write operations of this object are in need of modification themselves,
+	 * this long value is incremented by {@code 1} to signify a new version of
+	 * this class. See the {@link #readObject(ObjectInputStream)} and
+	 * {@link #writeObject(ObjectOutputStream)} methods for more details.
+	 */
+	private static final long trueSerialVersionUID = 1L;
+
+	/**
+	 * The file extension of saved objects that are of the {@link Law} type.
+	 */
+	private static final String FILE_EXTENSION = ".law";
+
 	// Class fields
 	/**
 	 * <p>
@@ -67,114 +93,6 @@ public final class Law extends MindsetObject implements TableViewable {
 		this.description.set(description);
 		this.rule.set(rule);
 		this.creationDate = creationDate;
-	}
-
-	public static final String TYPE = "Law";
-
-	// SerialVersionUIDs (for saving and reading objects)
-	/**
-	 * The Serial Version Unique Identifier for this class. This should never
-	 * change. The {@link #trueSerialVersionUID} is incremented when this class
-	 * is updated to signify different versions and different read/write
-	 * operation necessities.
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * The actual version of this class. When this class, (specifically the
-	 * structure of this object), is modified in such a way that the read and
-	 * write operations of this object are in need of modification themselves,
-	 * this long value is incremented by {@code 1} to signify a new version of
-	 * this class. See the {@link #readObject(ObjectInputStream)} and
-	 * {@link #writeObject(ObjectOutputStream)} methods for more details.
-	 */
-	private static final long trueSerialVersionUID = 1L;
-
-	/**
-	 * The file extension of saved objects that are of the {@link Law} type.
-	 */
-	private static final String FILE_EXTENSION = ".law";
-
-	// Serialization methods
-	/**
-	 * <p>
-	 * This method is automatically called by Java's Serialization API when
-	 * reading an object.
-	 * <p>
-	 * This method first reads a {@code long} from the given
-	 * {@link ObjectOutputStream} to check for the version of the saved
-	 * {@link Law}. This method then decides how to load the {@link Law} using
-	 * the version it found. For example, if the version found matches that of a
-	 * previously released class, the {@link Law} being instantiated is read
-	 * using the previous reading technique and any values that are not found
-	 * are set to there defaults.
-	 *
-	 * @param is
-	 *            The {@link ObjectInputStream} passed in via Serialization.
-	 * @throws IOException
-	 *             Needed so that Java can call this method reflectively.
-	 */
-	private void readObject(final ObjectInputStream is) throws IOException {
-
-		final long version = is.readLong();
-
-		try {
-			if (version == Law.trueSerialVersionUID) {
-
-				name = new SimpleStringProperty((String) is.readObject());
-				description = new SimpleStringProperty((String) is.readObject());
-				rule = new SimpleStringProperty((String) is.readObject());
-				creationDate = (Date) is.readObject();
-			}
-
-		} catch (final ClassNotFoundException e) {
-		}
-	}
-
-	/**
-	 * <p>
-	 * This method is automatically called by Java's Serialization API when
-	 * attempting to save this object.
-	 * <p>
-	 * First, this method saves the version of the {@link Law} class that this
-	 * object was created in. Next, this method saves everything that is needed
-	 * to replicate this object in such a state that there would be no
-	 * significant difference to the user if the original object is replaced
-	 * with the new.
-	 *
-	 * @param os
-	 *            The {@link ObjectOutputStream} passed in by Serialization.
-	 */
-	private void writeObject(final ObjectOutputStream os) {
-		try {
-			os.writeLong(Law.trueSerialVersionUID);
-			os.writeObject(name.get());
-			os.writeObject(description.get());
-			os.writeObject(rule.get());
-			os.writeObject(creationDate);
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see kröw.libs.MindsetObject#getExtension()
-	 */
-	@Override
-	String getExtension() {
-		return Law.FILE_EXTENSION;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see kröw.libs.MindsetObject#getSaveDirectory()
-	 */
-	@Override
-	File getSaveDirectory() {
-		return Wolf.LAW_SAVE_DIRECTORY;
 	}
 
 	// Getters and setters
@@ -230,6 +148,16 @@ public final class Law extends MindsetObject implements TableViewable {
 	/*
 	 * (non-Javadoc)
 	 *
+	 * @see kröw.libs.MindsetObject#getExtension()
+	 */
+	@Override
+	String getExtension() {
+		return Law.FILE_EXTENSION;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see kröw.libs.MindsetObject#getFile()
 	 */
 	@Override
@@ -276,9 +204,55 @@ public final class Law extends MindsetObject implements TableViewable {
 		return rule;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see kröw.libs.MindsetObject#getSaveDirectory()
+	 */
+	@Override
+	File getSaveDirectory() {
+		return Wolf.LAW_SAVE_DIRECTORY;
+	}
+
 	@Override
 	public String getType() {
 		return TYPE;
+	}
+
+	// Serialization methods
+	/**
+	 * <p>
+	 * This method is automatically called by Java's Serialization API when
+	 * reading an object.
+	 * <p>
+	 * This method first reads a {@code long} from the given
+	 * {@link ObjectOutputStream} to check for the version of the saved
+	 * {@link Law}. This method then decides how to load the {@link Law} using
+	 * the version it found. For example, if the version found matches that of a
+	 * previously released class, the {@link Law} being instantiated is read
+	 * using the previous reading technique and any values that are not found
+	 * are set to there defaults.
+	 *
+	 * @param is
+	 *            The {@link ObjectInputStream} passed in via Serialization.
+	 * @throws IOException
+	 *             Needed so that Java can call this method reflectively.
+	 */
+	private void readObject(final ObjectInputStream is) throws IOException {
+
+		final long version = is.readLong();
+
+		try {
+			if (version == Law.trueSerialVersionUID) {
+
+				name = new SimpleStringProperty((String) is.readObject());
+				description = new SimpleStringProperty((String) is.readObject());
+				rule = new SimpleStringProperty((String) is.readObject());
+				creationDate = (Date) is.readObject();
+			}
+
+		} catch (final ClassNotFoundException e) {
+		}
 	}
 
 	/**
@@ -329,6 +303,32 @@ public final class Law extends MindsetObject implements TableViewable {
 			makeEdit();
 		}
 
+	}
+
+	/**
+	 * <p>
+	 * This method is automatically called by Java's Serialization API when
+	 * attempting to save this object.
+	 * <p>
+	 * First, this method saves the version of the {@link Law} class that this
+	 * object was created in. Next, this method saves everything that is needed
+	 * to replicate this object in such a state that there would be no
+	 * significant difference to the user if the original object is replaced
+	 * with the new.
+	 *
+	 * @param os
+	 *            The {@link ObjectOutputStream} passed in by Serialization.
+	 */
+	private void writeObject(final ObjectOutputStream os) {
+		try {
+			os.writeLong(Law.trueSerialVersionUID);
+			os.writeObject(name.get());
+			os.writeObject(description.get());
+			os.writeObject(rule.get());
+			os.writeObject(creationDate);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

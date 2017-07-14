@@ -16,10 +16,7 @@ import java.util.List;
 import javax.swing.filechooser.FileSystemView;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -53,7 +50,7 @@ public final class Kröw extends Application {
 	public final static double SCREEN_HEIGHT, SCREEN_WIDTH;
 
 	static {
-		Dimension screenDimensions = Toolkit.getDefaultToolkit().getScreenSize();
+		final Dimension screenDimensions = Toolkit.getDefaultToolkit().getScreenSize();
 
 		SCREEN_HEIGHT = screenDimensions.getHeight();
 		SCREEN_WIDTH = screenDimensions.getWidth();

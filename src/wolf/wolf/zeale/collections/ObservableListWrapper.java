@@ -1,4 +1,5 @@
 package wolf.zeale.collections;
+
 import java.util.List;
 
 import javafx.collections.ModifiableObservableListBase;

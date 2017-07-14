@@ -20,16 +20,16 @@ import wolf.zeale.Wolf;
  */
 public final class Program extends MindsetObject implements TableViewable {
 
-	public Program(final String name) {
-		super(name);
-	}
-
 	/**
 	 * SerialVersionUID
 	 */
 	private static final long serialVersionUID = 1L;
 
 	public final static String TYPE = "Program";
+
+	public Program(final String name) {
+		super(name);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -39,16 +39,6 @@ public final class Program extends MindsetObject implements TableViewable {
 	@Override
 	String getExtension() {
 		return ".prgrm";
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see kröw.libs.MindsetObject#getSaveDirectory()
-	 */
-	@Override
-	File getSaveDirectory() {
-		return Wolf.PROGRAM_SAVE_DIRECTORY;
 	}
 
 	/*
@@ -71,6 +61,16 @@ public final class Program extends MindsetObject implements TableViewable {
 		if (key.equalsIgnoreCase("Name"))
 			return new ReadOnlyObjectWrapper<>(name.get());
 		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see kröw.libs.MindsetObject#getSaveDirectory()
+	 */
+	@Override
+	File getSaveDirectory() {
+		return Wolf.PROGRAM_SAVE_DIRECTORY;
 	}
 
 	@Override

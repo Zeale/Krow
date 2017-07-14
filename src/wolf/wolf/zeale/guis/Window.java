@@ -40,13 +40,6 @@ import wolf.zeale.Wolf;
 public abstract class Window {
 
 	/**
-	 * Constructs a {@link Window} object.
-	 */
-	protected Window() {
-
-	}
-
-	/**
 	 * The current {@link Stage}. This is set when the program starts.
 	 */
 	private static Stage stage;
@@ -67,12 +60,12 @@ public abstract class Window {
 	 */
 	private static Window previousController;
 
-	public static Window getPreviousController() {
-		return previousController;
-	}
-
 	public static Window getController() {
 		return controller;
+	}
+
+	public static Window getPreviousController() {
+		return previousController;
 	}
 
 	/**
@@ -383,6 +376,13 @@ public abstract class Window {
 	public static void spawnLabelAtMousePos(final String text, final Color color) {
 		spawnLabel(text, color, MouseInfo.getPointerInfo().getLocation().getX(),
 				MouseInfo.getPointerInfo().getLocation().getY());
+	}
+
+	/**
+	 * Constructs a {@link Window} object.
+	 */
+	protected Window() {
+
 	}
 
 	/**

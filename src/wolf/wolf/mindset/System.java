@@ -31,6 +31,26 @@ import wolf.zeale.Wolf;
  */
 public final class System extends MindsetObject implements TableViewable {
 
+	public final static String TYPE = "System";
+
+	/**
+	 * The serialVersionUID of this class.
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * The version of this class. This is used for backwards compatibility. See
+	 * {@link #readObject(ObjectInputStream)} for more details.
+	 */
+	private static final long trueSerialVersionUID = 1L;
+
+	/**
+	 * The file extension of this {@link MindsetObject}. This is used when
+	 * saving {@link System} objects to the file system. This {@link String} is
+	 * the file extension of the file that this {@link System} will be saved as.
+	 */
+	public static final String FILE_EXTENSION = ".syst";
+
 	/**
 	 * The description of this {@link System}.
 	 */
@@ -58,87 +78,6 @@ public final class System extends MindsetObject implements TableViewable {
 		super(name);
 		this.description = new SimpleStringProperty(description);
 		this.creationDate = creationDate;
-	}
-
-	public final static String TYPE = "System";
-
-	/**
-	 * The serialVersionUID of this class.
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * The version of this class. This is used for backwards compatibility. See
-	 * {@link #readObject(ObjectInputStream)} for more details.
-	 */
-	private static final long trueSerialVersionUID = 1L;
-
-	/**
-	 * The file extension of this {@link MindsetObject}. This is used when
-	 * saving {@link System} objects to the file system. This {@link String} is
-	 * the file extension of the file that this {@link System} will be saved as.
-	 */
-	public static final String FILE_EXTENSION = ".syst";
-
-	/**
-	 * The <code>readObject</code> method of this class.
-	 *
-	 * @param is
-	 *            The {@link ObjectStreamException} passed in by Serialization.
-	 * @throws IOException
-	 *             If an {@link IOException} ocurrs. Also necessary to match the
-	 *             method signature of the {@code readObject()} method used in
-	 *             Serialization.
-	 */
-	private void readObject(final ObjectInputStream is) throws IOException {
-		try {
-			final long version = is.readLong();
-			if (version == System.trueSerialVersionUID) {
-
-				name = new SimpleStringProperty((String) is.readObject());
-				description = new SimpleStringProperty((String) is.readObject());
-				creationDate = (Date) is.readObject();
-			}
-		} catch (final ClassNotFoundException e) {
-			// TODO: handle exception
-		}
-	}
-
-	/**
-	 * The <code>writeObject</code> method of this class.
-	 *
-	 * @param os
-	 *            The {@link ObjectOutputStream} passed in by Serialization.
-	 * @throws IOException
-	 *             If an {@link IOException} ocurrs. Also necessary to match the
-	 *             method signature of the {@code writeObject} method called by
-	 *             Serialization.
-	 */
-	private void writeObject(final ObjectOutputStream os) throws IOException {
-		os.writeLong(System.trueSerialVersionUID);
-		os.writeObject(name.get());
-		os.writeObject(description.get());
-		os.writeObject(creationDate);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see kröw.libs.MindsetObject#getExtension()
-	 */
-	@Override
-	String getExtension() {
-		return System.FILE_EXTENSION;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see kröw.libs.MindsetObject#getSaveDirectory()
-	 */
-	@Override
-	File getSaveDirectory() {
-		return Wolf.SYSTEM_SAVE_DIRECTORY;
 	}
 
 	/**
@@ -173,6 +112,16 @@ public final class System extends MindsetObject implements TableViewable {
 	/*
 	 * (non-Javadoc)
 	 *
+	 * @see kröw.libs.MindsetObject#getExtension()
+	 */
+	@Override
+	String getExtension() {
+		return System.FILE_EXTENSION;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see kröw.libs.MindsetObject#getFile()
 	 */
 	@Override
@@ -197,9 +146,43 @@ public final class System extends MindsetObject implements TableViewable {
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see kröw.libs.MindsetObject#getSaveDirectory()
+	 */
+	@Override
+	File getSaveDirectory() {
+		return Wolf.SYSTEM_SAVE_DIRECTORY;
+	}
+
 	@Override
 	public String getType() {
 		return TYPE;
+	}
+
+	/**
+	 * The <code>readObject</code> method of this class.
+	 *
+	 * @param is
+	 *            The {@link ObjectStreamException} passed in by Serialization.
+	 * @throws IOException
+	 *             If an {@link IOException} ocurrs. Also necessary to match the
+	 *             method signature of the {@code readObject()} method used in
+	 *             Serialization.
+	 */
+	private void readObject(final ObjectInputStream is) throws IOException {
+		try {
+			final long version = is.readLong();
+			if (version == System.trueSerialVersionUID) {
+
+				name = new SimpleStringProperty((String) is.readObject());
+				description = new SimpleStringProperty((String) is.readObject());
+				creationDate = (Date) is.readObject();
+			}
+		} catch (final ClassNotFoundException e) {
+			// TODO: handle exception
+		}
 	}
 
 	/**
@@ -226,6 +209,23 @@ public final class System extends MindsetObject implements TableViewable {
 			this.description.set(description);
 			makeEdit();
 		}
+	}
+
+	/**
+	 * The <code>writeObject</code> method of this class.
+	 *
+	 * @param os
+	 *            The {@link ObjectOutputStream} passed in by Serialization.
+	 * @throws IOException
+	 *             If an {@link IOException} ocurrs. Also necessary to match the
+	 *             method signature of the {@code writeObject} method called by
+	 *             Serialization.
+	 */
+	private void writeObject(final ObjectOutputStream os) throws IOException {
+		os.writeLong(System.trueSerialVersionUID);
+		os.writeObject(name.get());
+		os.writeObject(description.get());
+		os.writeObject(creationDate);
 	}
 
 }

@@ -5,6 +5,11 @@ import java.util.Collection;
 
 public class UniqueArrayList<E> extends ArrayList<E> {
 
+	/**
+	 * SerialVersionUID
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public UniqueArrayList() {
 	}
 
@@ -21,11 +26,6 @@ public class UniqueArrayList<E> extends ArrayList<E> {
 	public UniqueArrayList(final int initialCapacity) {
 		super(initialCapacity);
 	}
-
-	/**
-	 * SerialVersionUID
-	 */
-	private static final long serialVersionUID = 1L;
 
 	/*
 	 * (non-Javadoc)

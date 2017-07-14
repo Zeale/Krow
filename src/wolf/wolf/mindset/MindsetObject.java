@@ -45,6 +45,67 @@ import wolf.mindset.tables.TableViewable;
  */
 public abstract class MindsetObject implements Serializable, TableViewable {
 
+	public class ConstructMindsetModel {
+
+		private ConstructMindset attatchedMindset = null;
+
+		public void attatch(final ConstructMindset mindset) throws ObjectAlreadyExistsException {
+
+			if (mindset != null) {
+				mindset.attatch(MindsetObject.this);
+				attatchedMindset = mindset;
+			}
+		}
+
+		public void detatch() {
+			attatchedMindset.detatch(MindsetObject.this);
+			attatchedMindset = null;
+		}
+
+		public ConstructMindset getAttatchedMindset() {
+			return attatchedMindset;
+		}
+
+		public boolean isAttatched() {
+			return attatchedMindset != null;
+		}
+
+	}
+
+	public class Mark {
+		public Mark() {
+		}
+	}
+
+	public class MarkAlreadyExistsException extends Exception {
+
+		/**
+		 * SerialVersionUID.
+		 */
+		private static final long serialVersionUID = 1L;
+
+		private final Mark thrower, victim;
+
+		MarkAlreadyExistsException(final Mark thrower, final Mark victim) {
+			this.thrower = thrower;
+			this.victim = victim;
+		}
+
+		public Mark getThrower() {
+			return thrower;
+		}
+
+		public Mark getVictim() {
+			return victim;
+		}
+
+	}
+
+	/**
+	 * SerialVersionUID
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * The name of this {@link MindsetObject}.
 	 */
@@ -79,31 +140,12 @@ public abstract class MindsetObject implements Serializable, TableViewable {
 		getMindsetModel().attatch(mindset);
 	}
 
-	/**
-	 * SerialVersionUID
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private void readObject(final ObjectInputStream is) throws IOException {
-		mindsetModel = new ConstructMindsetModel();
-	}
-
-	// These may become public in following versions.
-	abstract String getExtension();
-
-	abstract File getSaveDirectory();
-
 	protected void checkAttatchedMindset() throws ObjectAlreadyExistsException {
 		if (getMindsetModel().isAttatched())
 			for (final MindsetObject object : getMindsetModel().getAttatchedMindset().getAllObjects())
 				if (object != MindsetObject.this && object.getType().equals(getType())
 						&& object.name.get().equals(name))
 					throw new ObjectAlreadyExistsException(MindsetObject.this, object);
-	}
-
-	protected void makeEdit() {
-		if (getMindsetModel().isAttatched())
-			getMindsetModel().getAttatchedMindset().getSaveQueue().add(this);
 	}
 
 	/**
@@ -146,6 +188,9 @@ public abstract class MindsetObject implements Serializable, TableViewable {
 		return true;
 	}
 
+	// These may become public in following versions.
+	abstract String getExtension();
+
 	/**
 	 * Gets the file of this {@link MindsetObject}. This is the {@link File}
 	 * object where this {@link MindsetObject} will be saved to when the program
@@ -174,6 +219,8 @@ public abstract class MindsetObject implements Serializable, TableViewable {
 		return name;
 	}
 
+	abstract File getSaveDirectory();
+
 	public abstract String getType();
 
 	/*
@@ -193,8 +240,17 @@ public abstract class MindsetObject implements Serializable, TableViewable {
 		return deleted;
 	}
 
+	protected void makeEdit() {
+		if (getMindsetModel().isAttatched())
+			getMindsetModel().getAttatchedMindset().getSaveQueue().add(this);
+	}
+
 	public StringProperty nameProperty() {
 		return name;
+	}
+
+	private void readObject(final ObjectInputStream is) throws IOException {
+		mindsetModel = new ConstructMindsetModel();
 	}
 
 	/**
@@ -215,62 +271,6 @@ public abstract class MindsetObject implements Serializable, TableViewable {
 	@Override
 	public String toString() {
 		return name.get();
-	}
-
-	public class ConstructMindsetModel {
-
-		private ConstructMindset attatchedMindset = null;
-
-		public void attatch(final ConstructMindset mindset) throws ObjectAlreadyExistsException {
-
-			if (mindset != null) {
-				mindset.attatch(MindsetObject.this);
-				attatchedMindset = mindset;
-			}
-		}
-
-		public void detatch() {
-			attatchedMindset.detatch(MindsetObject.this);
-			attatchedMindset = null;
-		}
-
-		public ConstructMindset getAttatchedMindset() {
-			return attatchedMindset;
-		}
-
-		public boolean isAttatched() {
-			return attatchedMindset != null;
-		}
-
-	}
-
-	public class Mark {
-		public Mark() {
-		}
-	}
-
-	public class MarkAlreadyExistsException extends Exception {
-
-		private final Mark thrower, victim;
-
-		MarkAlreadyExistsException(final Mark thrower, final Mark victim) {
-			this.thrower = thrower;
-			this.victim = victim;
-		}
-
-		/**
-		 * SerialVersionUID.
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public Mark getThrower() {
-			return thrower;
-		}
-
-		public Mark getVictim() {
-			return victim;
-		}
-
 	}
 
 }

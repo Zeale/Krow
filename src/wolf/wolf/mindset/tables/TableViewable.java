@@ -9,8 +9,6 @@ import javafx.util.Callback;
 import wolf.mindset.Construct;
 
 public interface TableViewable {
-	ObservableValue<?> getProperty(String key);
-
 	/**
 	 * <p>
 	 * This class is used to generate a CellValueFactory for a
@@ -77,15 +75,17 @@ public interface TableViewable {
 			this.key = key;
 		}
 
-		protected String getKey() {
-			return key;
-		}
-
 		@SuppressWarnings("unchecked")
 		@Override
 		public ObservableValue<T> call(final CellDataFeatures<S, T> param) {
 			return (ObservableValue<T>) param.getValue().getProperty(key);
 		}
 
+		protected String getKey() {
+			return key;
+		}
+
 	}
+
+	ObservableValue<?> getProperty(String key);
 }

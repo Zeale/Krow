@@ -20,10 +20,6 @@ import wolf.mindset.Law;
 
 public final class Wolf {
 
-	private Wolf(final Wolf wolf) throws Exception {
-		wolf.getClass();
-	}
-
 	/**
 	 * This variable defines whether or not debug mode is on.
 	 */
@@ -33,11 +29,11 @@ public final class Wolf {
 	 * Kröw's name.
 	 */
 	public static final String KROW_NAME = "Kröw";
+
 	/**
 	 * Wolf's name
 	 */
 	public static final String WOLF_NAME = "Wolf";
-
 	/**
 	 * The home directory of this library.
 	 */
@@ -53,6 +49,7 @@ public final class Wolf {
 	 * The directory for storing {@link Construct}s.
 	 */
 	public static final File CONSTRUCT_SAVE_DIRECTORY = new File(DATA_DIRECTORY, "Constructs");
+
 	/**
 	 * The directory for storing Tasks. (These currently don't exist.)
 	 */
@@ -468,6 +465,10 @@ public final class Wolf {
 		for (int i = 0; i < string.length(); i++)
 			textarr[i] = new Text(String.valueOf(string.charAt(i)));
 		return textarr;
+	}
+
+	private Wolf(final Wolf wolf) throws Exception {
+		wolf.getClass();
 	}
 
 }

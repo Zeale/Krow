@@ -18,8 +18,26 @@ public class ConstructMindset {
 	private final UniqueArrayList<Construct> constructs = new UniqueArrayList<>();
 	private final UniqueArrayList<System> systems = new UniqueArrayList<>();
 
+	private final List<EventListener<ChangeEvent>> changeEventListeners = new ArrayList<>();
+
+	private final List<EventListener<AddEvent>> addEventListeners = new ArrayList<>();
+
+	private final List<EventListener<RemoveEvent>> removeEventListeners = new ArrayList<>();
+
 	public ConstructMindset() {
 
+	}
+
+	public void addAddEventListener(final EventListener<AddEvent> listener) {
+		addEventListeners.add(listener);
+	}
+
+	public void addChangeEventListener(final EventListener<ChangeEvent> listener) {
+		changeEventListeners.add(listener);
+	}
+
+	public void addRemoveEventListener(final EventListener<RemoveEvent> listener) {
+		removeEventListeners.add(listener);
 	}
 
 	void attatch(final Construct object) throws ObjectAlreadyExistsException {
@@ -28,9 +46,9 @@ public class ConstructMindset {
 			final List<Construct> list = new ArrayList<>(constructs);
 			throw new ObjectAlreadyExistsException(object, list.get(list.indexOf(object)));
 		}
-		for (EventListener<ChangeEvent> l : changeEventListeners)
+		for (final EventListener<ChangeEvent> l : changeEventListeners)
 			l.eventOccurred(new ChangeEvent(true, object));
-		for (EventListener<AddEvent> l : addEventListeners)
+		for (final EventListener<AddEvent> l : addEventListeners)
 			l.eventOccurred(new AddEvent(object));
 	}
 
@@ -39,9 +57,9 @@ public class ConstructMindset {
 			final List<Law> list = new ArrayList<>(laws);
 			throw new ObjectAlreadyExistsException(object, list.get(list.indexOf(object)));
 		}
-		for (EventListener<ChangeEvent> l : changeEventListeners)
+		for (final EventListener<ChangeEvent> l : changeEventListeners)
 			l.eventOccurred(new ChangeEvent(true, object));
-		for (EventListener<AddEvent> l : addEventListeners)
+		for (final EventListener<AddEvent> l : addEventListeners)
 			l.eventOccurred(new AddEvent(object));
 	}
 
@@ -60,17 +78,17 @@ public class ConstructMindset {
 			throw new ObjectAlreadyExistsException(object, list.get(list.indexOf(object)));
 
 		}
-		for (EventListener<ChangeEvent> l : changeEventListeners)
+		for (final EventListener<ChangeEvent> l : changeEventListeners)
 			l.eventOccurred(new ChangeEvent(true, object));
-		for (EventListener<AddEvent> l : addEventListeners)
+		for (final EventListener<AddEvent> l : addEventListeners)
 			l.eventOccurred(new AddEvent(object));
 	}
 
 	void detatch(final MindsetObject object) {
 		if (saveQueue.remove(object) | (laws.remove(object) || systems.remove(object) || constructs.remove(object))) {
-			for (EventListener<ChangeEvent> l : changeEventListeners)
+			for (final EventListener<ChangeEvent> l : changeEventListeners)
 				l.eventOccurred(new ChangeEvent(false, object));
-			for (EventListener<RemoveEvent> l : removeEventListeners)
+			for (final EventListener<RemoveEvent> l : removeEventListeners)
 				l.eventOccurred(new RemoveEvent(object));
 		}
 	}
@@ -114,22 +132,6 @@ public class ConstructMindset {
 
 	public List<System> getSystemsUnmodifiable() {
 		return Collections.unmodifiableList(systems);
-	}
-
-	private final List<EventListener<ChangeEvent>> changeEventListeners = new ArrayList<>();
-	private final List<EventListener<AddEvent>> addEventListeners = new ArrayList<>();
-	private final List<EventListener<RemoveEvent>> removeEventListeners = new ArrayList<>();
-
-	public void addChangeEventListener(EventListener<ChangeEvent> listener) {
-		changeEventListeners.add(listener);
-	}
-
-	public void addRemoveEventListener(EventListener<RemoveEvent> listener) {
-		removeEventListeners.add(listener);
-	}
-
-	public void addAddEventListener(EventListener<AddEvent> listener) {
-		addEventListeners.add(listener);
 	}
 
 }

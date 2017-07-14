@@ -7,7 +7,7 @@ package wolf.mindset.events;
  *            The Event type that will be listened to.
  */
 public interface EventListener<E extends Event> {
-	
+
 	void eventOccurred(E event);
-	
+
 }
