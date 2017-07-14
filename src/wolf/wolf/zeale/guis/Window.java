@@ -71,6 +71,10 @@ public abstract class Window {
 		return previousController;
 	}
 
+	public static Window getController() {
+		return controller;
+	}
+
 	/**
 	 * A getter for the previous {@link Scene}.
 	 *

@@ -19,6 +19,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -29,6 +30,7 @@ import wolf.mindset.Law;
 import wolf.mindset.MindsetObject;
 import wolf.mindset.ObjectAlreadyExistsException;
 import wolf.zeale.Wolf;
+import wolf.zeale.guis.Window;
 import zeale.guis.Home;
 
 /**
@@ -434,17 +436,27 @@ public final class Kröw extends Application {
 	 */
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
-		Scene scene = new Scene(FXMLLoader.load(Home.class.getResource("Home.fxml")));
-		scene.setFill(Color.TRANSPARENT);
 
-		primaryStage.setScene(scene);
+		Window.setStage_Impl(primaryStage);
+		Window.setScene(Home.class);
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.setTitle(Kröw.NAME);
 		if (Kröw.IMAGE_KRÖW != null)
 			primaryStage.getIcons().add(Kröw.IMAGE_KRÖW);
+		Window.getStage().getScene().setFill(Color.TRANSPARENT);
 		primaryStage.setFullScreen(true);
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 		primaryStage.show();
+
+		// Adds the given ImageView to the window on startup. The
+		// ImageView can have its own onClick event handlers attached,
+		// Along with any other event handlers it wants.
+		// ((Home) Window.getController()).addImage(new ImageView(IMAGE_KRÖW));
+
+		// We can also call the clear method to delete all the current images.
+		// The Home window loads by default with some images, so we can use
+		// This to clear those and add our own.
+		// ((Home)Window.getController()).clearImages();
 
 	}
 
