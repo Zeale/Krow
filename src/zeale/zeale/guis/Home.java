@@ -1,11 +1,13 @@
 package zeale.guis;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -37,8 +39,10 @@ public class Home extends Window {
 	@FXML
 	private VBox verticalScroll;
 
-	private Item[] views = new Item[14];
-	private short totalShift = (short) (views.length - 6);
+	private ArrayList<Item> views = new ArrayList<Home.Item>(10);
+	private short totalShift = (short) (views.size() - 6);
+
+	private static final Image CONSTRUCT_MENU_ICON = new Image("krow/resources/ConstructIcon_hd.png");
 
 	@FXML
 	@Override
@@ -50,17 +54,18 @@ public class Home extends Window {
 		horizontalScroll.setStyle(
 				"-fx-background-color:  linear-gradient(to right, #00000020 0%, #000000A8 45%, #000000A8 55%, #00000020 100%);");
 
-		for (byte i = 0; i < 14; i++) {
+		for (int i = 0; i < 10; i++) {
 			ImageView img = new ImageView(new Random().nextBoolean()
-					? new Random().nextBoolean() ? Kröw.IMAGE_DARK_CROW : Kröw.IMAGE_LIGHT_CROW : Kröw.IMAGE_KRÖW);
+					? new Random().nextBoolean() ? Kröw.IMAGE_DARK_CROW : Kröw.IMAGE_LIGHT_CROW
+					: new Random().nextBoolean() ? Kröw.IMAGE_KRÖW : CONSTRUCT_MENU_ICON);
 
 			TranslateTransition transition = new TranslateTransition(Duration.seconds(1), img);
 
 			Item item = new Item(img, transition);
 
-			views[i] = item;
-
+			views.add(item);
 		}
+		totalShift = (short) (views.size() - 6);
 
 		horizontalScroll.setPrefWidth(Kröw.SCREEN_WIDTH);
 		horizontalScroll.setPrefHeight(IMAGE_HEIGHT);
@@ -86,9 +91,9 @@ public class Home extends Window {
 			public void handle(ScrollEvent event) {
 
 				double amount = event.getDeltaY() / event.getMultiplierY() > 0 ? 1 : -1;
-				if (amount + totalShift > views.length) {
-					amount = views.length - totalShift;
-					totalShift = (short) views.length;
+				if (amount + totalShift > views.size()) {
+					amount = views.size() - totalShift;
+					totalShift = (short) views.size();
 					return;// Omit below loop; it's useless.
 				} else if (amount + totalShift < 1) {
 					totalShift = 1;
