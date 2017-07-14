@@ -24,14 +24,8 @@ import wolf.zeale.guis.Window;
 
 public class Home extends Window {
 
-	private static final ImageView BLANK_IMAGE = new ImageView();
-
 	private static int IMAGE_WIDTH = (int) ((double) 100 / 1920 * Kröw.SCREEN_WIDTH),
 			IMAGE_HEIGHT = (int) ((double) 100 / 1080 * Kröw.SCREEN_HEIGHT), IMAGE_SPACING = IMAGE_WIDTH / 2;
-	static {
-		BLANK_IMAGE.setFitHeight(IMAGE_HEIGHT);
-		BLANK_IMAGE.setFitWidth(IMAGE_WIDTH);
-	}
 
 	@Override
 	public String getWindowFile() {
@@ -64,6 +58,14 @@ public class Home extends Window {
 				horizontalScroll.getChildren().clear();
 				for (Item i : views)
 					horizontalScroll.getChildren().add(i.image);
+				// If there are less than six images, we use this to position
+				// those images. This adds in dummy images for positioning.
+				for (int i = 7 - horizontalScroll.getChildren().size(); i > 0; i--) {
+					ImageView iv = new ImageView();
+					iv.setFitHeight(IMAGE_HEIGHT);
+					iv.setFitWidth(IMAGE_WIDTH);
+					horizontalScroll.getChildren().add(0, iv);
+				}
 			}
 		});
 
@@ -140,6 +142,8 @@ public class Home extends Window {
 			}
 		});
 
+		// Testing the dummy positioning images.
+		addImage(new ImageView(Kröw.IMAGE_KRÖW));
 		addImage(constructs);
 
 	}
