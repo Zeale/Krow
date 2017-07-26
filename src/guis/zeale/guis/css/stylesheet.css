@@ -1,3 +1,9 @@
 .background, .background > .viewport {
 	-fx-background-color: #000000C4;
 }
+
+.label.option-name {
+	-fx-text-fill: black;
+	-fx-font-weight: bold;
+	-fx-font-size: 18px;
+}
