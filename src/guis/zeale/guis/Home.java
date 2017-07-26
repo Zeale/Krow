@@ -2,7 +2,6 @@
 package zeale.guis;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +18,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import kröw.core.Kröw;
 import kröw.libs.guis.Window;
@@ -169,18 +169,20 @@ public class Home extends Window {
 		// Put this in front of the verticalScroll container.
 		horizontalScroll.toFront();
 
-		// TODO Fix all this stuff later.
+		loadDefaultImages();
+	}
 
+	private final void loadDefaultImages() {
 		// Now to add the default images to our horizontal scroll container.
 		final ImageView constructs = new ImageView(CONSTRUCT_MENU_ICON);
-		constructs.setOnMouseClicked(event -> System.out.println("Clicked C"));
+		constructs.setOnMouseClicked(event -> Window.spawnLabelAtMousePos("WIP", Color.WHITE));
 
 		final ImageView krow = new ImageView(Kröw.IMAGE_KRÖW);
 		// This code assures that clicking in a transparent portion of the image
 		// will still cause a click to be registered by the event handler.
 		krow.setPickOnBounds(true);
 		// Event handler
-		krow.setOnMouseClicked(event -> System.out.println("Clicked Krow"));
+		krow.setOnMouseClicked(event -> Window.spawnLabelAtMousePos("WIP", Color.WHITE));
 
 		ImageView settings = new ImageView("krow/resources/Settings.png");
 		settings.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -199,7 +201,6 @@ public class Home extends Window {
 		// Testing the dummy positioning images.
 		addImage(krow);
 		addImage(constructs);
-
 	}
 
 	public boolean removeImage(final ImageView imageView) {
