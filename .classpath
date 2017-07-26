@@ -2,8 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src/krow"/>
 	<classpathentry kind="src" path="src/resources"/>
-	<classpathentry kind="src" path="src/zeale"/>
-	<classpathentry kind="src" path="src/wolf"/>
+	<classpathentry kind="src" path="src/guis"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
