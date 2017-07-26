@@ -9,9 +9,9 @@ import java.io.InputStream;
 import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 
-import wolf.mindset.Construct;
-import wolf.mindset.Law;
-import wolf.mindset.MindsetObject;
+import kröw.libs.mindset.Construct;
+import kröw.libs.mindset.Law;
+import kröw.libs.mindset.MindsetObject;
 
 /**
  * An internal object used by the {@link Kröw} program to backwards-compatibly
@@ -69,7 +69,7 @@ final class OldVersionLoader {
 
 			// Repeat
 			else if (objectClassDescriptior.getName().equals("kröw.libs.System"))
-				objectClassDescriptior = ObjectStreamClass.lookup(wolf.mindset.System.class);
+				objectClassDescriptior = ObjectStreamClass.lookup(kröw.libs.mindset.System.class);
 
 			else if (objectClassDescriptior.getName().equals("kröw.libs.Law"))
 				objectClassDescriptior = ObjectStreamClass.lookup(Law.class);
@@ -121,7 +121,7 @@ final class OldVersionLoader {
 				classDescriptor = ObjectStreamClass.lookup(Construct.class);
 			// Repeat.
 			else if (classDescriptor.getName().equals("kröw.libs.System"))
-				classDescriptor = ObjectStreamClass.lookup(wolf.mindset.System.class);
+				classDescriptor = ObjectStreamClass.lookup(kröw.libs.mindset.System.class);
 
 			else if (classDescriptor.getName().equals("kröw.libs.Law"))
 				classDescriptor = ObjectStreamClass.lookup(Law.class);
