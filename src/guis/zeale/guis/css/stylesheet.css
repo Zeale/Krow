@@ -7,3 +7,14 @@
 	-fx-font-weight: bold;
 	-fx-font-size: 18px;
 }
+
+.choice-box, .choice-box.open-button {
+	-fx-background-color: black;
+	-fx-border-radius: 0px;
+	-fx-border-color: black;
+	-fx-text-fill: white;
+}
+
+.choice-box.open-button.arrow {
+	-fx-background-color: white;
+}
