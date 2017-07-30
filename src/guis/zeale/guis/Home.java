@@ -160,12 +160,6 @@ public class Home extends Window {
 				animate(amount > 0);
 		});
 
-		// Exit the program via the escape key.
-		horizontalScroll.setOnKeyPressed(event -> {
-			if (event.getCode() == KeyCode.ESCAPE)
-				Platform.exit();
-		});
-
 		// Put this in front of the verticalScroll container.
 		horizontalScroll.toFront();
 

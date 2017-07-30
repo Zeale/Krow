@@ -9,6 +9,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
@@ -48,7 +49,7 @@ public abstract class Window {
 	 * The previously showing {@link Scene}. This is set when any of the
 	 * <code>setScene</code> methods are called.
 	 */
-	private static Scene previousScene;
+	private static Parent previousRoot;
 
 	/**
 	 * The controller of the current {@link Scene}.
@@ -68,13 +69,8 @@ public abstract class Window {
 		return previousController;
 	}
 
-	/**
-	 * A getter for the previous {@link Scene}.
-	 *
-	 * @return {@link #previousScene}
-	 */
-	public static Scene getPreviousScene() {
-		return Window.previousScene;
+	public static Parent getPreviousRoot() {
+		return Window.previousRoot;
 	}
 
 	/**
@@ -263,17 +259,11 @@ public abstract class Window {
 		// Instantiate the loader
 		final FXMLLoader loader = new FXMLLoader(scene);
 		// Take the current objects and set them as the previous objects.
-		Window.previousScene = Window.stage.getScene();
+		Window.previousRoot = Window.stage.getScene().getRoot();
 		Window.previousController = Window.controller;
-		// Create a temporary loading scene.
-		LoadingScene tempScene = new LoadingScene();
-		// Show it
-		Window.stage.setScene(tempScene);
-		// Initialize it
-		tempScene.initialize();
+		// Set the new root.
+		Window.stage.getScene().setRoot(loader.load());
 
-		// Show the actual scene
-		tempScene.setRoot(loader.load());
 		// Assign the controller.
 		Window.controller = loader.<Window>getController();
 	}
@@ -292,13 +282,11 @@ public abstract class Window {
 	 * necessary for full functionality.
 	 */
 	public static void setSceneToPreviousScene() {
-		/* Switch the current scene and the previous scene. */
-		// Cache the previous scene
-		final Scene tempScene = Window.getPreviousScene();
+		final Parent tempRoot = Window.getPreviousRoot();
 		// Take the current scene and set it as the previous scene.
-		Window.previousScene = Window.stage.getScene();
+		Window.previousRoot = Window.stage.getScene().getRoot();
 		// Take the cached, previous scene and set it as the current scene.
-		Window.stage.setScene(tempScene);
+		Window.stage.getScene().setRoot(tempRoot);
 
 		// Try and reinitalize the scene that's about to show. (Controllers
 		// haven't yet been switched, but the scenes have, so the following
@@ -325,11 +313,18 @@ public abstract class Window {
 	 *
 	 * @param stage
 	 *            The new {@link Stage}.
+	 * @throws IOException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 * @Internal This method is meant for internal use only.
 	 *
 	 */
-	public static void setStage_Impl(final Stage stage) {
+	public static void setStage_Impl(final Stage stage, Class<? extends Window> cls)
+			throws IOException, InstantiationException, IllegalAccessException {
 		Window.stage = stage;
+		FXMLLoader loader = new FXMLLoader(cls.getResource(((Window) cls.newInstance()).getWindowFile()));
+		stage.setScene(new Scene(loader.load()));
+		controller = loader.getController();
 	}
 
 	/**

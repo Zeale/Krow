@@ -14,7 +14,6 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,8 +21,12 @@ import java.util.Set;
 import javax.swing.filechooser.FileSystemView;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -50,6 +53,11 @@ import zeale.guis.Home;
  *
  */
 public final class Kröw extends Application {
+
+	public static final EventHandler<KeyEvent> CLOSE_ON_ESCAPE_HANADLER = (event -> {
+		if (event.getCode() == KeyCode.ESCAPE)
+			Platform.exit();
+	});
 
 	/*
 	 * Screen width and height
@@ -468,8 +476,7 @@ public final class Kröw extends Application {
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
 
-		Window.setStage_Impl(primaryStage);
-		Window.setScene(Home.class);
+		Window.setStage_Impl(primaryStage, Home.class);
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.setTitle(Kröw.NAME);
 		if (Kröw.IMAGE_KRÖW != null)
@@ -477,6 +484,8 @@ public final class Kröw extends Application {
 		Window.getStage().getScene().setFill(Color.TRANSPARENT);
 		primaryStage.setFullScreen(true);
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+
+		primaryStage.getScene().setOnKeyPressed(CLOSE_ON_ESCAPE_HANADLER);
 		primaryStage.show();
 
 		// Adds the given ImageView to the window on startup. The
