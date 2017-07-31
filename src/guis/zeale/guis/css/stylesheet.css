@@ -8,13 +8,22 @@
 	-fx-font-size: 18px;
 }
 
-.choice-box, .choice-box.open-button {
+.choice-box, .choice-box .open-button, .menu-button {
 	-fx-background-color: black;
 	-fx-border-radius: 0px;
 	-fx-border-color: black;
 	-fx-text-fill: white;
 }
 
-.choice-box.open-button.arrow {
+.choice-box .open-button .arrow, .menu-button .arrow {
 	-fx-background-color: white;
+}
+
+.menu-button .label {
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+}
+
+.menu-button .context-menu, .menu-button .context-menu .label {
+	-fx-background-color: black;
 }
