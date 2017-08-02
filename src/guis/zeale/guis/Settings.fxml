@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.web.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <AnchorPane prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="zeale.guis.Settings">
    <children>
-      <Label fx:id="labelSettings" layoutX="263.0" layoutY="160.0" styleClass="option-name" text="Startup" />
+      <Label fx:id="settingsLabel" layoutX="664.0" layoutY="177.0" style="-fx-font-weight: bold; -fx-text-fill: black; -fx-font-size: 48px;" text="General" />
+      <TreeView id="SettingsTreeView" fx:id="tabList" layoutX="20.0" layoutY="20.0" prefHeight="1040.0" prefWidth="313.0" style="-fx-background-color: #00000060;" />
    </children>
 </AnchorPane>
