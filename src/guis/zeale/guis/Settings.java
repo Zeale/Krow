@@ -2,7 +2,6 @@ package zeale.guis;
 
 import java.util.ArrayList;
 
-import javafx.css.PseudoClass;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -45,6 +44,7 @@ public class Settings extends Window {
 
 		TreeItem<Item> item = new TreeItem<>(new Item("Test", new Label("AlsoTest")));
 		item.getChildren().add(new TreeItem<Settings.Item>(new Item("Hi", new Label("Potato"))));
+		addItem(item);
 
 	}
 
@@ -61,8 +61,6 @@ public class Settings extends Window {
 					@Override
 					protected void updateItem(Item item, boolean empty) {
 						super.updateItem(item, empty);
-
-						setDisclosureNode(null);
 
 						String background;
 
@@ -87,7 +85,7 @@ public class Settings extends Window {
 							this.setStyle(
 									"-fx-background-color: #FFFFFFBA; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
 						else
-							updateItem(getItem(), getItem() == null);
+							updateItem(getItem(), isEmpty());
 						super.updateSelected(selected);
 					}
 				};
