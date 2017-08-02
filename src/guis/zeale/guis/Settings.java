@@ -1,6 +1,7 @@
 package zeale.guis;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -42,10 +43,21 @@ public class Settings extends Window {
 		addItem(new TreeItem<Settings.Item>(new Item("Video")));
 		addItem(new TreeItem<Settings.Item>(new Item("Sound")));
 
-		TreeItem<Item> item = new TreeItem<>(new Item("Test", new Label("AlsoTest")));
-		item.getChildren().add(new TreeItem<Settings.Item>(new Item("Hi", new Label("Potato"))));
+		TreeItem<Item> item = new TreeItem<>(new Item("Menu1", new Label("AlsoTest")));
+		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu1", new Label("Potato"))));
+		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu2")));
+		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu3", new Label("Potato"))));
+		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu4")));
+		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu5", new Label("Potato"))));
+		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu6")));
 		addItem(item);
 
+		item = new TreeItem<>(new Item("Menu2", new Label("AlsoTest")));
+		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu1", new Label("Potato"))));
+		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu2")));
+		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu3", new Label("Potato"))));
+		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu4")));
+		addItem(item);
 	}
 
 	@Override
@@ -74,6 +86,19 @@ public class Settings extends Window {
 							setText("");
 						} else
 							setText(item.text);
+						if (getTreeItem() != null)
+							if (getTreeItem().getParent() != getTreeView().getRoot()) {
+								Random rand = new Random();
+								int r = rand.nextInt(256), g = rand.nextInt(256), b = rand.nextInt(256);
+								background = "#";
+								background += (Integer.toHexString(r).length() == 1 ? "0" : "")
+										+ Integer.toHexString(r);
+								background += (Integer.toHexString(g).length() == 1 ? "0" : "")
+										+ Integer.toHexString(g);
+								background += (Integer.toHexString(b).length() == 1 ? "0" : "")
+										+ Integer.toHexString(b);
+								background += "40";
+							}
 
 						this.setStyle("-fx-background-color: " + background
 								+ "; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
@@ -81,12 +106,13 @@ public class Settings extends Window {
 
 					@Override
 					public void updateSelected(boolean selected) {
+						super.updateSelected(selected);
 						if (selected)
 							this.setStyle(
 									"-fx-background-color: #FFFFFFBA; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
 						else
 							updateItem(getItem(), isEmpty());
-						super.updateSelected(selected);
+
 					}
 				};
 
@@ -94,6 +120,7 @@ public class Settings extends Window {
 			}
 		});
 		addDefaultItems();
+
 	}
 
 	public final void addItem(TreeItem<Item> child) {
