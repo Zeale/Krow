@@ -180,16 +180,21 @@ public final class Kröw extends Application {
 			Kröw.createFolder(Kröw.SYSTEM_SAVE_DIRECTORY);
 			Kröw.createFolder(Kröw.LAW_SAVE_DIRECTORY);
 			Kröw.createFolder(Backup.BACKUP_SAVE_DIRECTORY);
-			if (!Kröw.README_FILE.exists())
-				Kröw.copyFileToDirectory(new File("src/resources/krow/readme.txt"), Kröw.KRÖW_HOME_DIRECTORY);
-			if (!Kröw.LICENSE_FILE.exists())
-				Kröw.copyFileToDirectory(new File("src/resources/krow/license.txt"), Kröw.KRÖW_HOME_DIRECTORY);
-			if (!Kröw.CREDITS_FILE.exists())
-				Kröw.copyFileToDirectory(new File("src/resources/krow/credits.txt"), Kröw.KRÖW_HOME_DIRECTORY);
-			if (!Kröw.PLANS_FILE.exists())
-				Kröw.copyFileToDirectory(new File("src/resources/krow/plans.txt"), Kröw.KRÖW_HOME_DIRECTORY);
-			if (!Kröw.DATA_INCLUDES_FILE.exists())
-				Kröw.copyFileToDirectory(new File("src/resources/krow/includes.kcfg"), KRÖW_HOME_DIRECTORY);
+			try {
+				if (!Kröw.README_FILE.exists())
+					Kröw.copyFileToDirectory(new File("src/resources/krow/readme.txt"), Kröw.KRÖW_HOME_DIRECTORY);
+				if (!Kröw.LICENSE_FILE.exists())
+					Kröw.copyFileToDirectory(new File("src/resources/krow/license.txt"), Kröw.KRÖW_HOME_DIRECTORY);
+				if (!Kröw.CREDITS_FILE.exists())
+					Kröw.copyFileToDirectory(new File("src/resources/krow/credits.txt"), Kröw.KRÖW_HOME_DIRECTORY);
+				if (!Kröw.PLANS_FILE.exists())
+					Kröw.copyFileToDirectory(new File("src/resources/krow/plans.txt"), Kröw.KRÖW_HOME_DIRECTORY);
+				if (!Kröw.DATA_INCLUDES_FILE.exists())
+					Kröw.copyFileToDirectory(new File("src/resources/krow/includes.kcfg"), KRÖW_HOME_DIRECTORY);
+			} catch (IOException e) {
+				if(DEBUG_MODE)
+					e.printStackTrace();
+			}
 		} catch (final RuntimeException e) {
 			System.err.println(
 					"An exception occurred while trying to create or check some necessary directories. The program will print its errors and exit.");
@@ -592,12 +597,8 @@ public final class Kröw extends Application {
 	 * @param directory
 	 *            The parent folder of the copied {@link File}.
 	 */
-	public static void copyFileToDirectory(final File file, final File directory) {
-		try {
-			Files.copy(file.toPath(), new File(directory, file.getName()).toPath());
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
+	public static void copyFileToDirectory(final File file, final File directory) throws IOException {
+		Files.copy(file.toPath(), new File(directory, file.getName()).toPath());
 	}
 
 	/**
