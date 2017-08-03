@@ -255,7 +255,7 @@ public abstract class Window {
 
 	}
 
-	public static void setScene(URL scene) throws IOException {
+	public static void setScene(final URL scene) throws IOException {
 		// Instantiate the loader
 		final FXMLLoader loader = new FXMLLoader(scene);
 		// Take the current objects and set them as the previous objects.
@@ -319,10 +319,10 @@ public abstract class Window {
 	 * @Internal This method is meant for internal use only.
 	 *
 	 */
-	public static void setStage_Impl(final Stage stage, Class<? extends Window> cls)
+	public static void setStage_Impl(final Stage stage, final Class<? extends Window> cls)
 			throws IOException, InstantiationException, IllegalAccessException {
 		Window.stage = stage;
-		FXMLLoader loader = new FXMLLoader(cls.getResource(((Window) cls.newInstance()).getWindowFile()));
+		final FXMLLoader loader = new FXMLLoader(cls.getResource(((Window) cls.newInstance()).getWindowFile()));
 		stage.setScene(new Scene(loader.load()));
 		controller = loader.getController();
 	}

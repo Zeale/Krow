@@ -12,12 +12,12 @@ public class LoadingScene extends Scene {
 
 	/* Fields */
 
-	private Label loadingLbl = new Label();
-	private ProgressIndicator progressIndicator = new ProgressIndicator();
-	private BorderPane pane;
-
 	/* Default Values */
 	private static final Paint DEFAULT_SCENE_BACKGROUND = Color.TRANSPARENT;
+	private final Label loadingLbl = new Label();
+	private final ProgressIndicator progressIndicator = new ProgressIndicator();
+
+	private BorderPane pane;
 
 	{
 		setFill(DEFAULT_SCENE_BACKGROUND);// Set the default bg.
@@ -25,39 +25,40 @@ public class LoadingScene extends Scene {
 		// that is called.
 	}
 
+	{
+		pane = (BorderPane) getRoot();
+		pane.setCenter(loadingLbl);
+		pane.setBottom(progressIndicator);
+	}
+
 	/* Constructors */
 	public LoadingScene() {
 		super(new BorderPane());
 	}
 
-	public LoadingScene(Paint fill) {
-		this();
-		setFill(fill);
-	}
-
-	public LoadingScene(double width, double height) {
+	public LoadingScene(final double width, final double height) {
 		super(new BorderPane(), width, height);
 	}
 
-	public LoadingScene(double width, double height, Paint fill) {
+	public LoadingScene(final double width, final double height, final boolean depthBuffer) {
+		super(new BorderPane(), width, height, depthBuffer);
+	}
+
+	public LoadingScene(final double width, final double height, final boolean depthBuffer,
+			final SceneAntialiasing antiAliasing) {
+		super(new BorderPane(), width, height, depthBuffer, antiAliasing);
+	}
+
+	public LoadingScene(final double width, final double height, final Paint fill) {
 		this(width, height);
 		setFill(fill);
 	}
 
-	public LoadingScene(double width, double height, boolean depthBuffer) {
-		super(new BorderPane(), width, height, depthBuffer);
-	}
-
-	public LoadingScene(double width, double height, boolean depthBuffer, SceneAntialiasing antiAliasing) {
-		super(new BorderPane(), width, height, depthBuffer, antiAliasing);
-	}
-
 	/* Set up our loading scene. */
 
-	{
-		pane = (BorderPane) getRoot();
-		pane.setCenter(loadingLbl);
-		pane.setBottom(progressIndicator);
+	public LoadingScene(final Paint fill) {
+		this();
+		setFill(fill);
 	}
 
 	public void initialize() {

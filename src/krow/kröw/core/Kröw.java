@@ -55,10 +55,10 @@ import zeale.guis.Home;
  */
 public final class Kröw extends Application {
 
-	public static final EventHandler<KeyEvent> CLOSE_ON_ESCAPE_HANADLER = (event -> {
+	public static final EventHandler<KeyEvent> CLOSE_ON_ESCAPE_HANADLER = event -> {
 		if (event.getCode() == KeyCode.ESCAPE)
 			Platform.exit();
-	});
+	};
 
 	/*
 	 * Screen width and height
@@ -192,7 +192,7 @@ public final class Kröw extends Application {
 					Kröw.copyFileToDirectory(new File("src/resources/krow/plans.txt"), Kröw.KRÖW_HOME_DIRECTORY);
 				if (!Kröw.DATA_INCLUDES_FILE.exists())
 					Kröw.copyFileToDirectory(new File("src/resources/krow/includes.kcfg"), KRÖW_HOME_DIRECTORY);
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				if (DEBUG_MODE)
 					e.printStackTrace();
 			}
@@ -208,10 +208,6 @@ public final class Kröw extends Application {
 	}
 
 	private static GlobalSettingsManager globalSettingsManager;
-
-	public static GlobalSettingsManager getGlobalSettingsManager() {
-		return globalSettingsManager;
-	}
 
 	static {
 
@@ -240,6 +236,59 @@ public final class Kröw extends Application {
 	}
 
 	/**
+	 * Calculates the average runtime of a {@code runnable} after running a
+	 * specific number of times.
+	 *
+	 * @param runs
+	 *            The amount of times to run the {@code runnable}.
+	 * @param runnable
+	 *            The code to execute.
+	 * @return The average runtime lf the executed piece of code.
+	 */
+	public static double calculateAverageRunTime(final long runs, final Runnable runnable) {
+		final Timer timer = new Timer();
+
+		long totalTime = 0;
+		for (long i = 0; i < runs; i++) {
+			timer.startTimer();
+			runnable.run();
+			final long t = timer.endTimer();
+			totalTime += t;
+		}
+		return (double) totalTime / runs;
+
+	}
+
+	/**
+	 * Calculates the average amount of time that a given {@code runnable} takes
+	 * to run. This time may be lower than that returned by
+	 * {@link #calculateTime(Runnable)} because this operation runs multiple
+	 * times and the JIT compiler may <b>heavily optimize</b> a given operation.
+	 *
+	 * @param runnable
+	 *            The code to execute.
+	 * @return The average runtime of the executed code.
+	 */
+	public static double calculateAverageRunTime(final Runnable runnable) {
+		return calculateAverageRunTime(200000000, runnable);
+	}
+
+	/**
+	 * Calculates that amount of time that the {@code runnable} takes to execute
+	 * in nanoseconds.
+	 *
+	 * @param runnable
+	 *            The {@code runnable} to execute.
+	 * @return The time that the operation took in nanoseconds.
+	 */
+	public static long calculateTime(final Runnable runnable) {
+		final Timer timer = new Timer();
+		timer.startTimer();
+		runnable.run();
+		return timer.endTimer();
+	}
+
+	/**
 	 * Clears all the objects in this program.
 	 *
 	 * @return A {@link Backup} made prior to the clear.
@@ -249,6 +298,126 @@ public final class Kröw extends Application {
 		for (final MindsetObject obj : Kröw.CONSTRUCT_MINDSET.getAllObjects())
 			obj.delete();
 		return b;
+	}
+
+	/**
+	 * A static helper method that checks if a {@link List} contains a given
+	 * {@link String}. The {@link List} must have been instantiated with a type
+	 * argument of {@link String}.
+	 *
+	 * @param list
+	 *            The {@link List} to check through.
+	 * @param string
+	 *            The {@link String} that will be checked for existence in the
+	 *            {@link List}
+	 * @return true if this {@link List} contains the given {@link String}
+	 *         ignoring case.
+	 */
+	public static boolean containsIgnoreCase(final List<String> list, final String string) {
+		for (final String s : list)
+			if (s.equalsIgnoreCase(string))
+				return true;
+		return false;
+	}
+
+	/**
+	 * Copies a {@link File} from a location into a given {@code directory}.
+	 *
+	 * @param file
+	 *            The {@link File} that will be copied.
+	 * @param directory
+	 *            The parent folder of the copied {@link File}.
+	 */
+	public static void copyFileToDirectory(final File file, final File directory) throws IOException {
+		Files.copy(file.toPath(), new File(directory, file.getName()).toPath());
+	}
+
+	/**
+	 * This method attempts to create a folder in the specified {@link File}.
+	 *
+	 * @param fileObj
+	 *            The {@link File} where the folder will be created.
+	 */
+	public static void createFolder(final File fileObj) {
+		if (fileObj.isFile()) {
+			java.lang.System.out.println(
+					"The folder " + fileObj.getAbsolutePath() + " already exists as a file. It will be deleted now...");
+			if (!fileObj.delete())
+				throw new RuntimeException("The folder " + fileObj.getName() + " could not be deleted.");
+		}
+
+		if (!fileObj.exists()) {
+			java.lang.System.out
+					.println("The folder " + fileObj.getAbsolutePath() + " does not exist yet. It will be made now.");
+			fileObj.mkdirs();
+		} else
+			java.lang.System.out
+					.println("The folder " + fileObj.getAbsolutePath() + " already exists as a folder. All is well.");
+
+	}
+
+	/**
+	 * <p>
+	 * Removes all duplicate elements from a given {@link List}.
+	 * <p>
+	 * This operation depends on objects correctly implementing the
+	 * {@link Object#equals(Object)} and {@link Object#hashCode()} methods.
+	 * <p>
+	 * This operation also needs a {@link List} that has implemented
+	 * {@link List#clear()} and {@link List#addAll(java.util.Collection)} as
+	 * specified.
+	 * <p>
+	 * After this method runs, the {@link List} given will have no duplicate
+	 * elements of <code>e1</code> and <code>e2</code> such that
+	 * <code>e1.equals(e2)</code> returns <code>true</code>. In other words, if
+	 * you compare any two different objects in the {@code list}, the objects
+	 * will never <code>.equals</code> each other.
+	 *
+	 * @param list
+	 *            The {@link List} that this operation will be applied to.
+	 */
+	public static <T> void dedupeList(final List<T> list) {
+		final Set<T> set = new HashSet<>();
+		set.addAll(list);
+		list.clear();
+		list.addAll(set);
+	}
+
+	/**
+	 * Deletes a given {@code directory} by recursively calling this method on
+	 * every sub-folder or sub-file in the given {@code directory}.
+	 *
+	 * @param directory
+	 *            The directory that will be deleted. This method will work fine
+	 *            if this is a file.
+	 */
+	public static void deleteDirectory(final File directory) {
+		if (directory.isDirectory())
+			for (final File f : directory.listFiles())
+				deleteDirectory(f);
+		directory.delete();
+	}
+
+	public static List<File> getAllFilesFromDirectory(final File directory) {
+		final List<File> files = new ArrayList<>();
+		if (directory.isDirectory())
+			for (final File f0 : directory.listFiles())
+				for (final File f1 : getAllFilesFromDirectory(f0))
+					files.add(f1);
+		else
+			files.add(directory);
+		return files;
+	}
+
+	/**
+	 * Returns the current directory of the running program's <code>.jar</code>
+	 * file.
+	 *
+	 * @return A <code>new</code> {@link File} representing the program's parent
+	 *         folder.
+	 */
+	public static File getCurrentDirectory() {
+		return new File(Kröw.class.getProtectionDomain().getCodeSource().getLocation().getFile());
 	}
 
 	/**
@@ -273,6 +442,10 @@ public final class Kröw extends Application {
 			if (c.getGender())
 				list.add(c);
 		return list;
+	}
+
+	public static GlobalSettingsManager getGlobalSettingsManager() {
+		return globalSettingsManager;
 	}
 
 	/**
@@ -301,7 +474,7 @@ public final class Kröw extends Application {
 
 	/**
 	 * A static void method that loads data.
-	 * 
+	 *
 	 * @deprecated This is not up to date and will soon be removed.
 	 */
 	@Deprecated
@@ -428,275 +601,6 @@ public final class Kröw extends Application {
 	}
 
 	/**
-	 * The main method.
-	 *
-	 * @param args
-	 *            The program arguments given to the program on launch.
-	 */
-	public static void main(final String[] args) {
-		Kröw.start(args);
-	}
-
-	public static void saveObjects() {
-		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
-			try {
-				Kröw.saveObject(c, c.getFile(), OldVersionLoader.getOutputStream(c.getFile()));
-			} catch (final IOException e) {
-				System.err.println("Could not save the Construct " + c.getName());
-			}
-		for (final Law l : Kröw.CONSTRUCT_MINDSET.getLawsUnmodifiable())
-			try {
-				Kröw.saveObject(l, l.getFile(), OldVersionLoader.getOutputStream(l.getFile()));
-			} catch (final IOException e) {
-				System.err.println("Could not save the Law " + l.getName());
-			}
-		for (final kröw.libs.mindset.System s : Kröw.CONSTRUCT_MINDSET.getSystemsUnmodifiable())
-			try {
-				Kröw.saveObject(s, s.getFile(), OldVersionLoader.getOutputStream(s.getFile()));
-			} catch (final IOException e) {
-				System.err.println("Could not save the System " + s.getName());
-			}
-	}
-
-	/**
-	 * The start method of the program. This will load up and initialize the
-	 * entire program. Nothing else is needed. It can be called from a main
-	 * method or somewhere else.
-	 *
-	 * @param args
-	 *            The program arguments passed in from the main method. This can
-	 *            be null or can say whatever, but if it does not contain the
-	 *            actual arguments given by the user, <code>Kröw</code> will not
-	 *            be able to determine things like debug mode (which depends on
-	 *            program arguments).
-	 */
-	public static void start(final String[] args) {
-		System.out.println("\n\n\n\n");
-		System.out.println("Loading data...\n");
-		// Kröw.loadData();
-
-		if (Kröw.DEBUG_MODE)
-			System.out.println("\n\nDebug mode has been enabled...\n\n");
-		Application.launch(args);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see javafx.application.Application#start(javafx.stage.Stage)
-	 */
-	@Override
-	public void start(final Stage primaryStage) throws Exception {
-
-		Window.setStage_Impl(primaryStage, Home.class);
-		primaryStage.initStyle(StageStyle.TRANSPARENT);
-		primaryStage.setTitle(Kröw.NAME);
-		if (Kröw.IMAGE_KRÖW != null)
-			primaryStage.getIcons().add(Kröw.IMAGE_KRÖW);
-		Window.getStage().getScene().setFill(Color.TRANSPARENT);
-		primaryStage.setFullScreen(true);
-		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
-
-		primaryStage.getScene().setOnKeyPressed(CLOSE_ON_ESCAPE_HANADLER);
-		primaryStage.show();
-
-		// Adds the given ImageView to the window on startup. The
-		// ImageView can have its own onClick event handlers attached,
-		// Along with any other event handlers it wants.
-		// ((Home) Window.getController()).addImage(new ImageView(IMAGE_KRÖW));
-
-		// We can also call the clear method to delete all the current images.
-		// The Home window loads by default with some images, so we can use
-		// This to clear those and add our own.
-		// ((Home)Window.getController()).clearImages();
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see javafx.application.Application#stop()
-	 */
-	@Override
-	public void stop() throws Exception {
-		Kröw.saveObjects();
-		super.stop();
-	}
-
-	/**
-	 * Calculates the average runtime of a {@code runnable} after running a
-	 * specific number of times.
-	 *
-	 * @param runs
-	 *            The amount of times to run the {@code runnable}.
-	 * @param runnable
-	 *            The code to execute.
-	 * @return The average runtime lf the executed piece of code.
-	 */
-	public static double calculateAverageRunTime(final long runs, final Runnable runnable) {
-		final Timer timer = new Timer();
-
-		long totalTime = 0;
-		for (long i = 0; i < runs; i++) {
-			timer.startTimer();
-			runnable.run();
-			final long t = timer.endTimer();
-			totalTime += t;
-		}
-		return (double) totalTime / runs;
-
-	}
-
-	/**
-	 * Calculates the average amount of time that a given {@code runnable} takes
-	 * to run. This time may be lower than that returned by
-	 * {@link #calculateTime(Runnable)} because this operation runs multiple
-	 * times and the JIT compiler may <b>heavily optimize</b> a given operation.
-	 *
-	 * @param runnable
-	 *            The code to execute.
-	 * @return The average runtime of the executed code.
-	 */
-	public static double calculateAverageRunTime(final Runnable runnable) {
-		return calculateAverageRunTime(200000000, runnable);
-	}
-
-	/**
-	 * Calculates that amount of time that the {@code runnable} takes to execute
-	 * in nanoseconds.
-	 *
-	 * @param runnable
-	 *            The {@code runnable} to execute.
-	 * @return The time that the operation took in nanoseconds.
-	 */
-	public static long calculateTime(final Runnable runnable) {
-		final Timer timer = new Timer();
-		timer.startTimer();
-		runnable.run();
-		return timer.endTimer();
-	}
-
-	/**
-	 * A static helper method that checks if a {@link List} contains a given
-	 * {@link String}. The {@link List} must have been instantiated with a type
-	 * argument of {@link String}.
-	 *
-	 * @param list
-	 *            The {@link List} to check through.
-	 * @param string
-	 *            The {@link String} that will be checked for existence in the
-	 *            {@link List}
-	 * @return true if this {@link List} contains the given {@link String}
-	 *         ignoring case.
-	 */
-	public static boolean containsIgnoreCase(final List<String> list, final String string) {
-		for (final String s : list)
-			if (s.equalsIgnoreCase(string))
-				return true;
-		return false;
-	}
-
-	/**
-	 * Copies a {@link File} from a location into a given {@code directory}.
-	 *
-	 * @param file
-	 *            The {@link File} that will be copied.
-	 * @param directory
-	 *            The parent folder of the copied {@link File}.
-	 */
-	public static void copyFileToDirectory(final File file, final File directory) throws IOException {
-		Files.copy(file.toPath(), new File(directory, file.getName()).toPath());
-	}
-
-	/**
-	 * This method attempts to create a folder in the specified {@link File}.
-	 *
-	 * @param fileObj
-	 *            The {@link File} where the folder will be created.
-	 */
-	public static void createFolder(final File fileObj) {
-		if (fileObj.isFile()) {
-			java.lang.System.out.println(
-					"The folder " + fileObj.getAbsolutePath() + " already exists as a file. It will be deleted now...");
-			if (!fileObj.delete())
-				throw new RuntimeException("The folder " + fileObj.getName() + " could not be deleted.");
-		}
-
-		if (!fileObj.exists()) {
-			java.lang.System.out
-					.println("The folder " + fileObj.getAbsolutePath() + " does not exist yet. It will be made now.");
-			fileObj.mkdirs();
-		} else
-			java.lang.System.out
-					.println("The folder " + fileObj.getAbsolutePath() + " already exists as a folder. All is well.");
-
-	}
-
-	/**
-	 * <p>
-	 * Removes all duplicate elements from a given {@link List}.
-	 * <p>
-	 * This operation depends on objects correctly implementing the
-	 * {@link Object#equals(Object)} and {@link Object#hashCode()} methods.
-	 * <p>
-	 * This operation also needs a {@link List} that has implemented
-	 * {@link List#clear()} and {@link List#addAll(java.util.Collection)} as
-	 * specified.
-	 * <p>
-	 * After this method runs, the {@link List} given will have no duplicate
-	 * elements of <code>e1</code> and <code>e2</code> such that
-	 * <code>e1.equals(e2)</code> returns <code>true</code>. In other words, if
-	 * you compare any two different objects in the {@code list}, the objects
-	 * will never <code>.equals</code> each other.
-	 *
-	 * @param list
-	 *            The {@link List} that this operation will be applied to.
-	 */
-	public static <T> void dedupeList(final List<T> list) {
-		final Set<T> set = new HashSet<>();
-		set.addAll(list);
-		list.clear();
-		list.addAll(set);
-	}
-
-	/**
-	 * Deletes a given {@code directory} by recursively calling this method on
-	 * every sub-folder or sub-file in the given {@code directory}.
-	 *
-	 * @param directory
-	 *            The directory that will be deleted. This method will work fine
-	 *            if this is a file.
-	 */
-	public static void deleteDirectory(final File directory) {
-		if (directory.isDirectory())
-			for (final File f : directory.listFiles())
-				deleteDirectory(f);
-		directory.delete();
-	}
-
-	public static List<File> getAllFilesFromDirectory(final File directory) {
-		final List<File> files = new ArrayList<>();
-		if (directory.isDirectory())
-			for (final File f0 : directory.listFiles())
-				for (final File f1 : getAllFilesFromDirectory(f0))
-					files.add(f1);
-		else
-			files.add(directory);
-		return files;
-	}
-
-	/**
-	 * Returns the current directory of the running program's <code>.jar</code>
-	 * file.
-	 *
-	 * @return A <code>new</code> {@link File} representing the program's parent
-	 *         folder.
-	 */
-	public static File getCurrentDirectory() {
-		return new File(Kröw.class.getProtectionDomain().getCodeSource().getLocation().getFile());
-	}
-
-	/**
 	 * A method that loads a {@link Serializable} object from a given file. The
 	 * file should contain only one {@link Serializable} object.
 	 *
@@ -776,6 +680,16 @@ public final class Kröw extends Application {
 			}
 
 		return list;
+	}
+
+	/**
+	 * The main method.
+	 *
+	 * @param args
+	 *            The program arguments given to the program on launch.
+	 */
+	public static void main(final String[] args) {
+		Kröw.start(args);
 	}
 
 	/**
@@ -868,6 +782,27 @@ public final class Kröw extends Application {
 		}
 	}
 
+	public static void saveObjects() {
+		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
+			try {
+				Kröw.saveObject(c, c.getFile(), OldVersionLoader.getOutputStream(c.getFile()));
+			} catch (final IOException e) {
+				System.err.println("Could not save the Construct " + c.getName());
+			}
+		for (final Law l : Kröw.CONSTRUCT_MINDSET.getLawsUnmodifiable())
+			try {
+				Kröw.saveObject(l, l.getFile(), OldVersionLoader.getOutputStream(l.getFile()));
+			} catch (final IOException e) {
+				System.err.println("Could not save the Law " + l.getName());
+			}
+		for (final kröw.libs.mindset.System s : Kröw.CONSTRUCT_MINDSET.getSystemsUnmodifiable())
+			try {
+				Kröw.saveObject(s, s.getFile(), OldVersionLoader.getOutputStream(s.getFile()));
+			} catch (final IOException e) {
+				System.err.println("Could not save the System " + s.getName());
+			}
+	}
+
 	/**
 	 * A helper method used to split a {@link String} into an array of
 	 * {@link String}s.
@@ -909,5 +844,70 @@ public final class Kröw extends Application {
 		for (int i = 0; i < string.length(); i++)
 			textarr[i] = new Text(String.valueOf(string.charAt(i)));
 		return textarr;
+	}
+
+	/**
+	 * The start method of the program. This will load up and initialize the
+	 * entire program. Nothing else is needed. It can be called from a main
+	 * method or somewhere else.
+	 *
+	 * @param args
+	 *            The program arguments passed in from the main method. This can
+	 *            be null or can say whatever, but if it does not contain the
+	 *            actual arguments given by the user, <code>Kröw</code> will not
+	 *            be able to determine things like debug mode (which depends on
+	 *            program arguments).
+	 */
+	public static void start(final String[] args) {
+		System.out.println("\n\n\n\n");
+		System.out.println("Loading data...\n");
+		// Kröw.loadData();
+
+		if (Kröw.DEBUG_MODE)
+			System.out.println("\n\nDebug mode has been enabled...\n\n");
+		Application.launch(args);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see javafx.application.Application#start(javafx.stage.Stage)
+	 */
+	@Override
+	public void start(final Stage primaryStage) throws Exception {
+
+		Window.setStage_Impl(primaryStage, Home.class);
+		primaryStage.initStyle(StageStyle.TRANSPARENT);
+		primaryStage.setTitle(Kröw.NAME);
+		if (Kröw.IMAGE_KRÖW != null)
+			primaryStage.getIcons().add(Kröw.IMAGE_KRÖW);
+		Window.getStage().getScene().setFill(Color.TRANSPARENT);
+		primaryStage.setFullScreen(true);
+		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+
+		primaryStage.getScene().setOnKeyPressed(CLOSE_ON_ESCAPE_HANADLER);
+		primaryStage.show();
+
+		// Adds the given ImageView to the window on startup. The
+		// ImageView can have its own onClick event handlers attached,
+		// Along with any other event handlers it wants.
+		// ((Home) Window.getController()).addImage(new ImageView(IMAGE_KRÖW));
+
+		// We can also call the clear method to delete all the current images.
+		// The Home window loads by default with some images, so we can use
+		// This to clear those and add our own.
+		// ((Home)Window.getController()).clearImages();
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see javafx.application.Application#stop()
+	 */
+	@Override
+	public void stop() throws Exception {
+		Kröw.saveObjects();
+		super.stop();
 	}
 }

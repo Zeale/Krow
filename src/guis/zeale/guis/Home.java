@@ -6,16 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -178,16 +174,12 @@ public class Home extends Window {
 		// Event handler
 		krow.setOnMouseClicked(event -> Window.spawnLabelAtMousePos("WIP", Color.WHITE));
 
-		ImageView settings = new ImageView("krow/resources/Settings.png");
-		settings.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent event) {
-				try {
-					Window.setScene(Settings.class);
-				} catch (InstantiationException | IllegalAccessException | IOException e) {
-					e.printStackTrace();
-				}
+		final ImageView settings = new ImageView("krow/resources/Settings.png");
+		settings.setOnMouseClicked(event -> {
+			try {
+				Window.setScene(Settings.class);
+			} catch (InstantiationException | IllegalAccessException | IOException e) {
+				e.printStackTrace();
 			}
 		});
 		addImage(settings);
