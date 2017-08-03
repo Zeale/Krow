@@ -5,12 +5,12 @@
 .label.option-name {
 	-fx-text-fill: black;
 	-fx-font-weight: bold;
-	-fx-font-size: 18px;
+	-fx-font-size: 18.0px;
 }
 
 .choice-box, .choice-box .open-button, .menu-button {
 	-fx-background-color: black;
-	-fx-border-radius: 0px;
+	-fx-border-radius: 0.0px;
 	-fx-border-color: black;
 	-fx-text-fill: white;
 }
@@ -26,4 +26,14 @@
 
 .menu-button .context-menu, .menu-button .context-menu .label {
 	-fx-background-color: black;
+}
+
+.tree-view .tree-cell {
+	-fx-background-color: #00000030;
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+}
+
+#SettingOptionsTreeView .tree-cell {
+	-fx-alignment: CENTER;
 }

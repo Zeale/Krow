@@ -3,23 +3,23 @@ package zeale.guis;
 import java.util.ArrayList;
 import java.util.Random;
 
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.util.Callback;
 import kröw.libs.guis.Window;
+import zeale.guis.Settings.Setting;
 
 public class Settings extends Window {
 
 	@FXML
 	private Label settingsLabel;
 	@FXML
-	private TreeView<Item> tabList;
+	private TreeView<SettingTab> tabList;
+	@FXML
+	private TreeView<Setting> optionBox;
 
 	@Override
 	public String getWindowFile() {
@@ -27,52 +27,49 @@ public class Settings extends Window {
 	}
 
 	private final void addDefaultItems() {
-		addItem(new TreeItem<Settings.Item>(new Item("General", new Label("Open on startup") {
-			{
-				setOnMouseClicked(new EventHandler<Event>() {
+		addItem(new TreeItem<Settings.SettingTab>(new SettingTab("General", new Setting("Open on startup"))));
 
-					@Override
-					public void handle(Event event) {
-						setStyle("-fx-background-color: lightblue;");
-					}
-				});
-			}
-		})));
+		addItem(new TreeItem<Settings.SettingTab>(
+				new SettingTab("Keys", new Setting("Test1"), new Setting(""), new Setting("Test3"))));
+		addItem(new TreeItem<Settings.SettingTab>(new SettingTab("Video")));
+		addItem(new TreeItem<Settings.SettingTab>(new SettingTab("Sound")));
 
-		addItem(new TreeItem<Settings.Item>(new Item("Keys", new Label("Test1"), new Label(), new Label("Test3"))));
-		addItem(new TreeItem<Settings.Item>(new Item("Video")));
-		addItem(new TreeItem<Settings.Item>(new Item("Sound")));
+		TreeItem<SettingTab> settingTab = new TreeItem<>(new SettingTab("Menu1", new Setting("Okay")));
+		settingTab.getChildren()
+				.add(new TreeItem<Settings.SettingTab>(new SettingTab("SubMenu1", new Setting("Potato"))));
+		settingTab.getChildren().add(new TreeItem<Settings.SettingTab>(new SettingTab("SubMenu2")));
+		settingTab.getChildren()
+				.add(new TreeItem<Settings.SettingTab>(new SettingTab("SubMenu3", new Setting("Potato"))));
+		settingTab.getChildren().add(new TreeItem<Settings.SettingTab>(new SettingTab("SubMenu4")));
+		settingTab.getChildren()
+				.add(new TreeItem<Settings.SettingTab>(new SettingTab("SubMenu5", new Setting("Potato"))));
+		settingTab.getChildren().add(new TreeItem<Settings.SettingTab>(new SettingTab("SubMenu6")));
+		addItem(settingTab);
 
-		TreeItem<Item> item = new TreeItem<>(new Item("Menu1", new Label("AlsoTest")));
-		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu1", new Label("Potato"))));
-		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu2")));
-		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu3", new Label("Potato"))));
-		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu4")));
-		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu5", new Label("Potato"))));
-		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu6")));
-		addItem(item);
-
-		item = new TreeItem<>(new Item("Menu2", new Label("AlsoTest")));
-		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu1", new Label("Potato"))));
-		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu2")));
-		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu3", new Label("Potato"))));
-		item.getChildren().add(new TreeItem<Settings.Item>(new Item("SubMenu4")));
-		addItem(item);
+		settingTab = new TreeItem<>(new SettingTab("Menu2", new Setting("AlsoTest")));
+		settingTab.getChildren()
+				.add(new TreeItem<Settings.SettingTab>(new SettingTab("SubMenu1", new Setting("Potato"))));
+		settingTab.getChildren().add(new TreeItem<Settings.SettingTab>(new SettingTab("SubMenu2")));
+		settingTab.getChildren()
+				.add(new TreeItem<Settings.SettingTab>(new SettingTab("SubMenu3", new Setting("Potato"))));
+		settingTab.getChildren().add(new TreeItem<Settings.SettingTab>(new SettingTab("SubMenu4")));
+		addItem(settingTab);
 	}
 
 	@Override
 	public void initialize() {
-		settingsLabel.setLayoutX(Window.getStage().getScene().getWidth() / 2 - settingsLabel.getWidth() / 2);
+		settingsLabel.setLayoutX(Window.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
+		optionBox.setLayoutX(Window.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
 		tabList.setRoot(new TreeItem<>());
-		tabList.setShowRoot(false);
-		tabList.setCellFactory(new Callback<TreeView<Item>, TreeCell<Item>>() {
+		optionBox.setRoot(new TreeItem<>());
+		tabList.setCellFactory(new Callback<TreeView<SettingTab>, TreeCell<SettingTab>>() {
 
 			@Override
-			public TreeCell<Item> call(TreeView<Item> param) {
-				TreeCell<Item> cell = new TreeCell<Item>() {
+			public TreeCell<SettingTab> call(TreeView<SettingTab> param) {
+				TreeCell<SettingTab> cell = new TreeCell<SettingTab>() {
 					@Override
-					protected void updateItem(Item item, boolean empty) {
-						super.updateItem(item, empty);
+					protected void updateItem(SettingTab settingTab, boolean empty) {
+						super.updateItem(settingTab, empty);
 
 						String background;
 
@@ -85,7 +82,7 @@ public class Settings extends Window {
 							background = "transparent";
 							setText("");
 						} else
-							setText(item.text);
+							setText(settingTab.text);
 						if (getTreeItem() != null)
 							if (getTreeItem().getParent() != getTreeView().getRoot()) {
 								Random rand = new Random();
@@ -107,10 +104,15 @@ public class Settings extends Window {
 					@Override
 					public void updateSelected(boolean selected) {
 						super.updateSelected(selected);
-						if (selected)
+						if (selected) {
 							this.setStyle(
 									"-fx-background-color: #FFFFFFBA; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
-						else
+							optionBox.getRoot().getChildren().clear();
+							settingsLabel.setText(getItem().text);
+							for (Setting t : getItem().children) {
+								optionBox.getRoot().getChildren().add(new TreeItem<Settings.Setting>(t));
+							}
+						} else
 							updateItem(getItem(), isEmpty());
 
 					}
@@ -119,28 +121,53 @@ public class Settings extends Window {
 				return cell;
 			}
 		});
+		optionBox.setCellFactory(new Callback<TreeView<Setting>, TreeCell<Setting>>() {
+
+			@Override
+			public TreeCell<Setting> call(TreeView<Setting> param) {
+				TreeCell<Setting> cell = new TreeCell<Setting>() {
+
+					@Override
+					protected void updateItem(Setting item, boolean empty) {
+						super.updateItem(item, empty);
+
+						if (empty)
+							setText("");
+						else
+							setText(item.text);
+					}
+
+					@Override
+					public void updateSelected(boolean selected) {
+						super.updateSelected(selected);
+						getItem().togglable.onToggled(this);
+					}
+				};
+				return cell;
+			}
+		});
 		addDefaultItems();
 
 	}
 
-	public final void addItem(TreeItem<Item> child) {
+	public final void addItem(TreeItem<SettingTab> child) {
 		tabList.getRoot().getChildren().add(child);
 	}
 
 	@SafeVarargs
-	public final void addItem(TreeItem<Item> child, TreeItem<Item>... children) {
-		for (TreeItem<Item> ti : children)
+	public final void addItem(TreeItem<SettingTab> child, TreeItem<SettingTab>... children) {
+		for (TreeItem<SettingTab> ti : children)
 			child.getChildren().add(ti);
 		addItem(child);
 	}
 
-	public final class Item {
+	public final class SettingTab {
 		private final String text;
-		private final ArrayList<Node> children = new ArrayList<>();
+		private final ArrayList<Setting> children = new ArrayList<>();
 
-		public Item(String text, Node... children) {
+		public SettingTab(String text, Setting... children) {
 			this.text = text;
-			for (Node c : children)
+			for (Setting c : children)
 				this.children.add(c);
 		}
 
@@ -149,6 +176,27 @@ public class Settings extends Window {
 			return super.toString() + "text=[" + text + "],child-count=[" + children.size() + "]";
 		}
 
+	}
+
+	public final class Setting {
+		private String text;
+		private Togglable togglable;
+
+		public Setting(String text) {
+			togglable = cell -> {
+			};
+			this.text = text;
+		}
+
+		public Setting(String text, Togglable togglable) {
+			this.text = text;
+			this.togglable = togglable;
+		}
+
+	}
+
+	private static interface Togglable {
+		void onToggled(TreeCell<Setting> cell);
 	}
 
 }
