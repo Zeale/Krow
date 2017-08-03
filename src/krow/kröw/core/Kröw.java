@@ -31,6 +31,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import kröw.core.managers.GlobalSettingsManager;
 import kröw.libs.Timer;
 import kröw.libs.guis.Window;
 import kröw.libs.mindset.Construct;
@@ -192,7 +193,7 @@ public final class Kröw extends Application {
 				if (!Kröw.DATA_INCLUDES_FILE.exists())
 					Kröw.copyFileToDirectory(new File("src/resources/krow/includes.kcfg"), KRÖW_HOME_DIRECTORY);
 			} catch (IOException e) {
-				if(DEBUG_MODE)
+				if (DEBUG_MODE)
 					e.printStackTrace();
 			}
 		} catch (final RuntimeException e) {
@@ -204,6 +205,12 @@ public final class Kröw extends Application {
 			System.exit(-1);
 		}
 
+	}
+
+	private static GlobalSettingsManager globalSettingsManager;
+
+	public static GlobalSettingsManager getGlobalSettingsManager() {
+		return globalSettingsManager;
 	}
 
 	static {
