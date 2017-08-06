@@ -84,11 +84,15 @@ public final class Kröw extends Application {
 	/*
 	 * Files and directories.
 	 */
+
+	public static final File USER_HOME_DIRECTORY = new File(System.getProperty("user.home"));
+
+	public static final File USER_APPDATA_DIRECTORY = new File(USER_HOME_DIRECTORY, "Appdata/Roaming/");
+
 	/**
 	 * The Home directory of the {@link Kröw} application.
 	 */
-	public static final File KRÖW_HOME_DIRECTORY = new File(System.getProperty("user.home") + "/Appdata/Roaming/",
-			Kröw.KROW_NAME);
+	public static final File KRÖW_HOME_DIRECTORY = new File(USER_APPDATA_DIRECTORY, Kröw.KROW_NAME);
 
 	/**
 	 * This variable defines whether or not debug mode is on.
@@ -104,6 +108,8 @@ public final class Kröw extends Application {
 	 * The directory for data storage of this application.
 	 */
 	public final static File DATA_DIRECTORY = new File(KRÖW_HOME_DIRECTORY, "Data");
+
+	public static final File MANAGER_DIRECTORY = new File(KRÖW_HOME_DIRECTORY, "Program Managers");
 
 	/**
 	 * The directory for storing {@link Construct}s.
@@ -142,6 +148,11 @@ public final class Kröw extends Application {
 
 	public static final File SETTINGS_FILE = new File(KRÖW_HOME_DIRECTORY, "settings.cnfg");
 
+	public static final File USER_STARTUP_FOLDER = new File(USER_APPDATA_DIRECTORY,
+			"Microsoft/Windows/Start Menu/Programs/Startup");
+	public static final File COMMON_STARTUP_FOLDER = new File(
+			"C:/ProgramData/Microsoft/Windows/Start Menu/Programs/Startup");
+
 	/**
 	 * Files created in the {@link #KRÖW_HOME_DIRECTORY}.
 	 */
@@ -169,7 +180,10 @@ public final class Kröw extends Application {
 	 */
 	public static final String NAME = new String("Kröw");
 
+	private static GlobalSettingsManager globalSettingsManager;
+
 	static {
+
 		// Create the following folders if they don't already exist and catch
 		// any exceptions.
 		try {
@@ -181,6 +195,7 @@ public final class Kröw extends Application {
 			Kröw.createFolder(Kröw.SYSTEM_SAVE_DIRECTORY);
 			Kröw.createFolder(Kröw.LAW_SAVE_DIRECTORY);
 			Kröw.createFolder(Backup.BACKUP_SAVE_DIRECTORY);
+			Kröw.createFolder(MANAGER_DIRECTORY);
 			try {
 				if (!Kröw.README_FILE.exists())
 					Kröw.copyFileToDirectory(new File("src/resources/krow/readme.txt"), Kröw.KRÖW_HOME_DIRECTORY);
@@ -196,6 +211,20 @@ public final class Kröw extends Application {
 				if (DEBUG_MODE)
 					e.printStackTrace();
 			}
+
+			try {
+				globalSettingsManager = GlobalSettingsManager.loadManager(GlobalSettingsManager.DEFAULT_FILE_PATH);
+			} catch (FileNotFoundException e) {
+				try {
+					globalSettingsManager = GlobalSettingsManager
+							.createManager(GlobalSettingsManager.DEFAULT_FILE_PATH);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 		} catch (final RuntimeException e) {
 			System.err.println(
 					"An exception occurred while trying to create or check some necessary directories. The program will print its errors and exit.");
@@ -206,8 +235,6 @@ public final class Kröw extends Application {
 		}
 
 	}
-
-	private static GlobalSettingsManager globalSettingsManager;
 
 	static {
 
@@ -389,7 +416,7 @@ public final class Kröw extends Application {
 	 *
 	 * @param directory
 	 *            The directory that will be deleted. This method will work fine
-	 *            if this is a file.
+	 *            if this parameter is a file.
 	 */
 	public static void deleteDirectory(final File directory) {
 		if (directory.isDirectory())
@@ -908,6 +935,7 @@ public final class Kröw extends Application {
 	@Override
 	public void stop() throws Exception {
 		Kröw.saveObjects();
+		globalSettingsManager.save(GlobalSettingsManager.DEFAULT_FILE_PATH);
 		super.stop();
 	}
 }
