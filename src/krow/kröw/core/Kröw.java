@@ -132,7 +132,6 @@ public final class Kröw extends Application {
 				&& !JAR_FILE_CURRENT_PATH.equals(dest))
 			try {
 				Files.copy(JAR_FILE_CURRENT_PATH.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
-				JAR_FILE_CURRENT_PATH.delete();
 
 				String app = "powershell.exe";
 
@@ -158,6 +157,13 @@ public final class Kröw extends Application {
 					System.err.println(s);
 
 				proc.destroy();
+
+				if (!JAR_FILE_CURRENT_PATH.delete()) {
+					Runtime.getRuntime().exec(
+							"java -jar " + dest.getAbsolutePath() + " ---" + JAR_FILE_CURRENT_PATH.getAbsolutePath());
+
+					System.exit(0);
+				}
 
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -770,8 +776,22 @@ public final class Kröw extends Application {
 	 *
 	 * @param args
 	 *            The program arguments given to the program on launch.
+	 * @throws FileNotFoundException
 	 */
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws FileNotFoundException {
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				if (args.length == 1 && args[0].startsWith("---")) {
+					File f = new File(args[0].substring(3));
+
+					while (!f.delete() && f.exists())
+						;
+				}
+			}
+		}).start();
+
 		Kröw.start(args);
 	}
 
