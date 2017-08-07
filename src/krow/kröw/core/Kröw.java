@@ -226,6 +226,7 @@ public final class Kröw extends Application {
 	/**
 	 * Files created in the {@link #KRÖW_HOME_DIRECTORY}.
 	 */
+	@SuppressWarnings("unused")
 	private static final File README_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Readme.txt"),
 			LICENSE_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "License.txt"),
 			CREDITS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Credits.txt"),
@@ -266,21 +267,7 @@ public final class Kröw extends Application {
 			Kröw.createFolder(Kröw.LAW_SAVE_DIRECTORY);
 			Kröw.createFolder(Backup.BACKUP_SAVE_DIRECTORY);
 			Kröw.createFolder(MANAGER_DIRECTORY);
-			try {
-				if (!Kröw.README_FILE.exists())
-					Kröw.copyFileToDirectory(new File("src/resources/krow/readme.txt"), Kröw.KRÖW_HOME_DIRECTORY);
-				if (!Kröw.LICENSE_FILE.exists())
-					Kröw.copyFileToDirectory(new File("src/resources/krow/license.txt"), Kröw.KRÖW_HOME_DIRECTORY);
-				if (!Kröw.CREDITS_FILE.exists())
-					Kröw.copyFileToDirectory(new File("src/resources/krow/credits.txt"), Kröw.KRÖW_HOME_DIRECTORY);
-				if (!Kröw.PLANS_FILE.exists())
-					Kröw.copyFileToDirectory(new File("src/resources/krow/plans.txt"), Kröw.KRÖW_HOME_DIRECTORY);
-				if (!Kröw.DATA_INCLUDES_FILE.exists())
-					Kröw.copyFileToDirectory(new File("src/resources/krow/includes.kcfg"), KRÖW_HOME_DIRECTORY);
-			} catch (final IOException e) {
-				if (DEBUG_MODE)
-					e.printStackTrace();
-			}
+			
 			try {
 				globalSettingsManager = GlobalSettingsManager.loadManager(GlobalSettingsManager.DEFAULT_FILE_PATH);
 			} catch (FileNotFoundException e) {
