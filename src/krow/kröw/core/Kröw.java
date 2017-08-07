@@ -2,15 +2,22 @@ package kröw.core;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -84,6 +91,18 @@ public final class Kröw extends Application {
 	/*
 	 * Files and directories.
 	 */
+	public static final File JAR_FILE_CURRENT_PATH;
+
+	static {
+		File temp;
+		try {
+			temp = new File(Kröw.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+		} catch (URISyntaxException e) {
+			temp = null;
+		}
+
+		JAR_FILE_CURRENT_PATH = temp;
+	}
 
 	public static final File USER_HOME_DIRECTORY = new File(System.getProperty("user.home"));
 
@@ -93,6 +112,57 @@ public final class Kröw extends Application {
 	 * The Home directory of the {@link Kröw} application.
 	 */
 	public static final File KRÖW_HOME_DIRECTORY = new File(USER_APPDATA_DIRECTORY, Kröw.KROW_NAME);
+
+	static {
+		URL iconURL = null;
+		try {
+			iconURL = new URL("http://dusttoash.org/favicon.ico");
+		} catch (MalformedURLException e2) {
+			e2.printStackTrace();
+		}
+		File icon;
+		if (!(icon = new File(KRÖW_HOME_DIRECTORY, "Kröw.ico")).exists())
+			try (InputStream is = iconURL.openStream()) {
+				Files.copy(is, icon.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		File dest;
+		if (JAR_FILE_CURRENT_PATH != null && !((dest = new File(KRÖW_HOME_DIRECTORY, "Krow.jar")).exists())
+				&& !JAR_FILE_CURRENT_PATH.equals(dest))
+			try {
+				Files.copy(JAR_FILE_CURRENT_PATH.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				JAR_FILE_CURRENT_PATH.delete();
+
+				String app = "powershell.exe";
+
+				Process proc;
+				BufferedReader stdout = new BufferedReader(
+						new InputStreamReader((proc = Runtime.getRuntime().exec(app)).getInputStream())),
+						errout = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+				PrintWriter pw = new PrintWriter(proc.getOutputStream());
+				pw.println("$objShell = New-Object -ComObject WScript.Shell");
+				pw.println("$lnk = $objShell.CreateShortcut(\"" + "Krow.lnk" + "\")");
+				pw.println("$lnk.TargetPath = \"" + dest.getAbsolutePath() + "\"");
+				pw.println("$lnk.Description = \"Use this to launch Kröw...\"");
+				pw.println("$lnk.IconLocation = \"" + icon.getAbsolutePath() + "\"");
+				pw.println("$lnk.Save()");
+				pw.flush();
+
+				pw.close();
+
+				String s;
+				while ((s = stdout.readLine()) != null)
+					System.out.println(s);
+				while ((s = errout.readLine()) != null)
+					System.err.println(s);
+
+				proc.destroy();
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	}
 
 	/**
 	 * This variable defines whether or not debug mode is on.
@@ -211,7 +281,6 @@ public final class Kröw extends Application {
 				if (DEBUG_MODE)
 					e.printStackTrace();
 			}
-
 			try {
 				globalSettingsManager = GlobalSettingsManager.loadManager(GlobalSettingsManager.DEFAULT_FILE_PATH);
 			} catch (FileNotFoundException e) {
