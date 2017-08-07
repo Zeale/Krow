@@ -111,7 +111,7 @@ public final class Kröw extends Application {
 	/**
 	 * The Home directory of the {@link Kröw} application.
 	 */
-	public static final File KRÖW_HOME_DIRECTORY = new File(USER_APPDATA_DIRECTORY, Kröw.KROW_NAME);
+	public static final File KRÖW_HOME_DIRECTORY = new File(USER_APPDATA_DIRECTORY, "Krow");
 
 	static {
 		URL iconURL = null;
@@ -121,7 +121,7 @@ public final class Kröw extends Application {
 			e2.printStackTrace();
 		}
 		File icon;
-		if (!(icon = new File(KRÖW_HOME_DIRECTORY, "Kröw.ico")).exists())
+		if (!(icon = new File(KRÖW_HOME_DIRECTORY, "Krow.ico")).exists())
 			try (InputStream is = iconURL.openStream()) {
 				Files.copy(is, icon.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} catch (IOException e1) {
@@ -144,7 +144,7 @@ public final class Kröw extends Application {
 				pw.println("$objShell = New-Object -ComObject WScript.Shell");
 				pw.println("$lnk = $objShell.CreateShortcut(\"" + "Krow.lnk" + "\")");
 				pw.println("$lnk.TargetPath = \"" + dest.getAbsolutePath() + "\"");
-				pw.println("$lnk.Description = \"Use this to launch Kröw...\"");
+				pw.println("$lnk.Description = \"Use this to launch Krow...\"");
 				pw.println("$lnk.IconLocation = \"" + icon.getAbsolutePath() + "\"");
 				pw.println("$lnk.Save()");
 				pw.flush();
@@ -267,7 +267,7 @@ public final class Kröw extends Application {
 			Kröw.createFolder(Kröw.LAW_SAVE_DIRECTORY);
 			Kröw.createFolder(Backup.BACKUP_SAVE_DIRECTORY);
 			Kröw.createFolder(MANAGER_DIRECTORY);
-			
+
 			try {
 				globalSettingsManager = GlobalSettingsManager.loadManager(GlobalSettingsManager.DEFAULT_FILE_PATH);
 			} catch (FileNotFoundException e) {
