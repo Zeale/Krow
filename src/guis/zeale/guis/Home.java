@@ -21,6 +21,9 @@ import kröw.libs.guis.Window;
 
 public class Home extends Window {
 
+	@FXML
+	private ImageView close_button;
+
 	private class Item {
 		public final ImageView image;
 		public final TranslateTransition transition;
@@ -37,7 +40,6 @@ public class Home extends Window {
 			IMAGE_HEIGHT = (int) ((double) 100 / 1080 * Kröw.SCREEN_HEIGHT), IMAGE_SPACING = IMAGE_WIDTH / 2;
 
 	private static final Image CONSTRUCT_MENU_ICON = new Image("krow/resources/ConstructIcon_hd.png");
-
 	@FXML
 	private HBox horizontalScroll;
 
@@ -97,6 +99,8 @@ public class Home extends Window {
 	@FXML
 	@Override
 	public void initialize() {
+
+		GUIHelper.buildCloseButton(close_button);
 
 		// TODO Actually implement a vertical bar.
 		verticalScroll.setVisible(false);

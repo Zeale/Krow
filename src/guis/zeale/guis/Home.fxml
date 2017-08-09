@@ -17,5 +17,6 @@
          <children>
             <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" />
          </children></VBox>
+      <ImageView fx:id="close_button" fitHeight="32.0" fitWidth="32.0" layoutX="1154.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
    </children>
 </AnchorPane>

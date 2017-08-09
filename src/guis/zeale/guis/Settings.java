@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.ImageView;
 import kröw.libs.guis.Window;
 
 public class Settings extends Window {
@@ -105,8 +106,12 @@ public class Settings extends Window {
 		return "Settings.fxml";
 	}
 
+	
+	@FXML
+	private ImageView close_button;
 	@Override
 	public void initialize() {
+		GUIHelper.buildCloseButton(close_button);
 		settingsLabel.setLayoutX(Window.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
 		optionBox.setLayoutX(Window.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
 		tabList.setRoot(new TreeItem<>());
