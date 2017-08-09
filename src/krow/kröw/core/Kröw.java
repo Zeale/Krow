@@ -112,6 +112,7 @@ public final class Kröw extends Application {
 	 * The Home directory of the {@link Kröw} application.
 	 */
 	public static final File KRÖW_HOME_DIRECTORY = new File(USER_APPDATA_DIRECTORY, "Krow");
+	public static final File KRÖW_INSTALL_FILE;
 
 	static {
 		URL iconURL = null;
@@ -127,11 +128,11 @@ public final class Kröw extends Application {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-		File dest;
-		if (JAR_FILE_CURRENT_PATH != null && !((dest = new File(KRÖW_HOME_DIRECTORY, "Krow.jar")).exists())
-				&& !JAR_FILE_CURRENT_PATH.equals(dest))
+		if (JAR_FILE_CURRENT_PATH != null & !((KRÖW_INSTALL_FILE = new File(KRÖW_HOME_DIRECTORY, "Krow.jar")).exists())
+				&& !JAR_FILE_CURRENT_PATH.equals(KRÖW_INSTALL_FILE))
 			try {
-				Files.copy(JAR_FILE_CURRENT_PATH.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(JAR_FILE_CURRENT_PATH.toPath(), KRÖW_INSTALL_FILE.toPath(),
+						StandardCopyOption.REPLACE_EXISTING);
 
 				String app = "powershell.exe";
 
@@ -142,7 +143,7 @@ public final class Kröw extends Application {
 				PrintWriter pw = new PrintWriter(proc.getOutputStream());
 				pw.println("$objShell = New-Object -ComObject WScript.Shell");
 				pw.println("$lnk = $objShell.CreateShortcut(\"" + "Krow.lnk" + "\")");
-				pw.println("$lnk.TargetPath = \"" + dest.getAbsolutePath() + "\"");
+				pw.println("$lnk.TargetPath = \"" + KRÖW_INSTALL_FILE.getAbsolutePath() + "\"");
 				pw.println("$lnk.Description = \"Use this to launch Krow...\"");
 				pw.println("$lnk.IconLocation = \"" + icon.getAbsolutePath() + "\"");
 				pw.println("$lnk.Save()");
@@ -159,8 +160,8 @@ public final class Kröw extends Application {
 				proc.destroy();
 
 				if (!JAR_FILE_CURRENT_PATH.delete()) {
-					Runtime.getRuntime().exec(
-							"java -jar " + dest.getAbsolutePath() + " ---" + JAR_FILE_CURRENT_PATH.getAbsolutePath());
+					Runtime.getRuntime().exec("java -jar " + KRÖW_INSTALL_FILE.getAbsolutePath() + " ---"
+							+ JAR_FILE_CURRENT_PATH.getAbsolutePath());
 
 					System.exit(0);
 				}

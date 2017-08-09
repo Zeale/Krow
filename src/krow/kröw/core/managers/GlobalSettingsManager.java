@@ -11,7 +11,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import kröw.core.Kröw;
-import kröw.libs.OperatingSystem;
 
 public class GlobalSettingsManager implements Serializable {
 
@@ -33,11 +32,6 @@ public class GlobalSettingsManager implements Serializable {
 	}
 
 	private void validate() {
-		if (OperatingSystem.getCurrentOperatingSystem().equals(OperatingSystem.WINDOWS)) {
-
-			// TODO
-			// if(isLaunchOnSystemLogIn()&&new Fi)
-		}
 
 	}
 
