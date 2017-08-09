@@ -8,7 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import kröw.libs.guis.Window;
 
 public class Settings extends Window {
@@ -52,6 +52,9 @@ public class Settings extends Window {
 	}
 
 	@FXML
+	private AnchorPane pane;
+
+	@FXML
 	private Label settingsLabel;
 
 	@FXML
@@ -63,29 +66,23 @@ public class Settings extends Window {
 	private final void addDefaultItems() {
 		addItem(new TreeItem<>(new SettingTab("General", new Setting("Open on startup"))));
 
-		addItem(new TreeItem<>(
-				new SettingTab("Keys", new Setting("Test1"), new Setting(""), new Setting("Test3"))));
+		addItem(new TreeItem<>(new SettingTab("Keys", new Setting("Test1"), new Setting(""), new Setting("Test3"))));
 		addItem(new TreeItem<>(new SettingTab("Video")));
 		addItem(new TreeItem<>(new SettingTab("Sound")));
 
 		TreeItem<SettingTab> settingTab = new TreeItem<>(new SettingTab("Menu1", new Setting("Okay")));
-		settingTab.getChildren()
-				.add(new TreeItem<>(new SettingTab("SubMenu1", new Setting("Potato"))));
+		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu1", new Setting("Potato"))));
 		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu2")));
-		settingTab.getChildren()
-				.add(new TreeItem<>(new SettingTab("SubMenu3", new Setting("Potato"))));
+		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu3", new Setting("Potato"))));
 		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu4")));
-		settingTab.getChildren()
-				.add(new TreeItem<>(new SettingTab("SubMenu5", new Setting("Potato"))));
+		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu5", new Setting("Potato"))));
 		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu6")));
 		addItem(settingTab);
 
 		settingTab = new TreeItem<>(new SettingTab("Menu2", new Setting("AlsoTest")));
-		settingTab.getChildren()
-				.add(new TreeItem<>(new SettingTab("SubMenu1", new Setting("Potato"))));
+		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu1", new Setting("Potato"))));
 		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu2")));
-		settingTab.getChildren()
-				.add(new TreeItem<>(new SettingTab("SubMenu3", new Setting("Potato"))));
+		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu3", new Setting("Potato"))));
 		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu4")));
 		addItem(settingTab);
 	}
@@ -106,12 +103,9 @@ public class Settings extends Window {
 		return "Settings.fxml";
 	}
 
-	
-	@FXML
-	private ImageView close_button;
 	@Override
 	public void initialize() {
-		GUIHelper.buildCloseButton(close_button);
+		GUIHelper.buildCloseButton(pane);
 		settingsLabel.setLayoutX(Window.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
 		optionBox.setLayoutX(Window.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
 		tabList.setRoot(new TreeItem<>());

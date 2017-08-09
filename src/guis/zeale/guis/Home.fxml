@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" styleClass="background" stylesheets="@css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="zeale.guis.Home">
+<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" styleClass="background" stylesheets="@css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="zeale.guis.Home">
    <children>
       <HBox fx:id="horizontalScroll" focusTraversable="true" layoutY="300.0" prefHeight="100.0" prefWidth="1200.0" style="-fx-background-color: linear-gradient(to right, #00000020 0%, #000000A8 45%, #000000A8 55%, #00000020 100%);">
          <effect>
@@ -17,6 +17,5 @@
          <children>
             <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" />
          </children></VBox>
-      <ImageView fx:id="close_button" fitHeight="32.0" fitWidth="32.0" layoutX="1154.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
    </children>
 </AnchorPane>

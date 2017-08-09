@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -22,7 +23,7 @@ import kröw.libs.guis.Window;
 public class Home extends Window {
 
 	@FXML
-	private ImageView close_button;
+	private AnchorPane pane;
 
 	private class Item {
 		public final ImageView image;
@@ -100,7 +101,7 @@ public class Home extends Window {
 	@Override
 	public void initialize() {
 
-		GUIHelper.buildCloseButton(close_button);
+		GUIHelper.buildCloseButton(pane);
 
 		// TODO Actually implement a vertical bar.
 		verticalScroll.setVisible(false);

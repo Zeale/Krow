@@ -9,11 +9,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="zeale.guis.Settings">
+<AnchorPane fx:id="pane" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="zeale.guis.Settings">
    <children>
       <Label fx:id="settingsLabel" alignment="TOP_CENTER" layoutX="1095.0" layoutY="169.0" prefWidth="250.0" style="-fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 48px;" text="General" textAlignment="CENTER" />
       <TreeView fx:id="tabList" layoutX="20.0" layoutY="20.0" prefHeight="1040.0" prefWidth="313.0" showRoot="false" style="-fx-background-color: #00000060;" />
       <TreeView id="SettingOptionsTreeView" fx:id="optionBox" layoutX="800.0" layoutY="250.0" prefHeight="810.0" prefWidth="850.0" showRoot="false" style="-fx-background-color: #00000060;" />
-      <ImageView fx:id="close_button" fitHeight="64.0" fitWidth="64.0" layoutX="1842.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" />
    </children>
 </AnchorPane>
