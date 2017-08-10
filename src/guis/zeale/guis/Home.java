@@ -101,8 +101,6 @@ public class Home extends Window {
 	@Override
 	public void initialize() {
 
-		GUIHelper.buildCloseButton(pane);
-
 		// TODO Actually implement a vertical bar.
 		verticalScroll.setVisible(false);
 
@@ -165,6 +163,8 @@ public class Home extends Window {
 		horizontalScroll.toFront();
 
 		loadDefaultImages();
+
+		GUIHelper.buildCloseButton(pane);
 	}
 
 	private final void loadDefaultImages() {

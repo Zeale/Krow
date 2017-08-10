@@ -105,7 +105,6 @@ public class Settings extends Window {
 
 	@Override
 	public void initialize() {
-		GUIHelper.buildCloseButton(pane);
 		settingsLabel.setLayoutX(Window.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
 		optionBox.setLayoutX(Window.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
 		tabList.setRoot(new TreeItem<>());
@@ -184,6 +183,7 @@ public class Settings extends Window {
 		});
 		addDefaultItems();
 
+		GUIHelper.buildCloseButton(pane);
 	}
 
 }
