@@ -5,6 +5,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.event.EventHandler;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -18,6 +19,10 @@ import javafx.util.Duration;
 import kröw.core.Kröw;
 
 class GUIHelper {
+
+	private static final Color MENU_BAR_SHADOW_COLOR = Color.BLACK;
+
+	private static final int MENU_BAR_SHADOW_RADIUS = 7;
 
 	private static final Color MENU_BACKGROUND_COLOR = new Color(0, 0, 0, 0.3);
 
@@ -34,9 +39,9 @@ class GUIHelper {
 			MENU_BUTTON_Y = (double) 33 / 1080 * Kröw.SCREEN_HEIGHT,
 			MENU_BUTTON_RECTANGLE_SPACING = (double) 13 / 1080 * Kröw.SCREEN_HEIGHT;
 
-	private static final byte MENU_BAR_ANIMATION_ROTATION_COUNT = 1;
+	private static final byte MENU_BAR_ANIMATION_ROTATION_COUNT = 2;
 
-	private static final Color MENU_BUTTON_START_COLOR = Color.BLACK, MENU_BUTTON_END_COLOR = Color.WHITE;
+	private static final Color MENU_BUTTON_START_COLOR = MENU_BAR_SHADOW_COLOR, MENU_BUTTON_END_COLOR = Color.WHITE;
 
 	public static void buildCloseButton(Pane pane) {
 
@@ -51,6 +56,9 @@ class GUIHelper {
 		menubarTop.setFill(MENU_BUTTON_START_COLOR);
 		menubarBottom.setStroke(MENU_BUTTON_START_COLOR);
 		menubarBottom.setFill(MENU_BUTTON_START_COLOR);
+
+		menubarTop.setEffect(new DropShadow(MENU_BAR_SHADOW_RADIUS, MENU_BAR_SHADOW_COLOR));
+		menubarBottom.setEffect(new DropShadow(MENU_BAR_SHADOW_RADIUS, MENU_BAR_SHADOW_COLOR));
 
 		FillTransition topFill = new FillTransition(MENU_BUTTON_ANIMATION_DURATION, menubarTop),
 				bottomFill = new FillTransition(MENU_BUTTON_ANIMATION_DURATION, menubarBottom);
@@ -70,6 +78,7 @@ class GUIHelper {
 		menu.setLayoutX(Kröw.SCREEN_WIDTH);
 		menu.setLayoutY(0);
 		menu.setBackground(new Background(new BackgroundFill(MENU_BACKGROUND_COLOR, null, null)));
+		menu.setId("GUIH-SideMenu");
 
 		TranslateTransition menuSlide = new TranslateTransition(MENU_BUTTON_ANIMATION_DURATION, menu);
 		menuSlide.setInterpolator(MENU_BUTTON_TRANSITION_INTERPOLATOR);
