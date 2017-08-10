@@ -27,13 +27,14 @@ public class GlobalSettingsManager implements Serializable {
 			e.printStackTrace();
 			throw new RuntimeException("The file does not point to this class. Refactoring may have ocurred.");
 		}
-		gsm.validate();
+		gsm.bootup();
 		return gsm;
 	}
 
-	private void validate() {
+	private void bootup() {
 
 	}
+	
 
 	public static final GlobalSettingsManager createManager(File systemPath) throws IOException {
 		GlobalSettingsManager gsm = new GlobalSettingsManager();
