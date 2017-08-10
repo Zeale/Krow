@@ -39,7 +39,7 @@ class GUIHelper {
 			MENU_BUTTON_Y = (double) 33 / 1080 * Kröw.SCREEN_HEIGHT,
 			MENU_BUTTON_RECTANGLE_SPACING = (double) 13 / 1080 * Kröw.SCREEN_HEIGHT;
 
-	private static final byte MENU_BAR_ANIMATION_ROTATION_COUNT = 2;
+	private static final byte MENU_BAR_ANIMATION_ROTATION_COUNT = 1;
 
 	private static final Color MENU_BUTTON_START_COLOR = MENU_BAR_SHADOW_COLOR, MENU_BUTTON_END_COLOR = Color.WHITE;
 
