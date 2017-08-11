@@ -1,7 +1,11 @@
 package zeale.guis;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -9,6 +13,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
+import kröw.core.Kröw;
 import kröw.libs.guis.Window;
 
 public class Settings extends Window {
@@ -152,6 +157,11 @@ public class Settings extends Window {
 						settingsLabel.setText(getItem().text);
 						for (final Setting t : getItem().children)
 							optionBox.getRoot().getChildren().add(new TreeItem<>(t));
+						try {
+							Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+							e.printStackTrace();
+						}
 					} else
 						updateItem(getItem(), isEmpty());
 

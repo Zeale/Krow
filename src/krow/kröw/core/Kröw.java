@@ -259,9 +259,8 @@ public final class Kröw extends Application {
 	 */
 	public static final String NAME = new String("Kröw");
 
-
 	private static GlobalSettingsManager globalSettingsManager;
-	private static SoundManager soundManager;
+	private static SoundManager soundManager = new SoundManager();
 
 	/**
 	 * @return the soundManager

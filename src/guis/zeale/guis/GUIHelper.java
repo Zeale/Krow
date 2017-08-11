@@ -29,7 +29,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import kröw.core.Kröw;
-import kröw.core.managers.SoundManager;
 
 class GUIHelper {
 
@@ -234,7 +233,7 @@ class GUIHelper {
 					if (event.getPickResult().getIntersectedNode() == cover && opening)
 						return;
 					try {
-						SoundManager.playSound(SoundManager.TICK);
+						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
 					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
 						e.printStackTrace();
 					}
@@ -261,7 +260,7 @@ class GUIHelper {
 						if (opening) {
 							close();
 							try {
-								SoundManager.playSound(SoundManager.TICK);
+								Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
 							} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
 								e.printStackTrace();
 							}
@@ -270,7 +269,7 @@ class GUIHelper {
 						if (closing) {
 							open();
 							try {
-								SoundManager.playSound(SoundManager.TICK);
+								Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
 							} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
 								e.printStackTrace();
 							}
