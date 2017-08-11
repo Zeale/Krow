@@ -9,9 +9,12 @@ import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -149,20 +152,18 @@ public class Home extends Window {
 
 		// Set what happens when the user scrolls to a different image.
 		horizontalScroll.setOnScroll(event -> {
-
 			int amount = event.getDeltaY() / event.getMultiplierY() > 0 ? 1 : -1;
-			if (amount + totalShift > views.size()) {
-				amount = views.size() - totalShift;
-				totalShift = (short) views.size();
-				return;// Omit below loop; it's useless.
-			} else if (amount + totalShift < 1) {
-				totalShift = 1;
-				return;// Omit below loop; it's useless.
-			} else
-				totalShift += amount;
+			slideImages(amount);
+		});
+		horizontalScroll.setOnKeyPressed(new EventHandler<KeyEvent>() {
 
-			for (; amount != 0; amount -= amount > 0 ? 1 : -1)
-				animate(amount > 0);
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode().equals(KeyCode.LEFT))
+					slideImages(1);
+				else if (event.getCode().equals(KeyCode.RIGHT))
+					slideImages(-1);
+			}
 		});
 
 		// Put this in front of the verticalScroll container.
@@ -171,6 +172,21 @@ public class Home extends Window {
 		loadDefaultImages();
 
 		GUIHelper.buildCloseButton(pane);
+	}
+
+	private void slideImages(int amount) {
+		if (amount + totalShift > views.size()) {
+			amount = views.size() - totalShift;
+			totalShift = (short) views.size();
+			return;// Omit below loop; it's useless.
+		} else if (amount + totalShift < 1) {
+			totalShift = 1;
+			return;// Omit below loop; it's useless.
+		} else
+			totalShift += amount;
+
+		for (; amount != 0; amount -= amount > 0 ? 1 : -1)
+			animate(amount > 0);
 	}
 
 	private final void loadDefaultImages() {
