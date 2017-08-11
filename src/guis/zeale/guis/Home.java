@@ -21,11 +21,13 @@ import kröw.core.Kröw;
 import kröw.libs.guis.Window;
 
 public class Home extends Window {
+	private final static long SLIDE_ANIMATION_DURATION = 1000;
 
 	@FXML
 	private AnchorPane pane;
 
 	private class Item {
+
 		public final ImageView image;
 		public final TranslateTransition transition;
 		public double goal;
@@ -51,7 +53,8 @@ public class Home extends Window {
 	private short totalShift = (short) (views.size() - 6);
 
 	public void addImage(final ImageView image) {
-		final TranslateTransition transition = new TranslateTransition(Duration.seconds(1), image);
+		final TranslateTransition transition = new TranslateTransition(Duration.millis(SLIDE_ANIMATION_DURATION),
+				image);
 		image.setFitHeight(IMAGE_HEIGHT);
 		image.setFitWidth(IMAGE_WIDTH);
 		views.add(new Item(image, transition));
@@ -59,13 +62,15 @@ public class Home extends Window {
 
 	public void addImage(final int index, final ImageView imageView) {
 
-		final TranslateTransition transition = new TranslateTransition(Duration.seconds(1), imageView);
+		final TranslateTransition transition = new TranslateTransition(Duration.millis(SLIDE_ANIMATION_DURATION),
+				imageView);
 		imageView.setFitHeight(IMAGE_HEIGHT);
 		imageView.setFitWidth(IMAGE_WIDTH);
 		views.add(index, new Item(imageView, transition));
 	}
 
 	public void animate(final boolean forward) {
+
 		if (forward)
 			for (final Item i : views) {
 				i.goal++;
@@ -145,7 +150,7 @@ public class Home extends Window {
 		// Set what happens when the user scrolls to a different image.
 		horizontalScroll.setOnScroll(event -> {
 
-			double amount = event.getDeltaY() / event.getMultiplierY() > 0 ? 1 : -1;
+			int amount = event.getDeltaY() / event.getMultiplierY() > 0 ? 1 : -1;
 			if (amount + totalShift > views.size()) {
 				amount = views.size() - totalShift;
 				totalShift = (short) views.size();
@@ -155,6 +160,7 @@ public class Home extends Window {
 				return;// Omit below loop; it's useless.
 			} else
 				totalShift += amount;
+
 			for (; amount != 0; amount -= amount > 0 ? 1 : -1)
 				animate(amount > 0);
 		});
