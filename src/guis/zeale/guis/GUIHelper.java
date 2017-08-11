@@ -1,5 +1,10 @@
 package zeale.guis;
 
+import java.io.IOException;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -24,6 +29,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import kröw.core.Kröw;
+import kröw.core.managers.SoundManager;
 
 class GUIHelper {
 
@@ -227,6 +233,11 @@ class GUIHelper {
 				EventHandler<? super MouseEvent> enterHandler = event -> {
 					if (event.getPickResult().getIntersectedNode() == cover && opening)
 						return;
+					try {
+						SoundManager.playSound(SoundManager.TICK);
+					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+						e.printStackTrace();
+					}
 					open();
 				};
 
@@ -249,10 +260,22 @@ class GUIHelper {
 					public void handle(MouseEvent event) {
 						if (opening) {
 							close();
+							try {
+								SoundManager.playSound(SoundManager.TICK);
+							} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+								e.printStackTrace();
+							}
 							return;
 						}
-						if (closing)
+						if (closing) {
 							open();
+							try {
+								SoundManager.playSound(SoundManager.TICK);
+							} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+								e.printStackTrace();
+							}
+						}
+
 					}
 				};
 

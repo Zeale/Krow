@@ -39,6 +39,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import kröw.core.managers.GlobalSettingsManager;
+import kröw.core.managers.SoundManager;
 import kröw.libs.Timer;
 import kröw.libs.guis.Window;
 import kröw.libs.mindset.Construct;
@@ -258,7 +259,16 @@ public final class Kröw extends Application {
 	 */
 	public static final String NAME = new String("Kröw");
 
+
 	private static GlobalSettingsManager globalSettingsManager;
+	private static SoundManager soundManager;
+
+	/**
+	 * @return the soundManager
+	 */
+	public static final SoundManager getSoundManager() {
+		return soundManager;
+	}
 
 	static {
 
@@ -1015,4 +1025,5 @@ public final class Kröw extends Application {
 		globalSettingsManager.save(GlobalSettingsManager.DEFAULT_FILE_PATH);
 		super.stop();
 	}
+
 }
