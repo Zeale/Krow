@@ -4,7 +4,10 @@ import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
+import javafx.collections.ListChangeListener;
+import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -15,35 +18,35 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import kröw.core.Kröw;
 
 class GUIHelper {
 
 	private static final Color MENU_BAR_SHADOW_COLOR = Color.BLACK;
-
 	private static final int MENU_BAR_SHADOW_RADIUS = 7;
-
 	private static final Color MENU_BACKGROUND_COLOR = new Color(0, 0, 0, 0.3);
-
 	private static final double MENU_WIDTH_FRACTION = 4.5;
-
 	private static final double MENU_ITEM_SPACING = 15 / 1080 * Kröw.SCREEN_HEIGHT;
-
-	private static final Interpolator MENU_BUTTON_TRANSITION_INTERPOLATOR = Interpolator.EASE_OUT;
-
+	private static final Interpolator MENU_BUTTON_TRANSITION_INTERPOLATOR = Interpolator.EASE_OUT,
+			MENU_CHILD_TRANSITION_INTERPOLATOR = MENU_BUTTON_TRANSITION_INTERPOLATOR;
 	private static final Duration MENU_BUTTON_ANIMATION_DURATION = Duration.seconds(0.8);
-
 	private static final double MENU_BUTTON_RECTANGLE_WIDTH = 25, MENU_BUTTON_RECTANGLE_HEIGHT = 5,
 			MENU_BUTTON_RECTANGLE_X = Kröw.SCREEN_WIDTH - (double) 50 / 1920 * Kröw.SCREEN_WIDTH,
 			MENU_BUTTON_Y = (double) 33 / 1080 * Kröw.SCREEN_HEIGHT,
 			MENU_BUTTON_RECTANGLE_SPACING = (double) 13 / 1080 * Kröw.SCREEN_HEIGHT;
-
+	private static final int SIDE_MENU_PADDING_TOP = (int) ((double) 80 / 1080 * Kröw.SCREEN_HEIGHT);
 	private static final byte MENU_BAR_ANIMATION_ROTATION_COUNT = 1;
-
 	private static final Color MENU_BUTTON_START_COLOR = MENU_BAR_SHADOW_COLOR, MENU_BUTTON_END_COLOR = Color.WHITE;
+	private static final Duration MENU_CHILD_NODE_HOVER_ANIMATION_DURATION = Duration.seconds(0.6);
+	private static final Color MENU_CHILD_NODE_START_COLOR = Color.BLACK,
+			MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR = Color.WHITE;
 
-	public static void buildCloseButton(Pane pane) {
+	public static VBox buildCloseButton(Pane pane) {
 
 		Shape menubarTop = new Rectangle(MENU_BUTTON_RECTANGLE_WIDTH, MENU_BUTTON_RECTANGLE_HEIGHT),
 				menubarBottom = new Rectangle(MENU_BUTTON_RECTANGLE_WIDTH, MENU_BUTTON_RECTANGLE_HEIGHT);
@@ -79,6 +82,55 @@ class GUIHelper {
 		menu.setLayoutY(0);
 		menu.setBackground(new Background(new BackgroundFill(MENU_BACKGROUND_COLOR, null, null)));
 		menu.setId("GUIH-SideMenu");
+		menu.setStyle("-fx-padding: " + SIDE_MENU_PADDING_TOP + "px 0px 0px 0px; -fx-alignment: top-center;");
+		menu.getChildren().addListener(new ListChangeListener<Node>() {
+
+			@Override
+			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Node> c) {
+				while (c.next())
+					if (c.wasAdded())
+						for (Node n : c.getAddedSubList())
+							try {
+								assert n instanceof Text;// This is caught in
+															// actual runtime
+															// below if it's
+															// thrown.
+								Text t = (Text) n;
+
+								t.setTextAlignment(TextAlignment.CENTER);
+
+								t.setFill(MENU_CHILD_NODE_START_COLOR);
+								t.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD,
+										(int) ((double) 16 / 1920 * Kröw.SCREEN_WIDTH)));
+
+								FillTransition ft = new FillTransition(MENU_CHILD_NODE_HOVER_ANIMATION_DURATION, t);
+								ft.setInterpolator(MENU_CHILD_TRANSITION_INTERPOLATOR);
+								t.setOnMouseEntered(new EventHandler<Event>() {
+
+									@Override
+									public void handle(Event event) {
+										ft.stop();
+										ft.setFromValue((Color) t.getFill());
+										ft.setToValue(MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR);
+										ft.play();
+									}
+								});
+								t.setOnMouseExited(new EventHandler<Event>() {
+
+									@Override
+									public void handle(Event event) {
+										ft.stop();
+										ft.setFromValue((Color) t.getFill());
+										ft.setToValue(MENU_CHILD_NODE_START_COLOR);
+										ft.play();
+									}
+
+								});
+							} catch (ClassCastException e) {
+							}
+			}
+
+		});
 
 		TranslateTransition menuSlide = new TranslateTransition(MENU_BUTTON_ANIMATION_DURATION, menu);
 		menuSlide.setInterpolator(MENU_BUTTON_TRANSITION_INTERPOLATOR);
@@ -220,6 +272,11 @@ class GUIHelper {
 		pane.getChildren().add(menubarTop);
 		pane.getChildren().add(menubarBottom);
 		pane.getChildren().add(cover);
+
+		// Test Text object.
+		// menu.getChildren().add(new Text("ABCDEFGHIJKLMNOP"));
+
+		return menu;
 
 	}
 
