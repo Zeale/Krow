@@ -193,7 +193,12 @@ public class Settings extends Window {
 		});
 		addDefaultItems();
 
-		GUIHelper.buildCloseButton(pane);
+		GUIHelper.addDefaultSettings(GUIHelper.buildCloseButton(pane));
+	}
+
+	@Override
+	public String getWindowName() {
+		return new String("Settings");
 	}
 
 }

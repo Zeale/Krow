@@ -1,6 +1,7 @@
 package zeale.guis;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -29,8 +30,10 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import kröw.core.Kröw;
+import kröw.libs.guis.Window;
+import kröw.libs.guis.Window.NotSwitchableException;
 
-class GUIHelper {
+final class GUIHelper {
 
 	private static final Color MENU_BAR_SHADOW_COLOR = Color.BLACK;
 	private static final int MENU_BAR_SHADOW_RADIUS = 7;
@@ -300,6 +303,31 @@ class GUIHelper {
 
 		return menu;
 
+	}
+
+	public static void addDefaultSettings(VBox vbox) {
+		List<Node> children = vbox.getChildren();
+		Text goHome = new Text("Go Home");
+		goHome.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				try {
+					Window.setScene(Home.class);
+				} catch (InstantiationException | IllegalAccessException | IOException e) {
+					e.printStackTrace();
+				} catch (NotSwitchableException e) {
+					if (Window.getNamePropertyFromParent(e.getCurrentParent()) == Window
+							.getNamePropertyFromParent(e.getNewParent()))
+						Window.spawnLabelAtMousePos("You are already at this Window.", Color.FIREBRICK);
+					else
+						Window.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
+				}
+			}
+
+		});
+
+		children.add(goHome);
 	}
 
 }

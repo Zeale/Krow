@@ -2,7 +2,6 @@ package kröw.libs.guis;
 
 import java.awt.MouseInfo;
 import java.io.IOException;
-import java.net.URL;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -154,53 +153,7 @@ public abstract class Window {
 		};
 	}
 
-	/**
-	 * <p>
-	 * Loads and shows a {@link Scene} object given a {@link String} object and
-	 * a {@link Class} object.
-	 * <p>
-	 * The {@link Class} object is used to load the {@link Scene} from a file,
-	 * and the {@link String} is the path of the file relative to the given
-	 * {@link Class} object.
-	 * <p>
-	 * If a class exists in the package <code>my.package</code> with the name
-	 * <code>MyWindowController</code> and the FXML file of a {@link Scene}
-	 * exists in that same package with a name of <code>MyWindow</code>, a
-	 * sufficient call to this method to load in the {@link Scene} from the FXML
-	 * file would be as follows:
-	 * <ul>
-	 * <code>setScene(MyWindowController.class, "MyWindow.fxml");</code>
-	 * </ul>
-	 * <p>
-	 * If <code>MyWindow</code> existed in a sub-package of
-	 * <code>my.package</code>, such as <code>my.package.subpackage</code>, then
-	 * a sufficient call to this method would involve changing the given
-	 * {@link String}. An example is as follows:
-	 * <ul>
-	 * <code>setScene(MyWindowController.class, "subpackage/MyWindow.fxml</code>
-	 * </ul>
-	 * <p>
-	 * Similar methods exist to change the currently displayed {@link Scene} of
-	 * the program. For more details, see {@link #setScene(Class)},
-	 * {@link #setScene(String)}, and {@link #setSceneToPreviousScene()}.
-	 * <p>
-	 * <i>Note that the given class in the parameter of this method does not
-	 * have to be a subclass of {@link Window}, but the controller specified in
-	 * the FXML file <b>MUST</b> be of the type {@link Window}.</i>
-	 *
-	 * @param cls
-	 *            The {@link Class} that defines the starting path of which to
-	 *            get the FXML file.
-	 * @param scene
-	 *            The path to the FXML file, relative to the specified class.
-	 * @throws IOException
-	 *             in case this method fails to load the FXML file.
-	 */
-	public static void setScene(final Class<?> cls, final String scene) throws IOException {
-
-		setScene(cls.getResource(scene));
-
-	}
+	private static Object keyObject = new Object();
 
 	/**
 	 * <p>
@@ -225,47 +178,27 @@ public abstract class Window {
 	 *             visible.
 	 * @throws IOException
 	 *             in case this method fails to load the FXML file.
+	 * @throws NotSwitchableException
+	 *             If the current {@link Scene} can't be switched.
 	 */
 	public static <W extends Window> void setScene(final Class<W> cls)
-			throws InstantiationException, IllegalAccessException, IOException {
-		Window.setScene(cls, cls.newInstance().getWindowFile());
-
-	}
-
-	/**
-	 * <p>
-	 * Sets the current {@link Scene} of the program to that which is specified.
-	 * <p>
-	 * This method acts in the same way that its overloaded counterparts do, but
-	 * uses this {@link Window}. Calling this method is virtually equivalent to
-	 * calling
-	 * <ul>
-	 * <code>Window.setScene(Window.class, str);</code>
-	 * </ul>
-	 * where <code>str</code> is the parameter passed into this method.<br>
-	 * <br>
-	 *
-	 * @param scene
-	 *            The relative path of the FXML file that will be loaded.
-	 * @throws IOException
-	 *             Incase this method fails to load the FXML file.
-	 */
-	public static void setScene(final String scene) throws IOException {
-		setScene(Window.class.getResource(scene));
-
-	}
-
-	public static void setScene(final URL scene) throws IOException {
+			throws InstantiationException, IllegalAccessException, IOException, NotSwitchableException {
 		// Instantiate the loader
-		final FXMLLoader loader = new FXMLLoader(scene);
+		final FXMLLoader loader = new FXMLLoader(cls.getResource(cls.newInstance().getWindowFile()));
+		Parent root = loader.load();
+
+		if (!controller.canSwitchScenes(cls))
+			throw new NotSwitchableException(stage.getScene().getRoot(), root);
+
 		// Take the current objects and set them as the previous objects.
 		Window.previousRoot = Window.stage.getScene().getRoot();
 		Window.previousController = Window.controller;
 		// Set the new root.
-		Window.stage.getScene().setRoot(loader.load());
+		Window.stage.getScene().setRoot(root);
 
 		// Assign the controller.
 		Window.controller = loader.<Window>getController();
+		root.getProperties().put(keyObject, controller.getWindowName());
 	}
 
 	/**
@@ -280,8 +213,15 @@ public abstract class Window {
 	 * is done via any of the <code>setScene(...)</code> methods.</i> Using
 	 * these methods rather than switching the {@link Window} manually is almost
 	 * necessary for full functionality.
+	 * 
+	 * @throws NotSwitchableException
+	 *             If the current {@link Scene} can't be switched.
 	 */
-	public static void setSceneToPreviousScene() {
+	public static void setSceneToPreviousScene() throws NotSwitchableException {
+
+		if (!controller.canSwitchScenes(previousController.getClass()))
+			throw new NotSwitchableException(stage.getScene().getRoot(), previousRoot);
+
 		final Parent tempRoot = Window.getPreviousRoot();
 		// Take the current scene and set it as the previous scene.
 		Window.previousRoot = Window.stage.getScene().getRoot();
@@ -420,6 +360,63 @@ public abstract class Window {
 	 */
 	public void onRevertToThisWindow() {
 
+	}
+
+	/**
+	 * <p>
+	 * Checked when switching {@link Scene}s to verify that the current window
+	 * permits the user to go to a different window. This should be overridden
+	 * to return false when a window reaches a scenario in which it does not
+	 * want its user to leave.
+	 * <p>
+	 * Basically, return false when {@link Scene}s shouldn't be switched.
+	 * 
+	 * @return Whether or not the scene can currently be switched.
+	 */
+	public boolean canSwitchScenes(Class<? extends Window> newSceneClass) {
+		return true;
+	}
+
+	/**
+	 * <p>
+	 * Thrown when someone tries to switch the current {@link Scene} but the
+	 * current {@link Scene}'s controller's {@link Window#canSwitchScenes()}
+	 * method returns false.
+	 * 
+	 * @author Zeale
+	 */
+	public final static class NotSwitchableException extends Exception {
+
+		private static final long serialVersionUID = 1L;
+
+		private Parent currentParent, newParent;
+
+		private NotSwitchableException(Parent currentScene, Parent newScene) {
+			super("Current scene: " + currentScene + " New scene: " + newScene);
+			this.currentParent = currentScene;
+			this.newParent = newScene;
+		}
+
+		/**
+		 * @return the currentParent
+		 */
+		public final Parent getCurrentParent() {
+			return currentParent;
+		}
+
+		/**
+		 * @return the newParent
+		 */
+		public final Parent getNewParent() {
+			return newParent;
+		}
+
+	}
+
+	public abstract String getWindowName();
+
+	public static final String getNamePropertyFromParent(Parent parent) {
+		return (String) parent.getProperties().get(keyObject);
 	}
 
 }

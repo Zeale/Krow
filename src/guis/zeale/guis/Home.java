@@ -171,7 +171,7 @@ public class Home extends Window {
 
 		loadDefaultImages();
 
-		GUIHelper.buildCloseButton(pane);
+		GUIHelper.addDefaultSettings(GUIHelper.buildCloseButton(pane));
 	}
 
 	private void slideImages(int amount) {
@@ -207,6 +207,8 @@ public class Home extends Window {
 				Window.setScene(Settings.class);
 			} catch (InstantiationException | IllegalAccessException | IOException e) {
 				e.printStackTrace();
+			} catch (NotSwitchableException e) {
+				e.printStackTrace();
 			}
 		});
 		addImage(settings);
@@ -227,6 +229,18 @@ public class Home extends Window {
 
 	public void removeImage(final int index) {
 		views.remove(index);
+	}
+
+	@Override
+	public boolean canSwitchScenes(Class<? extends Window> newSceneClass) {
+		if (newSceneClass.equals(Home.class))
+			return false;
+		return super.canSwitchScenes(newSceneClass);
+	}
+
+	@Override
+	public String getWindowName() {
+		return new String("Home");
 	}
 
 }
