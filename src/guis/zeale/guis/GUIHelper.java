@@ -1,6 +1,7 @@
 package zeale.guis;
 
 import java.io.IOException;
+import java.util.EmptyStackException;
 import java.util.List;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -11,6 +12,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
@@ -38,7 +40,7 @@ final class GUIHelper {
 	private static final int MENU_BAR_SHADOW_RADIUS = 7;
 	private static final Color MENU_BACKGROUND_COLOR = new Color(0, 0, 0, 0.3);
 	private static final double MENU_WIDTH_FRACTION = 4.5;
-	private static final double MENU_ITEM_SPACING = 15 / 1080 * Kröw.SCREEN_HEIGHT;
+	private static final double MENU_ITEM_SPACING = 25 / 1080 * Kröw.SCREEN_HEIGHT;
 	private static final Interpolator MENU_BUTTON_TRANSITION_INTERPOLATOR = Interpolator.EASE_OUT,
 			MENU_CHILD_TRANSITION_INTERPOLATOR = MENU_BUTTON_TRANSITION_INTERPOLATOR;
 	private static final Duration MENU_BUTTON_ANIMATION_DURATION = Duration.seconds(0.8);
@@ -52,12 +54,14 @@ final class GUIHelper {
 	private static final Duration MENU_CHILD_NODE_HOVER_ANIMATION_DURATION = Duration.seconds(0.6);
 	private static final Color MENU_CHILD_NODE_START_COLOR = Color.BLACK,
 			MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR = Color.WHITE;
+	private static final int MENU_CHILD_NODE_FONT_SIZE = (int) ((double) 16 / 1920 * Kröw.SCREEN_WIDTH);
 
 	public static void addDefaultSettings(final VBox vbox) {
 		final List<Node> children = vbox.getChildren();
 
 		final Text close = new Text("Close");
 		final Text goHome = new Text("Go Home");
+		Text goBack = new Text("Go Back");
 
 		close.setOnMouseClicked(Kröw.CLOSE_PROGRAM_EVENT_HANDLER);
 
@@ -75,8 +79,24 @@ final class GUIHelper {
 			}
 		});
 
+		goBack.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+
+				try {
+					Window.goBack();
+				} catch (NotSwitchableException e) {
+					Window.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
+				} catch (EmptyStackException e) {
+					Window.spawnLabelAtMousePos("Back to where???...", Color.FIREBRICK);
+				}
+			}
+		});
+
 		children.add(close);
 		children.add(goHome);
+		children.add(goBack);
 	}
 
 	public static VBox buildCloseButton(final Pane pane) {
@@ -130,8 +150,8 @@ final class GUIHelper {
 							t.setTextAlignment(TextAlignment.CENTER);
 
 							t.setFill(MENU_CHILD_NODE_START_COLOR);
-							t.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD,
-									(int) ((double) 16 / 1920 * Kröw.SCREEN_WIDTH)));
+							t.setFont(
+									Font.font(Font.getDefault().getName(), FontWeight.BOLD, MENU_CHILD_NODE_FONT_SIZE));
 
 							final FillTransition ft = new FillTransition(MENU_CHILD_NODE_HOVER_ANIMATION_DURATION, t);
 							ft.setInterpolator(MENU_CHILD_TRANSITION_INTERPOLATOR);

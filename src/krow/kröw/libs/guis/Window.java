@@ -2,6 +2,7 @@ package kröw.libs.guis;
 
 import java.awt.MouseInfo;
 import java.io.IOException;
+import java.util.Stack;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -30,14 +31,17 @@ import javafx.util.Duration;
  * {@link Scene}, so any {@link Scene} switching done outside of this class (via
  * the {@link #stage} object) will not be recognized by this class.
  * <p>
- * This class also contains a {@link #setSceneToPreviousScene()} method which
- * changes the currently displayed {@link Scene} to the {@link Scene} being
- * shown prior to that.
+ * This class also contains a {@link #goBack()} method which changes the
+ * currently displayed {@link Scene} to the {@link Scene} being shown prior to
+ * that.
  *
  * @author Zeale
  *
  */
 public abstract class Window {
+
+	private static final Stack<Class<? extends Window>> history = new Stack<>();
+	private static Class<? extends Window> currentWindow;
 
 	/**
 	 * <p>
@@ -81,20 +85,9 @@ public abstract class Window {
 	private static Stage stage;
 
 	/**
-	 * The previously showing {@link Scene}. This is set when any of the
-	 * <code>setScene</code> methods are called.
-	 */
-	private static Parent previousRoot;
-
-	/**
 	 * The controller of the current {@link Scene}.
 	 */
 	private static Window controller;
-
-	/**
-	 * The controller of the previous {@link Scene}.
-	 */
-	private static Window previousController;
 
 	private static Object keyObject = new Object();
 
@@ -104,14 +97,6 @@ public abstract class Window {
 
 	public static final String getNamePropertyFromParent(final Parent parent) {
 		return (String) parent.getProperties().get(keyObject);
-	}
-
-	public static Window getPreviousController() {
-		return previousController;
-	}
-
-	public static Parent getPreviousRoot() {
-		return Window.previousRoot;
 	}
 
 	/**
@@ -223,6 +208,7 @@ public abstract class Window {
 	 */
 	public static <W extends Window> void setScene(final Class<W> cls)
 			throws InstantiationException, IllegalAccessException, IOException, NotSwitchableException {
+		history.push(currentWindow);
 		// Instantiate the loader
 		final FXMLLoader loader = new FXMLLoader(cls.getResource(cls.newInstance().getWindowFile()));
 		final Parent root = loader.load();
@@ -230,9 +216,7 @@ public abstract class Window {
 		if (!controller.canSwitchScenes(cls))
 			throw new NotSwitchableException(stage.getScene().getRoot(), root);
 
-		// Take the current objects and set them as the previous objects.
-		Window.previousRoot = Window.stage.getScene().getRoot();
-		Window.previousController = Window.controller;
+		currentWindow = cls;
 		// Set the new root.
 		Window.stage.getScene().setRoot(root);
 
@@ -257,35 +241,24 @@ public abstract class Window {
 	 * @throws NotSwitchableException
 	 *             If the current {@link Scene} can't be switched.
 	 */
-	public static void setSceneToPreviousScene() throws NotSwitchableException {
+	public static void goBack() throws NotSwitchableException {
 
-		if (!controller.canSwitchScenes(previousController.getClass()))
-			throw new NotSwitchableException(stage.getScene().getRoot(), previousRoot);
+		if (!controller.canSwitchScenes(history.peek()))
+			throw new NotSwitchableException(stage.getScene().getRoot(), null);
 
-		final Parent tempRoot = Window.getPreviousRoot();
-		// Take the current scene and set it as the previous scene.
-		Window.previousRoot = Window.stage.getScene().getRoot();
-		// Take the cached, previous scene and set it as the current scene.
-		Window.stage.getScene().setRoot(tempRoot);
-
-		// Try and reinitalize the scene that's about to show. (Controllers
-		// haven't yet been switched, but the scenes have, so the following
-		// previous controller actually refers to the current scene.)
-		if (Window.previousController != null)
-			Window.previousController.initialize();
-
-		/* Switch the current and previous controllers. */
-		// Cache the previous controller.
-		final Window tempController = Window.getPreviousController();
-		// Take the current controller and set it as the previous controller.
-		Window.previousController = Window.controller;
-		// Take the cached, previous controller and set it as the current
-		// controller.
-		Window.controller = tempController;
+		try {
+			setScene(history.pop());
+		} catch (InstantiationException | IllegalAccessException | IOException e) {
+			e.printStackTrace();
+		}
 
 		// Call this method.
 		Window.controller.onRevertToThisWindow();
 
+	}
+
+	public static Class<? extends Window> getPreviousWindowClass() {
+		return history.peek();
 	}
 
 	/**
@@ -305,6 +278,7 @@ public abstract class Window {
 		final FXMLLoader loader = new FXMLLoader(cls.getResource(((Window) cls.newInstance()).getWindowFile()));
 		stage.setScene(new Scene(loader.load()));
 		controller = loader.getController();
+		currentWindow = cls;
 	}
 
 	/**
@@ -410,10 +384,9 @@ public abstract class Window {
 
 	/**
 	 * <p>
-	 * This method is called when {@link Window#setSceneToPreviousScene()} is
-	 * called and this {@link Window} is shown. It's is like an extra initialize
-	 * method which is called only when the {@link #setSceneToPreviousScene()}
-	 * method shows this {@link Window}.
+	 * This method is called when {@link Window#goBack()} is called and this
+	 * {@link Window} is shown. It's is like an extra initialize method which is
+	 * called only when the {@link #goBack()} method shows this {@link Window}.
 	 */
 	public void onRevertToThisWindow() {
 
