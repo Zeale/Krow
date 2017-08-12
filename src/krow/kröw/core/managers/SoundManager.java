@@ -13,12 +13,10 @@ import kröw.core.Kröw;
 
 public class SoundManager {
 
-	public final Sound TICK = new Sound(Kröw.class.getResource("/krow/resources/sounds/Tick0.wav"));
-
 	public class Sound {
-		private URL location;
+		private final URL location;
 
-		public Sound(URL location) {
+		public Sound(final URL location) {
 			this.location = location;
 		}
 
@@ -27,13 +25,16 @@ public class SoundManager {
 		}
 	}
 
-	public void playSound(Sound s) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+	public final Sound TICK = new Sound(Kröw.class.getResource("/krow/resources/sounds/Tick0.wav"));
+
+	public void playSound(final Sound s) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 		s.play();
 	}
 
-	public void playSound(URL location) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-		AudioInputStream audioIn = AudioSystem.getAudioInputStream(location);
-		Clip clip = AudioSystem.getClip();
+	public void playSound(final URL location)
+			throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+		final AudioInputStream audioIn = AudioSystem.getAudioInputStream(location);
+		final Clip clip = AudioSystem.getClip();
 		clip.open(audioIn);
 		clip.start();
 	}

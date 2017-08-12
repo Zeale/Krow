@@ -131,12 +131,6 @@ final class OldVersionLoader {
 
 			// Apply the change.
 			super.writeClassDescriptor(classDescriptor);
-			// Now Serialization will write the object to a file.
-
-			// With these changes, the object should be saved with the class we
-			// assigned it, (if we did change the class).
-
-			// Then when it's loaded, the object will be loaded
 		}
 
 	}

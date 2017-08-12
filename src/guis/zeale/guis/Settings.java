@@ -109,6 +109,11 @@ public class Settings extends Window {
 	}
 
 	@Override
+	public String getWindowName() {
+		return new String("Settings");
+	}
+
+	@Override
 	public void initialize() {
 		settingsLabel.setLayoutX(Window.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
 		optionBox.setLayoutX(Window.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
@@ -194,11 +199,6 @@ public class Settings extends Window {
 		addDefaultItems();
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildCloseButton(pane));
-	}
-
-	@Override
-	public String getWindowName() {
-		return new String("Settings");
 	}
 
 }

@@ -69,13 +69,7 @@ public final class Kröw extends Application {
 			Platform.exit();
 	};
 
-	public static final EventHandler<Event> CLOSE_PROGRAM_EVENT_HANDLER = new EventHandler<Event>() {
-
-		@Override
-		public void handle(Event event) {
-			Platform.exit();
-		}
-	};
+	public static final EventHandler<Event> CLOSE_PROGRAM_EVENT_HANDLER = event -> Platform.exit();
 
 	/*
 	 * Screen width and height
@@ -107,7 +101,7 @@ public final class Kröw extends Application {
 		File temp;
 		try {
 			temp = new File(Kröw.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-		} catch (URISyntaxException e) {
+		} catch (final URISyntaxException e) {
 			temp = null;
 		}
 
@@ -128,29 +122,29 @@ public final class Kröw extends Application {
 		URL iconURL = null;
 		try {
 			iconURL = new URL("http://dusttoash.org/favicon.ico");
-		} catch (MalformedURLException e2) {
+		} catch (final MalformedURLException e2) {
 			e2.printStackTrace();
 		}
 		File icon;
 		if (!(icon = new File(KRÖW_HOME_DIRECTORY, "Krow.ico")).exists())
 			try (InputStream is = iconURL.openStream()) {
 				Files.copy(is, icon.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			} catch (IOException e1) {
+			} catch (final IOException e1) {
 				e1.printStackTrace();
 			}
-		if (JAR_FILE_CURRENT_PATH != null & !((KRÖW_INSTALL_FILE = new File(KRÖW_HOME_DIRECTORY, "Krow.jar")).exists())
+		if (JAR_FILE_CURRENT_PATH != null & !(KRÖW_INSTALL_FILE = new File(KRÖW_HOME_DIRECTORY, "Krow.jar")).exists()
 				&& !JAR_FILE_CURRENT_PATH.equals(KRÖW_INSTALL_FILE))
 			try {
 				Files.copy(JAR_FILE_CURRENT_PATH.toPath(), KRÖW_INSTALL_FILE.toPath(),
 						StandardCopyOption.REPLACE_EXISTING);
 
-				String app = "powershell.exe";
+				final String app = "powershell.exe";
 
 				Process proc;
-				BufferedReader stdout = new BufferedReader(
+				final BufferedReader stdout = new BufferedReader(
 						new InputStreamReader((proc = Runtime.getRuntime().exec(app)).getInputStream())),
 						errout = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-				PrintWriter pw = new PrintWriter(proc.getOutputStream());
+				final PrintWriter pw = new PrintWriter(proc.getOutputStream());
 				pw.println("$objShell = New-Object -ComObject WScript.Shell");
 				pw.println("$lnk = $objShell.CreateShortcut(\"" + "Krow.lnk" + "\")");
 				pw.println("$lnk.TargetPath = \"" + KRÖW_INSTALL_FILE.getAbsolutePath() + "\"");
@@ -176,7 +170,7 @@ public final class Kröw extends Application {
 					System.exit(0);
 				}
 
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 	}
@@ -271,13 +265,6 @@ public final class Kröw extends Application {
 	private static GlobalSettingsManager globalSettingsManager;
 	private static SoundManager soundManager = new SoundManager();
 
-	/**
-	 * @return the soundManager
-	 */
-	public static final SoundManager getSoundManager() {
-		return soundManager;
-	}
-
 	static {
 
 		// Create the following folders if they don't already exist and catch
@@ -295,14 +282,14 @@ public final class Kröw extends Application {
 
 			try {
 				globalSettingsManager = GlobalSettingsManager.loadManager(GlobalSettingsManager.DEFAULT_FILE_PATH);
-			} catch (FileNotFoundException e) {
+			} catch (final FileNotFoundException e) {
 				try {
 					globalSettingsManager = GlobalSettingsManager
 							.createManager(GlobalSettingsManager.DEFAULT_FILE_PATH);
-				} catch (IOException e1) {
+				} catch (final IOException e1) {
 					e1.printStackTrace();
 				}
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 
@@ -581,6 +568,13 @@ public final class Kröw extends Application {
 	}
 
 	/**
+	 * @return the soundManager
+	 */
+	public static final SoundManager getSoundManager() {
+		return soundManager;
+	}
+
+	/**
 	 * A static void method that loads data.
 	 *
 	 * @deprecated This is not up to date and will soon be removed.
@@ -798,16 +792,12 @@ public final class Kröw extends Application {
 	 * @throws FileNotFoundException
 	 */
 	public static void main(final String[] args) throws FileNotFoundException {
-		new Thread(new Runnable() {
+		new Thread(() -> {
+			if (args.length == 1 && args[0].startsWith("---")) {
+				final File f = new File(args[0].substring(3));
 
-			@Override
-			public void run() {
-				if (args.length == 1 && args[0].startsWith("---")) {
-					File f = new File(args[0].substring(3));
-
-					while (!f.delete() && f.exists())
-						;
-				}
+				while (!f.delete() && f.exists())
+					;
 			}
 		}).start();
 

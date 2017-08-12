@@ -19,11 +19,17 @@ public class GlobalSettingsManager implements Serializable {
 
 	public static final File DEFAULT_FILE_PATH = new File(Kröw.MANAGER_DIRECTORY, "GlobalSettingsManager.kmgr");
 
-	public static GlobalSettingsManager loadManager(File file) throws IOException {
+	public static final GlobalSettingsManager createManager(final File systemPath) throws IOException {
+		final GlobalSettingsManager gsm = new GlobalSettingsManager();
+		gsm.save(systemPath);
+		return gsm;
+	}
+
+	public static GlobalSettingsManager loadManager(final File file) throws IOException {
 		GlobalSettingsManager gsm = null;
 		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
 			gsm = (GlobalSettingsManager) ois.readObject();
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new RuntimeException("The file does not point to this class. Refactoring may have ocurred.");
 		}
@@ -31,42 +37,21 @@ public class GlobalSettingsManager implements Serializable {
 		return gsm;
 	}
 
-	private void bootup() {
-
-	}
-	
-
-	public static final GlobalSettingsManager createManager(File systemPath) throws IOException {
-		GlobalSettingsManager gsm = new GlobalSettingsManager();
-		gsm.save(systemPath);
-		return gsm;
-	}
-
-	public static GlobalSettingsManager loadManager(Path path) throws IOException {
+	public static GlobalSettingsManager loadManager(final Path path) throws IOException {
 
 		return loadManager(path.toFile());
 	}
 
-	public static GlobalSettingsManager loadManager(String path) throws IOException {
+	public static GlobalSettingsManager loadManager(final String path) throws IOException {
 		return loadManager(Paths.get(path));
 	}
 
 	private boolean launchOnSystemLogIn;
+
 	private boolean launchOnUserLogIn;
 
-	/**
-	 * @return the launchOnUserLogIn
-	 */
-	public final boolean isLaunchOnUserLogIn() {
-		return launchOnUserLogIn;
-	}
+	private void bootup() {
 
-	/**
-	 * @param launchOnUserLogIn
-	 *            the launchOnUserLogIn to set
-	 */
-	public final void setLaunchOnUserLogIn(boolean launchOnUserLogIn) {
-		this.launchOnUserLogIn = launchOnUserLogIn;
 	}
 
 	/**
@@ -77,24 +62,23 @@ public class GlobalSettingsManager implements Serializable {
 	}
 
 	/**
-	 * @param launchOnSystemLogIn
-	 *            the launchOnSystemLogIn to set
+	 * @return the launchOnUserLogIn
 	 */
-	public final void setLaunchOnSystemLogIn(boolean launchOnSystemLogIn) {
-		this.launchOnSystemLogIn = launchOnSystemLogIn;
+	public final boolean isLaunchOnUserLogIn() {
+		return launchOnUserLogIn;
 	}
 
-	private void readObject(ObjectInputStream is) throws IOException {
+	private void readObject(final ObjectInputStream is) throws IOException {
 		if (!(is.readLong() == version))
 			throw new RuntimeException("Outdated file.");
 		try {
 			is.defaultReadObject();
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void save(File savePath) throws IOException {
+	public void save(final File savePath) throws IOException {
 		if (!savePath.exists()) {
 			if (!savePath.getParentFile().isDirectory()) {
 				if (savePath.getParentFile().exists())
@@ -105,13 +89,29 @@ public class GlobalSettingsManager implements Serializable {
 			savePath.delete();
 		savePath.createNewFile();
 
-		ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(savePath));
+		final ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(savePath));
 		os.writeObject(this);
 		os.close();
 
 	}
 
-	private void writeObject(ObjectOutputStream os) throws IOException {
+	/**
+	 * @param launchOnSystemLogIn
+	 *            the launchOnSystemLogIn to set
+	 */
+	public final void setLaunchOnSystemLogIn(final boolean launchOnSystemLogIn) {
+		this.launchOnSystemLogIn = launchOnSystemLogIn;
+	}
+
+	/**
+	 * @param launchOnUserLogIn
+	 *            the launchOnUserLogIn to set
+	 */
+	public final void setLaunchOnUserLogIn(final boolean launchOnUserLogIn) {
+		this.launchOnUserLogIn = launchOnUserLogIn;
+	}
+
+	private void writeObject(final ObjectOutputStream os) throws IOException {
 		os.writeLong(version);
 		os.defaultWriteObject();
 

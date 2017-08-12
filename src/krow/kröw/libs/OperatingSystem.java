@@ -12,7 +12,7 @@ public enum OperatingSystem {
 	}
 
 	public static OperatingSystem getCurrentOperatingSystem() {
-		String os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
+		final String os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
 		if (os.startsWith("windows"))
 			return OperatingSystem.WINDOWS;
 		else if (os.startsWith("mac") || os.startsWith("darwin"))
@@ -29,4 +29,3 @@ public enum OperatingSystem {
 		return CURRENT_OPERATING_SYSTEM;
 	}
 }
- 

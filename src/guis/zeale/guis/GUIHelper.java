@@ -11,7 +11,6 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
@@ -54,9 +53,35 @@ final class GUIHelper {
 	private static final Color MENU_CHILD_NODE_START_COLOR = Color.BLACK,
 			MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR = Color.WHITE;
 
-	public static VBox buildCloseButton(Pane pane) {
+	public static void addDefaultSettings(final VBox vbox) {
+		final List<Node> children = vbox.getChildren();
 
-		Shape menubarTop = new Rectangle(MENU_BUTTON_RECTANGLE_WIDTH, MENU_BUTTON_RECTANGLE_HEIGHT),
+		final Text close = new Text("Close");
+		final Text goHome = new Text("Go Home");
+
+		close.setOnMouseClicked(Kröw.CLOSE_PROGRAM_EVENT_HANDLER);
+
+		goHome.setOnMouseClicked(event -> {
+			try {
+				Window.setScene(Home.class);
+			} catch (InstantiationException | IllegalAccessException | IOException e1) {
+				e1.printStackTrace();
+			} catch (final NotSwitchableException e2) {
+				if (Window.getNamePropertyFromParent(e2.getCurrentParent()) == Window
+						.getNamePropertyFromParent(e2.getNewParent()))
+					Window.spawnLabelAtMousePos("You're already here.", Color.FIREBRICK);
+				else
+					Window.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
+			}
+		});
+
+		children.add(close);
+		children.add(goHome);
+	}
+
+	public static VBox buildCloseButton(final Pane pane) {
+
+		final Shape menubarTop = new Rectangle(MENU_BUTTON_RECTANGLE_WIDTH, MENU_BUTTON_RECTANGLE_HEIGHT),
 				menubarBottom = new Rectangle(MENU_BUTTON_RECTANGLE_WIDTH, MENU_BUTTON_RECTANGLE_HEIGHT);
 		menubarTop.setLayoutX(MENU_BUTTON_RECTANGLE_X);
 		menubarBottom.setLayoutX(MENU_BUTTON_RECTANGLE_X);
@@ -71,79 +96,65 @@ final class GUIHelper {
 		menubarTop.setEffect(new DropShadow(MENU_BAR_SHADOW_RADIUS, MENU_BAR_SHADOW_COLOR));
 		menubarBottom.setEffect(new DropShadow(MENU_BAR_SHADOW_RADIUS, MENU_BAR_SHADOW_COLOR));
 
-		FillTransition topFill = new FillTransition(MENU_BUTTON_ANIMATION_DURATION, menubarTop),
+		final FillTransition topFill = new FillTransition(MENU_BUTTON_ANIMATION_DURATION, menubarTop),
 				bottomFill = new FillTransition(MENU_BUTTON_ANIMATION_DURATION, menubarBottom);
 		topFill.setInterpolator(MENU_BUTTON_TRANSITION_INTERPOLATOR);
 		bottomFill.setInterpolator(MENU_BUTTON_TRANSITION_INTERPOLATOR);
 
-		RotateTransition topRot = new RotateTransition(MENU_BUTTON_ANIMATION_DURATION, menubarTop),
+		final RotateTransition topRot = new RotateTransition(MENU_BUTTON_ANIMATION_DURATION, menubarTop),
 				bottomRot = new RotateTransition(MENU_BUTTON_ANIMATION_DURATION, menubarBottom);
 		topRot.setInterpolator(MENU_BUTTON_TRANSITION_INTERPOLATOR);
 		bottomRot.setInterpolator(MENU_BUTTON_TRANSITION_INTERPOLATOR);
 
-		TranslateTransition topTrans = new TranslateTransition(MENU_BUTTON_ANIMATION_DURATION, menubarTop),
+		final TranslateTransition topTrans = new TranslateTransition(MENU_BUTTON_ANIMATION_DURATION, menubarTop),
 				bottomTrans = new TranslateTransition(MENU_BUTTON_ANIMATION_DURATION, menubarBottom);
 
-		VBox menu = new VBox(MENU_ITEM_SPACING);
+		final VBox menu = new VBox(MENU_ITEM_SPACING);
 		menu.setPrefSize(Kröw.SCREEN_WIDTH / MENU_WIDTH_FRACTION, Kröw.SCREEN_HEIGHT);
 		menu.setLayoutX(Kröw.SCREEN_WIDTH);
 		menu.setLayoutY(0);
 		menu.setBackground(new Background(new BackgroundFill(MENU_BACKGROUND_COLOR, null, null)));
 		menu.setId("GUIH-SideMenu");
 		menu.setStyle("-fx-padding: " + SIDE_MENU_PADDING_TOP + "px 0px 0px 0px; -fx-alignment: top-center;");
-		menu.getChildren().addListener(new ListChangeListener<Node>() {
+		menu.getChildren().addListener((ListChangeListener<Node>) c -> {
+			while (c.next())
+				if (c.wasAdded())
+					for (final Node n : c.getAddedSubList())
+						try {
+							assert n instanceof Text;// This is caught in
+														// actual runtime
+														// below if it's
+														// thrown.
+							final Text t = (Text) n;
 
-			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Node> c) {
-				while (c.next())
-					if (c.wasAdded())
-						for (Node n : c.getAddedSubList())
-							try {
-								assert n instanceof Text;// This is caught in
-															// actual runtime
-															// below if it's
-															// thrown.
-								Text t = (Text) n;
+							t.setTextAlignment(TextAlignment.CENTER);
 
-								t.setTextAlignment(TextAlignment.CENTER);
+							t.setFill(MENU_CHILD_NODE_START_COLOR);
+							t.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD,
+									(int) ((double) 16 / 1920 * Kröw.SCREEN_WIDTH)));
 
-								t.setFill(MENU_CHILD_NODE_START_COLOR);
-								t.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD,
-										(int) ((double) 16 / 1920 * Kröw.SCREEN_WIDTH)));
-
-								FillTransition ft = new FillTransition(MENU_CHILD_NODE_HOVER_ANIMATION_DURATION, t);
-								ft.setInterpolator(MENU_CHILD_TRANSITION_INTERPOLATOR);
-								t.setOnMouseEntered(new EventHandler<Event>() {
-
-									@Override
-									public void handle(Event event) {
-										ft.stop();
-										ft.setFromValue((Color) t.getFill());
-										ft.setToValue(MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR);
-										ft.play();
-									}
-								});
-								t.setOnMouseExited(new EventHandler<Event>() {
-
-									@Override
-									public void handle(Event event) {
-										ft.stop();
-										ft.setFromValue((Color) t.getFill());
-										ft.setToValue(MENU_CHILD_NODE_START_COLOR);
-										ft.play();
-									}
-
-								});
-							} catch (ClassCastException e) {
-							}
-			}
-
+							final FillTransition ft = new FillTransition(MENU_CHILD_NODE_HOVER_ANIMATION_DURATION, t);
+							ft.setInterpolator(MENU_CHILD_TRANSITION_INTERPOLATOR);
+							t.setOnMouseEntered(event -> {
+								ft.stop();
+								ft.setFromValue((Color) t.getFill());
+								ft.setToValue(MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR);
+								ft.play();
+							});
+							t.setOnMouseExited(event -> {
+								ft.stop();
+								ft.setFromValue((Color) t.getFill());
+								ft.setToValue(MENU_CHILD_NODE_START_COLOR);
+								ft.play();
+							});
+						} catch (final ClassCastException e) {
+						}
 		});
 
-		TranslateTransition menuSlide = new TranslateTransition(MENU_BUTTON_ANIMATION_DURATION, menu);
+		final TranslateTransition menuSlide = new TranslateTransition(MENU_BUTTON_ANIMATION_DURATION, menu);
 		menuSlide.setInterpolator(MENU_BUTTON_TRANSITION_INTERPOLATOR);
 
-		AnchorPane cover = new AnchorPane();
+		final AnchorPane cover = new AnchorPane();
 
 		cover.setPrefSize(MENU_BUTTON_RECTANGLE_WIDTH * 2 + MENU_BUTTON_RECTANGLE_SPACING,
 				MENU_BUTTON_RECTANGLE_WIDTH * 2 + MENU_BUTTON_RECTANGLE_SPACING);
@@ -152,6 +163,59 @@ final class GUIHelper {
 
 		new Object() {
 			private boolean closing, opening;
+
+			{
+
+				final EventHandler<? super MouseEvent> enterHandler = event -> {
+					if (event.getPickResult().getIntersectedNode() == cover && opening)
+						return;
+					try {
+						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+						e.printStackTrace();
+					}
+					open();
+				};
+
+				final EventHandler<MouseEvent> exitHandler = event -> {
+					if (event.getPickResult().getIntersectedNode() == menu
+							|| event.getPickResult().getIntersectedNode() == cover
+							|| event.getPickResult().getIntersectedNode().getParent() == menu || closing)
+						return;
+
+					close();
+
+				};
+
+				final EventHandler<MouseEvent> coverClickHandler = event -> {
+					if (opening) {
+						close();
+						try {
+							Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e1) {
+							e1.printStackTrace();
+						}
+						return;
+					}
+					if (closing) {
+						open();
+						try {
+							Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e2) {
+							e2.printStackTrace();
+						}
+					}
+
+				};
+
+				cover.setOnMouseEntered(enterHandler);
+
+				cover.setOnMouseExited(exitHandler);
+				menu.setOnMouseExited(exitHandler);
+
+				cover.setOnMousePressed(coverClickHandler);
+
+			}
 
 			private void close() {
 				closing = true;
@@ -209,7 +273,7 @@ final class GUIHelper {
 
 				topRot.setFromAngle(menubarTop.getRotate());
 				bottomRot.setFromAngle(menubarBottom.getRotate());
-				double rotationCount = 45 + MENU_BAR_ANIMATION_ROTATION_COUNT * 180;
+				final double rotationCount = 45 + MENU_BAR_ANIMATION_ROTATION_COUNT * 180;
 				topRot.setToAngle(rotationCount);
 				bottomRot.setToAngle(-rotationCount);
 
@@ -229,66 +293,6 @@ final class GUIHelper {
 				bottomTrans.play();
 				menuSlide.play();
 			}
-
-			{
-
-				EventHandler<? super MouseEvent> enterHandler = event -> {
-					if (event.getPickResult().getIntersectedNode() == cover && opening)
-						return;
-					try {
-						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
-					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-						e.printStackTrace();
-					}
-					open();
-				};
-
-				EventHandler<MouseEvent> exitHandler = new EventHandler<MouseEvent>() {
-					@Override
-					public void handle(MouseEvent event) {
-						if (event.getPickResult().getIntersectedNode() == menu
-								|| event.getPickResult().getIntersectedNode() == cover
-								|| event.getPickResult().getIntersectedNode().getParent() == menu || closing)
-							return;
-
-						close();
-
-					}
-				};
-
-				EventHandler<MouseEvent> coverClickHandler = new EventHandler<MouseEvent>() {
-
-					@Override
-					public void handle(MouseEvent event) {
-						if (opening) {
-							close();
-							try {
-								Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
-							} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-								e.printStackTrace();
-							}
-							return;
-						}
-						if (closing) {
-							open();
-							try {
-								Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
-							} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-								e.printStackTrace();
-							}
-						}
-
-					}
-				};
-
-				cover.setOnMouseEntered(enterHandler);
-
-				cover.setOnMouseExited(exitHandler);
-				menu.setOnMouseExited(exitHandler);
-
-				cover.setOnMousePressed(coverClickHandler);
-
-			}
 		};
 
 		// Children will be added at the end.
@@ -303,37 +307,6 @@ final class GUIHelper {
 
 		return menu;
 
-	}
-
-	public static void addDefaultSettings(VBox vbox) {
-		List<Node> children = vbox.getChildren();
-
-		Text close = new Text("Close");
-		Text goHome = new Text("Go Home");
-
-		close.setOnMouseClicked(Kröw.CLOSE_PROGRAM_EVENT_HANDLER);
-
-		goHome.setOnMouseClicked(new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				try {
-					Window.setScene(Home.class);
-				} catch (InstantiationException | IllegalAccessException | IOException e) {
-					e.printStackTrace();
-				} catch (NotSwitchableException e) {
-					if (Window.getNamePropertyFromParent(e.getCurrentParent()) == Window
-							.getNamePropertyFromParent(e.getNewParent()))
-						Window.spawnLabelAtMousePos("You're already here.", Color.FIREBRICK);
-					else
-						Window.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
-				}
-			}
-
-		});
-
-		children.add(close);
-		children.add(goHome);
 	}
 
 }
