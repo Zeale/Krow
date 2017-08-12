@@ -307,7 +307,12 @@ final class GUIHelper {
 
 	public static void addDefaultSettings(VBox vbox) {
 		List<Node> children = vbox.getChildren();
+
+		Text close = new Text("Close");
 		Text goHome = new Text("Go Home");
+
+		close.setOnMouseClicked(Kröw.CLOSE_PROGRAM_EVENT_HANDLER);
+
 		goHome.setOnMouseClicked(new EventHandler<Event>() {
 
 			@Override
@@ -319,7 +324,7 @@ final class GUIHelper {
 				} catch (NotSwitchableException e) {
 					if (Window.getNamePropertyFromParent(e.getCurrentParent()) == Window
 							.getNamePropertyFromParent(e.getNewParent()))
-						Window.spawnLabelAtMousePos("You are already at this Window.", Color.FIREBRICK);
+						Window.spawnLabelAtMousePos("You're already here.", Color.FIREBRICK);
 					else
 						Window.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
 				}
@@ -327,6 +332,7 @@ final class GUIHelper {
 
 		});
 
+		children.add(close);
 		children.add(goHome);
 	}
 

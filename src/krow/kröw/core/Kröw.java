@@ -29,6 +29,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -66,6 +67,14 @@ public final class Kröw extends Application {
 	public static final EventHandler<KeyEvent> CLOSE_ON_ESCAPE_HANADLER = event -> {
 		if (event.getCode() == KeyCode.ESCAPE)
 			Platform.exit();
+	};
+
+	public static final EventHandler<Event> CLOSE_PROGRAM_EVENT_HANDLER = new EventHandler<Event>() {
+
+		@Override
+		public void handle(Event event) {
+			Platform.exit();
+		}
 	};
 
 	/*
