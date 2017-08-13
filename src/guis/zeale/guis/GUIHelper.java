@@ -53,7 +53,13 @@ final class GUIHelper {
 	private static final Duration MENU_CHILD_NODE_HOVER_ANIMATION_DURATION = Duration.seconds(0.6);
 	private static final Color MENU_CHILD_NODE_START_COLOR = Color.BLACK,
 			MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR = Color.WHITE;
-	private static final int MENU_CHILD_NODE_FONT_SIZE = (int) ((double) 16 / 1920 * Kröw.SCREEN_WIDTH);
+	private static final int MENU_CHILD_NODE_FONT_SIZE;
+	static {
+		double size = Kröw.OVERSIZED_DPI ? 16 : 21;
+		size *= (double) 1920 / Kröw.SCREEN_WIDTH;
+		MENU_CHILD_NODE_FONT_SIZE = (int) Math.round(size);
+		System.out.println(MENU_CHILD_NODE_FONT_SIZE);
+	}
 
 	public static void addDefaultSettings(final VBox vbox) {
 		final List<Node> children = vbox.getChildren();

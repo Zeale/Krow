@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import kröw.core.Kröw;
 
 public class WindowManager {
 
@@ -288,6 +289,9 @@ public class WindowManager {
 		/* Style label */
 		label.setTextFill(color);
 		label.setBackground(null);
+		double fontSize = Kröw.OVERSIZED_DPI ? 19 : 24;
+		fontSize *= (double) 1920 / Kröw.SCREEN_WIDTH;
+		label.setStyle("-fx-font-weight: bold; -fx-font-size: " + fontSize + "px;");
 		label.setStyle("-fx-font-weight: bold;");
 		/* Set Popup positions */
 		pc.setX(x);

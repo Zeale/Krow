@@ -82,6 +82,7 @@ public final class Kröw extends Application {
 	 * Screen width and height
 	 */
 	public final static double SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_DPI;
+	public static final boolean OVERSIZED_DPI;
 
 	static {
 		final Dimension screenDimensions = Toolkit.getDefaultToolkit().getScreenSize();
@@ -89,6 +90,11 @@ public final class Kröw extends Application {
 		SCREEN_HEIGHT = screenDimensions.getHeight();
 		SCREEN_WIDTH = screenDimensions.getWidth();
 		SCREEN_DPI = Toolkit.getDefaultToolkit().getScreenResolution();
+		OVERSIZED_DPI = SCREEN_DPI > 96.1;
+		System.out.println(SCREEN_WIDTH);
+		System.out.println(SCREEN_HEIGHT);
+		System.out.println(SCREEN_DPI);
+		System.out.println(OVERSIZED_DPI);
 	}
 
 	/*
