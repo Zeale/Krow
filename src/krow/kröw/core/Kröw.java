@@ -1,7 +1,11 @@
 package kröw.core;
 
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
@@ -25,10 +29,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileSystemView;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
@@ -74,13 +81,14 @@ public final class Kröw extends Application {
 	/*
 	 * Screen width and height
 	 */
-	public final static double SCREEN_HEIGHT, SCREEN_WIDTH;
+	public final static double SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_DPI;
 
 	static {
 		final Dimension screenDimensions = Toolkit.getDefaultToolkit().getScreenSize();
 
 		SCREEN_HEIGHT = screenDimensions.getHeight();
 		SCREEN_WIDTH = screenDimensions.getWidth();
+		SCREEN_DPI = Toolkit.getDefaultToolkit().getScreenResolution();
 	}
 
 	/*
@@ -1001,16 +1009,42 @@ public final class Kröw extends Application {
 		primaryStage.getScene().setOnKeyPressed(CLOSE_ON_ESCAPE_HANADLER);
 		primaryStage.show();
 
-		// Adds the given ImageView to the window on startup. The
-		// ImageView can have its own onClick event handlers attached,
-		// Along with any other event handlers it wants.
-		// ((Home) Page.getController()).addImage(new ImageView(IMAGE_KRÖW));
+	}
 
-		// We can also call the clear method to delete all the current images.
-		// The Home window loads by default with some images, so we can use
-		// This to clear those and add our own.
-		// ((Home)Page.getController()).clearImages();
+	public static Image iconToImage(Icon icon) {
+		return iconToImage(icon, icon.getIconWidth(), icon.getIconHeight());
+	}
 
+	public static Image iconToImage(Icon icon, int width, int height) {
+		if (icon instanceof ImageIcon) {
+			return SwingFXUtils.toFXImage(toBufferedImage(((ImageIcon) icon).getImage(), width, height), null);
+		} else {
+			BufferedImage image = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+					.getDefaultConfiguration().createCompatibleImage(width, height);
+			Graphics2D g = image.createGraphics();
+			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+			icon.paintIcon(null, g, 0, 0);
+			g.dispose();
+
+			return SwingFXUtils.toFXImage(image, null);
+		}
+	}
+
+	public static BufferedImage toBufferedImage(java.awt.Image image, int width, int height) {
+		BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D outputGraphics = output.createGraphics();
+		outputGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+		outputGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		outputGraphics.drawImage(image, 0, 0, width, height, null);
+		outputGraphics.dispose();
+
+		return output;
+	}
+
+	public static BufferedImage toBufferedImage(java.awt.Image image) {
+		return toBufferedImage(image, image.getWidth(null), image.getHeight(null));
 	}
 
 	/*

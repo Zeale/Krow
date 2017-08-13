@@ -32,7 +32,6 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.NotSwitchableException;
 
 final class GUIHelper {
 
