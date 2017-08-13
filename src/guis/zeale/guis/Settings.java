@@ -14,9 +14,10 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
 import kröw.core.Kröw;
-import kröw.libs.guis.Window;
+import kröw.core.managers.WindowManager;
+import kröw.core.managers.WindowManager.Page;
 
-public class Settings extends Window {
+public class Settings extends Page {
 
 	public final class Setting {
 		private final String text;
@@ -109,14 +110,9 @@ public class Settings extends Window {
 	}
 
 	@Override
-	public String getWindowName() {
-		return new String("Settings");
-	}
-
-	@Override
 	public void initialize() {
-		settingsLabel.setLayoutX(Window.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
-		optionBox.setLayoutX(Window.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
+		settingsLabel.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
+		optionBox.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
 		tabList.setRoot(new TreeItem<>());
 		optionBox.setRoot(new TreeItem<>());
 		tabList.setCellFactory(param -> {

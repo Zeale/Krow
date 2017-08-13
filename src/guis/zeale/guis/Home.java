@@ -21,9 +21,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import kröw.core.Kröw;
-import kröw.libs.guis.Window;
+import kröw.core.managers.WindowManager;
+import kröw.core.managers.WindowManager.Page;
 
-public class Home extends Window {
+public class Home extends Page {
 	private class Item {
 
 		public final ImageView image;
@@ -93,10 +94,10 @@ public class Home extends Window {
 	}
 
 	@Override
-	public boolean canSwitchScenes(final Class<? extends Window> newSceneClass) {
+	public boolean canSwitchScenes(final Class<? extends Page> newSceneClass) {
 		if (newSceneClass.equals(Home.class))
 			return false;
-		return super.canSwitchScenes(newSceneClass);
+		return true;
 	}
 
 	public List<ImageView> clearImages() {
@@ -110,11 +111,6 @@ public class Home extends Window {
 	@Override
 	public String getWindowFile() {
 		return "Home.fxml";
-	}
-
-	@Override
-	public String getWindowName() {
-		return new String("Home");
 	}
 
 	@FXML
@@ -185,7 +181,7 @@ public class Home extends Window {
 	private final void loadDefaultImages() {
 		// Now to add the default images to our horizontal scroll container.
 		final ImageView constructs = new ImageView(CONSTRUCT_MENU_ICON);
-		constructs.setOnMouseClicked(event -> Window.spawnLabelAtMousePos("WIP", Color.WHITE));
+		constructs.setOnMouseClicked(event -> WindowManager.spawnLabelAtMousePos("WIP", Color.WHITE));
 
 		final ImageView krow = new ImageView(Kröw.IMAGE_KRÖW);
 		// This code assures that clicking in a transparent portion of the image
@@ -197,8 +193,9 @@ public class Home extends Window {
 			@Override
 			public void handle(Event event) {
 				try {
-					Window.setScene(Tools.class);
-				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+					WindowManager.setScene(Tools.class);
+				} catch (InstantiationException | IllegalAccessException | IOException
+						| WindowManager.NotSwitchableException e) {
 					e.printStackTrace();
 				}
 			}
@@ -207,10 +204,10 @@ public class Home extends Window {
 		final ImageView settings = new ImageView("krow/resources/Settings.png");
 		settings.setOnMouseClicked(event -> {
 			try {
-				Window.setScene(Settings.class);
+				WindowManager.setScene(Settings.class);
 			} catch (InstantiationException | IllegalAccessException | IOException e) {
 				e.printStackTrace();
-			} catch (final NotSwitchableException e) {
+			} catch (final WindowManager.NotSwitchableException e) {
 				e.printStackTrace();
 			}
 		});

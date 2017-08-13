@@ -7,6 +7,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import kröw.core.managers.WindowManager;
 
 public class LoadingScene extends Scene {
 
@@ -63,8 +64,8 @@ public class LoadingScene extends Scene {
 
 	public void initialize() {
 		pane.setStyle("-fx-background-color: #000000C4;");
-		Window.getStage().getScene().setFill(Color.TRANSPARENT);
-		Window.getStage().setFullScreen(true);
+		WindowManager.getStage().getScene().setFill(Color.TRANSPARENT);
+		WindowManager.getStage().setFullScreen(true);
 	}
 
 }

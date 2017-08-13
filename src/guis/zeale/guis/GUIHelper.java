@@ -31,8 +31,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import kröw.core.Kröw;
-import kröw.libs.guis.Window;
-import kröw.libs.guis.Window.NotSwitchableException;
+import kröw.core.managers.WindowManager;
+import kröw.core.managers.WindowManager.NotSwitchableException;
 
 final class GUIHelper {
 
@@ -67,15 +67,14 @@ final class GUIHelper {
 
 		goHome.setOnMouseClicked(event -> {
 			try {
-				Window.setScene(Home.class);
+				WindowManager.setScene(Home.class);
 			} catch (InstantiationException | IllegalAccessException | IOException e1) {
 				e1.printStackTrace();
-			} catch (final NotSwitchableException e2) {
-				if (Window.getNamePropertyFromParent(e2.getCurrentParent()) == Window
-						.getNamePropertyFromParent(e2.getNewParent()))
-					Window.spawnLabelAtMousePos("You're already here.", Color.FIREBRICK);
+			} catch (final WindowManager.NotSwitchableException e2) {
+				if (e2.getCurrentWindow().getController().getClass() == e2.getControllerClass())
+					WindowManager.spawnLabelAtMousePos("You're already here.", Color.FIREBRICK);
 				else
-					Window.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
+					WindowManager.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
 			}
 		});
 
@@ -85,11 +84,11 @@ final class GUIHelper {
 			public void handle(Event event) {
 
 				try {
-					Window.goBack();
-				} catch (NotSwitchableException e) {
-					Window.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
+					WindowManager.goBack();
+				} catch (WindowManager.NotSwitchableException e) {
+					WindowManager.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
 				} catch (EmptyStackException e) {
-					Window.spawnLabelAtMousePos("Back to where???...", Color.FIREBRICK);
+					WindowManager.spawnLabelAtMousePos("Back to where???...", Color.FIREBRICK);
 				}
 			}
 		});

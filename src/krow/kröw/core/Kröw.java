@@ -41,8 +41,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import kröw.core.managers.GlobalSettingsManager;
 import kröw.core.managers.SoundManager;
+import kröw.core.managers.WindowManager;
 import kröw.libs.Timer;
-import kröw.libs.guis.Window;
 import kröw.libs.mindset.Construct;
 import kröw.libs.mindset.ConstructMindset;
 import kröw.libs.mindset.Law;
@@ -988,12 +988,13 @@ public final class Kröw extends Application {
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
 
-		Window.setStage_Impl(primaryStage, Home.class);
+		WindowManager.setStage_Impl(primaryStage, Home.class);
+
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.setTitle(Kröw.NAME);
 		if (Kröw.IMAGE_KRÖW != null)
 			primaryStage.getIcons().add(Kröw.IMAGE_KRÖW);
-		Window.getStage().getScene().setFill(Color.TRANSPARENT);
+		WindowManager.getStage().getScene().setFill(Color.TRANSPARENT);
 		primaryStage.setFullScreen(true);
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 
@@ -1003,12 +1004,12 @@ public final class Kröw extends Application {
 		// Adds the given ImageView to the window on startup. The
 		// ImageView can have its own onClick event handlers attached,
 		// Along with any other event handlers it wants.
-		// ((Home) Window.getController()).addImage(new ImageView(IMAGE_KRÖW));
+		// ((Home) Page.getController()).addImage(new ImageView(IMAGE_KRÖW));
 
 		// We can also call the clear method to delete all the current images.
 		// The Home window loads by default with some images, so we can use
 		// This to clear those and add our own.
-		// ((Home)Window.getController()).clearImages();
+		// ((Home)Page.getController()).clearImages();
 
 	}
 

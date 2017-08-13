@@ -2,9 +2,9 @@ package zeale.guis;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.Pane;
-import kröw.libs.guis.Window;
+import kröw.core.managers.WindowManager.Page;
 
-public class Tools extends Window {
+public class Tools extends Page {
 
 	@FXML
 	private Pane pane, subPane;
@@ -12,11 +12,6 @@ public class Tools extends Window {
 	@Override
 	public String getWindowFile() {
 		return "Tools.fxml";
-	}
-
-	@Override
-	public String getWindowName() {
-		return "Tools";
 	}
 
 	@Override
