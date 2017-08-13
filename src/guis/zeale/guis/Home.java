@@ -9,6 +9,8 @@ import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -190,7 +192,17 @@ public class Home extends Window {
 		// will still cause a click to be registered by the event handler.
 		krow.setPickOnBounds(true);
 		// Event handler
-		krow.setOnMouseClicked(event -> Window.spawnLabelAtMousePos("WIP", Color.WHITE));
+		krow.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				try {
+					Window.setScene(Tools.class);
+				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 
 		final ImageView settings = new ImageView("krow/resources/Settings.png");
 		settings.setOnMouseClicked(event -> {
