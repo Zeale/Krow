@@ -11,6 +11,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
@@ -60,6 +61,15 @@ public class Tools extends Page {
 	@Override
 	public void initialize() {
 		GUIHelper.addDefaultSettings(GUIHelper.buildCloseButton(pane));
+		if (Kröw.OVERSIZED_DPI) {
+			Label label = new Label("Your screen's DPI is too large. Program icons may appear to be cut off.");
+			label.setTextFill(Color.FIREBRICK);
+			label.setFont(Font.font(Font.getDefault().getName(), FontWeight.EXTRA_BOLD,
+					(double) 20 / 1920 * Kröw.SCREEN_WIDTH));
+			pane.getChildren().add(label);
+			label.setLayoutX(627.5146484375 / 1920 * Kröw.SCREEN_WIDTH);
+			label.setOnMouseClicked(event -> label.setLayoutX(Kröw.SCREEN_WIDTH / 2 - label.prefWidth(-1) / 2));
+		}
 
 		subPane.setVgap(PANE_VGAP);
 		subPane.setHgap(PANE_HGAP);
