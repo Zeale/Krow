@@ -289,10 +289,9 @@ public class WindowManager {
 		/* Style label */
 		label.setTextFill(color);
 		label.setBackground(null);
-		double fontSize = Kröw.OVERSIZED_DPI ? 19 : 24;
-		fontSize *= (double) 1920 / Kröw.SCREEN_WIDTH;
+		double fontSize = Kröw.getSystemProperties().isDPIOversized() ? 14 : 16;
+		fontSize *= (double) 1920 / Kröw.getSystemProperties().getScreenWidth();
 		label.setStyle("-fx-font-weight: bold; -fx-font-size: " + fontSize + "px;");
-		label.setStyle("-fx-font-weight: bold;");
 		/* Set Popup positions */
 		pc.setX(x);
 		pc.setWidth(label.getMaxWidth());

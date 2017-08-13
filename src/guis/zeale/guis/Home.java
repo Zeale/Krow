@@ -40,8 +40,8 @@ public class Home extends Page {
 
 	private final static long SLIDE_ANIMATION_DURATION = 1000;
 
-	private static int IMAGE_WIDTH = (int) ((double) 100 / 1920 * Kröw.SCREEN_WIDTH),
-			IMAGE_HEIGHT = (int) ((double) 100 / 1080 * Kröw.SCREEN_HEIGHT), IMAGE_SPACING = IMAGE_WIDTH / 2;
+	private static int IMAGE_WIDTH = (int) ((double) 100 / 1920 * Kröw.getSystemProperties().getScreenWidth()),
+			IMAGE_HEIGHT = (int) ((double) 100 / 1080 * Kröw.getSystemProperties().getScreenHeight()), IMAGE_SPACING = IMAGE_WIDTH / 2;
 
 	private static final Image CONSTRUCT_MENU_ICON = new Image("krow/resources/ConstructIcon_hd.png");
 
@@ -144,16 +144,16 @@ public class Home extends Page {
 		totalShift = (short) (views.size() - 6);
 
 		// Apply sizing to our containers.
-		horizontalScroll.setPrefWidth(Kröw.SCREEN_WIDTH);
+		horizontalScroll.setPrefWidth(Kröw.getSystemProperties().getScreenWidth());
 		horizontalScroll.setPrefHeight(IMAGE_HEIGHT);
-		verticalScroll.setPrefHeight(Kröw.SCREEN_HEIGHT);
+		verticalScroll.setPrefHeight(Kröw.getSystemProperties().getScreenHeight());
 		verticalScroll.setPrefWidth(IMAGE_WIDTH);
 
 		// Position our containers.
 		horizontalScroll.setLayoutX(0);
-		horizontalScroll.setLayoutY(Kröw.SCREEN_HEIGHT / 2 - horizontalScroll.getPrefHeight() / 2);
+		horizontalScroll.setLayoutY(Kröw.getSystemProperties().getScreenHeight() / 2 - horizontalScroll.getPrefHeight() / 2);
 		verticalScroll.setLayoutY(0);
-		verticalScroll.setLayoutX(Kröw.SCREEN_WIDTH / 2 - verticalScroll.getPrefWidth() / 2);
+		verticalScroll.setLayoutX(Kröw.getSystemProperties().getScreenWidth() / 2 - verticalScroll.getPrefWidth() / 2);
 
 		// The spacing between each image.
 		horizontalScroll.setSpacing(IMAGE_SPACING);

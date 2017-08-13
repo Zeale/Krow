@@ -39,13 +39,13 @@ import sun.awt.shell.ShellFolder;
 
 public class Tools extends Page {
 
-	private static final double PANE_VGAP = (double) 85 / 1080 * Kröw.SCREEN_HEIGHT,
-			PANE_HGAP = (double) 70 / 1920 * Kröw.SCREEN_WIDTH;
-	private static final double ICON_HEIGHT = (double) 100 / 1080 * Kröw.SCREEN_HEIGHT,
-			ICON_WIDTH = (double) 100 / 1920 * Kröw.SCREEN_WIDTH;
+	private static final double PANE_VGAP = (double) 85 / 1080 * Kröw.getSystemProperties().getScreenHeight(),
+			PANE_HGAP = (double) 70 / 1920 * Kröw.getSystemProperties().getScreenWidth();
+	private static final double ICON_HEIGHT = (double) 100 / 1080 * Kröw.getSystemProperties().getScreenHeight(),
+			ICON_WIDTH = (double) 100 / 1920 * Kröw.getSystemProperties().getScreenWidth();
 
-	private static final Insets FLOW_PANE_PADDING = new Insets((double) 120 / 1080 * Kröw.SCREEN_HEIGHT,
-			(double) 120 / 1920 * Kröw.SCREEN_WIDTH, 0, (double) 280 / 1080 * Kröw.SCREEN_HEIGHT);
+	private static final Insets FLOW_PANE_PADDING = new Insets((double) 120 / 1080 * Kröw.getSystemProperties().getScreenHeight(),
+			(double) 120 / 1920 * Kröw.getSystemProperties().getScreenWidth(), 0, (double) 280 / 1080 * Kröw.getSystemProperties().getScreenHeight());
 
 	@FXML
 	private Pane pane;
@@ -58,17 +58,26 @@ public class Tools extends Page {
 		return "Tools.fxml";
 	}
 
+	private void addWindowsTools() {
+		try {
+			addExecutable(new File("C:/Users/BHF-DUDEGUY/Appdata/Roaming/Krow/Krow.ico"));
+			addExecutable(new File("C:/Windows/regedit.exe"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public void initialize() {
 		GUIHelper.addDefaultSettings(GUIHelper.buildCloseButton(pane));
-		if (Kröw.OVERSIZED_DPI) {
+		if (Kröw.getSystemProperties().isDPIOversized()) {
 			Label label = new Label("Your screen's DPI is too large. Program icons may appear to be cut off.");
 			label.setTextFill(Color.FIREBRICK);
 			label.setFont(Font.font(Font.getDefault().getName(), FontWeight.EXTRA_BOLD,
-					(double) 20 / 1920 * Kröw.SCREEN_WIDTH));
+					(double) 20 / 1920 * Kröw.getSystemProperties().getScreenWidth()));
 			pane.getChildren().add(label);
-			label.setLayoutX(627.5146484375 / 1920 * Kröw.SCREEN_WIDTH);
-			label.setOnMouseClicked(event -> label.setLayoutX(Kröw.SCREEN_WIDTH / 2 - label.prefWidth(-1) / 2));
+			label.setLayoutX(627.5146484375 / 1920 * Kröw.getSystemProperties().getScreenWidth());
+			label.setOnMouseClicked(event -> label.setLayoutX(Kröw.getSystemProperties().getScreenWidth() / 2 - label.prefWidth(-1) / 2));
 		}
 
 		subPane.setVgap(PANE_VGAP);
@@ -88,12 +97,6 @@ public class Tools extends Page {
 
 		subPane.setPadding(FLOW_PANE_PADDING);
 
-		try {
-			addExecutable(new File("C:/Users/BHF-DUDEGUY/Appdata/Roaming/Krow/Krow.ico"));
-			addExecutable(new File("C:/Windows/regedit.exe"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public ToolButton addButton(String text, Image image) {

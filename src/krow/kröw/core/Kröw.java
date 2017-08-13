@@ -1,10 +1,8 @@
 package kröw.core;
 
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.EOFException;
@@ -48,6 +46,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import kröw.core.managers.GlobalSettingsManager;
 import kröw.core.managers.SoundManager;
+import kröw.core.managers.SystemProperties;
 import kröw.core.managers.WindowManager;
 import kröw.libs.Timer;
 import kröw.libs.mindset.Construct;
@@ -77,25 +76,6 @@ public final class Kröw extends Application {
 	};
 
 	public static final EventHandler<Event> CLOSE_PROGRAM_EVENT_HANDLER = event -> Platform.exit();
-
-	/*
-	 * Screen width and height
-	 */
-	public final static double SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_DPI;
-	public static final boolean OVERSIZED_DPI;
-
-	static {
-		final Dimension screenDimensions = Toolkit.getDefaultToolkit().getScreenSize();
-
-		SCREEN_HEIGHT = screenDimensions.getHeight();
-		SCREEN_WIDTH = screenDimensions.getWidth();
-		SCREEN_DPI = Toolkit.getDefaultToolkit().getScreenResolution();
-		OVERSIZED_DPI = SCREEN_DPI > 96.1;
-		System.out.println(SCREEN_WIDTH);
-		System.out.println(SCREEN_HEIGHT);
-		System.out.println(SCREEN_DPI);
-		System.out.println(OVERSIZED_DPI);
-	}
 
 	/*
 	 * Construct Mindset
@@ -278,6 +258,11 @@ public final class Kröw extends Application {
 
 	private static GlobalSettingsManager globalSettingsManager;
 	private static SoundManager soundManager = new SoundManager();
+	private static SystemProperties systemProperties = new SystemProperties();
+
+	public static SystemProperties getSystemProperties() {
+		return systemProperties;
+	}
 
 	static {
 
