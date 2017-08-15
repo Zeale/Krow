@@ -120,7 +120,10 @@ final class GUIHelper {
 			@Override
 			public void handle(Event event) {
 				WindowManager.getStage().hide();
-				Kröw.getSystemTrayManager().showIcon();
+				if (!(Kröw.getSystemTrayManager().isIconShowing() || Kröw.getSystemTrayManager().showIcon())) {
+					WindowManager.getStage().show();
+					WindowManager.spawnLabelAtMousePos("Failed to show icon...", Color.FIREBRICK);
+				}
 			}
 		});
 

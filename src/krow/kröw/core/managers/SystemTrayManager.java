@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 
 import javafx.application.Platform;
+import javafx.scene.paint.Color;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.core.Kröw;
@@ -35,10 +36,20 @@ public final class SystemTrayManager {
 				public void run() {
 					WindowManager.getStage().show();
 				}
+			}, hideProgram = new Runnable() {
+
+				@Override
+				public void run() {
+					WindowManager.getStage().hide();
+					if (!(isIconShowing() || showIcon())) {
+						WindowManager.getStage().show();
+						WindowManager.spawnLabelAtMousePos("Failed to show icon...", Color.FIREBRICK);
+					}
+				}
 			};
 
 			popup = new PopupMenu("Kröw");
-			MenuItem open = new MenuItem("Open"), exit = new MenuItem("Exit");
+			MenuItem open = new MenuItem("Open"), exit = new MenuItem("Exit"), hide = new MenuItem("Hide");
 			open.addActionListener(new ActionListener() {
 
 				@Override
@@ -54,8 +65,17 @@ public final class SystemTrayManager {
 					Kröw.exit();
 				}
 			});
+
+			hide.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Platform.runLater(hideProgram);
+				}
+			});
 			popup.add(open);
 			popup.add(exit);
+			popup.add(hide);
 			icon = new TrayIcon(new ImageIcon(SystemTray.class.getResource("/krow/resources/Kröw_hd.png")).getImage(),
 					"Kröw", popup);
 			icon.setImageAutoSize(true);
