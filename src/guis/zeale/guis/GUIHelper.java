@@ -12,7 +12,6 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
@@ -35,6 +34,55 @@ import kröw.core.managers.WindowManager;
 
 final class GUIHelper {
 
+	public static final class MenuOption extends Text {
+		private Color fadeColor, startColor;
+
+		public MenuOption(final Color fadeColor, final Color startColor, final String text) {
+			super(text);
+			this.fadeColor = fadeColor;
+			this.startColor = startColor;
+		}
+
+		public MenuOption(final Color fadeColor, final String text) {
+			this(fadeColor, MENU_CHILD_NODE_START_COLOR, text);
+		}
+
+		public MenuOption(final String text) {
+			this(MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR, text);
+		}
+
+		/**
+		 * @return the fadeColor
+		 */
+		public final Color getFadeColor() {
+			return fadeColor;
+		}
+
+		/**
+		 * @return the startColor
+		 */
+		public final Color getStartColor() {
+			return startColor;
+		}
+
+		/**
+		 * @param fadeColor
+		 *            the fadeColor to set
+		 */
+		public final void setFadeColor(final Color fadeColor) {
+			this.fadeColor = fadeColor;
+		}
+
+		/**
+		 * @param startColor
+		 *            the startColor to set
+		 */
+		public final void setStartColor(final Color startColor) {
+			this.startColor = startColor;
+		}
+
+	}
+
 	private static final Color MENU_BAR_SHADOW_COLOR = Color.BLACK;
 	private static final int MENU_BAR_SHADOW_RADIUS = 7;
 	private static final Color MENU_BACKGROUND_COLOR = new Color(0, 0, 0, 0.3);
@@ -56,9 +104,10 @@ final class GUIHelper {
 	private static final Color MENU_CHILD_NODE_START_COLOR = Color.BLACK,
 			MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR = Color.WHITE;
 	private static final int MENU_CHILD_NODE_FONT_SIZE;
+
 	static {
 		double size = Kröw.getSystemProperties().isDPIOversized() ? 16 : 18;
-		size *= (double) 1920 / Kröw.getSystemProperties().getScreenWidth();
+		size *= 1920 / Kröw.getSystemProperties().getScreenWidth();
 		MENU_CHILD_NODE_FONT_SIZE = (int) Math.round(size);
 		System.out.println(MENU_CHILD_NODE_FONT_SIZE);
 	}
@@ -69,7 +118,8 @@ final class GUIHelper {
 		final Node close = new MenuOption(Color.RED, "Close"), goHome = new Text("Go Home"),
 				goBack = new Text("Go Back"), hideProgram = new Text("Hide Program"),
 				sendProgramToBack = new Text("Send to back");
-		Text systemTray = new Text("Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
+		final Text systemTray = new Text(
+				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
 
 		close.setOnMouseClicked(Kröw.CLOSE_PROGRAM_EVENT_HANDLER);
 
@@ -86,55 +136,37 @@ final class GUIHelper {
 			}
 		});
 
-		goBack.setOnMouseClicked(new EventHandler<Event>() {
+		goBack.setOnMouseClicked(event -> {
 
-			@Override
-			public void handle(Event event) {
-
-				try {
-					WindowManager.goBack();
-				} catch (WindowManager.NotSwitchableException e) {
-					WindowManager.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
-				} catch (EmptyStackException e) {
-					WindowManager.spawnLabelAtMousePos("Back to where???...", Color.FIREBRICK);
-				}
+			try {
+				WindowManager.goBack();
+			} catch (final WindowManager.NotSwitchableException e1) {
+				WindowManager.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
+			} catch (final EmptyStackException e2) {
+				WindowManager.spawnLabelAtMousePos("Back to where???...", Color.FIREBRICK);
 			}
 		});
 
-		systemTray.setOnMouseClicked(new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				if (Kröw.getSystemTrayManager().isIconShowing())
-					if (Kröw.getSystemTrayManager().hideIcon())
-						systemTray.setText("Tray Icon: Show");
-					else
-						WindowManager.spawnLabelAtMousePos("Something went wrong...", Color.FIREBRICK);
-				else if (Kröw.getSystemTrayManager().showIcon())
-					systemTray.setText("Tray Icon: Hide");
+		systemTray.setOnMouseClicked(event -> {
+			if (Kröw.getSystemTrayManager().isIconShowing())
+				if (Kröw.getSystemTrayManager().hideIcon())
+					systemTray.setText("Tray Icon: Show");
 				else
 					WindowManager.spawnLabelAtMousePos("Something went wrong...", Color.FIREBRICK);
+			else if (Kröw.getSystemTrayManager().showIcon())
+				systemTray.setText("Tray Icon: Hide");
+			else
+				WindowManager.spawnLabelAtMousePos("Something went wrong...", Color.FIREBRICK);
+		});
+		hideProgram.setOnMouseClicked(event -> {
+			WindowManager.getStage().hide();
+			if (!(Kröw.getSystemTrayManager().isIconShowing() || Kröw.getSystemTrayManager().showIcon())) {
+				WindowManager.getStage().show();
+				WindowManager.spawnLabelAtMousePos("Failed to show icon...", Color.FIREBRICK);
 			}
 		});
-		hideProgram.setOnMouseClicked(new EventHandler<Event>() {
 
-			@Override
-			public void handle(Event event) {
-				WindowManager.getStage().hide();
-				if (!(Kröw.getSystemTrayManager().isIconShowing() || Kröw.getSystemTrayManager().showIcon())) {
-					WindowManager.getStage().show();
-					WindowManager.spawnLabelAtMousePos("Failed to show icon...", Color.FIREBRICK);
-				}
-			}
-		});
-
-		sendProgramToBack.setOnMouseClicked(new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				WindowManager.getStage().toBack();
-			}
-		});
+		sendProgramToBack.setOnMouseClicked(event -> WindowManager.getStage().toBack());
 
 		children.add(close);
 		children.add(goHome);
@@ -195,7 +227,7 @@ final class GUIHelper {
 
 							t.setTextAlignment(TextAlignment.CENTER);
 
-							Color startColor = t instanceof MenuOption ? ((MenuOption) t).getStartColor()
+							final Color startColor = t instanceof MenuOption ? ((MenuOption) t).getStartColor()
 									: MENU_CHILD_NODE_START_COLOR,
 									endColor = t instanceof MenuOption ? ((MenuOption) t).getFadeColor()
 											: MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR;
@@ -376,55 +408,6 @@ final class GUIHelper {
 		// menu.getChildren().add(new Text("ABCDEFGHIJKLMNOP"));
 
 		return menu;
-
-	}
-
-	public static final class MenuOption extends Text {
-		private Color fadeColor, startColor;
-
-		/**
-		 * @return the fadeColor
-		 */
-		public final Color getFadeColor() {
-			return fadeColor;
-		}
-
-		/**
-		 * @return the startColor
-		 */
-		public final Color getStartColor() {
-			return startColor;
-		}
-
-		/**
-		 * @param fadeColor
-		 *            the fadeColor to set
-		 */
-		public final void setFadeColor(Color fadeColor) {
-			this.fadeColor = fadeColor;
-		}
-
-		/**
-		 * @param startColor
-		 *            the startColor to set
-		 */
-		public final void setStartColor(Color startColor) {
-			this.startColor = startColor;
-		}
-
-		public MenuOption(Color fadeColor, Color startColor, String text) {
-			super(text);
-			this.fadeColor = fadeColor;
-			this.startColor = startColor;
-		}
-
-		public MenuOption(Color fadeColor, String text) {
-			this(fadeColor, MENU_CHILD_NODE_START_COLOR, text);
-		}
-
-		public MenuOption(String text) {
-			this(MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR, text);
-		}
 
 	}
 

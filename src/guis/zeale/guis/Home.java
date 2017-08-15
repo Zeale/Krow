@@ -9,8 +9,6 @@ import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -41,7 +39,8 @@ public class Home extends Page {
 	private final static long SLIDE_ANIMATION_DURATION = 1000;
 
 	private static int IMAGE_WIDTH = (int) ((double) 100 / 1920 * Kröw.getSystemProperties().getScreenWidth()),
-			IMAGE_HEIGHT = (int) ((double) 100 / 1080 * Kröw.getSystemProperties().getScreenHeight()), IMAGE_SPACING = IMAGE_WIDTH / 2;
+			IMAGE_HEIGHT = (int) ((double) 100 / 1080 * Kröw.getSystemProperties().getScreenHeight()),
+			IMAGE_SPACING = IMAGE_WIDTH / 2;
 
 	private static final Image CONSTRUCT_MENU_ICON = new Image("krow/resources/ConstructIcon_hd.png");
 
@@ -151,7 +150,8 @@ public class Home extends Page {
 
 		// Position our containers.
 		horizontalScroll.setLayoutX(0);
-		horizontalScroll.setLayoutY(Kröw.getSystemProperties().getScreenHeight() / 2 - horizontalScroll.getPrefHeight() / 2);
+		horizontalScroll
+				.setLayoutY(Kröw.getSystemProperties().getScreenHeight() / 2 - horizontalScroll.getPrefHeight() / 2);
 		verticalScroll.setLayoutY(0);
 		verticalScroll.setLayoutX(Kröw.getSystemProperties().getScreenWidth() / 2 - verticalScroll.getPrefWidth() / 2);
 
@@ -188,16 +188,12 @@ public class Home extends Page {
 		// will still cause a click to be registered by the event handler.
 		krow.setPickOnBounds(true);
 		// Event handler
-		krow.setOnMouseClicked(new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				try {
-					WindowManager.setScene(Tools.class);
-				} catch (InstantiationException | IllegalAccessException | IOException
-						| WindowManager.NotSwitchableException e) {
-					e.printStackTrace();
-				}
+		krow.setOnMouseClicked(event -> {
+			try {
+				WindowManager.setScene(Tools.class);
+			} catch (InstantiationException | IllegalAccessException | IOException
+					| WindowManager.NotSwitchableException e) {
+				e.printStackTrace();
 			}
 		});
 

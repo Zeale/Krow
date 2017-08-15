@@ -37,26 +37,12 @@ public class WindowManager {
 		private final Page controller;
 		private final Class<? extends Page> controllerClass;
 
-		public NotSwitchableException(Window<? extends Page> currentWindow, Parent root, Page controller,
-				Class<? extends Page> cls) {
+		public NotSwitchableException(final Window<? extends Page> currentWindow, final Parent root,
+				final Page controller, final Class<? extends Page> cls) {
 			this.currentWindow = currentWindow;
 			newRoot = root;
 			this.controller = controller;
-			this.controllerClass = cls;
-		}
-
-		/**
-		 * @return the currentWindow
-		 */
-		public final Window<? extends Page> getCurrentWindow() {
-			return currentWindow;
-		}
-
-		/**
-		 * @return the newRoot
-		 */
-		public final Parent getNewRoot() {
-			return newRoot;
+			controllerClass = cls;
 		}
 
 		/**
@@ -73,7 +59,137 @@ public class WindowManager {
 			return controllerClass;
 		}
 
+		/**
+		 * @return the currentWindow
+		 */
+		public final Window<? extends Page> getCurrentWindow() {
+			return currentWindow;
+		}
+
+		/**
+		 * @return the newRoot
+		 */
+		public final Parent getNewRoot() {
+			return newRoot;
+		}
+
 	}
+
+	public static abstract class Page {
+
+		/**
+		 * Constructs a {@link Page} object.
+		 */
+		protected Page() {
+
+		}
+
+		/**
+		 * <p>
+		 * Checked when switching {@link Scene}s to verify that the current
+		 * window permits the user to go to a different window. This should be
+		 * overridden to return false when a window reaches a scenario in which
+		 * it does not want its user to leave.
+		 * <p>
+		 * Basically, return false when {@link Scene}s shouldn't be switched.
+		 *
+		 * @return Whether or not the scene can currently be switched.
+		 */
+		public boolean canSwitchScenes(final Class<? extends Page> newSceneClass) {
+			return true;
+		}
+
+		/**
+		 * <p>
+		 * Returns the relative path to the FXML file that this {@link Page}
+		 * represents.
+		 *
+		 * @return A {@link String} object which represents the relative path of
+		 *         the FXML file that this {@link Page} represents.
+		 */
+		public abstract String getWindowFile();
+
+		/**
+		 * <p>
+		 * This method is called when a {@link Page} is initialized.
+		 * <p>
+		 * Specifically, this method is called after a {@link Page} has had its
+		 * <code>@FXML</code> fields set. This method is the optimal place for
+		 * subclasses to use the
+		 * {@link WindowManager#setPaneDraggableByNode(Node)} method.
+		 * <p>
+		 * This would have been reduced to <code>protected</code> visibility,
+		 * however JavaFX needs it public to be able to call it. It should be
+		 * treated as if it were <code>protected</code>.
+		 */
+		public void initialize() {
+
+		}
+
+		/**
+		 * <p>
+		 * This method is called when {@link WindowManager#goBack()} is called
+		 * and this {@link Page} is shown. It's is like an extra initialize
+		 * method which is called only when the {@link WindowManager#goBack()}
+		 * method shows this {@link Page}.
+		 */
+		public void onRevertToThisWindow() {
+
+		}
+
+	}
+
+	public static final class Window<T extends Page> {
+		private final T controller;
+		private final Parent root;
+		private final Stage stageUsed;
+		private final Scene sceneUsed;
+
+		public Window(final T controller, final Parent root, final Stage stageUsed, final Scene sceneUsed) {
+			this.controller = controller;
+			this.root = root;
+			this.stageUsed = stageUsed;
+			this.sceneUsed = sceneUsed;
+		}
+
+		/**
+		 * @return the controller
+		 */
+		public final T getController() {
+			return controller;
+		}
+
+		/**
+		 * @return the root
+		 */
+		public final Parent getRoot() {
+			return root;
+		}
+
+		/**
+		 * @return the sceneUsed
+		 */
+		public final Scene getSceneUsed() {
+			return sceneUsed;
+		}
+
+		/**
+		 * @return the stageUsed
+		 */
+		public final Stage getStageUsed() {
+			return stageUsed;
+		}
+
+	}
+
+	private static final Stack<Window<? extends Page>> history = new Stack<>();
+
+	private static Window<? extends Page> currentWindow;
+
+	/**
+	 * The current {@link Stage}. This is set when the program starts.
+	 */
+	public static Stage stage;
 
 	/**
 	 * A getter for the {@link Stage} of the running application.
@@ -82,6 +198,35 @@ public class WindowManager {
 	 */
 	public static Stage getStage() {
 		return WindowManager.stage;
+	}
+
+	/**
+	 * <p>
+	 * Reverts the current {@link Scene} to the previous {@link Scene}.
+	 * <p>
+	 * If the user switches from the home {@link Page} to another {@link Page}
+	 * and then this method is called, the program will switch back to the home
+	 * {@link Page}.
+	 * <p>
+	 * <i>NOTE that this only works when switching prior to this method's call
+	 * is done via any of the <code>setScene(...)</code> methods.</i> Using
+	 * these methods rather than switching the {@link Page} manually is almost
+	 * necessary for full functionality.
+	 *
+	 * @throws NotSwitchableException
+	 *             If the current {@link Scene} can't be switched.
+	 */
+	public static void goBack() throws NotSwitchableException {
+
+		try {
+			setScene(WindowManager.history.pop().controller.getClass());
+		} catch (InstantiationException | IllegalAccessException | IOException e) {
+			e.printStackTrace();
+		}
+
+		// Call this method.
+		WindowManager.currentWindow.controller.onRevertToThisWindow();
+
 	}
 
 	/**
@@ -185,7 +330,7 @@ public class WindowManager {
 	public static <W extends Page> Window<W> setScene(final Class<W> cls)
 			throws InstantiationException, IllegalAccessException, IOException, NotSwitchableException {
 
-		W controller = cls.newInstance();
+		final W controller = cls.newInstance();
 
 		// Instantiate the loader
 		final FXMLLoader loader = new FXMLLoader(cls.getResource(controller.getWindowFile()));
@@ -197,42 +342,13 @@ public class WindowManager {
 			else
 				WindowManager.history.push(currentWindow);
 
-		Window<W> window = new Window<W>(controller, root, stage, stage.getScene());
+		final Window<W> window = new Window<>(controller, root, stage, stage.getScene());
 
 		WindowManager.currentWindow = window;
 		// Set the new root.
 		WindowManager.stage.getScene().setRoot(root);
 
 		return window;
-
-	}
-
-	/**
-	 * <p>
-	 * Reverts the current {@link Scene} to the previous {@link Scene}.
-	 * <p>
-	 * If the user switches from the home {@link Page} to another {@link Page}
-	 * and then this method is called, the program will switch back to the home
-	 * {@link Page}.
-	 * <p>
-	 * <i>NOTE that this only works when switching prior to this method's call
-	 * is done via any of the <code>setScene(...)</code> methods.</i> Using
-	 * these methods rather than switching the {@link Page} manually is almost
-	 * necessary for full functionality.
-	 *
-	 * @throws NotSwitchableException
-	 *             If the current {@link Scene} can't be switched.
-	 */
-	public static void goBack() throws NotSwitchableException {
-
-		try {
-			setScene(WindowManager.history.pop().controller.getClass());
-		} catch (InstantiationException | IllegalAccessException | IOException e) {
-			e.printStackTrace();
-		}
-
-		// Call this method.
-		WindowManager.currentWindow.controller.onRevertToThisWindow();
 
 	}
 
@@ -248,15 +364,15 @@ public class WindowManager {
 	 * @Internal This method is meant for internal use only.
 	 *
 	 */
-	public static Window<? extends Page> setStage_Impl(final Stage stage, Class<? extends Page> cls)
+	public static Window<? extends Page> setStage_Impl(final Stage stage, final Class<? extends Page> cls)
 			throws IOException, InstantiationException, IllegalAccessException {
 		WindowManager.stage = stage;
-		Page controller = cls.newInstance();
+		final Page controller = cls.newInstance();
 		final FXMLLoader loader = new FXMLLoader(cls.getResource(controller.getWindowFile()));
 		loader.setController(controller);
 		final Parent root = loader.load();
 
-		Window<? extends Page> window = new Window<Page>(controller, root, stage, stage.getScene());
+		final Window<? extends Page> window = new Window<>(controller, root, stage, stage.getScene());
 
 		WindowManager.currentWindow = window;
 		// Set the new root.
@@ -290,7 +406,7 @@ public class WindowManager {
 		label.setTextFill(color);
 		label.setBackground(null);
 		double fontSize = Kröw.getSystemProperties().isDPIOversized() ? 14 : 16;
-		fontSize *= (double) 1920 / Kröw.getSystemProperties().getScreenWidth();
+		fontSize *= 1920 / Kröw.getSystemProperties().getScreenWidth();
 		label.setStyle("-fx-font-weight: bold; -fx-font-size: " + fontSize + "px;");
 		/* Set Popup positions */
 		pc.setX(x);
@@ -316,120 +432,6 @@ public class WindowManager {
 	public static void spawnLabelAtMousePos(final String text, final Color color) {
 		spawnLabel(text, color, MouseInfo.getPointerInfo().getLocation().getX(),
 				MouseInfo.getPointerInfo().getLocation().getY());
-	}
-
-	private static final Stack<Window<? extends Page>> history = new Stack<>();
-	private static Window<? extends Page> currentWindow;
-	/**
-	 * The current {@link Stage}. This is set when the program starts.
-	 */
-	public static Stage stage;
-
-	public static abstract class Page {
-
-		/**
-		 * Constructs a {@link Page} object.
-		 */
-		protected Page() {
-
-		}
-
-		/**
-		 * <p>
-		 * Checked when switching {@link Scene}s to verify that the current
-		 * window permits the user to go to a different window. This should be
-		 * overridden to return false when a window reaches a scenario in which
-		 * it does not want its user to leave.
-		 * <p>
-		 * Basically, return false when {@link Scene}s shouldn't be switched.
-		 *
-		 * @return Whether or not the scene can currently be switched.
-		 */
-		public boolean canSwitchScenes(final Class<? extends Page> newSceneClass) {
-			return true;
-		}
-
-		/**
-		 * <p>
-		 * Returns the relative path to the FXML file that this {@link Page}
-		 * represents.
-		 *
-		 * @return A {@link String} object which represents the relative path of
-		 *         the FXML file that this {@link Page} represents.
-		 */
-		public abstract String getWindowFile();
-
-		/**
-		 * <p>
-		 * This method is called when a {@link Page} is initialized.
-		 * <p>
-		 * Specifically, this method is called after a {@link Page} has had its
-		 * <code>@FXML</code> fields set. This method is the optimal place for
-		 * subclasses to use the
-		 * {@link WindowManager#setPaneDraggableByNode(Node)} method.
-		 * <p>
-		 * This would have been reduced to <code>protected</code> visibility,
-		 * however JavaFX needs it public to be able to call it. It should be
-		 * treated as if it were <code>protected</code>.
-		 */
-		public void initialize() {
-
-		}
-
-		/**
-		 * <p>
-		 * This method is called when {@link WindowManager#goBack()} is called
-		 * and this {@link Page} is shown. It's is like an extra initialize
-		 * method which is called only when the {@link WindowManager#goBack()}
-		 * method shows this {@link Page}.
-		 */
-		public void onRevertToThisWindow() {
-
-		}
-
-	}
-
-	public static final class Window<T extends Page> {
-		private T controller;
-		private Parent root;
-		private Stage stageUsed;
-		private Scene sceneUsed;
-
-		public Window(T controller, Parent root, Stage stageUsed, Scene sceneUsed) {
-			this.controller = controller;
-			this.root = root;
-			this.stageUsed = stageUsed;
-			this.sceneUsed = sceneUsed;
-		}
-
-		/**
-		 * @return the controller
-		 */
-		public final T getController() {
-			return controller;
-		}
-
-		/**
-		 * @return the root
-		 */
-		public final Parent getRoot() {
-			return root;
-		}
-
-		/**
-		 * @return the stageUsed
-		 */
-		public final Stage getStageUsed() {
-			return stageUsed;
-		}
-
-		/**
-		 * @return the sceneUsed
-		 */
-		public final Scene getSceneUsed() {
-			return sceneUsed;
-		}
-
 	}
 
 }

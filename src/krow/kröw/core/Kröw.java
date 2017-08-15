@@ -80,10 +80,6 @@ public final class Kröw extends Application {
 
 	private static ArrayList<Class<?>> reflectionClasses = new ArrayList<>();
 
-	public static void addReflectionClass(Class<?> cls) {
-		reflectionClasses.add(cls);
-	}
-
 	public static final EventHandler<KeyEvent> CLOSE_ON_ESCAPE_HANADLER = event -> {
 		if (event.getCode() == KeyCode.ESCAPE)
 			Platform.exit();
@@ -124,8 +120,8 @@ public final class Kröw extends Application {
 	 * The Home directory of the {@link Kröw} application.
 	 */
 	public static final File KRÖW_HOME_DIRECTORY = new File(USER_APPDATA_DIRECTORY, "Krow");
-	public static final File KRÖW_INSTALL_FILE;
 
+	public static final File KRÖW_INSTALL_FILE;
 	static {
 		URL iconURL = null;
 		try {
@@ -181,11 +177,6 @@ public final class Kröw extends Application {
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
-	}
-
-	public static final Image getImageFromFile(File dir, int width, int height) throws FileNotFoundException {
-		return SwingFXUtils
-				.toFXImage(Kröw.toBufferedImage(ShellFolder.getShellFolder(dir).getIcon(true), width, height), null);
 	}
 
 	/**
@@ -244,6 +235,7 @@ public final class Kröw extends Application {
 
 	public static final File USER_STARTUP_FOLDER = new File(USER_APPDATA_DIRECTORY,
 			"Microsoft/Windows/Start Menu/Programs/Startup");
+
 	public static final File COMMON_STARTUP_FOLDER = new File(
 			"C:/ProgramData/Microsoft/Windows/Start Menu/Programs/Startup");
 
@@ -256,7 +248,6 @@ public final class Kröw extends Application {
 			CREDITS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Credits.txt"),
 			PLANS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Plans.txt"),
 			DATA_INCLUDES_FILE = new File(KRÖW_HOME_DIRECTORY, "includes.kcfg");
-
 	/**
 	 * <p>
 	 * {@link #IMAGE_LIGHT_CROW} - The light colored crow image that is used for
@@ -276,21 +267,11 @@ public final class Kröw extends Application {
 	public static final String NAME = new String("Kröw");
 
 	private static GlobalSettingsManager globalSettingsManager;
+
 	private static SoundManager soundManager = new SoundManager();
+
 	private static SystemProperties systemProperties = new SystemProperties();
 	private static SystemTrayManager systemTrayManager = new SystemTrayManager();
-
-	/**
-	 * @return the systemTrayManager
-	 */
-	public static final SystemTrayManager getSystemTrayManager() {
-		return systemTrayManager;
-	}
-
-	public static SystemProperties getSystemProperties() {
-		return systemProperties;
-	}
-
 	static {
 
 		// Create the following folders if they don't already exist and catch
@@ -329,7 +310,6 @@ public final class Kröw extends Application {
 		}
 
 	}
-
 	static {
 
 		Image dark = null, light = null, kröw = null;
@@ -354,6 +334,14 @@ public final class Kröw extends Application {
 		IMAGE_DARK_CROW = dark;
 		IMAGE_LIGHT_CROW = light;
 		IMAGE_KRÖW = kröw;
+	}
+
+	private static void addDefaultLoadupClasses() {
+		addReflectionClass(SystemTrayManager.class);
+	}
+
+	public static void addReflectionClass(final Class<?> cls) {
+		reflectionClasses.add(cls);
 	}
 
 	/**
@@ -519,6 +507,31 @@ public final class Kröw extends Application {
 		directory.delete();
 	}
 
+	public final static void exit() {
+		for (final Class<?> c : reflectionClasses)
+			for (final Method m : c.getDeclaredMethods())
+				if (m.isAnnotationPresent(AutoLoad.class)
+						&& m.getAnnotation(AutoLoad.class).value().equals(LoadTime.PROGRAM_EXIT)) {
+					m.setAccessible(true);
+					Object invObj = new Object();
+					if (!Modifier.isStatic(m.getModifiers()))
+						try {
+							final Constructor<?> constructor = c.getDeclaredConstructor();
+							constructor.setAccessible(true);
+							invObj = constructor.newInstance();
+						} catch (NoSuchMethodException | IllegalArgumentException | InstantiationException
+								| InvocationTargetException | ExceptionInInitializerError | IllegalAccessException e) {
+							e.printStackTrace();
+						}
+					try {
+						m.invoke(invObj);
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+						e.printStackTrace();
+					}
+				}
+		Platform.exit();
+	}
+
 	public static List<File> getAllFilesFromDirectory(final File directory) {
 		final List<File> files = new ArrayList<>();
 		if (directory.isDirectory())
@@ -569,6 +582,12 @@ public final class Kröw extends Application {
 		return globalSettingsManager;
 	}
 
+	public static final Image getImageFromFile(final File dir, final int width, final int height)
+			throws FileNotFoundException {
+		return SwingFXUtils
+				.toFXImage(Kröw.toBufferedImage(ShellFolder.getShellFolder(dir).getIcon(true), width, height), null);
+	}
+
 	/**
 	 * @return An {@link ArrayList} of all the living {@link Construct}s managed
 	 *         by this program.
@@ -598,6 +617,37 @@ public final class Kröw extends Application {
 	 */
 	public static final SoundManager getSoundManager() {
 		return soundManager;
+	}
+
+	public static SystemProperties getSystemProperties() {
+		return systemProperties;
+	}
+
+	/**
+	 * @return the systemTrayManager
+	 */
+	public static final SystemTrayManager getSystemTrayManager() {
+		return systemTrayManager;
+	}
+
+	public static Image iconToImage(final Icon icon) {
+		return iconToImage(icon, icon.getIconWidth(), icon.getIconHeight());
+	}
+
+	public static Image iconToImage(final Icon icon, final int width, final int height) {
+		if (icon instanceof ImageIcon)
+			return SwingFXUtils.toFXImage(toBufferedImage(((ImageIcon) icon).getImage(), width, height), null);
+		else {
+			final BufferedImage image = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+					.getDefaultConfiguration().createCompatibleImage(width, height);
+			final Graphics2D g = image.createGraphics();
+			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+			icon.paintIcon(null, g, 0, 0);
+			g.dispose();
+
+			return SwingFXUtils.toFXImage(image, null);
+		}
 	}
 
 	/**
@@ -1006,6 +1056,22 @@ public final class Kröw extends Application {
 		Application.launch(args);
 	}
 
+	public static BufferedImage toBufferedImage(final java.awt.Image image) {
+		return toBufferedImage(image, image.getWidth(null), image.getHeight(null));
+	}
+
+	public static BufferedImage toBufferedImage(final java.awt.Image image, final int width, final int height) {
+		final BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		final Graphics2D outputGraphics = output.createGraphics();
+		outputGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+		outputGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+		outputGraphics.drawImage(image, 0, 0, width, height, null);
+		outputGraphics.dispose();
+
+		return output;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -1018,15 +1084,15 @@ public final class Kröw extends Application {
 
 		addDefaultLoadupClasses();
 		// Run things in reflectionClasses
-		for (Class<?> c : reflectionClasses) {
-			for (Method m : c.getDeclaredMethods()) {
+		for (final Class<?> c : reflectionClasses)
+			for (final Method m : c.getDeclaredMethods())
 				if (m.isAnnotationPresent(AutoLoad.class)
 						&& m.getAnnotation(AutoLoad.class).value().equals(LoadTime.PROGRAM_ENTER)) {
 					m.setAccessible(true);
 					Object invObj = new Object();
 					if (!Modifier.isStatic(m.getModifiers()))
 						try {
-							Constructor<?> constructor = c.getDeclaredConstructor();
+							final Constructor<?> constructor = c.getDeclaredConstructor();
 							constructor.setAccessible(true);
 							invObj = constructor.newInstance();
 						} catch (NoSuchMethodException | IllegalArgumentException | InstantiationException
@@ -1035,8 +1101,6 @@ public final class Kröw extends Application {
 						}
 					m.invoke(invObj);
 				}
-			}
-		}
 		WindowManager.setStage_Impl(primaryStage, Home.class);
 
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
@@ -1053,46 +1117,6 @@ public final class Kröw extends Application {
 
 	}
 
-	private static void addDefaultLoadupClasses() {
-		addReflectionClass(SystemTrayManager.class);
-	}
-
-	public static Image iconToImage(Icon icon) {
-		return iconToImage(icon, icon.getIconWidth(), icon.getIconHeight());
-	}
-
-	public static Image iconToImage(Icon icon, int width, int height) {
-		if (icon instanceof ImageIcon) {
-			return SwingFXUtils.toFXImage(toBufferedImage(((ImageIcon) icon).getImage(), width, height), null);
-		} else {
-			BufferedImage image = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
-					.getDefaultConfiguration().createCompatibleImage(width, height);
-			Graphics2D g = image.createGraphics();
-			g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-			icon.paintIcon(null, g, 0, 0);
-			g.dispose();
-
-			return SwingFXUtils.toFXImage(image, null);
-		}
-	}
-
-	public static BufferedImage toBufferedImage(java.awt.Image image, int width, int height) {
-		BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D outputGraphics = output.createGraphics();
-		outputGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-				RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-		outputGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-		outputGraphics.drawImage(image, 0, 0, width, height, null);
-		outputGraphics.dispose();
-
-		return output;
-	}
-
-	public static BufferedImage toBufferedImage(java.awt.Image image) {
-		return toBufferedImage(image, image.getWidth(null), image.getHeight(null));
-	}
-
 	/*
 	 * (non-Javadoc)
 	 *
@@ -1104,33 +1128,6 @@ public final class Kröw extends Application {
 		globalSettingsManager.save(GlobalSettingsManager.DEFAULT_FILE_PATH);
 
 		super.stop();
-	}
-
-	public final static void exit() {
-		for (Class<?> c : reflectionClasses) {
-			for (Method m : c.getDeclaredMethods()) {
-				if (m.isAnnotationPresent(AutoLoad.class)
-						&& m.getAnnotation(AutoLoad.class).value().equals(LoadTime.PROGRAM_EXIT)) {
-					m.setAccessible(true);
-					Object invObj = new Object();
-					if (!Modifier.isStatic(m.getModifiers()))
-						try {
-							Constructor<?> constructor = c.getDeclaredConstructor();
-							constructor.setAccessible(true);
-							invObj = constructor.newInstance();
-						} catch (NoSuchMethodException | IllegalArgumentException | InstantiationException
-								| InvocationTargetException | ExceptionInInitializerError | IllegalAccessException e) {
-							e.printStackTrace();
-						}
-					try {
-						m.invoke(invObj);
-					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		Platform.exit();
 	}
 
 }

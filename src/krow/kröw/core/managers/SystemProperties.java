@@ -21,12 +21,11 @@ public class SystemProperties {
 		osName = System.getProperty("os.name");
 	}
 
-	public boolean isWindows() {
-		return osName.toLowerCase().startsWith("win");
-	}
-
-	public boolean isApple() {
-		return osName.toLowerCase().startsWith("mac");
+	/**
+	 * @return the screenDotsPerInch
+	 */
+	public final double getScreenDotsPerInch() {
+		return screenDotsPerInch;
 	}
 
 	/**
@@ -43,11 +42,8 @@ public class SystemProperties {
 		return screenWidth;
 	}
 
-	/**
-	 * @return the screenDotsPerInch
-	 */
-	public final double getScreenDotsPerInch() {
-		return screenDotsPerInch;
+	public boolean isApple() {
+		return osName.toLowerCase().startsWith("mac");
 	}
 
 	/**
@@ -55,6 +51,10 @@ public class SystemProperties {
 	 */
 	public final boolean isDPIOversized() {
 		return isDPIOversized;
+	}
+
+	public boolean isWindows() {
+		return osName.toLowerCase().startsWith("win");
 	}
 
 }
