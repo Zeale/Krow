@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 
+import javafx.application.Platform;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 
@@ -27,7 +28,7 @@ public final class SystemTrayManager {
 	private void loadSystemTrayIcon() {
 		if (isSystemTrayAvailable()) {
 			popup = new PopupMenu("Kröw");
-			MenuItem open = new MenuItem("Open"), close = new MenuItem("close");
+			MenuItem open = new MenuItem("Open"), exit = new MenuItem("Exit");
 			open.addActionListener(new ActionListener() {
 
 				@Override
@@ -36,14 +37,15 @@ public final class SystemTrayManager {
 				}
 			});
 
-			close.addActionListener(new ActionListener() {
+			exit.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					WindowManager.getStage().close();
+					Platform.exit();
 				}
 			});
 			popup.add(open);
+			popup.add(exit);
 			icon = new TrayIcon(new ImageIcon(SystemTray.class.getResource("/krow/resources/Kröw_hd.png")).getImage(),
 					"Kröw", popup);
 			icon.setImageAutoSize(true);
