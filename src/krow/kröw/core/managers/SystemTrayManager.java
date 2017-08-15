@@ -5,6 +5,7 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
+import java.awt.TrayIcon.MessageType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -58,6 +59,10 @@ public final class SystemTrayManager {
 	@AutoLoad(LoadTime.PROGRAM_EXIT)
 	private void closeSystemTrayIcon() {
 		SystemTray.getSystemTray().remove(icon);
+	}
+
+	public void displayMessage(String caption, String message, MessageType messageType) {
+		icon.displayMessage(caption, message, messageType);
 	}
 
 }

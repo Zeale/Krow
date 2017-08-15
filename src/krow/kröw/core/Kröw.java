@@ -3,6 +3,7 @@ package kröw.core;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
+import java.awt.TrayIcon.MessageType;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.EOFException;
@@ -1049,6 +1050,7 @@ public final class Kröw extends Application {
 		}
 
 		primaryStage.show();
+		getSystemTrayManager().displayMessage("Krow", "Krow has notified you of something.", MessageType.INFO);
 
 	}
 
