@@ -3,7 +3,6 @@ package kröw.core;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
-import java.awt.TrayIcon.MessageType;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.EOFException;
@@ -1015,19 +1014,6 @@ public final class Kröw extends Application {
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
 		addDefaultLoadupClasses();
-
-		WindowManager.setStage_Impl(primaryStage, Home.class);
-
-		primaryStage.initStyle(StageStyle.TRANSPARENT);
-		primaryStage.setTitle(Kröw.NAME);
-		if (Kröw.IMAGE_KRÖW != null)
-			primaryStage.getIcons().add(Kröw.IMAGE_KRÖW);
-		WindowManager.getStage().getScene().setFill(Color.TRANSPARENT);
-		primaryStage.setFullScreen(true);
-		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
-
-		primaryStage.getScene().setOnKeyPressed(CLOSE_ON_ESCAPE_HANADLER);
-
 		// Run things in reflectionClasses
 		for (Class<?> c : reflectionClasses) {
 			for (Method m : c.getDeclaredMethods()) {
@@ -1048,9 +1034,19 @@ public final class Kröw extends Application {
 				}
 			}
 		}
+		WindowManager.setStage_Impl(primaryStage, Home.class);
+
+		primaryStage.initStyle(StageStyle.TRANSPARENT);
+		primaryStage.setTitle(Kröw.NAME);
+		if (Kröw.IMAGE_KRÖW != null)
+			primaryStage.getIcons().add(Kröw.IMAGE_KRÖW);
+		WindowManager.getStage().getScene().setFill(Color.TRANSPARENT);
+		primaryStage.setFullScreen(true);
+		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+
+		primaryStage.getScene().setOnKeyPressed(CLOSE_ON_ESCAPE_HANADLER);
 
 		primaryStage.show();
-		getSystemTrayManager().displayMessage("Krow", "Krow has notified you of something.", MessageType.INFO);
 
 	}
 

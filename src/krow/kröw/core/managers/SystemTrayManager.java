@@ -50,11 +50,7 @@ public final class SystemTrayManager {
 					"Kröw", popup);
 			icon.setImageAutoSize(true);
 
-			try {
-				SystemTray.getSystemTray().add(icon);
-			} catch (AWTException e1) {
-				e1.printStackTrace();
-			}
+			showIcon();
 		}
 	}
 
@@ -67,4 +63,31 @@ public final class SystemTrayManager {
 		icon.displayMessage(caption, message, messageType);
 	}
 
+	public boolean hideIcon() {
+		if (isIconShowing()) {
+			SystemTray.getSystemTray().remove(icon);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean showIcon() {
+		assert !isIconShowing();
+		if (isIconShowing())
+			return false;
+		try {
+			SystemTray.getSystemTray().add(icon);
+		} catch (AWTException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public boolean isIconShowing() {
+		for (TrayIcon ti : SystemTray.getSystemTray().getTrayIcons())
+			if (ti == icon)
+				return true;
+		return false;
+	}
 }
