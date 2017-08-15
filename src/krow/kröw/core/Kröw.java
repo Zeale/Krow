@@ -48,6 +48,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import kröw.annotations.AutoLoad;
+import kröw.annotations.LoadTime;
 import kröw.core.managers.GlobalSettingsManager;
 import kröw.core.managers.SoundManager;
 import kröw.core.managers.SystemProperties;
@@ -76,10 +78,10 @@ import zeale.guis.Home;
  */
 public final class Kröw extends Application {
 
-	private static ArrayList<Class<?>> loadUpClasses = new ArrayList<>();
+	private static ArrayList<Class<?>> reflectionClasses = new ArrayList<>();
 
-	public static void addLoadUpClass(Class<?> cls) {
-		loadUpClasses.add(cls);
+	public static void addReflectionClass(Class<?> cls) {
+		reflectionClasses.add(cls);
 	}
 
 	public static final EventHandler<KeyEvent> CLOSE_ON_ESCAPE_HANADLER = event -> {
@@ -1025,10 +1027,11 @@ public final class Kröw extends Application {
 
 		primaryStage.getScene().setOnKeyPressed(CLOSE_ON_ESCAPE_HANADLER);
 
-		// Run things in loadUpClasses
-		for (Class<?> c : loadUpClasses) {
+		// Run things in reflectionClasses
+		for (Class<?> c : reflectionClasses) {
 			for (Method m : c.getDeclaredMethods()) {
-				if (m.isAnnotationPresent(BootMethod.class)) {
+				if (m.isAnnotationPresent(AutoLoad.class)
+						&& m.getAnnotation(AutoLoad.class).value().equals(LoadTime.PROGRAM_ENTER)) {
 					m.setAccessible(true);
 					Object invObj = new Object();
 					if (!Modifier.isStatic(m.getModifiers()))
@@ -1050,7 +1053,7 @@ public final class Kröw extends Application {
 	}
 
 	private static void addDefaultLoadupClasses() {
-		addLoadUpClass(SystemTrayManager.class);
+		addReflectionClass(SystemTrayManager.class);
 	}
 
 	public static Image iconToImage(Icon icon) {
@@ -1098,6 +1101,25 @@ public final class Kröw extends Application {
 	public void stop() throws Exception {
 		Kröw.saveObjects();
 		globalSettingsManager.save(GlobalSettingsManager.DEFAULT_FILE_PATH);
+		for (Class<?> c : reflectionClasses) {
+			for (Method m : c.getDeclaredMethods()) {
+				if (m.isAnnotationPresent(AutoLoad.class)
+						&& m.getAnnotation(AutoLoad.class).value().equals(LoadTime.PROGRAM_EXIT)) {
+					m.setAccessible(true);
+					Object invObj = new Object();
+					if (!Modifier.isStatic(m.getModifiers()))
+						try {
+							Constructor<?> constructor = c.getDeclaredConstructor();
+							constructor.setAccessible(true);
+							invObj = constructor.newInstance();
+						} catch (NoSuchMethodException | IllegalArgumentException | InstantiationException
+								| InvocationTargetException | ExceptionInInitializerError e) {
+							e.printStackTrace();
+						}
+					m.invoke(invObj);
+				}
+			}
+		}
 		super.stop();
 	}
 

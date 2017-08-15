@@ -10,25 +10,22 @@ import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 
-import kröw.core.BootMethod;
+import kröw.annotations.AutoLoad;
+import kröw.annotations.LoadTime;
 
 public final class SystemTrayManager {
 
-	private static SystemTray systemTray;
+	private static TrayIcon icon;
+	private static PopupMenu popup;
 
 	public boolean isSystemTrayAvailable() {
 		return SystemTray.isSupported();
 	}
 
-	public SystemTray getSystemTray() {
-		return systemTray;
-	}
-
-	@BootMethod
-	private static void loadSystemTray() {
-		if (SystemTray.isSupported()) {
-			systemTray = SystemTray.getSystemTray();
-			PopupMenu popupMenu = new PopupMenu("Kröw");
+	@AutoLoad(LoadTime.PROGRAM_ENTER)
+	private void loadSystemTrayIcon() {
+		if (isSystemTrayAvailable()) {
+			popup = new PopupMenu("Kröw");
 			MenuItem open = new MenuItem("Open"), close = new MenuItem("close");
 			open.addActionListener(new ActionListener() {
 
@@ -45,18 +42,22 @@ public final class SystemTrayManager {
 					WindowManager.getStage().close();
 				}
 			});
-			popupMenu.add(open);
-			TrayIcon icon = new TrayIcon(
-					new ImageIcon(SystemTray.class.getResource("/krow/resources/Kröw_hd.png")).getImage(), "Kröw",
-					popupMenu);
+			popup.add(open);
+			icon = new TrayIcon(new ImageIcon(SystemTray.class.getResource("/krow/resources/Kröw_hd.png")).getImage(),
+					"Kröw", popup);
 			icon.setImageAutoSize(true);
 
 			try {
-				systemTray.add(icon);
+				SystemTray.getSystemTray().add(icon);
 			} catch (AWTException e1) {
 				e1.printStackTrace();
 			}
 		}
+	}
+
+	@AutoLoad(LoadTime.PROGRAM_EXIT)
+	private void closeSystemTrayIcon() {
+		SystemTray.getSystemTray().remove(icon);
 	}
 
 }
