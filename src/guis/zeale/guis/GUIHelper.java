@@ -44,10 +44,12 @@ final class GUIHelper {
 			MENU_CHILD_TRANSITION_INTERPOLATOR = MENU_BUTTON_TRANSITION_INTERPOLATOR;
 	private static final Duration MENU_BUTTON_ANIMATION_DURATION = Duration.seconds(0.8);
 	private static final double MENU_BUTTON_RECTANGLE_WIDTH = 25, MENU_BUTTON_RECTANGLE_HEIGHT = 5,
-			MENU_BUTTON_RECTANGLE_X = Kröw.getSystemProperties().getScreenWidth() - (double) 50 / 1920 * Kröw.getSystemProperties().getScreenWidth(),
+			MENU_BUTTON_RECTANGLE_X = Kröw.getSystemProperties().getScreenWidth()
+					- (double) 50 / 1920 * Kröw.getSystemProperties().getScreenWidth(),
 			MENU_BUTTON_Y = (double) 33 / 1080 * Kröw.getSystemProperties().getScreenHeight(),
 			MENU_BUTTON_RECTANGLE_SPACING = (double) 13 / 1080 * Kröw.getSystemProperties().getScreenHeight();
-	private static final int SIDE_MENU_PADDING_TOP = (int) ((double) 80 / 1080 * Kröw.getSystemProperties().getScreenHeight());
+	private static final int SIDE_MENU_PADDING_TOP = (int) ((double) 80 / 1080
+			* Kröw.getSystemProperties().getScreenHeight());
 	private static final byte MENU_BAR_ANIMATION_ROTATION_COUNT = 1;
 	private static final Color MENU_BUTTON_START_COLOR = MENU_BAR_SHADOW_COLOR, MENU_BUTTON_END_COLOR = Color.WHITE;
 	private static final Duration MENU_CHILD_NODE_HOVER_ANIMATION_DURATION = Duration.seconds(0.6);
@@ -55,7 +57,7 @@ final class GUIHelper {
 			MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR = Color.WHITE;
 	private static final int MENU_CHILD_NODE_FONT_SIZE;
 	static {
-		double size = Kröw.getSystemProperties().isDPIOversized() ? 16 :18;
+		double size = Kröw.getSystemProperties().isDPIOversized() ? 16 : 18;
 		size *= (double) 1920 / Kröw.getSystemProperties().getScreenWidth();
 		MENU_CHILD_NODE_FONT_SIZE = (int) Math.round(size);
 		System.out.println(MENU_CHILD_NODE_FONT_SIZE);
@@ -64,9 +66,8 @@ final class GUIHelper {
 	public static void addDefaultSettings(final VBox vbox) {
 		final List<Node> children = vbox.getChildren();
 
-		final Text close = new Text("Close");
-		final Text goHome = new Text("Go Home");
-		Text goBack = new Text("Go Back");
+		final Node close = new MenuOption(Color.RED, "Close"), goHome = new Text("Go Home"),
+				goBack = new Text("Go Back");
 
 		close.setOnMouseClicked(Kröw.CLOSE_PROGRAM_EVENT_HANDLER);
 
@@ -103,7 +104,7 @@ final class GUIHelper {
 		children.add(goBack);
 	}
 
-	public static VBox buildCloseButton(final Pane pane) {
+	public static VBox buildMenu(final Pane pane) {
 
 		final Shape menubarTop = new Rectangle(MENU_BUTTON_RECTANGLE_WIDTH, MENU_BUTTON_RECTANGLE_HEIGHT),
 				menubarBottom = new Rectangle(MENU_BUTTON_RECTANGLE_WIDTH, MENU_BUTTON_RECTANGLE_HEIGHT);
@@ -134,7 +135,8 @@ final class GUIHelper {
 				bottomTrans = new TranslateTransition(MENU_BUTTON_ANIMATION_DURATION, menubarBottom);
 
 		final VBox menu = new VBox(MENU_ITEM_SPACING);
-		menu.setPrefSize(Kröw.getSystemProperties().getScreenWidth() / MENU_WIDTH_FRACTION, Kröw.getSystemProperties().getScreenHeight());
+		menu.setPrefSize(Kröw.getSystemProperties().getScreenWidth() / MENU_WIDTH_FRACTION,
+				Kröw.getSystemProperties().getScreenHeight());
 		menu.setLayoutX(Kröw.getSystemProperties().getScreenWidth());
 		menu.setLayoutY(0);
 		menu.setBackground(new Background(new BackgroundFill(MENU_BACKGROUND_COLOR, null, null)));
@@ -153,7 +155,11 @@ final class GUIHelper {
 
 							t.setTextAlignment(TextAlignment.CENTER);
 
-							t.setFill(MENU_CHILD_NODE_START_COLOR);
+							Color startColor = t instanceof MenuOption ? ((MenuOption) t).getStartColor()
+									: MENU_CHILD_NODE_START_COLOR,
+									endColor = t instanceof MenuOption ? ((MenuOption) t).getFadeColor()
+											: MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR;
+							t.setFill(startColor);
 							t.setFont(
 									Font.font(Font.getDefault().getName(), FontWeight.BOLD, MENU_CHILD_NODE_FONT_SIZE));
 
@@ -162,13 +168,13 @@ final class GUIHelper {
 							t.setOnMouseEntered(event -> {
 								ft.stop();
 								ft.setFromValue((Color) t.getFill());
-								ft.setToValue(MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR);
+								ft.setToValue(endColor);
 								ft.play();
 							});
 							t.setOnMouseExited(event -> {
 								ft.stop();
 								ft.setFromValue((Color) t.getFill());
-								ft.setToValue(MENU_CHILD_NODE_START_COLOR);
+								ft.setToValue(startColor);
 								ft.play();
 							});
 						} catch (final ClassCastException e) {
@@ -330,6 +336,55 @@ final class GUIHelper {
 		// menu.getChildren().add(new Text("ABCDEFGHIJKLMNOP"));
 
 		return menu;
+
+	}
+
+	public static final class MenuOption extends Text {
+		private Color fadeColor, startColor;
+
+		/**
+		 * @return the fadeColor
+		 */
+		public final Color getFadeColor() {
+			return fadeColor;
+		}
+
+		/**
+		 * @return the startColor
+		 */
+		public final Color getStartColor() {
+			return startColor;
+		}
+
+		/**
+		 * @param fadeColor
+		 *            the fadeColor to set
+		 */
+		public final void setFadeColor(Color fadeColor) {
+			this.fadeColor = fadeColor;
+		}
+
+		/**
+		 * @param startColor
+		 *            the startColor to set
+		 */
+		public final void setStartColor(Color startColor) {
+			this.startColor = startColor;
+		}
+
+		public MenuOption(Color fadeColor, Color startColor, String text) {
+			super(text);
+			this.fadeColor = fadeColor;
+			this.startColor = startColor;
+		}
+
+		public MenuOption(Color fadeColor, String text) {
+			this(fadeColor, MENU_CHILD_NODE_START_COLOR, text);
+		}
+
+		public MenuOption(String text) {
+			this(MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR, text);
+		}
 
 	}
 

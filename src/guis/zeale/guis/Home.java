@@ -175,7 +175,7 @@ public class Home extends Page {
 
 		loadDefaultImages();
 
-		GUIHelper.addDefaultSettings(GUIHelper.buildCloseButton(pane));
+		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 	}
 
 	private final void loadDefaultImages() {

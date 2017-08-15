@@ -194,7 +194,7 @@ public class Settings extends Page {
 		});
 		addDefaultItems();
 
-		GUIHelper.addDefaultSettings(GUIHelper.buildCloseButton(pane));
+		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 	}
 
 }

@@ -79,7 +79,7 @@ public class Tools extends Page {
 
 	@Override
 	public void initialize() {
-		GUIHelper.addDefaultSettings(GUIHelper.buildCloseButton(pane));
+		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 		if (Kröw.getSystemProperties().isDPIOversized()) {
 			Label label = new Label("Your screen's DPI is too large. Program icons may appear to be cut off.");
 			label.setTextFill(Color.FIREBRICK);
