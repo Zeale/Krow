@@ -17,6 +17,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -70,6 +74,12 @@ import zeale.guis.Home;
  *
  */
 public final class Kröw extends Application {
+
+	private static ArrayList<Class<?>> loadUpClasses = new ArrayList<>();
+
+	public static void addLoadUpClass(Class<?> cls) {
+		loadUpClasses.add(cls);
+	}
 
 	public static final EventHandler<KeyEvent> CLOSE_ON_ESCAPE_HANADLER = event -> {
 		if (event.getCode() == KeyCode.ESCAPE)
@@ -1004,8 +1014,33 @@ public final class Kröw extends Application {
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 
 		primaryStage.getScene().setOnKeyPressed(CLOSE_ON_ESCAPE_HANADLER);
+
+		addLoadUpClass(getClass());
+
+		for (Class<?> c : loadUpClasses)
+			for (Method m : c.getMethods())
+				if (m.isAnnotationPresent(BootMethod.class)) {
+					m.setAccessible(true);
+					Object invObj = new Object();
+					if (!Modifier.isStatic(m.getModifiers()))
+						try {
+							Constructor<?> constructor = c.getDeclaredConstructor();
+							constructor.setAccessible(true);
+							invObj = constructor.newInstance();
+						} catch (NoSuchMethodException | IllegalArgumentException | InstantiationException
+								| InvocationTargetException | ExceptionInInitializerError e) {
+							e.printStackTrace();
+						}
+					m.invoke(invObj);
+				}
+
 		primaryStage.show();
 
+	}
+
+	@BootMethod
+	public static final void test() {
+		System.out.println("potato");
 	}
 
 	public static Image iconToImage(Icon icon) {
