@@ -67,7 +67,7 @@ final class GUIHelper {
 		final List<Node> children = vbox.getChildren();
 
 		final Node close = new MenuOption(Color.RED, "Close"), goHome = new Text("Go Home"),
-				goBack = new Text("Go Back");
+				goBack = new Text("Go Back"), hideProgram = new Text("Hide");
 		Text systemTray = new Text("Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
 
 		close.setOnMouseClicked(Kröw.CLOSE_PROGRAM_EVENT_HANDLER);
@@ -115,11 +115,20 @@ final class GUIHelper {
 					WindowManager.spawnLabelAtMousePos("Something went wrong...", Color.FIREBRICK);
 			}
 		});
+		hideProgram.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				WindowManager.getStage().hide();
+				Kröw.getSystemTrayManager().showIcon();
+			}
+		});
 
 		children.add(close);
 		children.add(goHome);
 		children.add(goBack);
 		children.add(systemTray);
+		children.add(hideProgram);
 	}
 
 	public static VBox buildMenu(final Pane pane) {

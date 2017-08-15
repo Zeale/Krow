@@ -1013,6 +1013,9 @@ public final class Kröw extends Application {
 	 */
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
+
+		Platform.setImplicitExit(false);
+
 		addDefaultLoadupClasses();
 		// Run things in reflectionClasses
 		for (Class<?> c : reflectionClasses) {
@@ -1099,6 +1102,11 @@ public final class Kröw extends Application {
 	public void stop() throws Exception {
 		Kröw.saveObjects();
 		globalSettingsManager.save(GlobalSettingsManager.DEFAULT_FILE_PATH);
+
+		super.stop();
+	}
+
+	public final static void exit() {
 		for (Class<?> c : reflectionClasses) {
 			for (Method m : c.getDeclaredMethods()) {
 				if (m.isAnnotationPresent(AutoLoad.class)
@@ -1111,14 +1119,18 @@ public final class Kröw extends Application {
 							constructor.setAccessible(true);
 							invObj = constructor.newInstance();
 						} catch (NoSuchMethodException | IllegalArgumentException | InstantiationException
-								| InvocationTargetException | ExceptionInInitializerError e) {
+								| InvocationTargetException | ExceptionInInitializerError | IllegalAccessException e) {
 							e.printStackTrace();
 						}
-					m.invoke(invObj);
+					try {
+						m.invoke(invObj);
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
-		super.stop();
+		Platform.exit();
 	}
 
 }
