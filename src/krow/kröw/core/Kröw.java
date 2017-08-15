@@ -51,6 +51,7 @@ import javafx.stage.StageStyle;
 import kröw.core.managers.GlobalSettingsManager;
 import kröw.core.managers.SoundManager;
 import kröw.core.managers.SystemProperties;
+import kröw.core.managers.SystemTrayManager;
 import kröw.core.managers.WindowManager;
 import kröw.libs.Timer;
 import kröw.libs.mindset.Construct;
@@ -275,6 +276,14 @@ public final class Kröw extends Application {
 	private static GlobalSettingsManager globalSettingsManager;
 	private static SoundManager soundManager = new SoundManager();
 	private static SystemProperties systemProperties = new SystemProperties();
+	private static SystemTrayManager systemTrayManager = new SystemTrayManager();
+
+	/**
+	 * @return the systemTrayManager
+	 */
+	public static final SystemTrayManager getSystemTrayManager() {
+		return systemTrayManager;
+	}
 
 	public static SystemProperties getSystemProperties() {
 		return systemProperties;
@@ -1002,6 +1011,7 @@ public final class Kröw extends Application {
 	 */
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
+		addDefaultLoadupClasses();
 
 		WindowManager.setStage_Impl(primaryStage, Home.class);
 
@@ -1015,10 +1025,9 @@ public final class Kröw extends Application {
 
 		primaryStage.getScene().setOnKeyPressed(CLOSE_ON_ESCAPE_HANADLER);
 
-		addLoadUpClass(getClass());
-
-		for (Class<?> c : loadUpClasses)
-			for (Method m : c.getMethods())
+		// Run things in loadUpClasses
+		for (Class<?> c : loadUpClasses) {
+			for (Method m : c.getDeclaredMethods()) {
 				if (m.isAnnotationPresent(BootMethod.class)) {
 					m.setAccessible(true);
 					Object invObj = new Object();
@@ -1033,14 +1042,15 @@ public final class Kröw extends Application {
 						}
 					m.invoke(invObj);
 				}
+			}
+		}
 
 		primaryStage.show();
 
 	}
 
-	@BootMethod
-	public static final void test() {
-		System.out.println("potato");
+	private static void addDefaultLoadupClasses() {
+		addLoadUpClass(SystemTrayManager.class);
 	}
 
 	public static Image iconToImage(Icon icon) {
