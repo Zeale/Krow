@@ -22,7 +22,7 @@ public class SystemProperties {
 	}
 
 	public boolean isWindows() {
-		return osName.toLowerCase().startsWith("Win");
+		return osName.toLowerCase().startsWith("win");
 	}
 
 	public boolean isApple() {

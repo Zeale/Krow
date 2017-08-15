@@ -54,6 +54,7 @@ import kröw.libs.mindset.ConstructMindset;
 import kröw.libs.mindset.Law;
 import kröw.libs.mindset.MindsetObject;
 import kröw.libs.mindset.ObjectAlreadyExistsException;
+import sun.awt.shell.ShellFolder;
 import zeale.guis.Home;
 
 /**
@@ -167,6 +168,11 @@ public final class Kröw extends Application {
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
+	}
+
+	public static final Image getImageFromFile(File dir, int width, int height) throws FileNotFoundException {
+		return SwingFXUtils
+				.toFXImage(Kröw.toBufferedImage(ShellFolder.getShellFolder(dir).getIcon(true), width, height), null);
 	}
 
 	/**

@@ -1,10 +1,15 @@
 package zeale.guis;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 
 import javafx.collections.ListChangeListener;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -34,6 +39,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import kröw.core.Kröw;
+import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
 import sun.awt.shell.ShellFolder;
 
@@ -44,8 +50,10 @@ public class Tools extends Page {
 	private static final double ICON_HEIGHT = (double) 100 / 1080 * Kröw.getSystemProperties().getScreenHeight(),
 			ICON_WIDTH = (double) 100 / 1920 * Kröw.getSystemProperties().getScreenWidth();
 
-	private static final Insets FLOW_PANE_PADDING = new Insets((double) 120 / 1080 * Kröw.getSystemProperties().getScreenHeight(),
-			(double) 120 / 1920 * Kröw.getSystemProperties().getScreenWidth(), 0, (double) 280 / 1080 * Kröw.getSystemProperties().getScreenHeight());
+	private static final Insets FLOW_PANE_PADDING = new Insets(
+			(double) 120 / 1080 * Kröw.getSystemProperties().getScreenHeight(),
+			(double) 120 / 1920 * Kröw.getSystemProperties().getScreenWidth(), 0,
+			(double) 280 / 1080 * Kröw.getSystemProperties().getScreenHeight());
 
 	@FXML
 	private Pane pane;
@@ -60,8 +68,10 @@ public class Tools extends Page {
 
 	private void addWindowsTools() {
 		try {
-			addExecutable(new File("C:/Users/BHF-DUDEGUY/Appdata/Roaming/Krow/Krow.ico"));
-			addExecutable(new File("C:/Windows/regedit.exe"));
+			addCommandTool("regedit", "Regedit",
+					Kröw.getImageFromFile(new File("C:/Windows/regedit.exe"), (int) ICON_WIDTH, (int) ICON_HEIGHT));
+			addCommandTool("services.msc", "Services", Kröw.getImageFromFile(
+					new File("C:/Windows/System32/services.msc"), (int) ICON_WIDTH, (int) ICON_HEIGHT));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -77,7 +87,8 @@ public class Tools extends Page {
 					(double) 20 / 1920 * Kröw.getSystemProperties().getScreenWidth()));
 			pane.getChildren().add(label);
 			label.setLayoutX(627.5146484375 / 1920 * Kröw.getSystemProperties().getScreenWidth());
-			label.setOnMouseClicked(event -> label.setLayoutX(Kröw.getSystemProperties().getScreenWidth() / 2 - label.prefWidth(-1) / 2));
+			label.setOnMouseClicked(event -> label
+					.setLayoutX(Kröw.getSystemProperties().getScreenWidth() / 2 - label.prefWidth(-1) / 2));
 		}
 
 		subPane.setVgap(PANE_VGAP);
@@ -96,32 +107,48 @@ public class Tools extends Page {
 		});
 
 		subPane.setPadding(FLOW_PANE_PADDING);
-
+		if (Kröw.getSystemProperties().isWindows())
+			addWindowsTools();
 	}
 
-	public ToolButton addButton(String text, Image image) {
+	public Tool addButton(String text, Image image) {
 		ImageView icon = new ImageView(image);
-		Button button = new Button(text, icon);
+		Button button = buildButton();
+		button.setGraphic(icon);
+		button.setText(text);
+		return new Tool(button);
+	}
+
+	private Button buildButton() {
+		Button button = new Button();
 		button.setFocusTraversable(false);
 		button.setContentDisplay(ContentDisplay.TOP);
 		button.setBackground(Background.EMPTY);
 		subPane.getChildren().add(button);
 		button.setTextFill(Color.WHITE);
 		button.setFont(Font.font(Font.getDefault().getName(), FontWeight.BOLD, 18));
-		return new ToolButton(button);
+		return button;
 	}
 
-	public ToolButton addExecutable(File executable) throws FileNotFoundException {
-
-		return addButton(executable.getName(),
-				SwingFXUtils.toFXImage(Kröw.toBufferedImage(ShellFolder.getShellFolder(executable).getIcon(true),
-						(int) ICON_WIDTH, (int) ICON_HEIGHT), null));
+	public ExecutableTool addExecutable(File executable) throws FileNotFoundException {
+		Button button = buildButton();
+		button.setText(executable.getName());
+		button.setGraphic(new ImageView(SwingFXUtils.toFXImage(Kröw.toBufferedImage(
+				ShellFolder.getShellFolder(executable).getIcon(true), (int) ICON_WIDTH, (int) ICON_HEIGHT), null)));
+		return new ExecutableTool(button, executable);
 	}
 
-	public static final class ToolButton {
-		private Button button;
+	public CommandTool addCommandTool(String command, String name, Image graphic) {
+		Button button = buildButton();
+		button.setText(name);
+		button.setGraphic(new ImageView(graphic));
+		return new CommandTool(button, command);
+	}
 
-		private ToolButton(Button button) {
+	public static class Tool {
+		private final Button button;
+
+		private Tool(Button button) {
 			this.button = button;
 		}
 
@@ -498,4 +525,91 @@ public class Tools extends Page {
 
 	}
 
+	public static abstract class LaunchableTool extends Tool {
+
+		private LaunchableTool(Button button) {
+			super(button);
+			button.setOnAction(new EventHandler<ActionEvent>() {
+
+				@Override
+				public void handle(ActionEvent event) {
+					if (!launchProcess())
+						WindowManager.spawnLabelAtMousePos("The process could not be started...", Color.FIREBRICK);
+				}
+			});
+		}
+
+		public abstract boolean launchProcess();
+	}
+
+	public static class ExecutableTool extends LaunchableTool {
+
+		private Process process;
+		private File executable;
+
+		private ExecutableTool(Button button, File executable) {
+			super(button);
+			this.executable = executable;
+			button.setOnAction(new EventHandler<ActionEvent>() {
+
+				@Override
+				public void handle(ActionEvent event) {
+					if (!launchProcess())
+						WindowManager.spawnLabelAtMousePos("Already running...", Color.FIREBRICK);
+				}
+			});
+		}
+
+		public boolean launchProcess() {
+			if (!(process == null) && process.isAlive())
+				return false;
+			try {
+				process = Runtime.getRuntime().exec(executable.getAbsolutePath());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return true;
+		}
+
+	}
+
+	public static class CommandTool extends LaunchableTool {
+		private String command;
+		private Process process;
+
+		private CommandTool(Button b, String command) {
+			super(b);
+			this.command = command;
+		}
+
+		@Override
+		public boolean launchProcess() {
+			if (process == null || !process.isAlive())
+				try {
+					process = Runtime.getRuntime().exec("powershell");
+					PrintWriter pw = new PrintWriter(process.getOutputStream());
+					pw.println(command);
+					pw.close();
+
+					String s;
+					try (BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));) {
+						while ((s = br.readLine()) != null)
+							System.out.println(s);
+					}
+
+					try (BufferedReader br = new BufferedReader(new InputStreamReader(process.getErrorStream()));) {
+						while ((s = br.readLine()) != null)
+							System.out.println(s);
+					}
+
+					process.destroy();
+
+					return true;
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			return false;
+		}
+
+	}
 }
