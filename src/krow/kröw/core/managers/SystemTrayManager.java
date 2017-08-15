@@ -12,7 +12,9 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.scene.paint.Color;
+import javafx.stage.WindowEvent;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.core.Kröw;
@@ -35,6 +37,8 @@ public final class SystemTrayManager {
 				@Override
 				public void run() {
 					WindowManager.getStage().show();
+					WindowManager.getStage().setIconified(false);
+					WindowManager.getStage().toFront();
 				}
 			}, hideProgram = new Runnable() {
 
@@ -76,6 +80,34 @@ public final class SystemTrayManager {
 			popup.add(open);
 			popup.add(exit);
 			popup.add(hide);
+			Platform.runLater(new Runnable() {
+
+				@Override
+				public void run() {
+					final EventHandler<WindowEvent> previousHidingHandler = WindowManager.getStage().getOnHiding();
+					WindowManager.getStage().setOnHiding(new EventHandler<WindowEvent>() {
+
+						@Override
+						public void handle(WindowEvent event) {
+							if (previousHidingHandler != null)
+								previousHidingHandler.handle(event);
+							open.setLabel("Show");
+						}
+					});
+
+					EventHandler<WindowEvent> previousShowingHandler = WindowManager.getStage().getOnShowing();
+					WindowManager.getStage().setOnShowing(new EventHandler<WindowEvent>() {
+
+						@Override
+						public void handle(WindowEvent event) {
+							if (previousShowingHandler != null)
+								previousShowingHandler.handle(event);
+							open.setLabel("Open");
+						}
+					});
+				}
+			});
+
 			icon = new TrayIcon(new ImageIcon(SystemTray.class.getResource("/krow/resources/Kröw_hd.png")).getImage(),
 					"Kröw", popup);
 			icon.setImageAutoSize(true);
