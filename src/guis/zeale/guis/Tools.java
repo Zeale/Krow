@@ -551,6 +551,17 @@ public class Tools extends Page {
 					Kröw.getImageFromFile(new File("C:/Windows/regedit.exe"), (int) ICON_WIDTH, (int) ICON_HEIGHT));
 			addCommandTool("services.msc", "Services", Kröw.getImageFromFile(
 					new File("C:/Windows/System32/services.msc"), (int) ICON_WIDTH, (int) ICON_HEIGHT));
+			addCommandTool("explorer", "Explorer",
+					Kröw.getImageFromFile(new File("C:/Windows/explorer.exe"), (int) ICON_WIDTH, (int) ICON_HEIGHT));
+			addCommandTool("notepad", "Notepad",
+					Kröw.getImageFromFile(new File("C:/Windows/notepad.exe"), (int) ICON_WIDTH, (int) ICON_HEIGHT));
+			addCommandTool("calc", "Windows Calculator", Kröw.getImageFromFile(new File("C:/Windows/System32/calc.exe"),
+					(int) ICON_WIDTH, (int) ICON_HEIGHT));
+			addCommandTool("START cmd", "Command Prompt", Kröw.getImageFromFile(new File("C:/Windows/System32/cmd.exe"),
+					(int) ICON_WIDTH, (int) ICON_HEIGHT));
+			addCommandTool("START powershell", "Powershell",
+					Kröw.getImageFromFile(new File("C:/Windows/SysWOW64/WindowsPowerShell/v1.0/powershell.exe"),
+							(int) ICON_WIDTH, (int) ICON_HEIGHT));
 		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
