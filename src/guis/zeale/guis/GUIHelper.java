@@ -102,7 +102,10 @@ final class GUIHelper {
 			* Kröw.getSystemProperties().getScreenHeight());
 	private static final byte MENU_BAR_ANIMATION_ROTATION_COUNT = 1;
 	private static final Color MENU_BUTTON_START_COLOR = MENU_BAR_SHADOW_COLOR, MENU_BUTTON_END_COLOR = Color.WHITE;
-	private static final Duration MENU_CHILD_NODE_HOVER_ANIMATION_DURATION = Duration.seconds(0.6);
+	private static final Duration DEFAULT_MENU_CHILD_NODE_HOVER_ANIMATION_DURATION = Duration.seconds(0.6);
+	private static final Duration MENU_CHILD_NODE_HOVER_ANIMATION_ENTER_DURATION = Duration.seconds(0.35);
+	private static final Duration MENU_CHILD_NODE_HOVER_ANIMATION_EXIT_DURATION = Duration.seconds(1);
+	private static boolean MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION = true;
 	private static final Color MENU_CHILD_NODE_START_COLOR = Color.BLACK,
 			MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR = Color.WHITE;
 	private static final int MENU_CHILD_NODE_FONT_SIZE;
@@ -120,7 +123,7 @@ final class GUIHelper {
 		final Node close = new MenuOption(Color.RED, "Close"),
 				synthesizerText = new MenuOption(Color.BLUE, Color.GOLD, "Synthesizer"), goHome = new Text("Go Home"),
 				goBack = new Text("Go Back"), hideProgram = new Text("Hide Program"),
-				sendProgramToBack = new Text("Send to back");
+				sendProgramToBack = new Text("Send to back"), switchAnimationMode = new Text("Switch animation mode");
 		final Text systemTray = new Text(
 				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
 
@@ -181,6 +184,13 @@ final class GUIHelper {
 		});
 
 		sendProgramToBack.setOnMouseClicked(event -> WindowManager.getStage().toBack());
+		switchAnimationMode.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION ^= true;
+			}
+		});
 
 		children.add(close);
 		children.add(goHome);
@@ -189,6 +199,7 @@ final class GUIHelper {
 		children.add(hideProgram);
 		children.add(sendProgramToBack);
 		children.add(synthesizerText);
+		children.add(switchAnimationMode);
 	}
 
 	public static VBox buildMenu(final Pane pane) {
@@ -250,16 +261,28 @@ final class GUIHelper {
 							t.setFont(
 									Font.font(Font.getDefault().getName(), FontWeight.BOLD, MENU_CHILD_NODE_FONT_SIZE));
 
-							final FillTransition ft = new FillTransition(MENU_CHILD_NODE_HOVER_ANIMATION_DURATION, t);
+							final FillTransition ft = new FillTransition(
+									DEFAULT_MENU_CHILD_NODE_HOVER_ANIMATION_DURATION, t);
 							ft.setInterpolator(MENU_CHILD_TRANSITION_INTERPOLATOR);
 							t.setOnMouseEntered(event -> {
+								try {
+									Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+								} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+									e.printStackTrace();
+								}
 								ft.stop();
+								ft.setDuration(MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION
+										? MENU_BUTTON_ANIMATION_DURATION
+										: MENU_CHILD_NODE_HOVER_ANIMATION_ENTER_DURATION);
 								ft.setFromValue((Color) t.getFill());
 								ft.setToValue(endColor);
 								ft.play();
 							});
 							t.setOnMouseExited(event -> {
 								ft.stop();
+								ft.setDuration(MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION
+										? MENU_BUTTON_ANIMATION_DURATION
+										: MENU_CHILD_NODE_HOVER_ANIMATION_EXIT_DURATION);
 								ft.setFromValue((Color) t.getFill());
 								ft.setToValue(startColor);
 								ft.play();
