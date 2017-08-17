@@ -114,7 +114,6 @@ final class GUIHelper {
 		double size = Kröw.getSystemProperties().isDPIOversized() ? 16 : 18;
 		size *= 1920 / Kröw.getSystemProperties().getScreenWidth();
 		MENU_CHILD_NODE_FONT_SIZE = (int) Math.round(size);
-		System.out.println(MENU_CHILD_NODE_FONT_SIZE);
 	}
 
 	public static void addDefaultSettings(final VBox vbox) {
@@ -192,13 +191,15 @@ final class GUIHelper {
 			}
 		});
 
+		synthesizerText.setStyle("-fx-strikethrough: true;");
+
 		children.add(close);
 		children.add(goHome);
 		children.add(goBack);
 		children.add(systemTray);
 		children.add(hideProgram);
 		children.add(sendProgramToBack);
-		children.add(synthesizerText);
+		// children.add(synthesizerText);
 		children.add(switchAnimationMode);
 	}
 
