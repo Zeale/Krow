@@ -37,3 +37,7 @@
 #SettingOptionsTreeView .tree-cell {
 	-fx-alignment: CENTER;
 }
+
+.grid-pane .region {
+	-fx-background-color: white;
+}

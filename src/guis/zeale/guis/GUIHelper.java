@@ -12,6 +12,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
@@ -31,6 +32,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
+import kröw.core.managers.WindowManager.NotSwitchableException;
 
 final class GUIHelper {
 
@@ -115,7 +117,8 @@ final class GUIHelper {
 	public static void addDefaultSettings(final VBox vbox) {
 		final List<Node> children = vbox.getChildren();
 
-		final Node close = new MenuOption(Color.RED, "Close"), goHome = new Text("Go Home"),
+		final Node close = new MenuOption(Color.RED, "Close"),
+				synthesizerText = new MenuOption(Color.BLUE, Color.GOLD, "Synthesizer"), goHome = new Text("Go Home"),
 				goBack = new Text("Go Back"), hideProgram = new Text("Hide Program"),
 				sendProgramToBack = new Text("Send to back");
 		final Text systemTray = new Text(
@@ -165,6 +168,17 @@ final class GUIHelper {
 				WindowManager.spawnLabelAtMousePos("Failed to show icon...", Color.FIREBRICK);
 			}
 		});
+		synthesizerText.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				try {
+					WindowManager.setScene(SoundSynthesizer.class);
+				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 
 		sendProgramToBack.setOnMouseClicked(event -> WindowManager.getStage().toBack());
 
@@ -174,6 +188,7 @@ final class GUIHelper {
 		children.add(systemTray);
 		children.add(hideProgram);
 		children.add(sendProgramToBack);
+		children.add(synthesizerText);
 	}
 
 	public static VBox buildMenu(final Pane pane) {
