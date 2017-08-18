@@ -87,6 +87,22 @@ public final class Kröw extends Application {
 
 	public static final EventHandler<Event> CLOSE_PROGRAM_EVENT_HANDLER = event -> Platform.exit();
 
+	public static double scaleWidth(double width) {
+		return width * 1920 / Kröw.getSystemProperties().getScreenWidth();
+	}
+
+	public static double scaleHeight(double height) {
+		return height * 1920 / Kröw.getSystemProperties().getScreenHeight();
+	}
+
+	public static int scaleWidth(int width) {
+		return (int) ((double) width * 1920 / Kröw.getSystemProperties().getScreenWidth());
+	}
+
+	public static int scaleHeight(int height) {
+		return (int) ((double) height * 1920 / Kröw.getSystemProperties().getScreenHeight());
+	}
+	
 	/*
 	 * Construct Mindset
 	 */
