@@ -1,4 +1,4 @@
-package zeale.guis;
+package krow.guis;
 
 import java.io.IOException;
 import java.util.EmptyStackException;
@@ -32,8 +32,9 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
+import zeale.guis.Home;
 
-final class GUIHelper {
+public final class GUIHelper {
 
 	public static final class MenuOption extends Text {
 		private Color fadeColor, startColor;

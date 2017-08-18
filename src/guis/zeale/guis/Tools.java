@@ -41,6 +41,7 @@ import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
 import sun.awt.shell.ShellFolder;
+import krow.guis.GUIHelper;
 
 public class Tools extends Page {
 
