@@ -177,6 +177,7 @@ public class Home extends Page {
 		loadDefaultImages();
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
+		GUIHelper.applyShapeBackground(pane);
 	}
 
 	private final void loadDefaultImages() {

@@ -1,8 +1,10 @@
 package krow.guis;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
+import java.util.Random;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -12,9 +14,11 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -23,6 +27,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
@@ -438,6 +443,70 @@ public final class GUIHelper {
 
 		return menu;
 
+	}
+
+	private static final int SHAPE_COUNT = 50;
+	private static final double SHAPE_DIAMETER = 100;
+	private static final Color SHAPE_COLOR = Color.BLACK;
+	private static final Duration SHAPE_MOVE_DURATION = Duration.seconds(8);
+
+	public static void applyShapeBackground(Pane pane) {
+		ArrayList<Shape> shapes = new ArrayList<>();
+		Random random = new Random();
+		for (int i = 0; i < SHAPE_COUNT; i++) {
+			Circle c = new Circle(SHAPE_DIAMETER / 2);
+			c.setStroke(SHAPE_COLOR);
+			c.setFill(Color.TRANSPARENT);
+			c.setEffect(new DropShadow(BlurType.GAUSSIAN, SHAPE_COLOR, 20, 0.5, 0, 0));
+			c.setLayoutX(random.nextInt((int) Kröw.getSystemProperties().getScreenWidth()) - SHAPE_DIAMETER / 2);
+			c.setLayoutY(random.nextInt((int) Kröw.getSystemProperties().getScreenHeight()) - SHAPE_DIAMETER / 2);
+			TranslateTransition translator = new TranslateTransition(SHAPE_MOVE_DURATION, c);
+			new Object() {
+				{
+
+					translator.setByX(calculateByX());
+					translator.setByY(calculateByY());
+					translator.setInterpolator(Interpolator.EASE_OUT);
+
+					translator.setOnFinished(new EventHandler<ActionEvent>() {
+
+						@Override
+						public void handle(ActionEvent event) {
+							translator.setByX(calculateByX());
+							translator.setByY(calculateByY());
+							translator.setDuration(Duration.millis(random.nextInt(2500) + 5500));
+							translator.play();
+						}
+					});
+				}
+
+				private double generateRand(boolean positive) {
+					return random.nextInt(50) + 50 * (positive ? 1 : -1);
+				}
+
+				private double generateRand() {
+					return generateRand(random.nextBoolean());
+				}
+
+				private double calculateByX() {
+					double numb = generateRand();
+
+					return numb;
+				}
+
+				private double calculateByY() {
+					double numb = generateRand();
+					return numb;
+				}
+
+			};
+
+			shapes.add(c);
+			translator.play();
+		}
+
+		for (Shape s : shapes)
+			pane.getChildren().add(0, s);
 	}
 
 }
