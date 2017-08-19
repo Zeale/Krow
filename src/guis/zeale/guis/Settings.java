@@ -1,11 +1,7 @@
 package zeale.guis;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -159,11 +155,7 @@ public class Settings extends Page {
 						settingsLabel.setText(getItem().text);
 						for (final Setting t : getItem().children)
 							optionBox.getRoot().getChildren().add(new TreeItem<>(t));
-						try {
-							Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
-						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-							e.printStackTrace();
-						}
+						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
 					} else
 						updateItem(getItem(), isEmpty());
 

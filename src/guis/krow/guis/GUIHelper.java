@@ -6,9 +6,6 @@ import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Random;
 
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -261,11 +258,7 @@ public final class GUIHelper {
 									DEFAULT_MENU_CHILD_NODE_HOVER_ANIMATION_DURATION, t);
 							ft.setInterpolator(MENU_CHILD_TRANSITION_INTERPOLATOR);
 							t.setOnMouseEntered(event -> {
-								try {
-									Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
-								} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-									e.printStackTrace();
-								}
+								Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
 								ft.stop();
 								ft.setDuration(MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION
 										? MENU_BUTTON_ANIMATION_DURATION
@@ -305,11 +298,7 @@ public final class GUIHelper {
 				final EventHandler<? super MouseEvent> enterHandler = event -> {
 					if (event.getPickResult().getIntersectedNode() == cover && opening)
 						return;
-					try {
-						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
-					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-						e.printStackTrace();
-					}
+					Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
 					open();
 				};
 
@@ -326,20 +315,12 @@ public final class GUIHelper {
 				final EventHandler<MouseEvent> coverClickHandler = event -> {
 					if (opening) {
 						close();
-						try {
-							Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
-						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e1) {
-							e1.printStackTrace();
-						}
+						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
 						return;
 					}
 					if (closing) {
 						open();
-						try {
-							Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
-						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e2) {
-							e2.printStackTrace();
-						}
+						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
 					}
 
 				};
@@ -533,35 +514,41 @@ public final class GUIHelper {
 			public void handle(MouseEvent event) {
 				double mouseX = event.getSceneX(), mouseY = event.getSceneY();
 				for (Shape s : shapes) {
-					double shapeX = s.getLayoutX() + s.getTranslateX(), shapeY = s.getLayoutY() + s.getTranslateY();
+					if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY)) {
+						double shapeX = s.getLayoutX() + s.getTranslateX(), shapeY = s.getLayoutY() + s.getTranslateY();
 
-					double distX = mouseX - shapeX, distY = mouseY - shapeY;
-					double distance = Math.sqrt(distX * distX + distY * distY);
-					if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY) && distance <= SHAPE_RADIUS * 2) {
+						double distX = mouseX - shapeX, distY = mouseY - shapeY;
+						double distance = Math.sqrt(distX * distX + distY * distY);
+						if (distance <= SHAPE_RADIUS * 2) {
 
-						TranslateTransition translator = (TranslateTransition) s.getProperties().get(TRANSLATOR_KEY);
+							TranslateTransition translator = (TranslateTransition) s.getProperties()
+									.get(TRANSLATOR_KEY);
 
-						translator.stop();
+							translator.stop();
 
-						translator.setByX(-distX * 3);
-						translator.setByY(-distY * 3);
-						translator.setDuration(
-								Duration.seconds(((double) 1 - random.nextDouble() / 8) * SHAPE_MOVE_DURATION / 3));
+							translator.setByX(-distX * 3);
+							translator.setByY(-distY * 3);
+							translator.setDuration(
+									Duration.seconds(((double) 1 - random.nextDouble() / 8) * SHAPE_MOVE_DURATION / 3));
 
-						EventHandler<ActionEvent> onFinished = translator.getOnFinished();
-						s.getProperties().put(IS_BEING_SHOVED_KEY, true);
-						translator.setOnFinished(new EventHandler<ActionEvent>() {
+							EventHandler<ActionEvent> onFinished = translator.getOnFinished();
+							s.getProperties().put(IS_BEING_SHOVED_KEY, true);
+							Interpolator interpolator = translator.getInterpolator();
+							translator.setOnFinished(new EventHandler<ActionEvent>() {
 
-							@Override
-							public void handle(ActionEvent event) {
-								s.getProperties().remove(IS_BEING_SHOVED_KEY);
-								translator.setOnFinished(onFinished);
-								onFinished.handle(event);
-							}
+								@Override
+								public void handle(ActionEvent event) {
+									s.getProperties().remove(IS_BEING_SHOVED_KEY);
+									translator.setOnFinished(onFinished);
+									translator.setInterpolator(interpolator);
+									onFinished.handle(event);
+								}
 
-						});
-
-						translator.play();
+							});
+							translator.setInterpolator(Interpolator.EASE_OUT);
+							translator.play();
+							Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP);
+						}
 					}
 				}
 			}
