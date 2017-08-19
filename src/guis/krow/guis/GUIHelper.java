@@ -448,7 +448,7 @@ public final class GUIHelper {
 	private static final int SHAPE_COUNT = 50;
 	private static final double SHAPE_DIAMETER = 100;
 	private static final Color SHAPE_COLOR = Color.BLACK;
-	private static final Duration SHAPE_MOVE_DURATION = Duration.seconds(8);
+	private static final double SHAPE_MOVE_DURATION = 8;
 
 	public static void applyShapeBackground(Pane pane) {
 		ArrayList<Shape> shapes = new ArrayList<>();
@@ -458,12 +458,15 @@ public final class GUIHelper {
 			c.setStroke(SHAPE_COLOR);
 			c.setFill(Color.TRANSPARENT);
 			c.setEffect(new DropShadow(BlurType.GAUSSIAN, SHAPE_COLOR, 20, 0.5, 0, 0));
-			c.setLayoutX(random.nextInt((int) Kröw.getSystemProperties().getScreenWidth()) - SHAPE_DIAMETER / 2);
-			c.setLayoutY(random.nextInt((int) Kröw.getSystemProperties().getScreenHeight()) - SHAPE_DIAMETER / 2);
-			TranslateTransition translator = new TranslateTransition(SHAPE_MOVE_DURATION, c);
+			c.setLayoutX(0);
+			c.setLayoutY(0);
+			c.setTranslateX(random.nextInt((int) Kröw.getSystemProperties().getScreenWidth()) - SHAPE_DIAMETER / 2);
+			c.setTranslateY(random.nextInt((int) Kröw.getSystemProperties().getScreenHeight()) - SHAPE_DIAMETER / 2);
+			TranslateTransition translator = new TranslateTransition();
+			translator.setNode(c);
 			new Object() {
 				{
-
+					translator.setDuration(Duration.seconds(generateRandomMultiplier() * SHAPE_MOVE_DURATION));
 					translator.setByX(calculateByX());
 					translator.setByY(calculateByY());
 					translator.setInterpolator(Interpolator.EASE_OUT);
@@ -472,16 +475,24 @@ public final class GUIHelper {
 
 						@Override
 						public void handle(ActionEvent event) {
-							translator.setByX(calculateByX());
-							translator.setByY(calculateByY());
-							translator.setDuration(Duration.millis(random.nextInt(2500) + 5500));
+
+							double multiplier = generateRandomMultiplier();
+							translator.setByX(calculateByX() * multiplier);
+							translator.setByY(calculateByY() * multiplier);
+							translator.setDuration(Duration.seconds(SHAPE_MOVE_DURATION * multiplier));
 							translator.play();
+
 						}
+
 					});
 				}
 
+				private double generateRandomMultiplier() {
+					return (double) 1 - random.nextDouble() / 8;
+				}
+
 				private double generateRand(boolean positive) {
-					return random.nextInt(50) + 50 * (positive ? 1 : -1);
+					return (random.nextInt(50) + 50) * (positive ? 1 : -1);
 				}
 
 				private double generateRand() {
@@ -490,16 +501,29 @@ public final class GUIHelper {
 
 				private double calculateByX() {
 					double numb = generateRand();
+					if (numb + c.getLayoutX() + c.getTranslateX() > Kröw.getSystemProperties().getScreenWidth())
+						numb -= 100;
+
+					if (numb + c.getLayoutX() + c.getTranslateX() < 0)
+						numb += 100;
 
 					return numb;
 				}
 
 				private double calculateByY() {
 					double numb = generateRand();
+					if (numb + c.getLayoutY() + c.getTranslateY() > Kröw.getSystemProperties().getScreenHeight())
+						numb -= 100;
+
+					if (numb + c.getLayoutY() + c.getTranslateY() < 0)
+						numb += 100;
+
 					return numb;
 				}
 
 			};
+
+			c.setCache(true);
 
 			shapes.add(c);
 			translator.play();
