@@ -612,5 +612,6 @@ public class Tools extends Page {
 		subPane.setPadding(FLOW_PANE_PADDING);
 		if (Kröw.getSystemProperties().isWindows())
 			addWindowsTools();
+		GUIHelper.applyShapeBackground(pane);
 	}
 }
