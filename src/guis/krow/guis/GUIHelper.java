@@ -14,7 +14,6 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -446,7 +445,7 @@ public final class GUIHelper {
 	}
 
 	private static final int SHAPE_COUNT = 50;
-	private static final double SHAPE_DIAMETER = 100;
+	private static final double SHAPE_RADIUS = 50;
 	private static final Color SHAPE_COLOR = Color.BLACK;
 	private static final double SHAPE_MOVE_DURATION = 8;
 
@@ -454,14 +453,14 @@ public final class GUIHelper {
 		ArrayList<Shape> shapes = new ArrayList<>();
 		Random random = new Random();
 		for (int i = 0; i < SHAPE_COUNT; i++) {
-			Circle c = new Circle(SHAPE_DIAMETER / 2);
+			Circle c = new Circle(SHAPE_RADIUS);
 			c.setStroke(SHAPE_COLOR);
 			c.setFill(Color.TRANSPARENT);
 			c.setEffect(new DropShadow(BlurType.GAUSSIAN, SHAPE_COLOR, 20, 0.5, 0, 0));
 			c.setLayoutX(0);
 			c.setLayoutY(0);
-			c.setTranslateX(random.nextInt((int) Kröw.getSystemProperties().getScreenWidth()) - SHAPE_DIAMETER / 2);
-			c.setTranslateY(random.nextInt((int) Kröw.getSystemProperties().getScreenHeight()) - SHAPE_DIAMETER / 2);
+			c.setTranslateX(random.nextInt((int) Kröw.getSystemProperties().getScreenWidth()) - SHAPE_RADIUS);
+			c.setTranslateY(random.nextInt((int) Kröw.getSystemProperties().getScreenHeight()) - SHAPE_RADIUS);
 			TranslateTransition translator = new TranslateTransition();
 			translator.setNode(c);
 			new Object() {
@@ -471,20 +470,8 @@ public final class GUIHelper {
 					translator.setByY(calculateByY());
 					translator.setInterpolator(Interpolator.EASE_OUT);
 
-					translator.setOnFinished(new EventHandler<ActionEvent>() {
+					translator.setOnFinished(event -> animate());
 
-						@Override
-						public void handle(ActionEvent event) {
-
-							double multiplier = generateRandomMultiplier();
-							translator.setByX(calculateByX() * multiplier);
-							translator.setByY(calculateByY() * multiplier);
-							translator.setDuration(Duration.seconds(SHAPE_MOVE_DURATION * multiplier));
-							translator.play();
-
-						}
-
-					});
 				}
 
 				private double generateRandomMultiplier() {
@@ -519,6 +506,14 @@ public final class GUIHelper {
 						numb += 100;
 
 					return numb;
+				}
+
+				private void animate() {
+					double multiplier = generateRandomMultiplier();
+					translator.setByX(calculateByX() * multiplier);
+					translator.setByY(calculateByY() * multiplier);
+					translator.setDuration(Duration.seconds(SHAPE_MOVE_DURATION * multiplier));
+					translator.play();
 				}
 
 			};
