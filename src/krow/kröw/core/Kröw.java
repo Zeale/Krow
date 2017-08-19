@@ -1124,6 +1124,8 @@ public final class Kröw extends Application {
 		if (Kröw.IMAGE_KRÖW != null)
 			primaryStage.getIcons().add(Kröw.IMAGE_KRÖW);
 		WindowManager.getStage().getScene().setFill(Color.TRANSPARENT);
+		primaryStage.setWidth(Kröw.getSystemProperties().getScreenWidth());
+		primaryStage.setHeight(Kröw.getSystemProperties().getScreenHeight());
 		primaryStage.setFullScreen(true);
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 
