@@ -14,6 +14,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -448,6 +449,7 @@ public final class GUIHelper {
 	private static final double SHAPE_RADIUS = 50;
 	private static final Color SHAPE_COLOR = Color.BLACK;
 	private static final double SHAPE_MOVE_DURATION = 8;
+	private static final Object TRANSLATOR_KEY = new Object(), IS_BEING_SHOVED_KEY = new Object();
 
 	public static void applyShapeBackground(Pane pane) {
 		ArrayList<Shape> shapes = new ArrayList<>();
@@ -463,6 +465,7 @@ public final class GUIHelper {
 			c.setTranslateY(random.nextInt((int) Kröw.getSystemProperties().getScreenHeight()) - SHAPE_RADIUS);
 			TranslateTransition translator = new TranslateTransition();
 			translator.setNode(c);
+			c.getProperties().put(TRANSLATOR_KEY, translator);
 			new Object() {
 				{
 					translator.setDuration(Duration.seconds(generateRandomMultiplier() * SHAPE_MOVE_DURATION));
@@ -523,6 +526,47 @@ public final class GUIHelper {
 			shapes.add(c);
 			translator.play();
 		}
+
+		pane.setOnMouseMoved(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				double mouseX = event.getSceneX(), mouseY = event.getSceneY();
+				for (Shape s : shapes) {
+					double shapeX = s.getLayoutX() + s.getTranslateX(), shapeY = s.getLayoutY() + s.getTranslateY();
+
+					double distX = mouseX - shapeX, distY = mouseY - shapeY;
+					double distance = Math.sqrt(distX * distX + distY * distY);
+					if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY) && distance <= SHAPE_RADIUS * 2) {
+
+						TranslateTransition translator = (TranslateTransition) s.getProperties().get(TRANSLATOR_KEY);
+
+						translator.stop();
+
+						translator.setByX(-distX * 3);
+						translator.setByY(-distY * 3);
+						translator.setDuration(
+								Duration.seconds(((double) 1 - random.nextDouble() / 8) * SHAPE_MOVE_DURATION / 3));
+
+						EventHandler<ActionEvent> onFinished = translator.getOnFinished();
+						s.getProperties().put(IS_BEING_SHOVED_KEY, true);
+						translator.setOnFinished(new EventHandler<ActionEvent>() {
+
+							@Override
+							public void handle(ActionEvent event) {
+								s.getProperties().remove(IS_BEING_SHOVED_KEY);
+								translator.setOnFinished(onFinished);
+								onFinished.handle(event);
+							}
+
+						});
+
+						translator.play();
+					}
+				}
+			}
+
+		});
 
 		for (Shape s : shapes)
 			pane.getChildren().add(0, s);
