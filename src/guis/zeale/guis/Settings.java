@@ -3,6 +3,8 @@ package zeale.guis;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
@@ -17,8 +19,8 @@ import kröw.core.managers.WindowManager.Page;
 public class Settings extends Page {
 
 	public final class Setting {
-		private final String text;
-		private final Togglable togglable;
+		private String text;
+		private Togglable togglable;
 
 		public Setting(final String text) {
 			togglable = cell -> {
@@ -28,6 +30,36 @@ public class Settings extends Page {
 
 		public Setting(final String text, final Togglable togglable) {
 			this.text = text;
+			this.togglable = togglable;
+		}
+
+		/**
+		 * @return the text
+		 */
+		public final String getText() {
+			return text;
+		}
+
+		/**
+		 * @param text
+		 *            the text to set
+		 */
+		public final void setText(String text) {
+			this.text = text;
+		}
+
+		/**
+		 * @return the togglable
+		 */
+		public final Togglable getTogglable() {
+			return togglable;
+		}
+
+		/**
+		 * @param togglable
+		 *            the togglable to set
+		 */
+		public final void setTogglable(Togglable togglable) {
 			this.togglable = togglable;
 		}
 
@@ -67,27 +99,55 @@ public class Settings extends Page {
 	private TreeView<Setting> optionBox;
 
 	private final void addDefaultItems() {
-		addItem(new TreeItem<>(new SettingTab("General", new Setting("Open on startup"))));
+		/*
+		 * addItem(new TreeItem<>(new SettingTab("General", new
+		 * Setting("Open on startup"))));
+		 * 
+		 * addItem(new TreeItem<>(new SettingTab("Keys", new Setting("Test1"),
+		 * new Setting(""), new Setting("Test3")))); addItem(new TreeItem<>(new
+		 * SettingTab("Video"))); addItem(new TreeItem<>(new
+		 * SettingTab("Sound")));
+		 */
 
-		addItem(new TreeItem<>(new SettingTab("Keys", new Setting("Test1"), new Setting(""), new Setting("Test3"))));
-		addItem(new TreeItem<>(new SettingTab("Video")));
-		addItem(new TreeItem<>(new SettingTab("Sound")));
+		addItem(new TreeItem<Settings.SettingTab>(new SettingTab("Visual",
+				new Setting(
+						"Background mouse response: "
+								+ (GUIHelper.isShapeBackgroundRespondToMouseMovement() ? "on" : "off"),
+						new Togglable() {
 
-		TreeItem<SettingTab> settingTab = new TreeItem<>(new SettingTab("Menu1", new Setting("Okay")));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu1", new Setting("Potato"))));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu2")));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu3", new Setting("Potato"))));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu4")));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu5", new Setting("Potato"))));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu6")));
-		addItem(settingTab);
+							@Override
+							public void onToggled(TreeCell<Setting> cell) {
+								GUIHelper.setShapeBackgroundRespondToMouseMovement(
+										!GUIHelper.isShapeBackgroundRespondToMouseMovement());
+								cell.getTreeItem().getValue().setText("Background mouse response: "
+										+ (GUIHelper.isShapeBackgroundRespondToMouseMovement() ? "on" : "off"));
 
-		settingTab = new TreeItem<>(new SettingTab("Menu2", new Setting("AlsoTest")));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu1", new Setting("Potato"))));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu2")));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu3", new Setting("Potato"))));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu4")));
-		addItem(settingTab);
+							}
+						}))));
+
+		/*
+		 * TreeItem<SettingTab> settingTab = new TreeItem<>(new
+		 * SettingTab("Menu1", new Setting("Okay")));
+		 * settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu1", new Setting("Potato"))));
+		 * settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu2"))); settingTab.getChildren().add(new
+		 * TreeItem<>(new SettingTab("SubMenu3", new Setting("Potato"))));
+		 * settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu4"))); settingTab.getChildren().add(new
+		 * TreeItem<>(new SettingTab("SubMenu5", new Setting("Potato"))));
+		 * settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu6"))); addItem(settingTab);
+		 * 
+		 * settingTab = new TreeItem<>(new SettingTab("Menu2", new
+		 * Setting("AlsoTest"))); settingTab.getChildren().add(new
+		 * TreeItem<>(new SettingTab("SubMenu1", new Setting("Potato"))));
+		 * settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu2"))); settingTab.getChildren().add(new
+		 * TreeItem<>(new SettingTab("SubMenu3", new Setting("Potato"))));
+		 * settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu4"))); addItem(settingTab);
+		 */
 	}
 
 	public final void addItem(final TreeItem<SettingTab> child) {
@@ -166,6 +226,17 @@ public class Settings extends Page {
 		});
 		optionBox.setCellFactory(param -> {
 			final TreeCell<Setting> cell = new TreeCell<Setting>() {
+				{
+					setOnMouseClicked(new EventHandler<Event>() {
+
+						@Override
+						public void handle(Event event) {
+							getItem().getTogglable().onToggled(getThis());
+							updateItem(getItem(), isEmpty());
+						}
+					});
+
+				}
 
 				@Override
 				protected void updateItem(final Setting item, final boolean empty) {
@@ -174,13 +245,17 @@ public class Settings extends Page {
 					if (empty)
 						setText("");
 					else
-						setText(item.text);
+						setText(item.getText());
 				}
 
 				@Override
 				public void updateSelected(final boolean selected) {
 					super.updateSelected(selected);
-					getItem().togglable.onToggled(this);
+					updateItem(getItem(), isEmpty());
+				}
+
+				private TreeCell<Setting> getThis() {
+					return this;
 				}
 			};
 			return cell;
