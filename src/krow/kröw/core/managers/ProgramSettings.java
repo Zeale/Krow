@@ -53,22 +53,15 @@ public class ProgramSettings implements Serializable {
 	private boolean shapeBackgroundRespondToMouseMovement = false;
 	private int currentAnimationMode = 0;
 
+	private void bootup() {
+
+	}
+
 	/**
 	 * @return the currentAnimationMode
 	 */
 	public final int getCurrentAnimationMode() {
 		return currentAnimationMode;
-	}
-
-	/**
-	 * @param currentAnimationMode the currentAnimationMode to set
-	 */
-	public final void setCurrentAnimationMode(int currentAnimationMode) {
-		this.currentAnimationMode = currentAnimationMode;
-	}
-
-	private void bootup() {
-
 	}
 
 	/**
@@ -114,6 +107,14 @@ public class ProgramSettings implements Serializable {
 		os.writeObject(this);
 		os.close();
 
+	}
+
+	/**
+	 * @param currentAnimationMode
+	 *            the currentAnimationMode to set
+	 */
+	public final void setCurrentAnimationMode(final int currentAnimationMode) {
+		this.currentAnimationMode = currentAnimationMode;
 	}
 
 	/**

@@ -13,7 +13,6 @@ import krow.guis.GUIHelper;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
-import zeale.guis.Settings.Setting;
 
 public class Settings extends Page {
 
@@ -120,17 +119,13 @@ public class Settings extends Page {
 								}),
 						new Setting("Current animation mode: "
 								+ (Kröw.getProgramSettings().getCurrentAnimationMode() == 0 ? "Normal" : "Lengthy"),
-								new Togglable() {
-
-									@Override
-									public void onToggled(TreeCell<Setting> cell) {
-										Kröw.getProgramSettings().setCurrentAnimationMode(
-												Kröw.getProgramSettings().getCurrentAnimationMode() == 0 ? 1 : 0);
-										cell.getItem()
-												.setText("Current animation mode: "
-														+ (Kröw.getProgramSettings().getCurrentAnimationMode() == 0
-																? "Normal" : "Lengthy"));
-									}
+								cell -> {
+									Kröw.getProgramSettings().setCurrentAnimationMode(
+											Kröw.getProgramSettings().getCurrentAnimationMode() == 0 ? 1 : 0);
+									cell.getItem()
+											.setText("Current animation mode: "
+													+ (Kröw.getProgramSettings().getCurrentAnimationMode() == 0
+															? "Normal" : "Lengthy"));
 								}))));
 
 		/*

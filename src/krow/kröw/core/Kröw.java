@@ -580,10 +580,6 @@ public final class Kröw extends Application {
 		return list;
 	}
 
-	public static ProgramSettings getProgramSettings() {
-		return programSettings;
-	}
-
 	public static final Image getImageFromFile(final File dir, final int width, final int height)
 			throws FileNotFoundException {
 		return SwingFXUtils
@@ -612,6 +608,10 @@ public final class Kröw extends Application {
 			if (!c.getGender())
 				list.add(c);
 		return list;
+	}
+
+	public static ProgramSettings getProgramSettings() {
+		return programSettings;
 	}
 
 	/**
