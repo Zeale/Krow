@@ -98,16 +98,34 @@ public final class SystemTrayManager {
 					"Kröw", popup);
 			icon.setImageAutoSize(true);
 
-			icon.addActionListener(new ActionListener() {
+			if (Kröw.getProgramSettings().isOpenProgramOnDoubleClickTrayIcon())
+				addActionListener();
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					Platform.runLater(show);
-				}
-			});
-
-			showIcon();
+			if (Kröw.getProgramSettings().isUseTrayIcon())
+				showIcon();
 		}
+	}
+
+	private static ActionListener openOnActionListener = new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Platform.runLater(() -> {
+
+				WindowManager.getStage().show();
+				WindowManager.getStage().setIconified(false);
+				WindowManager.getStage().toFront();
+
+			});
+		}
+	};
+
+	public void addActionListener() {
+		icon.addActionListener(openOnActionListener);
+	}
+
+	public void removeActionListener() {
+		icon.removeActionListener(openOnActionListener);
 	}
 
 	public boolean showIcon() {
