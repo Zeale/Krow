@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
@@ -118,8 +119,16 @@ public class Tools extends Page {
 		private LaunchableTool(final Button button) {
 			super(button);
 			button.setOnAction(event -> {
-				if (!launchProcess())
-					WindowManager.spawnLabelAtMousePos("The process could not be started...", Color.FIREBRICK);
+
+				new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						if (!launchProcess())
+							Platform.runLater(() -> WindowManager
+									.spawnLabelAtMousePos("The process could not be started...", Color.FIREBRICK));
+					}
+				}).start();
 			});
 		}
 
