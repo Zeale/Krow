@@ -55,8 +55,6 @@ public class ProgramSettings implements Serializable {
 
 	private boolean useTrayIcon = false;
 	private boolean openProgramOnDoubleClickTrayIcon = true;
-	
-	
 
 	/**
 	 * @return the useTrayIcon
@@ -66,10 +64,12 @@ public class ProgramSettings implements Serializable {
 	}
 
 	/**
-	 * @param useTrayIcon the useTrayIcon to set
+	 * @param useTrayIcon
+	 *            the useTrayIcon to set
 	 */
 	public final void setUseTrayIcon(boolean useTrayIcon) {
 		this.useTrayIcon = useTrayIcon;
+		// TODO Apply this to runtime trayicon
 	}
 
 	/**
@@ -80,10 +80,12 @@ public class ProgramSettings implements Serializable {
 	}
 
 	/**
-	 * @param openProgramOnDoubleClickTrayIcon the openProgramOnDoubleClickTrayIcon to set
+	 * @param openProgramOnDoubleClickTrayIcon
+	 *            the openProgramOnDoubleClickTrayIcon to set
 	 */
 	public final void setOpenProgramOnDoubleClickTrayIcon(boolean openProgramOnDoubleClickTrayIcon) {
 		this.openProgramOnDoubleClickTrayIcon = openProgramOnDoubleClickTrayIcon;
+		// TODO Apply this to runtime trayicon
 	}
 
 	private void bootup() {

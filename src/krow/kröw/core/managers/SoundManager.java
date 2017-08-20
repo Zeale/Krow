@@ -6,6 +6,7 @@ import java.net.URL;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -42,5 +43,24 @@ public class SoundManager {
 		final Clip clip = AudioSystem.getClip();
 		clip.open(audioIn);
 		clip.start();
+	}
+
+	public void playSound(URL location, float volume)
+			throws LineUnavailableException, UnsupportedAudioFileException, IOException {
+		final AudioInputStream audioIn = AudioSystem.getAudioInputStream(location);
+		final Clip clip = AudioSystem.getClip();
+		clip.open(audioIn);
+		FloatControl vol = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+		vol.setValue(((vol.getMaximum() - vol.getMinimum()) * volume) + vol.getMinimum());
+		clip.start();
+
+	}
+
+	public void playSound(final Sound s, float volume) {
+		try {
+			playSound(s.location, volume);
+		} catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

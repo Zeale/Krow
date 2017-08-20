@@ -298,7 +298,7 @@ public final class GUIHelper {
 						});
 						translator.setInterpolator(Interpolator.EASE_OUT);
 						translator.play();
-						Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP);
+						Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP, 0.9f);
 					}
 				}
 		});
