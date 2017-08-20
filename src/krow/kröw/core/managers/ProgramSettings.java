@@ -69,7 +69,10 @@ public class ProgramSettings implements Serializable {
 	 */
 	public final void setUseTrayIcon(boolean useTrayIcon) {
 		this.useTrayIcon = useTrayIcon;
-		// TODO Apply this to runtime trayicon
+		if (useTrayIcon)
+			Kröw.getSystemTrayManager().showIcon();
+		else
+			Kröw.getSystemTrayManager().hideIcon();
 	}
 
 	/**
@@ -85,7 +88,10 @@ public class ProgramSettings implements Serializable {
 	 */
 	public final void setOpenProgramOnDoubleClickTrayIcon(boolean openProgramOnDoubleClickTrayIcon) {
 		this.openProgramOnDoubleClickTrayIcon = openProgramOnDoubleClickTrayIcon;
-		// TODO Apply this to runtime trayicon
+		if (openProgramOnDoubleClickTrayIcon)
+			Kröw.getSystemTrayManager().addActionListener();
+		else
+			Kröw.getSystemTrayManager().removeActionListener();
 	}
 
 	private void bootup() {
