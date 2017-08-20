@@ -3,8 +3,6 @@ package zeale.guis;
 import java.util.ArrayList;
 import java.util.Random;
 
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
@@ -41,14 +39,6 @@ public class Settings extends Page {
 		}
 
 		/**
-		 * @param text
-		 *            the text to set
-		 */
-		public final void setText(String text) {
-			this.text = text;
-		}
-
-		/**
 		 * @return the togglable
 		 */
 		public final Togglable getTogglable() {
@@ -56,10 +46,18 @@ public class Settings extends Page {
 		}
 
 		/**
+		 * @param text
+		 *            the text to set
+		 */
+		public final void setText(final String text) {
+			this.text = text;
+		}
+
+		/**
 		 * @param togglable
 		 *            the togglable to set
 		 */
-		public final void setTogglable(Togglable togglable) {
+		public final void setTogglable(final Togglable togglable) {
 			this.togglable = togglable;
 		}
 
@@ -102,27 +100,24 @@ public class Settings extends Page {
 		/*
 		 * addItem(new TreeItem<>(new SettingTab("General", new
 		 * Setting("Open on startup"))));
-		 * 
+		 *
 		 * addItem(new TreeItem<>(new SettingTab("Keys", new Setting("Test1"),
 		 * new Setting(""), new Setting("Test3")))); addItem(new TreeItem<>(new
 		 * SettingTab("Video"))); addItem(new TreeItem<>(new
 		 * SettingTab("Sound")));
 		 */
 
-		addItem(new TreeItem<Settings.SettingTab>(new SettingTab("Visual",
+		addItem(new TreeItem<>(new SettingTab("Visual",
 				new Setting("Background mouse response: "
 						+ (Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement() ? "on" : "off"),
-						new Togglable() {
+						cell -> {
+							Kröw.getGlobalSettingsManager().setShapeBackgroundRespondToMouseMovement(
+									!Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement());
+							cell.getTreeItem().getValue()
+									.setText("Background mouse response: "
+											+ (Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement()
+													? "on" : "off"));
 
-							@Override
-							public void onToggled(TreeCell<Setting> cell) {
-								Kröw.getGlobalSettingsManager().setShapeBackgroundRespondToMouseMovement(
-										!Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement());
-								cell.getTreeItem().getValue().setText("Background mouse response: "
-										+ (Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement()
-												? "on" : "off"));
-
-							}
 						}))));
 
 		/*
@@ -138,7 +133,7 @@ public class Settings extends Page {
 		 * TreeItem<>(new SettingTab("SubMenu5", new Setting("Potato"))));
 		 * settingTab.getChildren().add(new TreeItem<>(new
 		 * SettingTab("SubMenu6"))); addItem(settingTab);
-		 * 
+		 *
 		 * settingTab = new TreeItem<>(new SettingTab("Menu2", new
 		 * Setting("AlsoTest"))); settingTab.getChildren().add(new
 		 * TreeItem<>(new SettingTab("SubMenu1", new Setting("Potato"))));
@@ -227,15 +222,15 @@ public class Settings extends Page {
 		optionBox.setCellFactory(param -> {
 			final TreeCell<Setting> cell = new TreeCell<Setting>() {
 				{
-					setOnMouseClicked(new EventHandler<Event>() {
-
-						@Override
-						public void handle(Event event) {
-							getItem().getTogglable().onToggled(getThis());
-							updateItem(getItem(), isEmpty());
-						}
+					setOnMouseClicked(event -> {
+						getItem().getTogglable().onToggled(getThis());
+						updateItem(getItem(), isEmpty());
 					});
 
+				}
+
+				private TreeCell<Setting> getThis() {
+					return this;
 				}
 
 				@Override
@@ -252,10 +247,6 @@ public class Settings extends Page {
 				public void updateSelected(final boolean selected) {
 					super.updateSelected(selected);
 					updateItem(getItem(), isEmpty());
-				}
-
-				private TreeCell<Setting> getThis() {
-					return this;
 				}
 			};
 			return cell;

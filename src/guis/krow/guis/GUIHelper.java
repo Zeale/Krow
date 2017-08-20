@@ -12,7 +12,6 @@ import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.effect.BlurType;
@@ -118,6 +117,14 @@ public final class GUIHelper {
 		MENU_CHILD_NODE_FONT_SIZE = (int) Math.round(size);
 	}
 
+	private static final int SHAPE_COUNT = 50;
+
+	private static final double SHAPE_RADIUS = 50;
+
+	private static final Color SHAPE_COLOR = Color.BLACK;
+	private static final double SHAPE_MOVE_DURATION = 8;
+	private static final Object TRANSLATOR_KEY = new Object(), IS_BEING_SHOVED_KEY = new Object();
+
 	public static void addDefaultSettings(final VBox vbox) {
 		final List<Node> children = vbox.getChildren();
 
@@ -175,14 +182,10 @@ public final class GUIHelper {
 		});
 
 		sendProgramToBack.setOnMouseClicked(event -> WindowManager.getStage().toBack());
-		switchAnimationMode.setOnMouseClicked(new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION ^= true;
-				switchAnimationMode.setText(
-						"Current animation mode: " + (MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION ? 1 : 2));
-			}
+		switchAnimationMode.setOnMouseClicked(event -> {
+			MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION ^= true;
+			switchAnimationMode.setText(
+					"Current animation mode: " + (MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION ? 1 : 2));
 		});
 
 		children.add(close);
@@ -193,6 +196,124 @@ public final class GUIHelper {
 		children.add(sendProgramToBack);
 		// children.add(synthesizerText);
 		children.add(switchAnimationMode);
+	}
+
+	public static void applyShapeBackground(final Pane pane) {
+		final ArrayList<Shape> shapes = new ArrayList<>();
+		final Random random = new Random();
+		for (int i = 0; i < SHAPE_COUNT; i++) {
+			final Circle c = new Circle(SHAPE_RADIUS);
+			c.setStroke(SHAPE_COLOR);
+			c.setFill(Color.TRANSPARENT);
+			c.setEffect(new DropShadow(BlurType.GAUSSIAN, SHAPE_COLOR, 20, 0.5, 0, 0));
+			c.setLayoutX(0);
+			c.setLayoutY(0);
+			c.setTranslateX(random.nextInt((int) Kröw.getSystemProperties().getScreenWidth()) - SHAPE_RADIUS);
+			c.setTranslateY(random.nextInt((int) Kröw.getSystemProperties().getScreenHeight()) - SHAPE_RADIUS);
+			final TranslateTransition translator = new TranslateTransition();
+			translator.setNode(c);
+			c.getProperties().put(TRANSLATOR_KEY, translator);
+			new Object() {
+				{
+					translator.setDuration(Duration.seconds(generateRandomMultiplier() * SHAPE_MOVE_DURATION));
+					translator.setByX(calculateByX());
+					translator.setByY(calculateByY());
+					translator.setInterpolator(Interpolator.EASE_OUT);
+
+					translator.setOnFinished(event -> animate());
+
+				}
+
+				private void animate() {
+					final double multiplier = generateRandomMultiplier();
+					translator.setByX(calculateByX() * multiplier);
+					translator.setByY(calculateByY() * multiplier);
+					translator.setDuration(Duration.seconds(SHAPE_MOVE_DURATION * multiplier));
+					translator.play();
+				}
+
+				private double calculateByX() {
+					double numb = generateRand();
+					if (numb + c.getLayoutX() + c.getTranslateX() > Kröw.getSystemProperties().getScreenWidth())
+						numb -= 100;
+
+					if (numb + c.getLayoutX() + c.getTranslateX() < 0)
+						numb += 100;
+
+					return numb;
+				}
+
+				private double calculateByY() {
+					double numb = generateRand();
+					if (numb + c.getLayoutY() + c.getTranslateY() > Kröw.getSystemProperties().getScreenHeight())
+						numb -= 100;
+
+					if (numb + c.getLayoutY() + c.getTranslateY() < 0)
+						numb += 100;
+
+					return numb;
+				}
+
+				private double generateRand() {
+					return generateRand(random.nextBoolean());
+				}
+
+				private double generateRand(final boolean positive) {
+					return (random.nextInt(50) + 50) * (positive ? 1 : -1);
+				}
+
+				private double generateRandomMultiplier() {
+					return 1 - random.nextDouble() / 8;
+				}
+
+			};
+
+			c.setCache(true);
+
+			shapes.add(c);
+			translator.play();
+		}
+
+		pane.setOnMouseMoved(event -> {
+			final double mouseX = event.getSceneX(), mouseY = event.getSceneY();
+			for (final Shape s : shapes)
+				if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY)
+						&& Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement()) {
+					final double shapeX = s.getLayoutX() + s.getTranslateX(),
+							shapeY = s.getLayoutY() + s.getTranslateY();
+
+					final double distX = mouseX - shapeX, distY = mouseY - shapeY;
+					final double distance = Math.sqrt(distX * distX + distY * distY);
+					if (distance <= SHAPE_RADIUS * 2) {
+
+						final TranslateTransition translator = (TranslateTransition) s.getProperties()
+								.get(TRANSLATOR_KEY);
+
+						translator.stop();
+
+						translator.setByX(-distX * 3);
+						translator.setByY(-distY * 3);
+						translator
+								.setDuration(Duration.seconds((1 - random.nextDouble() / 8) * SHAPE_MOVE_DURATION / 3));
+
+						final EventHandler<ActionEvent> onFinished = translator.getOnFinished();
+						s.getProperties().put(IS_BEING_SHOVED_KEY, true);
+						final Interpolator interpolator = translator.getInterpolator();
+						translator.setOnFinished(event1 -> {
+							s.getProperties().remove(IS_BEING_SHOVED_KEY);
+							translator.setOnFinished(onFinished);
+							translator.setInterpolator(interpolator);
+							onFinished.handle(event1);
+						});
+						translator.setInterpolator(Interpolator.EASE_OUT);
+						translator.play();
+						Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP);
+					}
+				}
+		});
+
+		for (final Shape s : shapes)
+			pane.getChildren().add(0, s);
 	}
 
 	public static VBox buildMenu(final Pane pane) {
@@ -424,140 +545,6 @@ public final class GUIHelper {
 
 		return menu;
 
-	}
-
-	private static final int SHAPE_COUNT = 50;
-	private static final double SHAPE_RADIUS = 50;
-	private static final Color SHAPE_COLOR = Color.BLACK;
-	private static final double SHAPE_MOVE_DURATION = 8;
-	private static final Object TRANSLATOR_KEY = new Object(), IS_BEING_SHOVED_KEY = new Object();
-
-	public static void applyShapeBackground(Pane pane) {
-		ArrayList<Shape> shapes = new ArrayList<>();
-		Random random = new Random();
-		for (int i = 0; i < SHAPE_COUNT; i++) {
-			Circle c = new Circle(SHAPE_RADIUS);
-			c.setStroke(SHAPE_COLOR);
-			c.setFill(Color.TRANSPARENT);
-			c.setEffect(new DropShadow(BlurType.GAUSSIAN, SHAPE_COLOR, 20, 0.5, 0, 0));
-			c.setLayoutX(0);
-			c.setLayoutY(0);
-			c.setTranslateX(random.nextInt((int) Kröw.getSystemProperties().getScreenWidth()) - SHAPE_RADIUS);
-			c.setTranslateY(random.nextInt((int) Kröw.getSystemProperties().getScreenHeight()) - SHAPE_RADIUS);
-			TranslateTransition translator = new TranslateTransition();
-			translator.setNode(c);
-			c.getProperties().put(TRANSLATOR_KEY, translator);
-			new Object() {
-				{
-					translator.setDuration(Duration.seconds(generateRandomMultiplier() * SHAPE_MOVE_DURATION));
-					translator.setByX(calculateByX());
-					translator.setByY(calculateByY());
-					translator.setInterpolator(Interpolator.EASE_OUT);
-
-					translator.setOnFinished(event -> animate());
-
-				}
-
-				private double generateRandomMultiplier() {
-					return (double) 1 - random.nextDouble() / 8;
-				}
-
-				private double generateRand(boolean positive) {
-					return (random.nextInt(50) + 50) * (positive ? 1 : -1);
-				}
-
-				private double generateRand() {
-					return generateRand(random.nextBoolean());
-				}
-
-				private double calculateByX() {
-					double numb = generateRand();
-					if (numb + c.getLayoutX() + c.getTranslateX() > Kröw.getSystemProperties().getScreenWidth())
-						numb -= 100;
-
-					if (numb + c.getLayoutX() + c.getTranslateX() < 0)
-						numb += 100;
-
-					return numb;
-				}
-
-				private double calculateByY() {
-					double numb = generateRand();
-					if (numb + c.getLayoutY() + c.getTranslateY() > Kröw.getSystemProperties().getScreenHeight())
-						numb -= 100;
-
-					if (numb + c.getLayoutY() + c.getTranslateY() < 0)
-						numb += 100;
-
-					return numb;
-				}
-
-				private void animate() {
-					double multiplier = generateRandomMultiplier();
-					translator.setByX(calculateByX() * multiplier);
-					translator.setByY(calculateByY() * multiplier);
-					translator.setDuration(Duration.seconds(SHAPE_MOVE_DURATION * multiplier));
-					translator.play();
-				}
-
-			};
-
-			c.setCache(true);
-
-			shapes.add(c);
-			translator.play();
-		}
-
-		pane.setOnMouseMoved(new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent event) {
-				double mouseX = event.getSceneX(), mouseY = event.getSceneY();
-				for (Shape s : shapes) {
-					if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY)
-							&& Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement()) {
-						double shapeX = s.getLayoutX() + s.getTranslateX(), shapeY = s.getLayoutY() + s.getTranslateY();
-
-						double distX = mouseX - shapeX, distY = mouseY - shapeY;
-						double distance = Math.sqrt(distX * distX + distY * distY);
-						if (distance <= SHAPE_RADIUS * 2) {
-
-							TranslateTransition translator = (TranslateTransition) s.getProperties()
-									.get(TRANSLATOR_KEY);
-
-							translator.stop();
-
-							translator.setByX(-distX * 3);
-							translator.setByY(-distY * 3);
-							translator.setDuration(
-									Duration.seconds(((double) 1 - random.nextDouble() / 8) * SHAPE_MOVE_DURATION / 3));
-
-							EventHandler<ActionEvent> onFinished = translator.getOnFinished();
-							s.getProperties().put(IS_BEING_SHOVED_KEY, true);
-							Interpolator interpolator = translator.getInterpolator();
-							translator.setOnFinished(new EventHandler<ActionEvent>() {
-
-								@Override
-								public void handle(ActionEvent event) {
-									s.getProperties().remove(IS_BEING_SHOVED_KEY);
-									translator.setOnFinished(onFinished);
-									translator.setInterpolator(interpolator);
-									onFinished.handle(event);
-								}
-
-							});
-							translator.setInterpolator(Interpolator.EASE_OUT);
-							translator.play();
-							Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP);
-						}
-					}
-				}
-			}
-
-		});
-
-		for (Shape s : shapes)
-			pane.getChildren().add(0, s);
 	}
 
 }

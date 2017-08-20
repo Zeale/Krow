@@ -87,22 +87,6 @@ public final class Kröw extends Application {
 
 	public static final EventHandler<Event> CLOSE_PROGRAM_EVENT_HANDLER = event -> Kröw.exit();
 
-	public static double scaleWidth(double width) {
-		return width * 1920 / Kröw.getSystemProperties().getScreenWidth();
-	}
-
-	public static double scaleHeight(double height) {
-		return height * 1920 / Kröw.getSystemProperties().getScreenHeight();
-	}
-
-	public static int scaleWidth(int width) {
-		return (int) ((double) width * 1920 / Kröw.getSystemProperties().getScreenWidth());
-	}
-
-	public static int scaleHeight(int height) {
-		return (int) ((double) height * 1920 / Kröw.getSystemProperties().getScreenHeight());
-	}
-
 	/*
 	 * Construct Mindset
 	 */
@@ -138,6 +122,7 @@ public final class Kröw extends Application {
 	public static final File KRÖW_HOME_DIRECTORY = new File(USER_APPDATA_DIRECTORY, "Krow");
 
 	public static final File KRÖW_INSTALL_FILE;
+
 	static {
 		URL iconURL = null;
 		try {
@@ -209,7 +194,6 @@ public final class Kröw extends Application {
 	 * The directory for data storage of this application.
 	 */
 	public final static File DATA_DIRECTORY = new File(KRÖW_HOME_DIRECTORY, "Data");
-
 	public static final File MANAGER_DIRECTORY = new File(KRÖW_HOME_DIRECTORY, "Program Managers");
 
 	/**
@@ -264,6 +248,7 @@ public final class Kröw extends Application {
 			CREDITS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Credits.txt"),
 			PLANS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Plans.txt"),
 			DATA_INCLUDES_FILE = new File(KRÖW_HOME_DIRECTORY, "includes.kcfg");
+
 	/**
 	 * <p>
 	 * {@link #IMAGE_LIGHT_CROW} - The light colored crow image that is used for
@@ -285,9 +270,10 @@ public final class Kröw extends Application {
 	private static ProgramSettings settings;
 
 	private static SoundManager soundManager = new SoundManager();
-
 	private static SystemProperties systemProperties = new SystemProperties();
+
 	private static SystemTrayManager systemTrayManager = new SystemTrayManager();
+
 	static {
 
 		// Create the following folders if they don't already exist and catch
@@ -307,8 +293,7 @@ public final class Kröw extends Application {
 				settings = ProgramSettings.loadManager(ProgramSettings.DEFAULT_FILE_PATH);
 			} catch (final FileNotFoundException e) {
 				try {
-					settings = ProgramSettings
-							.createManager(ProgramSettings.DEFAULT_FILE_PATH);
+					settings = ProgramSettings.createManager(ProgramSettings.DEFAULT_FILE_PATH);
 				} catch (final IOException e1) {
 					e1.printStackTrace();
 				}
@@ -326,6 +311,7 @@ public final class Kröw extends Application {
 		}
 
 	}
+
 	static {
 
 		Image dark = null, light = null, kröw = null;
@@ -1005,6 +991,22 @@ public final class Kröw extends Application {
 			} catch (final IOException e) {
 				System.err.println("Could not save the System " + s.getName());
 			}
+	}
+
+	public static double scaleHeight(final double height) {
+		return height * 1920 / Kröw.getSystemProperties().getScreenHeight();
+	}
+
+	public static int scaleHeight(final int height) {
+		return (int) ((double) height * 1920 / Kröw.getSystemProperties().getScreenHeight());
+	}
+
+	public static double scaleWidth(final double width) {
+		return width * 1920 / Kröw.getSystemProperties().getScreenWidth();
+	}
+
+	public static int scaleWidth(final int width) {
+		return (int) ((double) width * 1920 / Kröw.getSystemProperties().getScreenWidth());
 	}
 
 	/**

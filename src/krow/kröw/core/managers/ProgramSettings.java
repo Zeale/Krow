@@ -50,6 +50,8 @@ public class ProgramSettings implements Serializable {
 
 	private boolean launchOnUserLogIn;
 
+	private boolean shapeBackgroundRespondToMouseMovement = false;
+
 	private void bootup() {
 
 	}
@@ -66,6 +68,10 @@ public class ProgramSettings implements Serializable {
 	 */
 	public final boolean isLaunchOnUserLogIn() {
 		return launchOnUserLogIn;
+	}
+
+	public boolean isShapeBackgroundRespondToMouseMovement() {
+		return shapeBackgroundRespondToMouseMovement;
 	}
 
 	private void readObject(final ObjectInputStream is) throws IOException {
@@ -111,19 +117,13 @@ public class ProgramSettings implements Serializable {
 		this.launchOnUserLogIn = launchOnUserLogIn;
 	}
 
+	public void setShapeBackgroundRespondToMouseMovement(final boolean shapeBackgroundRespondToMouseMovement) {
+		this.shapeBackgroundRespondToMouseMovement = shapeBackgroundRespondToMouseMovement;
+	}
+
 	private void writeObject(final ObjectOutputStream os) throws IOException {
 		os.writeLong(version);
 		os.defaultWriteObject();
 
-	}
-
-	private boolean shapeBackgroundRespondToMouseMovement = false;
-
-	public void setShapeBackgroundRespondToMouseMovement(boolean shapeBackgroundRespondToMouseMovement) {
-		this.shapeBackgroundRespondToMouseMovement = shapeBackgroundRespondToMouseMovement;
-	}
-
-	public boolean isShapeBackgroundRespondToMouseMovement() {
-		return shapeBackgroundRespondToMouseMovement;
 	}
 }

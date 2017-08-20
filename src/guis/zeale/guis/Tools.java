@@ -38,11 +38,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import krow.guis.GUIHelper;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
 import sun.awt.shell.ShellFolder;
-import krow.guis.GUIHelper;
 
 public class Tools extends Page {
 
@@ -120,14 +120,10 @@ public class Tools extends Page {
 			super(button);
 			button.setOnAction(event -> {
 
-				new Thread(new Runnable() {
-
-					@Override
-					public void run() {
-						if (!launchProcess())
-							Platform.runLater(() -> WindowManager
-									.spawnLabelAtMousePos("The process could not be started...", Color.FIREBRICK));
-					}
+				new Thread(() -> {
+					if (!launchProcess())
+						Platform.runLater(() -> WindowManager
+								.spawnLabelAtMousePos("The process could not be started...", Color.FIREBRICK));
 				}).start();
 			});
 		}
