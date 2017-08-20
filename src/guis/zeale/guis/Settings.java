@@ -9,6 +9,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import krow.guis.GUIHelper;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
@@ -16,9 +17,11 @@ import kröw.core.managers.WindowManager.Page;
 
 public class Settings extends Page {
 
-	public final class Setting {
+	public class Setting {
 		private String text;
 		private Togglable togglable;
+
+		private ArrayList<TreeItem<Setting>> children = new ArrayList<>();
 
 		public Setting(final String text) {
 			this.text = text;
@@ -27,6 +30,14 @@ public class Settings extends Page {
 		public Setting(final String text, final Togglable togglable) {
 			this.text = text;
 			this.togglable = togglable;
+		}
+
+		@SafeVarargs
+		public Setting(String text, Togglable togglable, TreeItem<Setting>... children) {
+			this.text = text;
+			this.togglable = togglable;
+			for (TreeItem<Setting> s : children)
+				this.children.add(s);
 		}
 
 		/**
@@ -59,10 +70,14 @@ public class Settings extends Page {
 			this.togglable = togglable;
 		}
 
+		public ArrayList<TreeItem<Setting>> getChildren() {
+			return children;
+		}
+
 	}
 
 	public final class SettingTab {
-		private final String text;
+		private String text;
 		private final ArrayList<Setting> children = new ArrayList<>();
 
 		public SettingTab(final String text, final Setting... children) {
@@ -74,6 +89,28 @@ public class Settings extends Page {
 		@Override
 		public String toString() {
 			return super.toString() + "text=[" + text + "],child-count=[" + children.size() + "]";
+		}
+
+		/**
+		 * @return the text
+		 */
+		public final String getText() {
+			return text;
+		}
+
+		/**
+		 * @param text
+		 *            the text to set
+		 */
+		public final void setText(String text) {
+			this.text = text;
+		}
+
+		/**
+		 * @return the children
+		 */
+		public final ArrayList<Setting> getChildren() {
+			return children;
 		}
 
 	}
@@ -128,6 +165,48 @@ public class Settings extends Page {
 															? "Normal" : "Lengthy"));
 								}))));
 
+		TreeItem<SettingTab> program = new TreeItem<>(new SettingTab("Program"));
+
+		TreeItem<Setting> openOnDoubleClick = new TreeItem<Setting>(new Setting(
+				"Open with tray icon: "
+						+ (Kröw.getProgramSettings().isOpenProgramOnDoubleClickTrayIcon() ? "Yes" : "No"),
+				new Togglable() {
+
+					@Override
+					public void onToggled(TreeCell<Setting> cell) {
+						Kröw.getProgramSettings().setOpenProgramOnDoubleClickTrayIcon(
+								!Kröw.getProgramSettings().isOpenProgramOnDoubleClickTrayIcon());
+						cell.getTreeItem().getValue().setText("Open with tray icon: "
+								+ (Kröw.getProgramSettings().isOpenProgramOnDoubleClickTrayIcon() ? "Yes" : "No"));
+					}
+				}));
+
+		Setting useTrayIcon = new Setting(
+				"Use tray icon: " + (Kröw.getProgramSettings().isUseTrayIcon() ? "Yes" : "No"));
+
+		useTrayIcon.setTogglable(new Togglable() {
+
+			@Override
+			public void onToggled(TreeCell<Setting> cell) {
+				Kröw.getProgramSettings().setUseTrayIcon(!Kröw.getProgramSettings().isUseTrayIcon());
+				useTrayIcon.setText("Use tray icon: " + (Kröw.getProgramSettings().isUseTrayIcon() ? "Yes" : "No"));
+
+				if (Kröw.getProgramSettings().isUseTrayIcon()) {
+					useTrayIcon.getChildren().add(openOnDoubleClick);
+					openOnDoubleClick.getValue().setText("Open with tray icon: "
+							+ (Kröw.getProgramSettings().isOpenProgramOnDoubleClickTrayIcon() ? "Yes" : "No"));
+				} else {
+					useTrayIcon.getChildren().remove(openOnDoubleClick);
+				}
+
+			}
+		});
+
+		if (Kröw.getProgramSettings().isUseTrayIcon())
+			useTrayIcon.getChildren().add(openOnDoubleClick);
+
+		program.getValue().getChildren().add(useTrayIcon);
+		addItem(program);
 		/*
 		 * TreeItem<SettingTab> settingTab = new TreeItem<>(new
 		 * SettingTab("Menu1", new Setting("Okay")));
@@ -182,7 +261,6 @@ public class Settings extends Page {
 					super.updateItem(settingTab, empty);
 
 					String background;
-
 					if ((getIndex() & 1) == 1)
 						background = "#00000040";
 					else
@@ -192,7 +270,7 @@ public class Settings extends Page {
 						background = "transparent";
 						setText("");
 					} else
-						setText(settingTab.text);
+						setText(settingTab.getText());
 					if (getTreeItem() != null)
 						if (getTreeItem().getParent() != getTreeView().getRoot()) {
 							final Random rand = new Random();
@@ -231,6 +309,11 @@ public class Settings extends Page {
 			final TreeCell<Setting> cell = new TreeCell<Setting>() {
 				{
 					setOnMouseClicked(event -> {
+						if (event.getPickResult().getIntersectedNode() instanceof StackPane) {
+							event.consume();
+							return;
+						}
+
 						getItem().getTogglable().onToggled(getThis());
 						updateItem(getItem(), isEmpty());
 					});
@@ -249,6 +332,13 @@ public class Settings extends Page {
 						setText("");
 					else
 						setText(item.getText());
+					if (!(getTreeItem() == null)) {
+						getTreeItem().getChildren().clear();
+						for (TreeItem<Setting> s : getTreeItem().getValue().getChildren())
+							getTreeItem().getChildren().add(s);
+
+					}
+
 				}
 
 				@Override
