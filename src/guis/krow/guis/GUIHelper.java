@@ -106,7 +106,6 @@ public final class GUIHelper {
 	private static final Duration DEFAULT_MENU_CHILD_NODE_HOVER_ANIMATION_DURATION = Duration.seconds(0.6);
 	private static final Duration MENU_CHILD_NODE_HOVER_ANIMATION_ENTER_DURATION = Duration.seconds(0.35);
 	private static final Duration MENU_CHILD_NODE_HOVER_ANIMATION_EXIT_DURATION = Duration.seconds(1);
-	private static boolean MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION = true;
 	private static final Color MENU_CHILD_NODE_START_COLOR = Color.BLACK,
 			MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR = Color.WHITE;
 	private static final int MENU_CHILD_NODE_FONT_SIZE;
@@ -132,10 +131,7 @@ public final class GUIHelper {
 				goBack = new Text("Go Back"), hideProgram = new Text("Hide Program"),
 				sendProgramToBack = new Text("Send to back");
 		final Text systemTray = new Text(
-				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show")),
-				switchAnimationMode = new Text(
-						"Current animation mode: " + (MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION ? 1 : 2));
-
+				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
 		close.setOnMouseClicked(Kröw.CLOSE_PROGRAM_EVENT_HANDLER);
 
 		goHome.setOnMouseClicked(event -> {
@@ -173,6 +169,7 @@ public final class GUIHelper {
 			else
 				WindowManager.spawnLabelAtMousePos("Something went wrong...", Color.FIREBRICK);
 		});
+
 		hideProgram.setOnMouseClicked(event -> {
 			WindowManager.getStage().hide();
 			if (!(Kröw.getSystemTrayManager().isIconShowing() || Kröw.getSystemTrayManager().showIcon())) {
@@ -182,11 +179,6 @@ public final class GUIHelper {
 		});
 
 		sendProgramToBack.setOnMouseClicked(event -> WindowManager.getStage().toBack());
-		switchAnimationMode.setOnMouseClicked(event -> {
-			MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION ^= true;
-			switchAnimationMode.setText(
-					"Current animation mode: " + (MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION ? 1 : 2));
-		});
 
 		children.add(close);
 		children.add(goHome);
@@ -195,7 +187,6 @@ public final class GUIHelper {
 		children.add(hideProgram);
 		children.add(sendProgramToBack);
 		// children.add(synthesizerText);
-		children.add(switchAnimationMode);
 	}
 
 	public static void applyShapeBackground(final Pane pane) {
@@ -278,7 +269,7 @@ public final class GUIHelper {
 			final double mouseX = event.getSceneX(), mouseY = event.getSceneY();
 			for (final Shape s : shapes)
 				if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY)
-						&& Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement()) {
+						&& Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement()) {
 					final double shapeX = s.getLayoutX() + s.getTranslateX(),
 							shapeY = s.getLayoutY() + s.getTranslateY();
 
@@ -381,7 +372,7 @@ public final class GUIHelper {
 							t.setOnMouseEntered(event -> {
 								Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
 								ft.stop();
-								ft.setDuration(MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION
+								ft.setDuration(Kröw.getProgramSettings().getCurrentAnimationMode() == 0
 										? MENU_BUTTON_ANIMATION_DURATION
 										: MENU_CHILD_NODE_HOVER_ANIMATION_ENTER_DURATION);
 								ft.setFromValue((Color) t.getFill());
@@ -390,7 +381,7 @@ public final class GUIHelper {
 							});
 							t.setOnMouseExited(event -> {
 								ft.stop();
-								ft.setDuration(MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION
+								ft.setDuration(Kröw.getProgramSettings().getCurrentAnimationMode() == 0
 										? MENU_BUTTON_ANIMATION_DURATION
 										: MENU_CHILD_NODE_HOVER_ANIMATION_EXIT_DURATION);
 								ft.setFromValue((Color) t.getFill());

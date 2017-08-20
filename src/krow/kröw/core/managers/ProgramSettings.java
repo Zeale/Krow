@@ -51,6 +51,21 @@ public class ProgramSettings implements Serializable {
 	private boolean launchOnUserLogIn;
 
 	private boolean shapeBackgroundRespondToMouseMovement = false;
+	private int currentAnimationMode = 0;
+
+	/**
+	 * @return the currentAnimationMode
+	 */
+	public final int getCurrentAnimationMode() {
+		return currentAnimationMode;
+	}
+
+	/**
+	 * @param currentAnimationMode the currentAnimationMode to set
+	 */
+	public final void setCurrentAnimationMode(int currentAnimationMode) {
+		this.currentAnimationMode = currentAnimationMode;
+	}
 
 	private void bootup() {
 

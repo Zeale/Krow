@@ -267,7 +267,7 @@ public final class Kröw extends Application {
 	 */
 	public static final String NAME = new String("Kröw");
 
-	private static ProgramSettings settings;
+	private static ProgramSettings programSettings;
 
 	private static SoundManager soundManager = new SoundManager();
 	private static SystemProperties systemProperties = new SystemProperties();
@@ -290,10 +290,10 @@ public final class Kröw extends Application {
 			Kröw.createFolder(MANAGER_DIRECTORY);
 
 			try {
-				settings = ProgramSettings.loadManager(ProgramSettings.DEFAULT_FILE_PATH);
+				programSettings = ProgramSettings.loadManager(ProgramSettings.DEFAULT_FILE_PATH);
 			} catch (final FileNotFoundException e) {
 				try {
-					settings = ProgramSettings.createManager(ProgramSettings.DEFAULT_FILE_PATH);
+					programSettings = ProgramSettings.createManager(ProgramSettings.DEFAULT_FILE_PATH);
 				} catch (final IOException e1) {
 					e1.printStackTrace();
 				}
@@ -580,8 +580,8 @@ public final class Kröw extends Application {
 		return list;
 	}
 
-	public static ProgramSettings getGlobalSettingsManager() {
-		return settings;
+	public static ProgramSettings getProgramSettings() {
+		return programSettings;
 	}
 
 	public static final Image getImageFromFile(final File dir, final int width, final int height)
@@ -1145,7 +1145,7 @@ public final class Kröw extends Application {
 	@Override
 	public void stop() throws Exception {
 		Kröw.saveObjects();
-		settings.save(ProgramSettings.DEFAULT_FILE_PATH);
+		programSettings.save(ProgramSettings.DEFAULT_FILE_PATH);
 
 		super.stop();
 	}

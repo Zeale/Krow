@@ -13,6 +13,7 @@ import krow.guis.GUIHelper;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
+import zeale.guis.Settings.Setting;
 
 public class Settings extends Page {
 
@@ -21,8 +22,6 @@ public class Settings extends Page {
 		private Togglable togglable;
 
 		public Setting(final String text) {
-			togglable = cell -> {
-			};
 			this.text = text;
 		}
 
@@ -107,18 +106,32 @@ public class Settings extends Page {
 		 * SettingTab("Sound")));
 		 */
 
-		addItem(new TreeItem<>(new SettingTab("Visual",
-				new Setting("Background mouse response: "
-						+ (Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement() ? "on" : "off"),
-						cell -> {
-							Kröw.getGlobalSettingsManager().setShapeBackgroundRespondToMouseMovement(
-									!Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement());
-							cell.getTreeItem().getValue()
-									.setText("Background mouse response: "
-											+ (Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement()
+		addItem(new TreeItem<>(
+				new SettingTab("Visual",
+						new Setting("Background mouse response: "
+								+ (Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement() ? "on" : "off"),
+								cell -> {
+									Kröw.getProgramSettings().setShapeBackgroundRespondToMouseMovement(
+											!Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement());
+									cell.getTreeItem().getValue().setText("Background mouse response: "
+											+ (Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement()
 													? "on" : "off"));
 
-						}))));
+								}),
+						new Setting("Current animation mode: "
+								+ (Kröw.getProgramSettings().getCurrentAnimationMode() == 0 ? "Normal" : "Lengthy"),
+								new Togglable() {
+
+									@Override
+									public void onToggled(TreeCell<Setting> cell) {
+										Kröw.getProgramSettings().setCurrentAnimationMode(
+												Kröw.getProgramSettings().getCurrentAnimationMode() == 0 ? 1 : 0);
+										cell.getItem()
+												.setText("Current animation mode: "
+														+ (Kröw.getProgramSettings().getCurrentAnimationMode() == 0
+																? "Normal" : "Lengthy"));
+									}
+								}))));
 
 		/*
 		 * TreeItem<SettingTab> settingTab = new TreeItem<>(new
@@ -158,7 +171,7 @@ public class Settings extends Page {
 
 	@Override
 	public String getWindowFile() {
-		return "ProgramSettings.fxml";
+		return "Settings.fxml";
 	}
 
 	@Override
