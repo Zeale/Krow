@@ -110,17 +110,17 @@ public class Settings extends Page {
 		 */
 
 		addItem(new TreeItem<Settings.SettingTab>(new SettingTab("Visual",
-				new Setting(
-						"Background mouse response: "
-								+ (GUIHelper.isShapeBackgroundRespondToMouseMovement() ? "on" : "off"),
+				new Setting("Background mouse response: "
+						+ (Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement() ? "on" : "off"),
 						new Togglable() {
 
 							@Override
 							public void onToggled(TreeCell<Setting> cell) {
-								GUIHelper.setShapeBackgroundRespondToMouseMovement(
-										!GUIHelper.isShapeBackgroundRespondToMouseMovement());
+								Kröw.getGlobalSettingsManager().setShapeBackgroundRespondToMouseMovement(
+										!Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement());
 								cell.getTreeItem().getValue().setText("Background mouse response: "
-										+ (GUIHelper.isShapeBackgroundRespondToMouseMovement() ? "on" : "off"));
+										+ (Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement()
+												? "on" : "off"));
 
 							}
 						}))));

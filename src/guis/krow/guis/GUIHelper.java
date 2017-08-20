@@ -432,16 +432,6 @@ public final class GUIHelper {
 	private static final double SHAPE_MOVE_DURATION = 8;
 	private static final Object TRANSLATOR_KEY = new Object(), IS_BEING_SHOVED_KEY = new Object();
 
-	private static boolean shapeBackgroundRespondToMouseMovement = false;
-
-	public static void setShapeBackgroundRespondToMouseMovement(boolean shapeBackgroundRespondToMouseMovement) {
-		GUIHelper.shapeBackgroundRespondToMouseMovement = shapeBackgroundRespondToMouseMovement;
-	}
-
-	public static boolean isShapeBackgroundRespondToMouseMovement() {
-		return shapeBackgroundRespondToMouseMovement;
-	}
-
 	public static void applyShapeBackground(Pane pane) {
 		ArrayList<Shape> shapes = new ArrayList<>();
 		Random random = new Random();
@@ -524,7 +514,8 @@ public final class GUIHelper {
 			public void handle(MouseEvent event) {
 				double mouseX = event.getSceneX(), mouseY = event.getSceneY();
 				for (Shape s : shapes) {
-					if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY) && shapeBackgroundRespondToMouseMovement) {
+					if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY)
+							&& Kröw.getGlobalSettingsManager().isShapeBackgroundRespondToMouseMovement()) {
 						double shapeX = s.getLayoutX() + s.getTranslateX(), shapeY = s.getLayoutY() + s.getTranslateY();
 
 						double distX = mouseX - shapeX, distY = mouseY - shapeY;

@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import krow.guis.GUIHelper;
 import kröw.core.Kröw;
 
 public class GlobalSettingsManager implements Serializable {
@@ -115,5 +116,15 @@ public class GlobalSettingsManager implements Serializable {
 		os.writeLong(version);
 		os.defaultWriteObject();
 
+	}
+
+	private boolean shapeBackgroundRespondToMouseMovement = false;
+
+	public void setShapeBackgroundRespondToMouseMovement(boolean shapeBackgroundRespondToMouseMovement) {
+		this.shapeBackgroundRespondToMouseMovement = shapeBackgroundRespondToMouseMovement;
+	}
+
+	public boolean isShapeBackgroundRespondToMouseMovement() {
+		return shapeBackgroundRespondToMouseMovement;
 	}
 }
