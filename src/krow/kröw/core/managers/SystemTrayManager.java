@@ -6,6 +6,8 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 
@@ -95,6 +97,14 @@ public final class SystemTrayManager {
 			icon = new TrayIcon(new ImageIcon(SystemTray.class.getResource("/krow/resources/Kröw_hd.png")).getImage(),
 					"Kröw", popup);
 			icon.setImageAutoSize(true);
+
+			icon.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Platform.runLater(show);
+				}
+			});
 
 			showIcon();
 		}
