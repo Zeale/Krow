@@ -18,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import krow.guis.GUIHelper;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
@@ -176,6 +177,7 @@ public class Home extends Page {
 		loadDefaultImages();
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
+		GUIHelper.applyShapeBackground(pane);
 	}
 
 	private final void loadDefaultImages() {

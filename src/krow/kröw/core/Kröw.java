@@ -50,7 +50,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
-import kröw.core.managers.GlobalSettingsManager;
+import kröw.core.managers.ProgramSettings;
 import kröw.core.managers.SoundManager;
 import kröw.core.managers.SystemProperties;
 import kröw.core.managers.SystemTrayManager;
@@ -87,22 +87,6 @@ public final class Kröw extends Application {
 
 	public static final EventHandler<Event> CLOSE_PROGRAM_EVENT_HANDLER = event -> Kröw.exit();
 
-	public static double scaleWidth(double width) {
-		return width * 1920 / Kröw.getSystemProperties().getScreenWidth();
-	}
-
-	public static double scaleHeight(double height) {
-		return height * 1920 / Kröw.getSystemProperties().getScreenHeight();
-	}
-
-	public static int scaleWidth(int width) {
-		return (int) ((double) width * 1920 / Kröw.getSystemProperties().getScreenWidth());
-	}
-
-	public static int scaleHeight(int height) {
-		return (int) ((double) height * 1920 / Kröw.getSystemProperties().getScreenHeight());
-	}
-
 	/*
 	 * Construct Mindset
 	 */
@@ -138,6 +122,7 @@ public final class Kröw extends Application {
 	public static final File KRÖW_HOME_DIRECTORY = new File(USER_APPDATA_DIRECTORY, "Krow");
 
 	public static final File KRÖW_INSTALL_FILE;
+
 	static {
 		URL iconURL = null;
 		try {
@@ -209,7 +194,6 @@ public final class Kröw extends Application {
 	 * The directory for data storage of this application.
 	 */
 	public final static File DATA_DIRECTORY = new File(KRÖW_HOME_DIRECTORY, "Data");
-
 	public static final File MANAGER_DIRECTORY = new File(KRÖW_HOME_DIRECTORY, "Program Managers");
 
 	/**
@@ -264,6 +248,7 @@ public final class Kröw extends Application {
 			CREDITS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Credits.txt"),
 			PLANS_FILE = new File(Kröw.KRÖW_HOME_DIRECTORY, "Plans.txt"),
 			DATA_INCLUDES_FILE = new File(KRÖW_HOME_DIRECTORY, "includes.kcfg");
+
 	/**
 	 * <p>
 	 * {@link #IMAGE_LIGHT_CROW} - The light colored crow image that is used for
@@ -282,12 +267,13 @@ public final class Kröw extends Application {
 	 */
 	public static final String NAME = new String("Kröw");
 
-	private static GlobalSettingsManager globalSettingsManager;
+	private static ProgramSettings programSettings;
 
 	private static SoundManager soundManager = new SoundManager();
-
 	private static SystemProperties systemProperties = new SystemProperties();
+
 	private static SystemTrayManager systemTrayManager = new SystemTrayManager();
+
 	static {
 
 		// Create the following folders if they don't already exist and catch
@@ -304,11 +290,10 @@ public final class Kröw extends Application {
 			Kröw.createFolder(MANAGER_DIRECTORY);
 
 			try {
-				globalSettingsManager = GlobalSettingsManager.loadManager(GlobalSettingsManager.DEFAULT_FILE_PATH);
+				programSettings = ProgramSettings.loadManager(ProgramSettings.DEFAULT_FILE_PATH);
 			} catch (final FileNotFoundException e) {
 				try {
-					globalSettingsManager = GlobalSettingsManager
-							.createManager(GlobalSettingsManager.DEFAULT_FILE_PATH);
+					programSettings = ProgramSettings.createManager(ProgramSettings.DEFAULT_FILE_PATH);
 				} catch (final IOException e1) {
 					e1.printStackTrace();
 				}
@@ -326,6 +311,7 @@ public final class Kröw extends Application {
 		}
 
 	}
+
 	static {
 
 		Image dark = null, light = null, kröw = null;
@@ -594,10 +580,6 @@ public final class Kröw extends Application {
 		return list;
 	}
 
-	public static GlobalSettingsManager getGlobalSettingsManager() {
-		return globalSettingsManager;
-	}
-
 	public static final Image getImageFromFile(final File dir, final int width, final int height)
 			throws FileNotFoundException {
 		return SwingFXUtils
@@ -626,6 +608,10 @@ public final class Kröw extends Application {
 			if (!c.getGender())
 				list.add(c);
 		return list;
+	}
+
+	public static ProgramSettings getProgramSettings() {
+		return programSettings;
 	}
 
 	/**
@@ -1007,6 +993,22 @@ public final class Kröw extends Application {
 			}
 	}
 
+	public static double scaleHeight(final double height) {
+		return height * 1920 / Kröw.getSystemProperties().getScreenHeight();
+	}
+
+	public static int scaleHeight(final int height) {
+		return (int) ((double) height * 1920 / Kröw.getSystemProperties().getScreenHeight());
+	}
+
+	public static double scaleWidth(final double width) {
+		return width * 1920 / Kröw.getSystemProperties().getScreenWidth();
+	}
+
+	public static int scaleWidth(final int width) {
+		return (int) ((double) width * 1920 / Kröw.getSystemProperties().getScreenWidth());
+	}
+
 	/**
 	 * A helper method used to split a {@link String} into an array of
 	 * {@link String}s.
@@ -1124,6 +1126,8 @@ public final class Kröw extends Application {
 		if (Kröw.IMAGE_KRÖW != null)
 			primaryStage.getIcons().add(Kröw.IMAGE_KRÖW);
 		WindowManager.getStage().getScene().setFill(Color.TRANSPARENT);
+		primaryStage.setWidth(Kröw.getSystemProperties().getScreenWidth());
+		primaryStage.setHeight(Kröw.getSystemProperties().getScreenHeight());
 		primaryStage.setFullScreen(true);
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 
@@ -1141,7 +1145,7 @@ public final class Kröw extends Application {
 	@Override
 	public void stop() throws Exception {
 		Kröw.saveObjects();
-		globalSettingsManager.save(GlobalSettingsManager.DEFAULT_FILE_PATH);
+		programSettings.save(ProgramSettings.DEFAULT_FILE_PATH);
 
 		super.stop();
 	}

@@ -1,11 +1,7 @@
 package zeale.guis;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -13,6 +9,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
+import krow.guis.GUIHelper;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
@@ -20,17 +17,45 @@ import kröw.core.managers.WindowManager.Page;
 public class Settings extends Page {
 
 	public final class Setting {
-		private final String text;
-		private final Togglable togglable;
+		private String text;
+		private Togglable togglable;
 
 		public Setting(final String text) {
-			togglable = cell -> {
-			};
 			this.text = text;
 		}
 
 		public Setting(final String text, final Togglable togglable) {
 			this.text = text;
+			this.togglable = togglable;
+		}
+
+		/**
+		 * @return the text
+		 */
+		public final String getText() {
+			return text;
+		}
+
+		/**
+		 * @return the togglable
+		 */
+		public final Togglable getTogglable() {
+			return togglable;
+		}
+
+		/**
+		 * @param text
+		 *            the text to set
+		 */
+		public final void setText(final String text) {
+			this.text = text;
+		}
+
+		/**
+		 * @param togglable
+		 *            the togglable to set
+		 */
+		public final void setTogglable(final Togglable togglable) {
 			this.togglable = togglable;
 		}
 
@@ -70,27 +95,62 @@ public class Settings extends Page {
 	private TreeView<Setting> optionBox;
 
 	private final void addDefaultItems() {
-		addItem(new TreeItem<>(new SettingTab("General", new Setting("Open on startup"))));
+		/*
+		 * addItem(new TreeItem<>(new SettingTab("General", new
+		 * Setting("Open on startup"))));
+		 *
+		 * addItem(new TreeItem<>(new SettingTab("Keys", new Setting("Test1"),
+		 * new Setting(""), new Setting("Test3")))); addItem(new TreeItem<>(new
+		 * SettingTab("Video"))); addItem(new TreeItem<>(new
+		 * SettingTab("Sound")));
+		 */
 
-		addItem(new TreeItem<>(new SettingTab("Keys", new Setting("Test1"), new Setting(""), new Setting("Test3"))));
-		addItem(new TreeItem<>(new SettingTab("Video")));
-		addItem(new TreeItem<>(new SettingTab("Sound")));
+		addItem(new TreeItem<>(
+				new SettingTab("Visual",
+						new Setting("Background mouse response: "
+								+ (Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement() ? "on" : "off"),
+								cell -> {
+									Kröw.getProgramSettings().setShapeBackgroundRespondToMouseMovement(
+											!Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement());
+									cell.getTreeItem().getValue().setText("Background mouse response: "
+											+ (Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement()
+													? "on" : "off"));
 
-		TreeItem<SettingTab> settingTab = new TreeItem<>(new SettingTab("Menu1", new Setting("Okay")));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu1", new Setting("Potato"))));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu2")));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu3", new Setting("Potato"))));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu4")));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu5", new Setting("Potato"))));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu6")));
-		addItem(settingTab);
+								}),
+						new Setting("Current animation mode: "
+								+ (Kröw.getProgramSettings().getCurrentAnimationMode() == 0 ? "Normal" : "Lengthy"),
+								cell -> {
+									Kröw.getProgramSettings().setCurrentAnimationMode(
+											Kröw.getProgramSettings().getCurrentAnimationMode() == 0 ? 1 : 0);
+									cell.getItem()
+											.setText("Current animation mode: "
+													+ (Kröw.getProgramSettings().getCurrentAnimationMode() == 0
+															? "Normal" : "Lengthy"));
+								}))));
 
-		settingTab = new TreeItem<>(new SettingTab("Menu2", new Setting("AlsoTest")));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu1", new Setting("Potato"))));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu2")));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu3", new Setting("Potato"))));
-		settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu4")));
-		addItem(settingTab);
+		/*
+		 * TreeItem<SettingTab> settingTab = new TreeItem<>(new
+		 * SettingTab("Menu1", new Setting("Okay")));
+		 * settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu1", new Setting("Potato"))));
+		 * settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu2"))); settingTab.getChildren().add(new
+		 * TreeItem<>(new SettingTab("SubMenu3", new Setting("Potato"))));
+		 * settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu4"))); settingTab.getChildren().add(new
+		 * TreeItem<>(new SettingTab("SubMenu5", new Setting("Potato"))));
+		 * settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu6"))); addItem(settingTab);
+		 *
+		 * settingTab = new TreeItem<>(new SettingTab("Menu2", new
+		 * Setting("AlsoTest"))); settingTab.getChildren().add(new
+		 * TreeItem<>(new SettingTab("SubMenu1", new Setting("Potato"))));
+		 * settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu2"))); settingTab.getChildren().add(new
+		 * TreeItem<>(new SettingTab("SubMenu3", new Setting("Potato"))));
+		 * settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu4"))); addItem(settingTab);
+		 */
 	}
 
 	public final void addItem(final TreeItem<SettingTab> child) {
@@ -158,11 +218,7 @@ public class Settings extends Page {
 						settingsLabel.setText(getItem().text);
 						for (final Setting t : getItem().children)
 							optionBox.getRoot().getChildren().add(new TreeItem<>(t));
-						try {
-							Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
-						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-							e.printStackTrace();
-						}
+						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
 					} else
 						updateItem(getItem(), isEmpty());
 
@@ -173,6 +229,17 @@ public class Settings extends Page {
 		});
 		optionBox.setCellFactory(param -> {
 			final TreeCell<Setting> cell = new TreeCell<Setting>() {
+				{
+					setOnMouseClicked(event -> {
+						getItem().getTogglable().onToggled(getThis());
+						updateItem(getItem(), isEmpty());
+					});
+
+				}
+
+				private TreeCell<Setting> getThis() {
+					return this;
+				}
 
 				@Override
 				protected void updateItem(final Setting item, final boolean empty) {
@@ -181,13 +248,13 @@ public class Settings extends Page {
 					if (empty)
 						setText("");
 					else
-						setText(item.text);
+						setText(item.getText());
 				}
 
 				@Override
 				public void updateSelected(final boolean selected) {
 					super.updateSelected(selected);
-					getItem().togglable.onToggled(this);
+					updateItem(getItem(), isEmpty());
 				}
 			};
 			return cell;

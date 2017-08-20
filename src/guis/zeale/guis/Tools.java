@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
@@ -37,6 +38,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import krow.guis.GUIHelper;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
@@ -117,8 +119,12 @@ public class Tools extends Page {
 		private LaunchableTool(final Button button) {
 			super(button);
 			button.setOnAction(event -> {
-				if (!launchProcess())
-					WindowManager.spawnLabelAtMousePos("The process could not be started...", Color.FIREBRICK);
+
+				new Thread(() -> {
+					if (!launchProcess())
+						Platform.runLater(() -> WindowManager
+								.spawnLabelAtMousePos("The process could not be started...", Color.FIREBRICK));
+				}).start();
 			});
 		}
 
@@ -611,5 +617,6 @@ public class Tools extends Page {
 		subPane.setPadding(FLOW_PANE_PADDING);
 		if (Kröw.getSystemProperties().isWindows())
 			addWindowsTools();
+		GUIHelper.applyShapeBackground(pane);
 	}
 }

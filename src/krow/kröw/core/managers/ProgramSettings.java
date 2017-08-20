@@ -12,23 +12,23 @@ import java.nio.file.Paths;
 
 import kröw.core.Kröw;
 
-public class GlobalSettingsManager implements Serializable {
+public class ProgramSettings implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private static final long version = 0;
 
-	public static final File DEFAULT_FILE_PATH = new File(Kröw.MANAGER_DIRECTORY, "GlobalSettingsManager.kmgr");
+	public static final File DEFAULT_FILE_PATH = new File(Kröw.MANAGER_DIRECTORY, "ProgramSettings.kmgr");
 
-	public static final GlobalSettingsManager createManager(final File systemPath) throws IOException {
-		final GlobalSettingsManager gsm = new GlobalSettingsManager();
+	public static final ProgramSettings createManager(final File systemPath) throws IOException {
+		final ProgramSettings gsm = new ProgramSettings();
 		gsm.save(systemPath);
 		return gsm;
 	}
 
-	public static GlobalSettingsManager loadManager(final File file) throws IOException {
-		GlobalSettingsManager gsm = null;
+	public static ProgramSettings loadManager(final File file) throws IOException {
+		ProgramSettings gsm = null;
 		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-			gsm = (GlobalSettingsManager) ois.readObject();
+			gsm = (ProgramSettings) ois.readObject();
 		} catch (final ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new RuntimeException("The file does not point to this class. Refactoring may have ocurred.");
@@ -37,12 +37,12 @@ public class GlobalSettingsManager implements Serializable {
 		return gsm;
 	}
 
-	public static GlobalSettingsManager loadManager(final Path path) throws IOException {
+	public static ProgramSettings loadManager(final Path path) throws IOException {
 
 		return loadManager(path.toFile());
 	}
 
-	public static GlobalSettingsManager loadManager(final String path) throws IOException {
+	public static ProgramSettings loadManager(final String path) throws IOException {
 		return loadManager(Paths.get(path));
 	}
 
@@ -50,8 +50,18 @@ public class GlobalSettingsManager implements Serializable {
 
 	private boolean launchOnUserLogIn;
 
+	private boolean shapeBackgroundRespondToMouseMovement = false;
+	private int currentAnimationMode = 0;
+
 	private void bootup() {
 
+	}
+
+	/**
+	 * @return the currentAnimationMode
+	 */
+	public final int getCurrentAnimationMode() {
+		return currentAnimationMode;
 	}
 
 	/**
@@ -66,6 +76,10 @@ public class GlobalSettingsManager implements Serializable {
 	 */
 	public final boolean isLaunchOnUserLogIn() {
 		return launchOnUserLogIn;
+	}
+
+	public boolean isShapeBackgroundRespondToMouseMovement() {
+		return shapeBackgroundRespondToMouseMovement;
 	}
 
 	private void readObject(final ObjectInputStream is) throws IOException {
@@ -96,6 +110,14 @@ public class GlobalSettingsManager implements Serializable {
 	}
 
 	/**
+	 * @param currentAnimationMode
+	 *            the currentAnimationMode to set
+	 */
+	public final void setCurrentAnimationMode(final int currentAnimationMode) {
+		this.currentAnimationMode = currentAnimationMode;
+	}
+
+	/**
 	 * @param launchOnSystemLogIn
 	 *            the launchOnSystemLogIn to set
 	 */
@@ -109,6 +131,10 @@ public class GlobalSettingsManager implements Serializable {
 	 */
 	public final void setLaunchOnUserLogIn(final boolean launchOnUserLogIn) {
 		this.launchOnUserLogIn = launchOnUserLogIn;
+	}
+
+	public void setShapeBackgroundRespondToMouseMovement(final boolean shapeBackgroundRespondToMouseMovement) {
+		this.shapeBackgroundRespondToMouseMovement = shapeBackgroundRespondToMouseMovement;
 	}
 
 	private void writeObject(final ObjectOutputStream os) throws IOException {

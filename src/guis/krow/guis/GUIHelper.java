@@ -1,20 +1,20 @@
-package zeale.guis;
+package krow.guis;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
-
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import java.util.Random;
 
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
-import javafx.event.Event;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -23,6 +23,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
@@ -32,8 +33,9 @@ import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
+import zeale.guis.Home;
 
-final class GUIHelper {
+public final class GUIHelper {
 
 	public static final class MenuOption extends Text {
 		private Color fadeColor, startColor;
@@ -104,7 +106,6 @@ final class GUIHelper {
 	private static final Duration DEFAULT_MENU_CHILD_NODE_HOVER_ANIMATION_DURATION = Duration.seconds(0.6);
 	private static final Duration MENU_CHILD_NODE_HOVER_ANIMATION_ENTER_DURATION = Duration.seconds(0.35);
 	private static final Duration MENU_CHILD_NODE_HOVER_ANIMATION_EXIT_DURATION = Duration.seconds(1);
-	private static boolean MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION = true;
 	private static final Color MENU_CHILD_NODE_START_COLOR = Color.BLACK,
 			MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR = Color.WHITE;
 	private static final int MENU_CHILD_NODE_FONT_SIZE;
@@ -115,6 +116,14 @@ final class GUIHelper {
 		MENU_CHILD_NODE_FONT_SIZE = (int) Math.round(size);
 	}
 
+	private static final int SHAPE_COUNT = 50;
+
+	private static final double SHAPE_RADIUS = 50;
+
+	private static final Color SHAPE_COLOR = Color.BLACK;
+	private static final double SHAPE_MOVE_DURATION = 8;
+	private static final Object TRANSLATOR_KEY = new Object(), IS_BEING_SHOVED_KEY = new Object();
+
 	public static void addDefaultSettings(final VBox vbox) {
 		final List<Node> children = vbox.getChildren();
 
@@ -122,10 +131,7 @@ final class GUIHelper {
 				goBack = new Text("Go Back"), hideProgram = new Text("Hide Program"),
 				sendProgramToBack = new Text("Send to back");
 		final Text systemTray = new Text(
-				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show")),
-				switchAnimationMode = new Text(
-						"Current animation mode: " + (MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION ? 1 : 2));
-
+				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
 		close.setOnMouseClicked(Kröw.CLOSE_PROGRAM_EVENT_HANDLER);
 
 		goHome.setOnMouseClicked(event -> {
@@ -163,6 +169,7 @@ final class GUIHelper {
 			else
 				WindowManager.spawnLabelAtMousePos("Something went wrong...", Color.FIREBRICK);
 		});
+
 		hideProgram.setOnMouseClicked(event -> {
 			WindowManager.getStage().hide();
 			if (!(Kröw.getSystemTrayManager().isIconShowing() || Kröw.getSystemTrayManager().showIcon())) {
@@ -172,15 +179,6 @@ final class GUIHelper {
 		});
 
 		sendProgramToBack.setOnMouseClicked(event -> WindowManager.getStage().toBack());
-		switchAnimationMode.setOnMouseClicked(new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION ^= true;
-				switchAnimationMode.setText(
-						"Current animation mode: " + (MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION ? 1 : 2));
-			}
-		});
 
 		children.add(close);
 		children.add(goHome);
@@ -189,7 +187,124 @@ final class GUIHelper {
 		children.add(hideProgram);
 		children.add(sendProgramToBack);
 		// children.add(synthesizerText);
-		children.add(switchAnimationMode);
+	}
+
+	public static void applyShapeBackground(final Pane pane) {
+		final ArrayList<Shape> shapes = new ArrayList<>();
+		final Random random = new Random();
+		for (int i = 0; i < SHAPE_COUNT; i++) {
+			final Circle c = new Circle(SHAPE_RADIUS);
+			c.setStroke(SHAPE_COLOR);
+			c.setFill(Color.TRANSPARENT);
+			c.setEffect(new DropShadow(BlurType.GAUSSIAN, SHAPE_COLOR, 20, 0.5, 0, 0));
+			c.setLayoutX(0);
+			c.setLayoutY(0);
+			c.setTranslateX(random.nextInt((int) Kröw.getSystemProperties().getScreenWidth()) - SHAPE_RADIUS);
+			c.setTranslateY(random.nextInt((int) Kröw.getSystemProperties().getScreenHeight()) - SHAPE_RADIUS);
+			final TranslateTransition translator = new TranslateTransition();
+			translator.setNode(c);
+			c.getProperties().put(TRANSLATOR_KEY, translator);
+			new Object() {
+				{
+					translator.setDuration(Duration.seconds(generateRandomMultiplier() * SHAPE_MOVE_DURATION));
+					translator.setByX(calculateByX());
+					translator.setByY(calculateByY());
+					translator.setInterpolator(Interpolator.EASE_OUT);
+
+					translator.setOnFinished(event -> animate());
+
+				}
+
+				private void animate() {
+					final double multiplier = generateRandomMultiplier();
+					translator.setByX(calculateByX() * multiplier);
+					translator.setByY(calculateByY() * multiplier);
+					translator.setDuration(Duration.seconds(SHAPE_MOVE_DURATION * multiplier));
+					translator.play();
+				}
+
+				private double calculateByX() {
+					double numb = generateRand();
+					if (numb + c.getLayoutX() + c.getTranslateX() > Kröw.getSystemProperties().getScreenWidth())
+						numb -= 100;
+
+					if (numb + c.getLayoutX() + c.getTranslateX() < 0)
+						numb += 100;
+
+					return numb;
+				}
+
+				private double calculateByY() {
+					double numb = generateRand();
+					if (numb + c.getLayoutY() + c.getTranslateY() > Kröw.getSystemProperties().getScreenHeight())
+						numb -= 100;
+
+					if (numb + c.getLayoutY() + c.getTranslateY() < 0)
+						numb += 100;
+
+					return numb;
+				}
+
+				private double generateRand() {
+					return generateRand(random.nextBoolean());
+				}
+
+				private double generateRand(final boolean positive) {
+					return (random.nextInt(50) + 50) * (positive ? 1 : -1);
+				}
+
+				private double generateRandomMultiplier() {
+					return 1 - random.nextDouble() / 8;
+				}
+
+			};
+
+			c.setCache(true);
+
+			shapes.add(c);
+			translator.play();
+		}
+
+		pane.setOnMouseMoved(event -> {
+			final double mouseX = event.getSceneX(), mouseY = event.getSceneY();
+			for (final Shape s : shapes)
+				if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY)
+						&& Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement()) {
+					final double shapeX = s.getLayoutX() + s.getTranslateX(),
+							shapeY = s.getLayoutY() + s.getTranslateY();
+
+					final double distX = mouseX - shapeX, distY = mouseY - shapeY;
+					final double distance = Math.sqrt(distX * distX + distY * distY);
+					if (distance <= SHAPE_RADIUS * 2) {
+
+						final TranslateTransition translator = (TranslateTransition) s.getProperties()
+								.get(TRANSLATOR_KEY);
+
+						translator.stop();
+
+						translator.setByX(-distX * 3);
+						translator.setByY(-distY * 3);
+						translator
+								.setDuration(Duration.seconds((1 - random.nextDouble() / 8) * SHAPE_MOVE_DURATION / 3));
+
+						final EventHandler<ActionEvent> onFinished = translator.getOnFinished();
+						s.getProperties().put(IS_BEING_SHOVED_KEY, true);
+						final Interpolator interpolator = translator.getInterpolator();
+						translator.setOnFinished(event1 -> {
+							s.getProperties().remove(IS_BEING_SHOVED_KEY);
+							translator.setOnFinished(onFinished);
+							translator.setInterpolator(interpolator);
+							onFinished.handle(event1);
+						});
+						translator.setInterpolator(Interpolator.EASE_OUT);
+						translator.play();
+						Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP);
+					}
+				}
+		});
+
+		for (final Shape s : shapes)
+			pane.getChildren().add(0, s);
 	}
 
 	public static VBox buildMenu(final Pane pane) {
@@ -255,13 +370,9 @@ final class GUIHelper {
 									DEFAULT_MENU_CHILD_NODE_HOVER_ANIMATION_DURATION, t);
 							ft.setInterpolator(MENU_CHILD_TRANSITION_INTERPOLATOR);
 							t.setOnMouseEntered(event -> {
-								try {
-									Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
-								} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-									e.printStackTrace();
-								}
+								Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
 								ft.stop();
-								ft.setDuration(MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION
+								ft.setDuration(Kröw.getProgramSettings().getCurrentAnimationMode() == 0
 										? MENU_BUTTON_ANIMATION_DURATION
 										: MENU_CHILD_NODE_HOVER_ANIMATION_ENTER_DURATION);
 								ft.setFromValue((Color) t.getFill());
@@ -270,7 +381,7 @@ final class GUIHelper {
 							});
 							t.setOnMouseExited(event -> {
 								ft.stop();
-								ft.setDuration(MENU_CHILD_NODE_HOVER_ANIMATION_USE_SINGLE_DURATION
+								ft.setDuration(Kröw.getProgramSettings().getCurrentAnimationMode() == 0
 										? MENU_BUTTON_ANIMATION_DURATION
 										: MENU_CHILD_NODE_HOVER_ANIMATION_EXIT_DURATION);
 								ft.setFromValue((Color) t.getFill());
@@ -299,11 +410,7 @@ final class GUIHelper {
 				final EventHandler<? super MouseEvent> enterHandler = event -> {
 					if (event.getPickResult().getIntersectedNode() == cover && opening)
 						return;
-					try {
-						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
-					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-						e.printStackTrace();
-					}
+					Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
 					open();
 				};
 
@@ -320,20 +427,12 @@ final class GUIHelper {
 				final EventHandler<MouseEvent> coverClickHandler = event -> {
 					if (opening) {
 						close();
-						try {
-							Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
-						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e1) {
-							e1.printStackTrace();
-						}
+						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
 						return;
 					}
 					if (closing) {
 						open();
-						try {
-							Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
-						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e2) {
-							e2.printStackTrace();
-						}
+						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
 					}
 
 				};
