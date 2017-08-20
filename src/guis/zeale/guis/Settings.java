@@ -163,7 +163,7 @@ public class Settings extends Page {
 
 	@Override
 	public String getWindowFile() {
-		return "Settings.fxml";
+		return "ProgramSettings.fxml";
 	}
 
 	@Override

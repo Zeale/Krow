@@ -199,7 +199,7 @@ public class Home extends Page {
 			}
 		});
 
-		final ImageView settings = new ImageView("krow/resources/Settings.png");
+		final ImageView settings = new ImageView("krow/resources/ProgramSettings.png");
 		settings.setOnMouseClicked(event -> {
 			try {
 				WindowManager.setScene(Settings.class);

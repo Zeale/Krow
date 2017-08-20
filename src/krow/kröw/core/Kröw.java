@@ -50,7 +50,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
-import kröw.core.managers.GlobalSettingsManager;
+import kröw.core.managers.ProgramSettings;
 import kröw.core.managers.SoundManager;
 import kröw.core.managers.SystemProperties;
 import kröw.core.managers.SystemTrayManager;
@@ -282,7 +282,7 @@ public final class Kröw extends Application {
 	 */
 	public static final String NAME = new String("Kröw");
 
-	private static GlobalSettingsManager globalSettingsManager;
+	private static ProgramSettings settings;
 
 	private static SoundManager soundManager = new SoundManager();
 
@@ -304,11 +304,11 @@ public final class Kröw extends Application {
 			Kröw.createFolder(MANAGER_DIRECTORY);
 
 			try {
-				globalSettingsManager = GlobalSettingsManager.loadManager(GlobalSettingsManager.DEFAULT_FILE_PATH);
+				settings = ProgramSettings.loadManager(ProgramSettings.DEFAULT_FILE_PATH);
 			} catch (final FileNotFoundException e) {
 				try {
-					globalSettingsManager = GlobalSettingsManager
-							.createManager(GlobalSettingsManager.DEFAULT_FILE_PATH);
+					settings = ProgramSettings
+							.createManager(ProgramSettings.DEFAULT_FILE_PATH);
 				} catch (final IOException e1) {
 					e1.printStackTrace();
 				}
@@ -594,8 +594,8 @@ public final class Kröw extends Application {
 		return list;
 	}
 
-	public static GlobalSettingsManager getGlobalSettingsManager() {
-		return globalSettingsManager;
+	public static ProgramSettings getGlobalSettingsManager() {
+		return settings;
 	}
 
 	public static final Image getImageFromFile(final File dir, final int width, final int height)
@@ -1143,7 +1143,7 @@ public final class Kröw extends Application {
 	@Override
 	public void stop() throws Exception {
 		Kröw.saveObjects();
-		globalSettingsManager.save(GlobalSettingsManager.DEFAULT_FILE_PATH);
+		settings.save(ProgramSettings.DEFAULT_FILE_PATH);
 
 		super.stop();
 	}
