@@ -189,7 +189,7 @@ public final class GUIHelper {
 		// children.add(synthesizerText);
 	}
 
-	public static void applyShapeBackground(final Pane pane) {
+	public static void applyShapeBackground(final Pane pane, Node... mouseDetectionNodes) {
 		final ArrayList<Shape> shapes = new ArrayList<>();
 		final Random random = new Random();
 		for (int i = 0; i < SHAPE_COUNT; i++) {
@@ -265,43 +265,49 @@ public final class GUIHelper {
 			translator.play();
 		}
 
-		pane.setOnMouseMoved(event -> {
-			final double mouseX = event.getSceneX(), mouseY = event.getSceneY();
-			for (final Shape s : shapes)
-				if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY)
-						&& Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement()) {
-					final double shapeX = s.getLayoutX() + s.getTranslateX(),
-							shapeY = s.getLayoutY() + s.getTranslateY();
+		EventHandler<MouseEvent> handler =
 
-					final double distX = mouseX - shapeX, distY = mouseY - shapeY;
-					final double distance = Math.sqrt(distX * distX + distY * distY);
-					if (distance <= SHAPE_RADIUS * 2) {
+				event -> {
+					final double mouseX = event.getSceneX(), mouseY = event.getSceneY();
+					for (final Shape s : shapes)
+						if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY)
+								&& Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement()) {
+							final double shapeX = s.getLayoutX() + s.getTranslateX(),
+									shapeY = s.getLayoutY() + s.getTranslateY();
 
-						final TranslateTransition translator = (TranslateTransition) s.getProperties()
-								.get(TRANSLATOR_KEY);
+							final double distX = mouseX - shapeX, distY = mouseY - shapeY;
+							final double distance = Math.sqrt(distX * distX + distY * distY);
+							if (distance <= SHAPE_RADIUS * 2) {
 
-						translator.stop();
+								final TranslateTransition translator = (TranslateTransition) s.getProperties()
+										.get(TRANSLATOR_KEY);
 
-						translator.setByX(-distX * 3);
-						translator.setByY(-distY * 3);
-						translator
-								.setDuration(Duration.seconds((1 - random.nextDouble() / 8) * SHAPE_MOVE_DURATION / 3));
+								translator.stop();
 
-						final EventHandler<ActionEvent> onFinished = translator.getOnFinished();
-						s.getProperties().put(IS_BEING_SHOVED_KEY, true);
-						final Interpolator interpolator = translator.getInterpolator();
-						translator.setOnFinished(event1 -> {
-							s.getProperties().remove(IS_BEING_SHOVED_KEY);
-							translator.setOnFinished(onFinished);
-							translator.setInterpolator(interpolator);
-							onFinished.handle(event1);
-						});
-						translator.setInterpolator(Interpolator.EASE_OUT);
-						translator.play();
-						Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP, 0.7f);
-					}
-				}
-		});
+								translator.setByX(-distX * 3);
+								translator.setByY(-distY * 3);
+								translator.setDuration(
+										Duration.seconds((1 - random.nextDouble() / 8) * SHAPE_MOVE_DURATION / 3));
+
+								final EventHandler<ActionEvent> onFinished = translator.getOnFinished();
+								s.getProperties().put(IS_BEING_SHOVED_KEY, true);
+								final Interpolator interpolator = translator.getInterpolator();
+								translator.setOnFinished(event1 -> {
+									s.getProperties().remove(IS_BEING_SHOVED_KEY);
+									translator.setOnFinished(onFinished);
+									translator.setInterpolator(interpolator);
+									onFinished.handle(event1);
+								});
+								translator.setInterpolator(Interpolator.EASE_OUT);
+								translator.play();
+								Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP, 0.7f);
+							}
+						}
+				};
+
+		pane.setOnMouseMoved(handler);
+		for (Node n : mouseDetectionNodes)
+			n.setOnMouseMoved(handler);
 
 		for (final Shape s : shapes)
 			pane.getChildren().add(0, s);

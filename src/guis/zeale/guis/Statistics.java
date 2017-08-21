@@ -39,7 +39,7 @@ public class Statistics extends WindowManager.Page {
 		searchList.setLayoutX(Kröw.scaleWidth(SEARCH_LIST_LAYOUT_X));
 		searchList.setLayoutY(Kröw.scaleHeight(SEARCH_LIST_LAYOUT_Y));
 
-		GUIHelper.applyShapeBackground(pane);
+		GUIHelper.applyShapeBackground(pane, searchBar, searchList);
 	}
 
 	@Override
