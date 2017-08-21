@@ -1,26 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane fx:id="wrapper" prefHeight="1080.0" prefWidth="1960.0" styleClass="background" stylesheets="@css/stylesheet.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+<AnchorPane fx:id="pane" prefHeight="1080.0" prefWidth="1960.0" styleClass="background" stylesheets="@css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TabPane fx:id="pane" layoutX="484.0" layoutY="238.0" prefHeight="1080.0" prefWidth="1960.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <tabs>
-          <Tab text="Untitled Tab 1">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" />
-            </content>
-          </Tab>
-          <Tab text="Untitled Tab 2">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-            </content>
-          </Tab>
-        </tabs>
-      </TabPane>
+      <ListView fx:id="searchList" layoutX="22.0" layoutY="118.0" prefHeight="941.0" prefWidth="1918.0" style="-fx-background-color: #0000004C;" />
+      <TextField fx:id="searchBar" alignment="CENTER" layoutX="361.0" layoutY="24.0" prefHeight="44.0" prefWidth="1241.0" promptText="Search for a spec..." style="-fx-background-color: rgba(0,0,0,0.3);">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </TextField>
    </children>
 </AnchorPane>

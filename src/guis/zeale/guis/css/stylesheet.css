@@ -37,3 +37,20 @@
 #SettingOptionsTreeView .tree-cell {
 	-fx-alignment: CENTER;
 }
+
+.text-field {
+    -fx-background-color: rgba(53.0,89.0,119.0,0.4);
+}
+
+.text-field .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.text-field .scroll-pane .viewport{
+    -fx-background-color: transparent;
+}
+
+
+.text-field .scroll-pane .content{
+    -fx-background-color: transparent;
+}
