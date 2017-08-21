@@ -20,9 +20,9 @@ public class Statistics extends WindowManager.Page {
 	private ListView<Object> searchList;
 
 	private static final double SEARCH_BAR_WIDTH = 1241, SEARCH_BAR_HEIGHT = 44;
-	private static final double SEARCH_BAR_LAYOUT_X = 361, SEARCH_BAR_LAYOUT_Y = 24;
+	private static final double SEARCH_BAR_LAYOUT_X = 340, SEARCH_BAR_LAYOUT_Y = 24;
 
-	private static final double SEARCH_LIST_WIDTH = 1918, SEARCH_LIST_HEIGHT = 941;
+	private static final double SEARCH_LIST_WIDTH = 1875, SEARCH_LIST_HEIGHT = 941;
 	private static final double SEARCH_LIST_LAYOUT_X = 22, SEARCH_LIST_LAYOUT_Y = 118;
 
 	@Override

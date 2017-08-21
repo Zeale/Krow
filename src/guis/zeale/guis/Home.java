@@ -218,7 +218,6 @@ public class Home extends Page {
 
 			@Override
 			public void handle(Event event) {
-				System.out.println("Potato");
 				try {
 					WindowManager.setScene(Statistics.class);
 				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
