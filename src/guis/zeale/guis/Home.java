@@ -9,6 +9,8 @@ import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,6 +23,7 @@ import javafx.util.Duration;
 import krow.guis.GUIHelper;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
+import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
 
 public class Home extends Page {
@@ -184,11 +187,11 @@ public class Home extends Page {
 		// Now to add the default images to our horizontal scroll container.
 		final ImageView constructs = new ImageView(CONSTRUCT_MENU_ICON);
 		constructs.setOnMouseClicked(event -> WindowManager.spawnLabelAtMousePos("WIP", Color.WHITE));
+		constructs.setPickOnBounds(true);
 
 		final ImageView krow = new ImageView(Kröw.IMAGE_KRÖW);
 		// This code assures that clicking in a transparent portion of the image
 		// will still cause a click to be registered by the event handler.
-		krow.setPickOnBounds(true);
 		// Event handler
 		krow.setOnMouseClicked(event -> {
 			try {
@@ -209,11 +212,26 @@ public class Home extends Page {
 				e.printStackTrace();
 			}
 		});
-		addImage(settings);
 
-		// Testing the dummy positioning images.
+		ImageView statistics = new ImageView("krow/resources/Statistics.png");
+		statistics.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				System.out.println("Potato");
+				try {
+					WindowManager.setScene(Statistics.class);
+				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		statistics.setPickOnBounds(true);
+
+		addImage(settings);
 		addImage(krow);
 		addImage(constructs);
+		addImage(statistics);
 	}
 
 	public boolean removeImage(final ImageView imageView) {
