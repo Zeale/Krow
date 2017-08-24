@@ -2,6 +2,7 @@ package zeale.guis;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.Executors;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -70,7 +71,7 @@ public class Statistics extends WindowManager.Page {
 		/**
 		 * @return the cell
 		 */
-		public final ListCell<Object> getCell() {
+		protected final ListCell<Object> getCell() {
 			return cell;
 		}
 
@@ -78,7 +79,7 @@ public class Statistics extends WindowManager.Page {
 		 * @param cell
 		 *            the cell to set
 		 */
-		public final void setCell(ListCell<Object> cell) {
+		private final void setCell(ListCell<Object> cell) {
 			this.cell = cell;
 		}
 
@@ -128,6 +129,32 @@ public class Statistics extends WindowManager.Page {
 	public static class AutoUpdatingStatistic extends Statistic {
 		private static final Thread updater = new Thread();
 		private static Collection<AutoUpdatingStatistic> statistics = new ArrayList<>();
+		private static long timeout;
+
+		private boolean disposed;
+
+		public AutoUpdatingStatistic() {
+		}
+
+		/**
+		 * @return the timeout
+		 */
+		public static final long getTimeout() {
+			return timeout;
+		}
+
+		/**
+		 * @param timeout
+		 *            the timeout to set
+		 */
+		public static final void setTimeout(long timeout) {
+			AutoUpdatingStatistic.timeout = timeout;
+		}
+
+		public void dispose() {
+
+		}
+
 	}
 
 	public void addStatistic(Statistic statistic) {
