@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import kröw.libs.collections.UniqueArrayList;
+import kröw.app.api.collections.UniqueArrayList;
 import kröw.libs.mindset.events.AddEvent;
 import kröw.libs.mindset.events.ChangeEvent;
 import kröw.libs.mindset.events.EventListener;

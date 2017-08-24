@@ -1,4 +1,4 @@
-package kröw.libs;
+package kröw.app.api;
 
 import java.util.Locale;
 

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javafx.collections.ObservableList;
-import kröw.libs.collections.ObservableListWrapper;
+import kröw.app.api.collections.ObservableListWrapper;
 import kröw.libs.mindset.MindsetObject;
 import kröw.libs.mindset.ObjectAlreadyExistsException;
 

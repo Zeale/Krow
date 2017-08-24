@@ -1,4 +1,4 @@
-package kröw.libs.collections;
+package kröw.app.api.collections;
 
 import java.util.List;
 
