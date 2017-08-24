@@ -2,7 +2,6 @@ package zeale.guis;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.Executors;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 import krow.guis.GUIHelper;
+import kröw.app.api.callables.Task;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 
@@ -71,7 +71,7 @@ public class Statistics extends WindowManager.Page {
 		/**
 		 * @return the cell
 		 */
-		protected final ListCell<Object> getCell() {
+		public final ListCell<Object> getCell() {
 			return cell;
 		}
 
@@ -127,13 +127,45 @@ public class Statistics extends WindowManager.Page {
 	}
 
 	public static class AutoUpdatingStatistic extends Statistic {
-		private static final Thread updater = new Thread();
+		private static Thread updater = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				while (statistics.size() > 0) {
+					for (AutoUpdatingStatistic s : statistics)
+						try {
+							s.updateTask.execute();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					try {
+						Thread.sleep(timeout);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				Thread.currentThread().interrupt();
+				updater = new Thread(this);
+			}
+		});
+
 		private static Collection<AutoUpdatingStatistic> statistics = new ArrayList<>();
 		private static long timeout;
 
-		private boolean disposed;
+		private Task updateTask;
 
-		public AutoUpdatingStatistic() {
+		public Task getUpdateTask() {
+			return updateTask;
+		}
+
+		public void setUpdateTask(Task updateTask) {
+			this.updateTask = updateTask;
+		}
+
+		public AutoUpdatingStatistic(Task updater) {
+			updateTask = updater;
+			if (!AutoUpdatingStatistic.updater.isInterrupted())
+				AutoUpdatingStatistic.updater.start();
 		}
 
 		/**
@@ -152,7 +184,7 @@ public class Statistics extends WindowManager.Page {
 		}
 
 		public void dispose() {
-
+			statistics.remove(this);
 		}
 
 	}
