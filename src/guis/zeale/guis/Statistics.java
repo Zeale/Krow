@@ -2,16 +2,19 @@ package zeale.guis;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.util.Callback;
@@ -36,7 +39,7 @@ public class Statistics extends WindowManager.Page {
 	private static final double SEARCH_BAR_WIDTH = 1241, SEARCH_BAR_HEIGHT = 44;
 	private static final double SEARCH_BAR_LAYOUT_X = 340, SEARCH_BAR_LAYOUT_Y = 24;
 
-	private static final double SEARCH_LIST_WIDTH = 1875, SEARCH_LIST_HEIGHT = 941;
+	private static final double SEARCH_LIST_WIDTH = 1875, SEARCH_LIST_HEIGHT = 350;
 	private static final double SEARCH_LIST_LAYOUT_X = 22, SEARCH_LIST_LAYOUT_Y = 118;
 
 	@Override
@@ -57,6 +60,10 @@ public class Statistics extends WindowManager.Page {
 
 		searchList.setCellFactory(new Callback<ListView<Object>, ListCell<Object>>() {
 
+			private static final double BACKGROUND_OPACITY = 0.2;
+
+			int color = 0;
+
 			@Override
 			public ListCell<Object> call(ListView<Object> param) {
 				ListCell<Object> cell = new ListCell<Object>() {
@@ -69,6 +76,21 @@ public class Statistics extends WindowManager.Page {
 
 						if (previousItem instanceof Statistic)
 							((Statistic) previousItem).unlinkCell();
+
+						BackgroundFill[] backgrounds = {
+								new BackgroundFill(new Color(1, 0, 0, BACKGROUND_OPACITY), CornerRadii.EMPTY,
+										Insets.EMPTY),
+								new BackgroundFill(new Color(0, 1, 0, BACKGROUND_OPACITY), CornerRadii.EMPTY,
+										Insets.EMPTY),
+								new BackgroundFill(new Color(0, 0, 1, BACKGROUND_OPACITY), CornerRadii.EMPTY,
+										Insets.EMPTY),
+								new BackgroundFill(new Color(1, (double) 43 / 51, 0, BACKGROUND_OPACITY),
+										CornerRadii.EMPTY, Insets.EMPTY) };
+
+						setBackground(new Background(backgrounds[color]));
+
+						if (++color > 3)
+							color = 0;
 
 						String result;
 
@@ -100,7 +122,7 @@ public class Statistics extends WindowManager.Page {
 			}
 		});
 
-		searchItems.add(new Statistic("Test", "Val", Color.BLUE));
+		searchItems.add(new Statistic("Test", "Val"));
 		GUIHelper.applyShapeBackground(pane, searchBar, searchList);
 	}
 
