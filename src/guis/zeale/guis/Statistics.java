@@ -41,6 +41,8 @@ import kröw.core.managers.WindowManager.Page;
 
 public class Statistics extends WindowManager.Page {
 
+	private static ChangeListener<Object> windowMovedListener;
+
 	public static class AutoUpdatingStatistic extends Statistic {
 		private static Thread updater = new Thread(new Runnable() {
 
@@ -301,13 +303,14 @@ public class Statistics extends WindowManager.Page {
 		final Statistic screenWidth = new Statistic("Screen Width",
 				formatter.format(Kröw.getSystemProperties().getScreenWidth()));
 		final Statistic screenHeight = new Statistic("Screen Height",
-				formatter.format(Kröw.getSystemProperties().getScreenWidth()));
+				formatter.format(Kröw.getSystemProperties().getScreenHeight()));
 
 		final Statistic username = new Statistic("System Username", System.getProperty("user.name", "???"));
 		final Statistic countryCode = new Statistic("Country Code", System.getProperty("user.country", "???"));
 		final Statistic osName = new Statistic("Operating System", System.getProperty("os.name", "???"));
 		final Statistic homeDir = new Statistic("Home Directory", System.getProperty("user.home", "???"));
-		final Statistic timezone = new Statistic("Timezone", System.getProperty("user.timezone", "???"));
+		final Statistic timezone = new Statistic("Timezone", System.getProperty("user.timezone", "???").isEmpty()
+				? "???" : System.getProperty("user.timezone", "???"));
 		final Statistic osVer = new Statistic("Operating System Version", System.getProperty("os.version", "???"));
 
 		final Statistic processorsAvailable = new Statistic("Available Processors",
@@ -332,6 +335,18 @@ public class Statistics extends WindowManager.Page {
 		final Statistic vendorURL = new Statistic("Java Vendor URL", System.getProperty("java.vendor.url", "???"));
 		final Statistic javaRuntimeName = new Statistic("Java Runtime Name",
 				System.getProperty("java.runtime.name", "???"));
+
+		if (windowMovedListener == null) {
+			windowMovedListener = new ChangeListener<Object>() {
+
+				@Override
+				public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
+					dpi.setVal(Kröw.getSystemProperties().getScreenDotsPerInch());
+					screenHeight.setVal(Kröw.getSystemProperties().getScreenHeight());
+					screenWidth.setVal(Kröw.getSystemProperties().getScreenWidth());
+				}
+			};
+		}
 
 		addListObjects(dpi, screenWidth, screenHeight, username, countryCode, osName, osVer, timezone,
 				processorsAvailable, totalAvailableMemory, freeAvailableMemory, usedMemory, homeDir, pathSeparator,
@@ -476,12 +491,6 @@ public class Statistics extends WindowManager.Page {
 
 		/***/
 
-		AutoUpdatingStatistic.startChecker();
-
-		GUIHelper.applyShapeBackground(pane, searchBar, searchList);
-
-		/***/
-
 		startsWith.setToggleGroup(searchTypesGroup);
 		contains.setToggleGroup(searchTypesGroup);
 		endsWith.setToggleGroup(searchTypesGroup);
@@ -505,6 +514,12 @@ public class Statistics extends WindowManager.Page {
 		startsWith.setOnAction(onSearchTypeChanged);
 		contains.setOnAction(onSearchTypeChanged);
 		endsWith.setOnAction(onSearchTypeChanged);
+
+		/***/
+
+		AutoUpdatingStatistic.startChecker();
+
+		GUIHelper.applyShapeBackground(pane, searchBar, searchList);
 
 	}
 

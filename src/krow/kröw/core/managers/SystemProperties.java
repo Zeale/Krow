@@ -1,45 +1,58 @@
 package kröw.core.managers;
 
-import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.List;
 
-public class SystemProperties {
+import javafx.geometry.Rectangle2D;
+import javafx.stage.Screen;
 
-	private final double screenHeight;
-	private final double screenWidth;
-	private final double screenDotsPerInch;
-	private final boolean isDPIOversized;
+public final class SystemProperties {
+
 	private String osName;
 
-	{
-		final Dimension screenDimensions = Toolkit.getDefaultToolkit().getScreenSize();
-
-		screenHeight = screenDimensions.getHeight();
-		screenWidth = screenDimensions.getWidth();
-		screenDotsPerInch = Toolkit.getDefaultToolkit().getScreenResolution();
-		isDPIOversized = screenDotsPerInch > 96.1;
-		osName = System.getProperty("os.name");
+	public int getScreenCount() {
+		return Screen.getScreens().size();
 	}
 
 	/**
-	 * @return the screenDotsPerInch
+	 * If the current screen is not the primary screen, this will return -2.
+	 * 
+	 * @return The dots-per-inch of the current screen (or -2 if unknown).
 	 */
 	public final double getScreenDotsPerInch() {
-		return screenDotsPerInch;
+		// System.out.println(getCurrentScreen().getDpi());
+		// ??? 0.0 ???
+		if (!Screen.getPrimary().equals(getCurrentScreen()))
+			return -2;
+		return Toolkit.getDefaultToolkit().getScreenResolution();
+	}
+
+	public Screen getCurrentScreen() {
+
+		List<Screen> screens = Screen.getScreensForRectangle(WindowManager.getStage().getX(),
+				WindowManager.getStage().getY(), 1, 1);
+		if (Double.isNaN(WindowManager.getStage().getX()) || Double.isNaN(WindowManager.getStage().getY())
+				|| screens.isEmpty())
+			return Screen.getScreensForRectangle(1, 1, 1, 1).get(0);
+		return screens.get(0);
+	}
+
+	public Rectangle2D getCurrentScreenBounds() {
+		return getCurrentScreen().getBounds();
 	}
 
 	/**
 	 * @return the screenHeight
 	 */
 	public final double getScreenHeight() {
-		return screenHeight;
+		return getCurrentScreenBounds().getHeight();
 	}
 
 	/**
 	 * @return the screenWidth
 	 */
 	public final double getScreenWidth() {
-		return screenWidth;
+		return getCurrentScreenBounds().getWidth();
 	}
 
 	public boolean isApple() {
@@ -50,7 +63,7 @@ public class SystemProperties {
 	 * @return the isDPIOversized
 	 */
 	public final boolean isDPIOversized() {
-		return isDPIOversized;
+		return getScreenDotsPerInch() > 96.1;
 	}
 
 	public boolean isWindows() {
