@@ -3,6 +3,8 @@ package zeale.guis;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -17,6 +19,8 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.util.Callback;
 import krow.guis.GUIHelper;
 import kröw.app.api.callables.Task;
@@ -38,6 +42,7 @@ public class Statistics extends WindowManager.Page {
 
 	private static final double SEARCH_BAR_WIDTH = 1241, SEARCH_BAR_HEIGHT = 44;
 	private static final double SEARCH_BAR_LAYOUT_X = 340, SEARCH_BAR_LAYOUT_Y = 24;
+	private static final double SEARCH_BAR_FONT_SIZE = 18;
 
 	private static final double SEARCH_LIST_WIDTH = 1875, SEARCH_LIST_HEIGHT = 350;
 	private static final double SEARCH_LIST_LAYOUT_X = 22, SEARCH_LIST_LAYOUT_Y = 118;
@@ -62,8 +67,6 @@ public class Statistics extends WindowManager.Page {
 
 			private static final double BACKGROUND_OPACITY = 0.2;
 
-			int color = 0;
-
 			@Override
 			public ListCell<Object> call(ListView<Object> param) {
 				ListCell<Object> cell = new ListCell<Object>() {
@@ -87,20 +90,20 @@ public class Statistics extends WindowManager.Page {
 								new BackgroundFill(new Color(1, (double) 43 / 51, 0, BACKGROUND_OPACITY),
 										CornerRadii.EMPTY, Insets.EMPTY) };
 
-						setBackground(new Background(backgrounds[color]));
-
-						if (++color > 3)
-							color = 0;
-
 						String result;
 
 						// Check if we're an empty cell.
 						// If we are, the below code is useless.
 						if (empty) {
 							setText("");
+							setBackground(new Background(new BackgroundFill(new Color(0.7, 0.7, 0.7, 0.23),
+									CornerRadii.EMPTY, Insets.EMPTY)));
 							return;// Code below is useless.
-						} else
-							result = item.toString();
+						}
+
+						result = item.toString();
+
+						setBackground(new Background(backgrounds[param.getItems().indexOf(item) % backgrounds.length]));
 
 						if (item instanceof ListObject) {
 							ListObject listObject = (ListObject) item;
@@ -120,6 +123,35 @@ public class Statistics extends WindowManager.Page {
 
 				return cell;
 			}
+		});
+
+		searchBar.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.EXTRA_BOLD, SEARCH_BAR_FONT_SIZE));
+
+		searchBar.textProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if (newValue.isEmpty())
+					searchList.setItems(searchItems);
+				else {
+					ObservableList<Object> newList = FXCollections.observableArrayList();
+					for (Object o : searchItems) {
+						String stat;
+						if (o instanceof Statistic)
+							stat = ((Statistic) o).getStat();
+						else if (o instanceof ListObject)
+							stat = ((ListObject) o).getVal();
+						else
+							stat = o.toString();
+						if (stat.startsWith(newValue))
+							newList.add(o);
+					}
+					if (newList.isEmpty())
+						newList.add(new ListObject(""));
+					searchList.setItems(newList);
+				}
+			}
+
 		});
 
 		searchItems.add(new Statistic("Test", "Val"));
