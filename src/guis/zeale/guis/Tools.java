@@ -568,6 +568,8 @@ public class Tools extends Page {
 			addCommandTool("START powershell", "Powershell",
 					Kröw.getImageFromFile(new File("C:/Windows/SysWOW64/WindowsPowerShell/v1.0/powershell.exe"),
 							(int) ICON_WIDTH, (int) ICON_HEIGHT));
+			addCommandTool("START dxdiag", "DxDiag", Kröw.getImageFromFile(new File("C:/Windows/System32/dxdiag.exe"),
+					(int) ICON_WIDTH, (int) ICON_HEIGHT));
 		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
