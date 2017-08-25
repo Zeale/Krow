@@ -68,6 +68,9 @@ public class Statistics extends WindowManager.Page {
 						if (previousItem instanceof Statistic)
 							((Statistic) previousItem).unlinkCell();
 
+						// TODO remove
+						System.out.println("2");
+
 						String result;
 
 						// Check if we're an empty cell.
@@ -78,6 +81,11 @@ public class Statistics extends WindowManager.Page {
 						} else
 							result = item.toString();
 
+						if (item instanceof ListObject) {
+							ListObject listObject = (ListObject) item;
+							setTextFill(listObject.getStatColor());
+							result = listObject.getVal();
+						}
 						// Check if the item is a statistic.
 						if (item instanceof Statistic) {
 							Statistic statistic = (Statistic) item;
@@ -98,27 +106,70 @@ public class Statistics extends WindowManager.Page {
 	}
 
 	public static class ListObject {
+		private String val;
+
+		public ListObject() {
+		}
+
+		public ListObject(Paint statColor) {
+			this.statColor = statColor;
+		}
+
+		public ListObject(String val) {
+			this.val = val;
+		}
+
+		public ListObject(String val, Paint statColor) {
+			this.val = val;
+			this.statColor = statColor;
+		}
+
+		/**
+		 * @return the val
+		 */
+		public final String getVal() {
+			return val;
+		}
+
+		/**
+		 * @param val
+		 *            the val to set
+		 */
+		public void setVal(String val) {
+			this.val = val;
+		}
+
+		private Paint statColor = Color.WHITE;
+
+		public Paint getStatColor() {
+			return statColor;
+		}
+
+		public void setStatColor(Paint statColor) {
+			this.statColor = statColor;
+		}
+	}
+
+	public static class ListParent extends ListObject {
 	}
 
 	public static class Statistic extends ListObject {
 
-		private String stat, val;
+		private String stat;
 
 		private ListCell<Object> cell;
-		private Paint statColor = Color.WHITE;
 
 		public Statistic() {
 		}
 
 		public Statistic(String stat, String val, Paint statColor) {
+			super(val, statColor);
 			this.stat = stat;
-			this.val = val;
-			this.statColor = statColor;
 		}
 
 		public Statistic(String stat, String val) {
+			super(val);
 			this.stat = stat;
-			this.val = val;
 		}
 
 		public final void unlinkCell() {
@@ -154,22 +205,6 @@ public class Statistics extends WindowManager.Page {
 		public final void setStat(String stat) {
 			updateCell();
 			this.stat = stat;
-		}
-
-		/**
-		 * @return the val
-		 */
-		public final String getVal() {
-			return val;
-		}
-
-		/**
-		 * @param val
-		 *            the val to set
-		 */
-		public final void setVal(String val) {
-			updateCell();
-			this.val = val;
 		}
 
 		protected void updateCell() {
