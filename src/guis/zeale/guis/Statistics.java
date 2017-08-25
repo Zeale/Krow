@@ -97,12 +97,12 @@ public class Statistics extends WindowManager.Page {
 						String result;
 
 						// Check if we're an empty cell.
-						// If we are, the below code is useless.
+						// If we are, don't run the code below.
 						if (empty) {
 							setText("");
 							setBackground(new Background(
 									new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
-							return;// Code below is useless.
+							return;// Don't run below code.
 						}
 
 						result = item.toString();
@@ -166,8 +166,22 @@ public class Statistics extends WindowManager.Page {
 				formatter.format(Kröw.getSystemProperties().getScreenWidth()));
 		Statistic screenHeight = new Statistic("Screen Height",
 				formatter.format(Kröw.getSystemProperties().getScreenWidth()));
+		Statistic username = new Statistic("System Username", System.getProperty("user.name", "???"));
+		Statistic countryCode = new Statistic("Country Code", System.getProperty("user.country", "???"));
+		Statistic osName = new Statistic("Operating System", System.getProperty("os.name", "???"));
+		Statistic homeDir = new Statistic("Home Directory", System.getProperty("user.home", "???"));
+		Statistic timezone = new Statistic("Timezone", System.getProperty("user.timezone", "???"));
+		Statistic osVer = new Statistic("Operating System Version", System.getProperty("os.version", "???"));
 
-		addListObjects(dpi, screenWidth, screenHeight);
+		Statistic fileEncoding = new Statistic("File Encoding", System.getProperty("file.encoding", "???"));
+		Statistic executionaryCommand = new Statistic("Used Execute-Command",
+				System.getProperty("sun.java.command", "???"));
+		Statistic pathSeparator = new Statistic("Path separator", System.getProperty("path.separator", "???"));
+		Statistic vendorURL = new Statistic("Java Vendor URL", System.getProperty("java.vendor.url", "???"));
+		Statistic javaRuntimeName = new Statistic("Java Runtime Name", System.getProperty("java.runtime.name", "???"));
+
+		addListObjects(dpi, screenWidth, screenHeight, username, countryCode, osName, osVer, homeDir, timezone,
+				pathSeparator, fileEncoding, executionaryCommand, vendorURL, javaRuntimeName);
 
 	}
 
@@ -265,42 +279,6 @@ public class Statistics extends WindowManager.Page {
 		public void setStatColor(Paint statColor) {
 			this.statColor = statColor;
 		}
-	}
-
-	public static class ListParent extends ListObject {
-		private ObservableList<ListObject> children = FXCollections.observableArrayList();
-		{
-			children.addListener(new ListChangeListener<ListObject>() {
-
-				@Override
-				public void onChanged(ListChangeListener.Change<? extends ListObject> c) {
-					getCell().setItem(ListParent.this);
-				}
-			});
-		}
-
-		public ListParent(Paint statColor, ListObject... children) {
-			this(null, statColor, children);
-		}
-
-		public ListParent(String val, Paint statColor, ListObject... children) {
-			super(val, statColor);
-			for (ListObject lo : children)
-				this.children.add(lo);
-		}
-
-		public ListParent(String val, ListObject... children) {
-			this(val, null, children);
-		}
-
-		public ObservableList<ListObject> getChildrenUnmodifiable() {
-			return FXCollections.unmodifiableObservableList(children);
-		}
-
-		public ObservableList<ListObject> getChildren() {
-			return children;
-		}
-
 	}
 
 	public static class Statistic extends ListObject {
