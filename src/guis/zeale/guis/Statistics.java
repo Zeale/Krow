@@ -10,6 +10,8 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.util.Callback;
 import krow.guis.GUIHelper;
 import kröw.app.api.callables.Task;
@@ -55,18 +57,73 @@ public class Statistics extends WindowManager.Page {
 
 			@Override
 			public ListCell<Object> call(ListView<Object> param) {
-				return null;
+				ListCell<Object> cell = new ListCell<Object>() {
+					@Override
+					protected void updateItem(Object item, boolean empty) {
+						// Get previous item.
+						Object previousItem = getItem();
+						// Call super method.
+						super.updateItem(item, empty);
+
+						if (previousItem instanceof Statistic)
+							((Statistic) previousItem).unlinkCell();
+
+						String result;
+
+						// Check if we're an empty cell.
+						// If we are, the below code is useless.
+						if (empty) {
+							setText("");
+							return;// Code below is useless.
+						} else
+							result = item.toString();
+
+						// Check if the item is a statistic.
+						if (item instanceof Statistic) {
+							Statistic statistic = (Statistic) item;
+							statistic.setCell(this);
+							result = statistic.getStat() + ": " + statistic.getVal();
+						}
+
+						setText(result);
+					}
+				};
+
+				return cell;
 			}
 		});
 
+		searchItems.add(new Statistic("Test", "Val", Color.BLUE));
 		GUIHelper.applyShapeBackground(pane, searchBar, searchList);
 	}
 
-	public static class Statistic {
+	public static class ListObject {
+	}
+
+	public static class Statistic extends ListObject {
 
 		private String stat, val;
 
 		private ListCell<Object> cell;
+		private Paint statColor = Color.WHITE;
+
+		public Statistic() {
+		}
+
+		public Statistic(String stat, String val, Paint statColor) {
+			this.stat = stat;
+			this.val = val;
+			this.statColor = statColor;
+		}
+
+		public Statistic(String stat, String val) {
+			this.stat = stat;
+			this.val = val;
+		}
+
+		public final void unlinkCell() {
+			cell = null;
+		}
 
 		/**
 		 * @return the cell
@@ -149,6 +206,11 @@ public class Statistics extends WindowManager.Page {
 			}
 		});
 
+		public AutoUpdatingStatistic(String stat, String val, Task updater) {
+			super(stat, val);
+			updateTask = updater;
+		}
+
 		private static Collection<AutoUpdatingStatistic> statistics = new ArrayList<>();
 		private static long timeout;
 
@@ -166,6 +228,11 @@ public class Statistics extends WindowManager.Page {
 			updateTask = updater;
 			if (!AutoUpdatingStatistic.updater.isInterrupted())
 				AutoUpdatingStatistic.updater.start();
+		}
+
+		public AutoUpdatingStatistic(String stat, String val, Paint statColor, Task updater) {
+			super(stat, val, statColor);
+			updateTask = updater;
 		}
 
 		/**
