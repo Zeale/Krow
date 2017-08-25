@@ -2,8 +2,10 @@ package zeale.guis;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
@@ -178,6 +180,39 @@ public class Statistics extends WindowManager.Page {
 	}
 
 	public static class ListParent extends ListObject {
+		private ObservableList<ListObject> children = FXCollections.observableArrayList();
+		{
+			children.addListener(new ListChangeListener<ListObject>() {
+
+				@Override
+				public void onChanged(ListChangeListener.Change<? extends ListObject> c) {
+					getCell().setItem(ListParent.this);
+				}
+			});
+		}
+
+		public ListParent(Paint statColor, ListObject... children) {
+			this(null, statColor, children);
+		}
+
+		public ListParent(String val, Paint statColor, ListObject... children) {
+			super(val, statColor);
+			for (ListObject lo : children)
+				this.children.add(lo);
+		}
+
+		public ListParent(String val, ListObject... children) {
+			this(val, null, children);
+		}
+
+		public ObservableList<ListObject> getChildrenUnmodifiable() {
+			return FXCollections.unmodifiableObservableList(children);
+		}
+
+		public ObservableList<ListObject> getChildren() {
+			return children;
+		}
+
 	}
 
 	public static class Statistic extends ListObject {
@@ -286,10 +321,6 @@ public class Statistics extends WindowManager.Page {
 			statistics.remove(this);
 		}
 
-	}
-
-	public void addStatistic(Statistic statistic) {
-		searchItems.add(statistic);
 	}
 
 	@Override
