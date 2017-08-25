@@ -54,3 +54,9 @@
 .text-field .scroll-pane .content{
     -fx-background-color: transparent;
 }
+
+#StatisticsListView .list-cell {
+	-fx-alignment: center;
+	-fx-font-weight: bold;
+	-fx-font-size: 20.0px;
+}
