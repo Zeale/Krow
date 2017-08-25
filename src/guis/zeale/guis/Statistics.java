@@ -61,6 +61,8 @@ public class Statistics extends WindowManager.Page {
 		searchList.setLayoutX(Kröw.scaleWidth(SEARCH_LIST_LAYOUT_X));
 		searchList.setLayoutY(Kröw.scaleHeight(SEARCH_LIST_LAYOUT_Y));
 
+		/***/
+
 		searchList.setItems(searchItems);
 
 		searchList.setCellFactory(new Callback<ListView<Object>, ListCell<Object>>() {
@@ -96,8 +98,8 @@ public class Statistics extends WindowManager.Page {
 						// If we are, the below code is useless.
 						if (empty) {
 							setText("");
-							setBackground(new Background(new BackgroundFill(new Color(0.7, 0.7, 0.7, 0.23),
-									CornerRadii.EMPTY, Insets.EMPTY)));
+							setBackground(new Background(
+									new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
 							return;// Code below is useless.
 						}
 
@@ -131,31 +133,57 @@ public class Statistics extends WindowManager.Page {
 
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				if (newValue.isEmpty())
-					searchList.setItems(searchItems);
-				else {
-					ObservableList<Object> newList = FXCollections.observableArrayList();
-					for (Object o : searchItems) {
-						String stat;
-						if (o instanceof Statistic)
-							stat = ((Statistic) o).getStat();
-						else if (o instanceof ListObject)
-							stat = ((ListObject) o).getVal();
-						else
-							stat = o.toString();
-						if (stat.startsWith(newValue))
-							newList.add(o);
-					}
-					if (newList.isEmpty())
-						newList.add(new ListObject(""));
-					searchList.setItems(newList);
-				}
+				updateList();
 			}
 
 		});
 
-		searchItems.add(new Statistic("Test", "Val"));
+		searchItems.addListener(new ListChangeListener<Object>() {
+
+			@Override
+			public void onChanged(ListChangeListener.Change<? extends Object> c) {
+				updateList();
+			}
+
+		});
+
+		/***/
+
+		addDefaultStats();
+
+		/***/
+
 		GUIHelper.applyShapeBackground(pane, searchBar, searchList);
+	}
+
+	private void addDefaultStats() {
+		Statistic dpi = new Statistic("Screen DPI", Kröw.getSystemProperties().getScreenDotsPerInch());
+		Statistic screenWidth = new Statistic("Screen Width", Kröw.getSystemProperties().getScreenWidth());
+		Statistic screenHeight = new Statistic("Screen Height", Kröw.getSystemProperties().getScreenWidth());
+
+		addListObjects(dpi, screenWidth, screenHeight);
+
+	}
+
+	private void updateList() {
+		if (searchBar.getText().isEmpty())
+			searchList.setItems(searchItems);
+		else {
+			ObservableList<Object> newList = FXCollections.observableArrayList();
+			for (Object o : searchItems) {
+				String stat;
+				if (o instanceof Statistic)
+					stat = ((Statistic) o).getStat();
+				else if (o instanceof ListObject)
+					stat = ((ListObject) o).getVal();
+				else
+					stat = o.toString();
+				if (stat.startsWith(searchBar.getText()))
+					newList.add(o);
+			}
+			searchList.setItems(newList);
+		}
+
 	}
 
 	public static class ListObject {
@@ -286,6 +314,10 @@ public class Statistics extends WindowManager.Page {
 			this.stat = stat;
 		}
 
+		public Statistic(String stat, Number val) {
+			this(stat, "" + val);
+		}
+
 		/**
 		 * @return the stat
 		 */
@@ -382,4 +414,8 @@ public class Statistics extends WindowManager.Page {
 		return "Statistics.fxml";
 	}
 
+	public void addListObjects(ListObject... listObjects) {
+		for (ListObject lo : listObjects)
+			searchItems.add(lo);
+	}
 }
