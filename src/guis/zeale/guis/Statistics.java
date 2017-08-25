@@ -1,5 +1,7 @@
 package zeale.guis;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -157,9 +159,13 @@ public class Statistics extends WindowManager.Page {
 	}
 
 	private void addDefaultStats() {
-		Statistic dpi = new Statistic("Screen DPI", Kröw.getSystemProperties().getScreenDotsPerInch());
-		Statistic screenWidth = new Statistic("Screen Width", Kröw.getSystemProperties().getScreenWidth());
-		Statistic screenHeight = new Statistic("Screen Height", Kröw.getSystemProperties().getScreenWidth());
+		NumberFormat formatter = new DecimalFormat();
+		Statistic dpi = new Statistic("Screen DPI",
+				formatter.format(Kröw.getSystemProperties().getScreenDotsPerInch()));
+		Statistic screenWidth = new Statistic("Screen Width",
+				formatter.format(Kröw.getSystemProperties().getScreenWidth()));
+		Statistic screenHeight = new Statistic("Screen Height",
+				formatter.format(Kröw.getSystemProperties().getScreenWidth()));
 
 		addListObjects(dpi, screenWidth, screenHeight);
 
