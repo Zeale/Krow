@@ -13,11 +13,15 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -42,6 +46,7 @@ public class Statistics extends WindowManager.Page {
 
 			@Override
 			public void run() {
+				closing = false;
 				while (statistics.size() > 0 && !closing) {
 					for (final AutoUpdatingStatistic s : statistics)
 						try {
@@ -61,6 +66,12 @@ public class Statistics extends WindowManager.Page {
 				updater = new Thread(this);
 			}
 		});
+
+		public static void startChecker() {
+			if (!AutoUpdatingStatistic.updater.isInterrupted() && !AutoUpdatingStatistic.updater.isAlive()
+					&& statistics.size() > 0)
+				AutoUpdatingStatistic.updater.start();
+		}
 
 		private static Collection<AutoUpdatingStatistic> statistics = new ConcurrentLinkedQueue<>();
 
@@ -101,8 +112,7 @@ public class Statistics extends WindowManager.Page {
 				final ParameterizedTask<AutoUpdatingStatistic> updater) {
 			super(stat, val, statColor);
 			updateTask = updater;
-			if (!AutoUpdatingStatistic.updater.isInterrupted() && !AutoUpdatingStatistic.updater.isAlive())
-				AutoUpdatingStatistic.updater.start();
+			startChecker();
 		}
 
 		public AutoUpdatingStatistic(final String stat, final String val,
@@ -284,8 +294,6 @@ public class Statistics extends WindowManager.Page {
 	@FXML
 	private ListView<Object> searchList;
 
-	int i;
-
 	private void addDefaultStats() {
 		final NumberFormat formatter = new DecimalFormat();
 		final Statistic dpi = new Statistic("Screen DPI",
@@ -315,18 +323,17 @@ public class Statistics extends WindowManager.Page {
 				Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory(),
 				(ParameterizedTask<AutoUpdatingStatistic>) param -> param
 						.setVal(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
-		final Statistic test = new AutoUpdatingStatistic("Test", doit(),
-				(ParameterizedTask<AutoUpdatingStatistic>) param -> param.setVal(doit()));
 
 		final Statistic fileEncoding = new Statistic("File Encoding", System.getProperty("file.encoding", "???"));
 		final Statistic executionaryCommand = new Statistic("Used Execute-Command",
 				System.getProperty("sun.java.command", "???"));
-		final Statistic pathSeparator = new Statistic("Path separator", System.getProperty("path.separator", "???"));
+		final Statistic pathSeparator = new Statistic("System Path Separator",
+				System.getProperty("path.separator", "???"));
 		final Statistic vendorURL = new Statistic("Java Vendor URL", System.getProperty("java.vendor.url", "???"));
 		final Statistic javaRuntimeName = new Statistic("Java Runtime Name",
 				System.getProperty("java.runtime.name", "???"));
 
-		addListObjects(test, dpi, screenWidth, screenHeight, username, countryCode, osName, osVer, timezone,
+		addListObjects(dpi, screenWidth, screenHeight, username, countryCode, osName, osVer, timezone,
 				processorsAvailable, totalAvailableMemory, freeAvailableMemory, usedMemory, homeDir, pathSeparator,
 				fileEncoding, executionaryCommand, vendorURL, javaRuntimeName);
 
@@ -341,10 +348,6 @@ public class Statistics extends WindowManager.Page {
 	public boolean canSwitchScenes(final Class<? extends Page> newSceneClass) {
 		closing = true;
 		return true;
-	}
-
-	private int doit() {
-		return i++;
 	}
 
 	@Override
@@ -473,8 +476,41 @@ public class Statistics extends WindowManager.Page {
 
 		/***/
 
+		AutoUpdatingStatistic.startChecker();
+
 		GUIHelper.applyShapeBackground(pane, searchBar, searchList);
+
+		/***/
+
+		startsWith.setToggleGroup(searchTypesGroup);
+		contains.setToggleGroup(searchTypesGroup);
+		endsWith.setToggleGroup(searchTypesGroup);
+
+		startsWith.setLayoutY(44);
+		contains.setLayoutX(startsWith.getLayoutX());
+		contains.setLayoutY(startsWith.getLayoutY() + startsWith.getPrefHeight() + 25);
+		endsWith.setLayoutX(contains.getLayoutX());
+		endsWith.setLayoutY(contains.getLayoutY() + contains.getPrefHeight() + 25);
+
+		startsWith.setSelected(true);
+
+		EventHandler<ActionEvent> onSearchTypeChanged = new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				updateList();
+			}
+		};
+
+		startsWith.setOnAction(onSearchTypeChanged);
+		contains.setOnAction(onSearchTypeChanged);
+		endsWith.setOnAction(onSearchTypeChanged);
+
 	}
+
+	@FXML
+	private RadioButton contains, startsWith, endsWith;
+	private ToggleGroup searchTypesGroup = new ToggleGroup();
 
 	private void updateList() {
 		if (searchBar.getText().isEmpty())
@@ -489,7 +525,9 @@ public class Statistics extends WindowManager.Page {
 					stat = ((ListObject) o).getVal();
 				else
 					stat = o.toString();
-				if (stat.startsWith(searchBar.getText()))
+				if ((startsWith.isSelected() && stat.startsWith(searchBar.getText()))
+						|| (contains.isSelected() && stat.contains(searchBar.getText()))
+						|| (endsWith.isSelected() && stat.endsWith(searchBar.getText())))
 					newList.add(o);
 			}
 			searchList.setItems(newList);

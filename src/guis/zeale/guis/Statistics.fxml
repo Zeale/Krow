@@ -14,5 +14,20 @@
             <Font size="18.0" />
          </font>
       </TextField>
+      <RadioButton fx:id="startsWith" layoutX="1593.0" layoutY="38.0" mnemonicParsing="false" prefWidth="107.0" text="Starts With" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </RadioButton>
+      <RadioButton fx:id="contains" layoutX="1709.0" layoutY="38.0" mnemonicParsing="false" prefWidth="89.0" text="Contains" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </RadioButton>
+      <RadioButton fx:id="endsWith" layoutX="1806.0" layoutY="38.0" mnemonicParsing="false" prefWidth="99.0" text="Ends With" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </RadioButton>
    </children>
 </AnchorPane>
