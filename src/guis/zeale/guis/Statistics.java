@@ -68,9 +68,6 @@ public class Statistics extends WindowManager.Page {
 						if (previousItem instanceof Statistic)
 							((Statistic) previousItem).unlinkCell();
 
-						// TODO remove
-						System.out.println("2");
-
 						String result;
 
 						// Check if we're an empty cell.
@@ -84,12 +81,12 @@ public class Statistics extends WindowManager.Page {
 						if (item instanceof ListObject) {
 							ListObject listObject = (ListObject) item;
 							setTextFill(listObject.getStatColor());
+							listObject.setCell(this);
 							result = listObject.getVal();
 						}
 						// Check if the item is a statistic.
 						if (item instanceof Statistic) {
 							Statistic statistic = (Statistic) item;
-							statistic.setCell(this);
 							result = statistic.getStat() + ": " + statistic.getVal();
 						}
 
@@ -106,6 +103,36 @@ public class Statistics extends WindowManager.Page {
 	}
 
 	public static class ListObject {
+		private ListCell<Object> cell;
+
+		public final void unlinkCell() {
+			cell = null;
+		}
+
+		/**
+		 * @return the cell
+		 */
+		public final ListCell<Object> getCell() {
+			return cell;
+		}
+
+		/**
+		 * @param cell
+		 *            the cell to set
+		 */
+		private final void setCell(ListCell<Object> cell) {
+			this.cell = cell;
+		}
+
+		protected void updateCell() {
+			if (isAssignedToCell())
+				cell.setItem(this);
+		}
+
+		public boolean isAssignedToCell() {
+			return cell != null;
+		}
+
 		private String val;
 
 		public ListObject() {
@@ -157,8 +184,6 @@ public class Statistics extends WindowManager.Page {
 
 		private String stat;
 
-		private ListCell<Object> cell;
-
 		public Statistic() {
 		}
 
@@ -170,25 +195,6 @@ public class Statistics extends WindowManager.Page {
 		public Statistic(String stat, String val) {
 			super(val);
 			this.stat = stat;
-		}
-
-		public final void unlinkCell() {
-			cell = null;
-		}
-
-		/**
-		 * @return the cell
-		 */
-		public final ListCell<Object> getCell() {
-			return cell;
-		}
-
-		/**
-		 * @param cell
-		 *            the cell to set
-		 */
-		private final void setCell(ListCell<Object> cell) {
-			this.cell = cell;
 		}
 
 		/**
@@ -205,15 +211,6 @@ public class Statistics extends WindowManager.Page {
 		public final void setStat(String stat) {
 			updateCell();
 			this.stat = stat;
-		}
-
-		protected void updateCell() {
-			if (isAssignedToCell())
-				cell.setItem(this);
-		}
-
-		public boolean isAssignedToCell() {
-			return cell != null;
 		}
 
 	}
