@@ -37,56 +37,11 @@ public final class BackgroundBuilder {
 	}
 
 	public static ShapeBackgroundManager shapeBackground(final Pane pane, final Node... mouseDetectionNodes) {
-		ShapeBackgroundManager manager = new ShapeBackgroundManager();
-		final Random random = new Random();
+		ShapeBackgroundManager manager = new ShapeBackgroundManager(pane);
 		manager.addRandomShapes(SHAPE_COUNT);
 
-		final EventHandler<MouseEvent> handler =
-
-				event -> {
-					final double mouseX = event.getSceneX(), mouseY = event.getSceneY();
-					for (final Shape s : manager.getShapes())
-						if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY)
-								&& Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement()) {
-							final double shapeX = s.getLayoutX() + s.getTranslateX(),
-									shapeY = s.getLayoutY() + s.getTranslateY();
-
-							final double distX = mouseX - shapeX, distY = mouseY - shapeY;
-							final double distance = Math.sqrt(distX * distX + distY * distY);
-							if (distance <= SHAPE_RADIUS * 2) {
-
-								final TranslateTransition translator = (TranslateTransition) s.getProperties()
-										.get(TRANSLATOR_KEY);
-
-								translator.stop();
-
-								translator.setByX(-distX * 3);
-								translator.setByY(-distY * 3);
-								translator.setDuration(Duration
-										.seconds((1 - random.nextDouble() / 8) * manager.getAnimationDuration() / 3));
-
-								final EventHandler<ActionEvent> onFinished = translator.getOnFinished();
-								s.getProperties().put(IS_BEING_SHOVED_KEY, true);
-								final Interpolator interpolator = translator.getInterpolator();
-								translator.setOnFinished(event1 -> {
-									s.getProperties().remove(IS_BEING_SHOVED_KEY);
-									translator.setOnFinished(onFinished);
-									translator.setInterpolator(interpolator);
-									onFinished.handle(event1);
-								});
-								translator.setInterpolator(Interpolator.EASE_OUT);
-								translator.play();
-								Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP, 0.7f);
-							}
-						}
-				};
-
-		pane.setOnMouseMoved(handler);
 		for (final Node n : mouseDetectionNodes)
-			n.setOnMouseMoved(handler);
-
-		for (final Shape s : manager.getShapes())
-			pane.getChildren().add(0, s);
+			n.setOnMouseMoved(manager.getMouseMovementHandler());
 
 		return manager;
 
@@ -95,6 +50,8 @@ public final class BackgroundBuilder {
 	public static class BackgroundManager {
 
 		private double animationDuration = SHAPE_MOVE_DURATION;
+		protected Pane currentPane;
+		private Color startColor = SHAPE_COLOR;
 
 		/**
 		 * @return the animationDuration
@@ -115,6 +72,15 @@ public final class BackgroundBuilder {
 
 		protected void setMouseMovementHandler(EventHandler<MouseEvent> mouseMovementHandler) {
 			this.mouseMovementHandler = mouseMovementHandler;
+			currentPane.setOnMouseMoved(mouseMovementHandler);
+		}
+
+		public void disableMouseInteraction() {
+			currentPane.setOnMouseMoved(null);
+		}
+
+		public void enableMouseInteraction() {
+			currentPane.setOnMouseMoved(getMouseMovementHandler());
 		}
 
 		protected EventHandler<MouseEvent> getMouseMovementHandler() {
@@ -131,14 +97,95 @@ public final class BackgroundBuilder {
 				n.setOnMouseMoved(null);
 		}
 
-		private BackgroundManager() {
-
+		protected BackgroundManager(Pane currentPane, Color startColor, Node... detectionNodes) {
+			this(currentPane);
+			this.startColor = startColor;
+			for (Node n : detectionNodes)
+				n.setOnMouseMoved(getMouseMovementHandler());
 		}
+
+		protected BackgroundManager(Pane currentPane, Node... detectionNodes) {
+			this(currentPane);
+			for (Node n : detectionNodes)
+				n.setOnMouseMoved(getMouseMovementHandler());
+		}
+
+		protected BackgroundManager(Pane pane) {
+			currentPane = pane;
+			pane.setOnMouseMoved(getMouseMovementHandler());
+		}
+
+		public Color getStartColor() {
+			return startColor;
+		}
+
+		protected BackgroundManager(Pane currentPane, Color startColor) {
+			this(currentPane);
+			this.startColor = startColor;
+		}
+
 	}
 
 	public static class ShapeBackgroundManager extends BackgroundManager {
 
 		private ArrayList<Shape> shapes = new ArrayList<>();
+
+		private double customShapeSize = SHAPE_RADIUS;
+
+		/**
+		 * @return the customShapeSize
+		 */
+		public double getCustomShapeSize() {
+			return customShapeSize;
+		}
+
+		/**
+		 * @param customShapeSize
+		 *            the customShapeSize to set
+		 */
+		public void setCustomShapeSize(double customShapeSize) {
+			this.customShapeSize = customShapeSize;
+		}
+
+		{
+			setMouseMovementHandler(event -> {
+				final double mouseX = event.getSceneX(), mouseY = event.getSceneY();
+				for (final Shape s : getShapes())
+					if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY)
+							&& Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement()) {
+						final double shapeX = s.getLayoutX() + s.getTranslateX(),
+								shapeY = s.getLayoutY() + s.getTranslateY();
+
+						final double distX = mouseX - shapeX, distY = mouseY - shapeY;
+						final double distance = Math.sqrt(distX * distX + distY * distY);
+						if (distance <= customShapeSize * 2) {
+
+							final TranslateTransition translator = (TranslateTransition) s.getProperties()
+									.get(TRANSLATOR_KEY);
+
+							translator.stop();
+
+							translator.setByX(-distX * 3);
+							translator.setByY(-distY * 3);
+							translator.setDuration(
+									Duration.seconds((1 - random.nextDouble() / 8) * getAnimationDuration() / 3));
+
+							final EventHandler<ActionEvent> onFinished = translator.getOnFinished();
+							s.getProperties().put(IS_BEING_SHOVED_KEY, true);
+							final Interpolator interpolator = translator.getInterpolator();
+							translator.setOnFinished(event1 -> {
+								s.getProperties().remove(IS_BEING_SHOVED_KEY);
+								translator.setOnFinished(onFinished);
+								translator.setInterpolator(interpolator);
+								onFinished.handle(event1);
+							});
+							translator.setInterpolator(Interpolator.EASE_OUT);
+							translator.play();
+							Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP, 0.7f);
+						}
+					}
+			});
+		}
 
 		public void setShapeColor(Paint color) {
 			for (Shape s : shapes)
@@ -163,6 +210,10 @@ public final class BackgroundBuilder {
 
 		public boolean isRotatable() {
 			return rotatable;
+		}
+
+		protected ShapeBackgroundManager(Pane currentPane, Color startColor) {
+			super(currentPane, startColor);
 		}
 
 		public void setRotatable(boolean rotatable) {
@@ -255,42 +306,47 @@ public final class BackgroundBuilder {
 		}
 
 		public void addRandomShape() {
-			final Shape c = random.nextBoolean() ? new Circle(SHAPE_RADIUS)
-					: new Rectangle(SHAPE_RADIUS * 1.8, SHAPE_RADIUS * 1.8);
-			c.setStroke(SHAPE_COLOR);
-			c.setFill(Color.TRANSPARENT);
-			c.setEffect(new DropShadow(BlurType.GAUSSIAN, SHAPE_COLOR, 20, 0.5, 0, 0));
-			c.setLayoutX(0);
-			c.setLayoutY(0);
-			c.setTranslateX(random.nextInt((int) Kröw.getSystemProperties().getScreenWidth()) - SHAPE_RADIUS);
-			c.setTranslateY(random.nextInt((int) Kröw.getSystemProperties().getScreenHeight()) - SHAPE_RADIUS);
+			final Shape s = random.nextBoolean() ? new Circle(customShapeSize)
+					: new Rectangle(customShapeSize * 1.8, customShapeSize * 1.8);
+			s.setStroke(SHAPE_COLOR);
+			s.setFill(Color.TRANSPARENT);
+			s.setEffect(new DropShadow(BlurType.GAUSSIAN, SHAPE_COLOR, 20, 0.5, 0, 0));
+			s.setLayoutX(0);
+			s.setLayoutY(0);
+			s.setTranslateX(random.nextInt((int) Kröw.getSystemProperties().getScreenWidth()) - customShapeSize);
+			s.setTranslateY(random.nextInt((int) Kröw.getSystemProperties().getScreenHeight()) - customShapeSize);
 			final TranslateTransition translator = new TranslateTransition();
 			final RotateTransition rotator = new RotateTransition();
 			final StrokeTransition colorer = new StrokeTransition();
-			translator.setNode(c);
-			rotator.setNode(c);
-			colorer.setShape(c);
-			c.getProperties().put(TRANSLATOR_KEY, translator);
-			c.getProperties().put(ROTATOR_KEY, rotator);
-			c.getProperties().put(COLORER_KEY, colorer);
+			translator.setNode(s);
+			rotator.setNode(s);
+			colorer.setShape(s);
+			s.getProperties().put(TRANSLATOR_KEY, translator);
+			s.getProperties().put(ROTATOR_KEY, rotator);
+			s.getProperties().put(COLORER_KEY, colorer);
 
 			translator.setDuration(Duration.seconds(generateRandomMultiplier() * getAnimationDuration()));
-			translator.setByX(calculateByX(c.getLayoutX(), c.getTranslateX()));
-			translator.setByY(calculateByY(c.getLayoutY(), c.getTranslateY()));
+			translator.setByX(calculateByX(s.getLayoutX(), s.getTranslateX()));
+			translator.setByY(calculateByY(s.getLayoutY(), s.getTranslateY()));
 			translator.setInterpolator(Interpolator.EASE_OUT);
-			translator.setOnFinished(event -> animate(c));
+			translator.setOnFinished(event -> animate(s));
 
-			c.setCache(true);
+			s.setCache(true);
 
-			shapes.add(c);
+			shapes.add(s);
+			addShapeToPane(s);
+		}
+
+		private void addShapeToPane(Shape s) {
+			currentPane.getChildren().add(0, s);
 		}
 
 		private ArrayList<Shape> getShapes() {
 			return shapes;
 		}
 
-		private ShapeBackgroundManager() {
-
+		protected ShapeBackgroundManager(Pane pane) {
+			super(pane);
 		}
 	}
 
