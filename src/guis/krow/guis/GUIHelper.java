@@ -173,11 +173,9 @@ public final class GUIHelper {
 
 			@Override
 			public void handle(Event event) {
-				backgroundmngr.addColorAnimations(
-						new BackgroundBuilder.ShapeBackgroundManager.ColorAnimation(1, false, Color.RED, Color.GREEN,
-								Color.ORANGE),
-						new BackgroundBuilder.ShapeBackgroundManager.ColorAnimation(4, true, true, Color.WHITE,
-								Color.BLACK));
+				backgroundmngr.setColorAnimations(false,
+						BackgroundBuilder.ShapeBackgroundManager.ColorAnimation.generateRandomColorAnimation(50));
+
 				backgroundmngr.setRepeatColorAnimations(true);
 				backgroundmngr.setRotatable(true);
 

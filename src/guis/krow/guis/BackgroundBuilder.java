@@ -137,6 +137,34 @@ public final class BackgroundBuilder {
 
 		public static class ColorAnimation {
 
+			public static ColorAnimation generateRandomColorAnimation(int colorCount) {
+				Color[] colors = new Color[colorCount];
+				for (int i = 0; i < colorCount; i++)
+					colors[i] = generateRandomColor();
+				return new ColorAnimation(random.nextInt(random.nextInt(5) + 2) + 1, random.nextBoolean(),
+						random.nextBoolean(), colors);
+			}
+
+			public static ColorAnimation generateRandomColorAnimation() {
+				return generateRandomColorAnimation(random.nextInt(19) + 1);
+			}
+
+			public static ColorAnimation[] generateRandomColorAnimations(int count) {
+				ColorAnimation[] animations = new ColorAnimation[count];
+				for (int i = 0; i < count; i++)
+					animations[i] = generateRandomColorAnimation();
+				return animations;
+			}
+
+			public static ColorAnimation rainbow(int runCount, boolean synchronous, boolean even) {
+				return new ColorAnimation(runCount, synchronous, even, Color.RED, Color.ORANGE, Color.YELLOW,
+						Color.GREEN, Color.BLUE, Color.INDIGO, Color.VIOLET);
+			}
+
+			public static ColorAnimation[] generateRandomColorAnimations() {
+				return generateRandomColorAnimations(random.nextInt(10) + 1);
+			}
+
 			private Color[] colors;
 			private int runCount = 1;
 			private boolean synchronous, even;
@@ -383,7 +411,7 @@ public final class BackgroundBuilder {
 				s.setEffect(null);
 		}
 
-		private Color generateRandomColor() {
+		private static Color generateRandomColor() {
 			return new Color(random.nextDouble(), random.nextDouble(), random.nextDouble(), 1);
 		}
 
