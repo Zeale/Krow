@@ -173,7 +173,15 @@ public final class GUIHelper {
 
 			@Override
 			public void handle(Event event) {
-				backgroundmngr.setColorsEvenly(Color.RED, Color.BLUE, Color.GREEN);
+				backgroundmngr.addColorAnimations(
+						new BackgroundBuilder.ShapeBackgroundManager.ColorAnimation(1, false, Color.RED, Color.GREEN,
+								Color.ORANGE),
+						new BackgroundBuilder.ShapeBackgroundManager.ColorAnimation(4, true, true, Color.WHITE,
+								Color.BLACK));
+				backgroundmngr.setRepeatColorAnimations(true);
+				backgroundmngr.setRotatable(true);
+
+				backgroundmngr.playColorAnimations();
 			}
 		});
 

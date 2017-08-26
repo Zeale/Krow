@@ -2,6 +2,7 @@ package krow.guis;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Stack;
 
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
@@ -131,24 +132,179 @@ public final class BackgroundBuilder {
 
 	public static class ShapeBackgroundManager extends BackgroundManager {
 
+		private Stack<ColorAnimation> animation = new Stack<>();
+		private boolean repeatColorAnimation;
+
+		public static class ColorAnimation {
+
+			private Color[] colors;
+			private int runCount = 1;
+			private boolean synchronous, even;
+
+			/**
+			 * @return the even
+			 */
+			public boolean isEven() {
+				return even;
+			}
+
+			public ColorAnimation(boolean synchronous, boolean even, Color... colors) {
+				this.colors = colors;
+				this.synchronous = synchronous;
+				this.even = even;
+			}
+
+			public ColorAnimation(int runCount, boolean synchronous, boolean even, Color... colors) {
+				this.colors = colors;
+				this.runCount = runCount;
+				this.synchronous = synchronous;
+				this.even = even;
+			}
+
+			public ColorAnimation(Color... colors) {
+				this.colors = colors;
+			}
+
+			public ColorAnimation(int runCount, boolean synchronous, Color... colors) {
+				this.colors = colors;
+				this.runCount = runCount;
+				this.synchronous = synchronous;
+			}
+
+			public ColorAnimation(boolean synchronous, Color... colors) {
+				this.colors = colors;
+				this.synchronous = synchronous;
+			}
+
+			public ColorAnimation(int runCount, Color... colors) {
+				this.colors = colors;
+				this.runCount = runCount;
+			}
+
+			/**
+			 * @return the colors
+			 */
+			public Color[] getColors() {
+				return colors;
+			}
+
+			/**
+			 * @return the runCount
+			 */
+			public int getRunCount() {
+				return runCount;
+			}
+
+			/**
+			 * @return the synchronous
+			 */
+			public boolean isSynchronous() {
+				return synchronous;
+			}
+
+		}
+
+		public void setColorAnimations(boolean repeat, ColorAnimation... animations) {
+			stopColorAnimations();
+			repeatColorAnimation = repeat;
+
+			animation.clear();
+			for (ColorAnimation ca : animations)
+				animation.add(0, ca);
+
+		}
+
+		public void addColorAnimations(ColorAnimation... animations) {
+			for (ColorAnimation ca : animations)
+				animation.add(0, ca);
+		}
+
+		public void playColorAnimations() {
+			for (Shape s : getShapes()) {
+				((StrokeTransition) s.getProperties().get(COLORER_KEY)).setOnFinished(new EventHandler<ActionEvent>() {
+
+					@Override
+					public void handle(ActionEvent event) {
+						setGlowColor(s, (Color) s.getStroke());
+						shapesColored++;
+						if (shapesColored >= getShapes().size() && !animation.isEmpty())
+							animateColors();
+					}
+
+				});
+			}
+			animateColors();
+		}
+
+		private void setGlowColor(Shape s, Color c) {
+			if (s.getEffect() != null && s.getEffect() instanceof DropShadow)
+				((DropShadow) s.getEffect()).setColor(c);
+		}
+
+		private int shapesColored = 0, runCount = 0;
+
+		private void animateColors() {
+			shapesColored = 0;
+
+			int i = 0;
+
+			// Get first color animation.
+			ColorAnimation currentAnimation = animation.peek();
+			if (currentAnimation.getRunCount() <= runCount) {
+				currentAnimation = animation.pop();
+			}
+
+			// Apply it to each shape.
+			for (Shape s : getShapes()) {
+				// Get transition
+				StrokeTransition st = (StrokeTransition) s.getProperties().get(COLORER_KEY);
+
+				// Handle time.
+				st.setDuration(Duration.seconds(currentAnimation.isSynchronous() ? getAnimationDuration()
+						: getAnimationDuration() * generateRandomMultiplier()));
+
+				// Handle color distribution.
+				if (currentAnimation.isEven()) {
+					st.setToValue(currentAnimation.getColors()[i % currentAnimation.getColors().length]);
+					i++;
+				} else
+					st.setToValue(
+							currentAnimation.getColors()[(int) (Math.random() * currentAnimation.getColors().length)]);
+			}
+
+			// If the animation loops.
+			if (currentAnimation.getRunCount() <= runCount) {
+				if (repeatColorAnimation)
+					animation.add(0, currentAnimation);// Add this to the front.
+				runCount = 0;
+			}
+			for (Shape s : getShapes())
+				((StrokeTransition) s.getProperties().get(COLORER_KEY)).play();
+
+			runCount++;
+
+		}
+
+		public void setRepeatColorAnimations(boolean repeat) {
+			repeatColorAnimation = repeat;
+		}
+
+		public void stopColorAnimations() {
+			for (Shape s : getShapes())
+				((StrokeTransition) s.getProperties().get(COLORER_KEY)).stop();
+		}
+
 		public void setColor(Color newColor) {
 			for (Shape s : getShapes()) {
-				fadeShapeColor(s, newColor);
+				fadeShapesToColor(s, newColor);
 			}
 		}
 
-		private void fadeShapeColor(Shape s, Color color) {
-			fadeShapeColor(s, color, new EventHandler<ActionEvent>() {
-
-				@Override
-				public void handle(ActionEvent event) {
-					if (s.getEffect() != null && s.getEffect() instanceof DropShadow)
-						((DropShadow) s.getEffect()).setColor(color);
-				}
-			});
+		private void fadeShapesToColor(Shape s, Color color) {
+			fadeShapeToColor(s, color, Duration.seconds(getAnimationDuration() * generateRandomMultiplier()));
 		}
 
-		private void fadeShapeColor(Shape s, Color color, EventHandler<ActionEvent> onFinished) {
+		private void fadeShapeToColor(Shape s, Color color, EventHandler<ActionEvent> onFinished) {
 			StrokeTransition st = (StrokeTransition) s.getProperties().get(COLORER_KEY);
 			st.stop();
 			st.setToValue(color);
@@ -157,11 +313,40 @@ public final class BackgroundBuilder {
 			st.play();
 		}
 
+		private void fadeShapeToColor(Shape s, Color color, Duration duration) {
+			StrokeTransition st = (StrokeTransition) s.getProperties().get(COLORER_KEY);
+			st.stop();
+			st.setToValue(color);
+			st.setDuration(duration);
+			st.play();
+		}
+
+		public void setEvenShapeColorsSynchronously(Color... colors) {
+			int i = 0;
+			for (Shape s : getShapes())
+				fadeShapeToColor(s, colors[i % colors.length], Duration.seconds(getAnimationDuration()));
+		}
+
+		public void setRandomShapeColorsSynchronously() {
+			for (Shape s : getShapes())
+				fadeShapeToColor(s, generateRandomColor(),
+						Duration.seconds(generateRandomMultiplier() * getAnimationDuration()));
+		}
+
+		public void setRandomShapeColorsSynchronously(int count) {
+			if (count > shapes.size())
+				count = shapes.size();
+			Color[] colors = new Color[count];
+			for (int i = 0; i < count; i++)
+				colors[i] = generateRandomColor();
+			setEvenShapeColorsSynchronously(colors);
+		}
+
 		public void setColorsRandomly(Color... colors) {
 			if (colors.length == 0)
 				return;
 			for (Shape s : getShapes())
-				fadeShapeColor(s, colors[(int) (Math.random() * colors.length)]);
+				fadeShapesToColor(s, colors[(int) (Math.random() * colors.length)]);
 		}
 
 		public void setRandomColor() {
@@ -170,7 +355,7 @@ public final class BackgroundBuilder {
 
 		public void setRandomColors() {
 			for (Shape s : getShapes())
-				fadeShapeColor(s, generateRandomColor());
+				fadeShapesToColor(s, generateRandomColor());
 		}
 
 		public void disableGlow() {
@@ -207,7 +392,7 @@ public final class BackgroundBuilder {
 				return;
 			int i = 0;
 			for (Shape s : getShapes())
-				fadeShapeColor(s, colors[i++ % colors.length]);
+				fadeShapesToColor(s, colors[i++ % colors.length]);
 
 		}
 
