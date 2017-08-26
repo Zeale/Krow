@@ -341,7 +341,8 @@ public class Statistics extends WindowManager.Page {
 
 				@Override
 				public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
-					dpi.setVal(Kröw.getSystemProperties().getScreenDotsPerInch());
+					dpi.setVal(Kröw.getSystemProperties().getScreenDotsPerInch() < 0 ? "???"
+							: "" + Kröw.getSystemProperties().getScreenDotsPerInch());
 					screenHeight.setVal(Kröw.getSystemProperties().getScreenHeight());
 					screenWidth.setVal(Kröw.getSystemProperties().getScreenWidth());
 				}
