@@ -9,8 +9,6 @@ import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -213,16 +211,12 @@ public class Home extends Page {
 			}
 		});
 
-		ImageView statistics = new ImageView("krow/resources/Statistics.png");
-		statistics.setOnMouseClicked(new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				try {
-					WindowManager.setScene(Statistics.class);
-				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-					e.printStackTrace();
-				}
+		final ImageView statistics = new ImageView("krow/resources/Statistics.png");
+		statistics.setOnMouseClicked(event -> {
+			try {
+				WindowManager.setScene(Statistics.class);
+			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+				e.printStackTrace();
 			}
 		});
 		statistics.setPickOnBounds(true);

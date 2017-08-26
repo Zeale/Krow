@@ -9,7 +9,6 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -42,8 +41,6 @@ import kröw.core.managers.WindowManager.Page;
 
 public class Statistics extends WindowManager.Page {
 
-	private static ChangeListener<Object> windowMovedListener;
-
 	public static class AutoUpdatingStatistic extends Statistic {
 		private static Thread updater = new Thread(new Runnable() {
 
@@ -70,12 +67,6 @@ public class Statistics extends WindowManager.Page {
 			}
 		});
 
-		public static void startChecker() {
-			if (!AutoUpdatingStatistic.updater.isInterrupted() && !AutoUpdatingStatistic.updater.isAlive()
-					&& statistics.size() > 0)
-				AutoUpdatingStatistic.updater.start();
-		}
-
 		private static Collection<AutoUpdatingStatistic> statistics = new ConcurrentLinkedQueue<>();
 
 		private static long timeout = 1000;
@@ -93,6 +84,12 @@ public class Statistics extends WindowManager.Page {
 		 */
 		public static final void setTimeout(final long timeout) {
 			AutoUpdatingStatistic.timeout = timeout;
+		}
+
+		public static void startChecker() {
+			if (!AutoUpdatingStatistic.updater.isInterrupted() && !AutoUpdatingStatistic.updater.isAlive()
+					&& statistics.size() > 0)
+				AutoUpdatingStatistic.updater.start();
 		}
 
 		private ParameterizedTask<AutoUpdatingStatistic> updateTask;
@@ -161,15 +158,15 @@ public class Statistics extends WindowManager.Page {
 			this.statColor = statColor == null ? Color.WHITE : statColor;
 		}
 
-		public String getDisplayText() {
-			return val.get();
-		}
-
 		/**
 		 * @return the cell
 		 */
 		public final ListCell<Object> getCell() {
 			return cell;
+		}
+
+		public String getDisplayText() {
+			return val.get();
 		}
 
 		public Paint getStatColor() {
@@ -181,6 +178,10 @@ public class Statistics extends WindowManager.Page {
 		 */
 		public final String getVal() {
 			return val.get();
+		}
+
+		public StringProperty getValProperty() {
+			return val;
 		}
 
 		public boolean isAssignedToCell() {
@@ -211,10 +212,6 @@ public class Statistics extends WindowManager.Page {
 			this.val.set(val);
 		}
 
-		public StringProperty getValProperty() {
-			return val;
-		}
-
 		public final void unlinkCell() {
 			cell = null;
 		}
@@ -224,11 +221,6 @@ public class Statistics extends WindowManager.Page {
 	public static class Statistic extends ListObject {
 
 		private StringProperty stat;
-
-		@Override
-		public String getDisplayText() {
-			return stat.get() + ": " + super.getDisplayText();
-		}
 
 		public Statistic() {
 		}
@@ -246,11 +238,20 @@ public class Statistics extends WindowManager.Page {
 			this.stat = new SimpleStringProperty(stat);
 		}
 
+		@Override
+		public String getDisplayText() {
+			return stat.get() + ": " + super.getDisplayText();
+		}
+
 		/**
 		 * @return the stat
 		 */
 		public final String getStat() {
 			return stat.get();
+		}
+
+		public StringProperty getStatProperty() {
+			return stat;
 		}
 
 		/**
@@ -261,11 +262,9 @@ public class Statistics extends WindowManager.Page {
 			this.stat.set(stat);
 		}
 
-		public StringProperty getStatProperty() {
-			return stat;
-		}
-
 	}
+
+	private static ChangeListener<Object> windowMovedListener;
 
 	static {
 		Kröw.addReflectionClass(Statistics.class);
@@ -283,11 +282,6 @@ public class Statistics extends WindowManager.Page {
 	private static final double SEARCH_LIST_WIDTH = 1875, SEARCH_LIST_HEIGHT = 350;
 	private static final double SEARCH_LIST_LAYOUT_X = 22, SEARCH_LIST_LAYOUT_Y = 118;
 
-	@AutoLoad(value = LoadTime.PROGRAM_EXIT)
-	private void onClose() {
-		closing = true;
-	}
-
 	@FXML
 	private AnchorPane pane;
 
@@ -296,6 +290,11 @@ public class Statistics extends WindowManager.Page {
 
 	@FXML
 	private ListView<Object> searchList;
+
+	@FXML
+	private RadioButton contains, startsWith, endsWith;
+
+	private final ToggleGroup searchTypesGroup = new ToggleGroup();
 
 	private void addDefaultStats() {
 		final NumberFormat formatter = new DecimalFormat();
@@ -337,18 +336,13 @@ public class Statistics extends WindowManager.Page {
 		final Statistic javaRuntimeName = new Statistic("Java Runtime Name",
 				System.getProperty("java.runtime.name", "???"));
 
-		if (windowMovedListener == null) {
-			windowMovedListener = new ChangeListener<Object>() {
-
-				@Override
-				public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
-					dpi.setVal(Kröw.getSystemProperties().getScreenDotsPerInch() < 0 ? "???"
-							: "" + Kröw.getSystemProperties().getScreenDotsPerInch());
-					screenHeight.setVal(Kröw.getSystemProperties().getScreenHeight());
-					screenWidth.setVal(Kröw.getSystemProperties().getScreenWidth());
-				}
+		if (windowMovedListener == null)
+			windowMovedListener = (observable, oldValue, newValue) -> {
+				dpi.setVal(Kröw.getSystemProperties().getScreenDotsPerInch() < 0 ? "???"
+						: "" + Kröw.getSystemProperties().getScreenDotsPerInch());
+				screenHeight.setVal(Kröw.getSystemProperties().getScreenHeight());
+				screenWidth.setVal(Kröw.getSystemProperties().getScreenWidth());
 			};
-		}
 
 		addListObjects(dpi, screenWidth, screenHeight, username, countryCode, osName, osVer, timezone,
 				processorsAvailable, totalAvailableMemory, freeAvailableMemory, usedMemory, homeDir, pathSeparator,
@@ -401,21 +395,11 @@ public class Statistics extends WindowManager.Page {
 
 				final ListCell<Object> cell = new ListCell<Object>() {
 
-					private ChangeListener<Object> changeTextListener = new ChangeListener<Object>() {
-
-						@Override
-						public void changed(ObservableValue<? extends Object> observable, Object oldValue,
-								Object newValue) {
-							Platform.runLater(new Runnable() {
-
-								@Override
-								public void run() {
-									if (getItem() instanceof ListObject)
-										setText(((ListObject) getItem()).getDisplayText());
-								}
+					private final ChangeListener<Object> changeTextListener = (observable, oldValue,
+							newValue) -> Platform.runLater(() -> {
+								if (getItem() instanceof ListObject)
+									setText(((ListObject) getItem()).getDisplayText());
 							});
-						}
-					};
 
 					@Override
 					protected void updateItem(final Object item, final boolean empty) {
@@ -425,7 +409,7 @@ public class Statistics extends WindowManager.Page {
 						super.updateItem(item, empty);
 
 						if (previousItem instanceof Statistic && previousItem != item) {
-							Statistic prevStatistic = (Statistic) previousItem;
+							final Statistic prevStatistic = (Statistic) previousItem;
 							prevStatistic.unlinkCell();
 							prevStatistic.getStatProperty().removeListener(changeTextListener);
 							prevStatistic.getValProperty().removeListener(changeTextListener);
@@ -487,7 +471,7 @@ public class Statistics extends WindowManager.Page {
 
 		searchItems.addListener((ListChangeListener<Object>) c -> updateList());
 
-		Reflection reflection = new Reflection(0, (double) 1 / 2, 0.05, 0);
+		final Reflection reflection = new Reflection(0, (double) 1 / 2, 0.05, 0);
 		searchList.setEffect(reflection);
 
 		/***/
@@ -508,13 +492,7 @@ public class Statistics extends WindowManager.Page {
 
 		startsWith.setSelected(true);
 
-		EventHandler<ActionEvent> onSearchTypeChanged = new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent event) {
-				updateList();
-			}
-		};
+		final EventHandler<ActionEvent> onSearchTypeChanged = event -> updateList();
 
 		startsWith.setOnAction(onSearchTypeChanged);
 		contains.setOnAction(onSearchTypeChanged);
@@ -528,9 +506,10 @@ public class Statistics extends WindowManager.Page {
 
 	}
 
-	@FXML
-	private RadioButton contains, startsWith, endsWith;
-	private ToggleGroup searchTypesGroup = new ToggleGroup();
+	@AutoLoad(value = LoadTime.PROGRAM_EXIT)
+	private void onClose() {
+		closing = true;
+	}
 
 	private void updateList() {
 		if (searchBar.getText().isEmpty())
@@ -545,9 +524,9 @@ public class Statistics extends WindowManager.Page {
 					stat = ((ListObject) o).getVal();
 				else
 					stat = o.toString();
-				if ((startsWith.isSelected() && stat.startsWith(searchBar.getText()))
-						|| (contains.isSelected() && stat.contains(searchBar.getText()))
-						|| (endsWith.isSelected() && stat.endsWith(searchBar.getText())))
+				if (startsWith.isSelected() && stat.startsWith(searchBar.getText())
+						|| contains.isSelected() && stat.contains(searchBar.getText())
+						|| endsWith.isSelected() && stat.endsWith(searchBar.getText()))
 					newList.add(o);
 			}
 			searchList.setItems(newList);

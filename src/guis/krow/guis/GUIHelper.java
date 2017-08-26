@@ -189,7 +189,7 @@ public final class GUIHelper {
 		// children.add(synthesizerText);
 	}
 
-	public static void applyShapeBackground(final Pane pane, Node... mouseDetectionNodes) {
+	public static void applyShapeBackground(final Pane pane, final Node... mouseDetectionNodes) {
 		final ArrayList<Shape> shapes = new ArrayList<>();
 		final Random random = new Random();
 		for (int i = 0; i < SHAPE_COUNT; i++) {
@@ -265,7 +265,7 @@ public final class GUIHelper {
 			translator.play();
 		}
 
-		EventHandler<MouseEvent> handler =
+		final EventHandler<MouseEvent> handler =
 
 				event -> {
 					final double mouseX = event.getSceneX(), mouseY = event.getSceneY();
@@ -306,7 +306,7 @@ public final class GUIHelper {
 				};
 
 		pane.setOnMouseMoved(handler);
-		for (Node n : mouseDetectionNodes)
+		for (final Node n : mouseDetectionNodes)
 			n.setOnMouseMoved(handler);
 
 		for (final Shape s : shapes)

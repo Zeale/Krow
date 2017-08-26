@@ -6,7 +6,6 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
@@ -23,6 +22,18 @@ public final class SystemTrayManager {
 
 	private static TrayIcon icon;
 	private static PopupMenu popup;
+
+	private static ActionListener openOnActionListener = e -> Platform.runLater(() -> {
+
+		WindowManager.getStage().show();
+		WindowManager.getStage().setIconified(false);
+		WindowManager.getStage().toFront();
+
+	});
+
+	public void addActionListener() {
+		icon.addActionListener(openOnActionListener);
+	}
 
 	@AutoLoad(LoadTime.PROGRAM_EXIT)
 	private void closeSystemTrayIcon() {
@@ -104,24 +115,6 @@ public final class SystemTrayManager {
 			if (Kröw.getProgramSettings().isUseTrayIcon())
 				showIcon();
 		}
-	}
-
-	private static ActionListener openOnActionListener = new ActionListener() {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			Platform.runLater(() -> {
-
-				WindowManager.getStage().show();
-				WindowManager.getStage().setIconified(false);
-				WindowManager.getStage().toFront();
-
-			});
-		}
-	};
-
-	public void addActionListener() {
-		icon.addActionListener(openOnActionListener);
 	}
 
 	public void removeActionListener() {

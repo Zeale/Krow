@@ -37,6 +37,14 @@ public class SoundManager {
 		}
 	}
 
+	public void playSound(final Sound s, final float volume) {
+		try {
+			playSound(s.location, volume);
+		} catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void playSound(final URL location)
 			throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 		final AudioInputStream audioIn = AudioSystem.getAudioInputStream(location);
@@ -45,22 +53,14 @@ public class SoundManager {
 		clip.start();
 	}
 
-	public void playSound(URL location, float volume)
+	public void playSound(final URL location, final float volume)
 			throws LineUnavailableException, UnsupportedAudioFileException, IOException {
 		final AudioInputStream audioIn = AudioSystem.getAudioInputStream(location);
 		final Clip clip = AudioSystem.getClip();
 		clip.open(audioIn);
-		FloatControl vol = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-		vol.setValue(((vol.getMaximum() - vol.getMinimum()) * volume) + vol.getMinimum());
+		final FloatControl vol = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+		vol.setValue((vol.getMaximum() - vol.getMinimum()) * volume + vol.getMinimum());
 		clip.start();
 
-	}
-
-	public void playSound(final Sound s, float volume) {
-		try {
-			playSound(s.location, volume);
-		} catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
-			e.printStackTrace();
-		}
 	}
 }

@@ -56,44 +56,6 @@ public class ProgramSettings implements Serializable {
 	private boolean useTrayIcon = false;
 	private boolean openProgramOnDoubleClickTrayIcon = true;
 
-	/**
-	 * @return the useTrayIcon
-	 */
-	public final boolean isUseTrayIcon() {
-		return useTrayIcon;
-	}
-
-	/**
-	 * @param useTrayIcon
-	 *            the useTrayIcon to set
-	 */
-	public final void setUseTrayIcon(boolean useTrayIcon) {
-		this.useTrayIcon = useTrayIcon;
-		if (useTrayIcon)
-			Kröw.getSystemTrayManager().showIcon();
-		else
-			Kröw.getSystemTrayManager().hideIcon();
-	}
-
-	/**
-	 * @return the openProgramOnDoubleClickTrayIcon
-	 */
-	public final boolean isOpenProgramOnDoubleClickTrayIcon() {
-		return openProgramOnDoubleClickTrayIcon;
-	}
-
-	/**
-	 * @param openProgramOnDoubleClickTrayIcon
-	 *            the openProgramOnDoubleClickTrayIcon to set
-	 */
-	public final void setOpenProgramOnDoubleClickTrayIcon(boolean openProgramOnDoubleClickTrayIcon) {
-		this.openProgramOnDoubleClickTrayIcon = openProgramOnDoubleClickTrayIcon;
-		if (openProgramOnDoubleClickTrayIcon)
-			Kröw.getSystemTrayManager().addActionListener();
-		else
-			Kröw.getSystemTrayManager().removeActionListener();
-	}
-
 	private void bootup() {
 
 	}
@@ -119,8 +81,22 @@ public class ProgramSettings implements Serializable {
 		return launchOnUserLogIn;
 	}
 
+	/**
+	 * @return the openProgramOnDoubleClickTrayIcon
+	 */
+	public final boolean isOpenProgramOnDoubleClickTrayIcon() {
+		return openProgramOnDoubleClickTrayIcon;
+	}
+
 	public boolean isShapeBackgroundRespondToMouseMovement() {
 		return shapeBackgroundRespondToMouseMovement;
+	}
+
+	/**
+	 * @return the useTrayIcon
+	 */
+	public final boolean isUseTrayIcon() {
+		return useTrayIcon;
 	}
 
 	private void readObject(final ObjectInputStream is) throws IOException {
@@ -174,8 +150,32 @@ public class ProgramSettings implements Serializable {
 		this.launchOnUserLogIn = launchOnUserLogIn;
 	}
 
+	/**
+	 * @param openProgramOnDoubleClickTrayIcon
+	 *            the openProgramOnDoubleClickTrayIcon to set
+	 */
+	public final void setOpenProgramOnDoubleClickTrayIcon(final boolean openProgramOnDoubleClickTrayIcon) {
+		this.openProgramOnDoubleClickTrayIcon = openProgramOnDoubleClickTrayIcon;
+		if (openProgramOnDoubleClickTrayIcon)
+			Kröw.getSystemTrayManager().addActionListener();
+		else
+			Kröw.getSystemTrayManager().removeActionListener();
+	}
+
 	public void setShapeBackgroundRespondToMouseMovement(final boolean shapeBackgroundRespondToMouseMovement) {
 		this.shapeBackgroundRespondToMouseMovement = shapeBackgroundRespondToMouseMovement;
+	}
+
+	/**
+	 * @param useTrayIcon
+	 *            the useTrayIcon to set
+	 */
+	public final void setUseTrayIcon(final boolean useTrayIcon) {
+		this.useTrayIcon = useTrayIcon;
+		if (useTrayIcon)
+			Kröw.getSystemTrayManager().showIcon();
+		else
+			Kröw.getSystemTrayManager().hideIcon();
 	}
 
 	private void writeObject(final ObjectOutputStream os) throws IOException {

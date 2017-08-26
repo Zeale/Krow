@@ -10,26 +10,9 @@ public final class SystemProperties {
 
 	private String osName;
 
-	public int getScreenCount() {
-		return Screen.getScreens().size();
-	}
-
-	/**
-	 * If the current screen is not the primary screen, this will return -2.
-	 * 
-	 * @return The dots-per-inch of the current screen (or -2 if unknown).
-	 */
-	public final double getScreenDotsPerInch() {
-		// System.out.println(getCurrentScreen().getDpi());
-		// ??? 0.0 ???
-		if (!Screen.getPrimary().equals(getCurrentScreen()))
-			return -2;
-		return Toolkit.getDefaultToolkit().getScreenResolution();
-	}
-
 	public Screen getCurrentScreen() {
 
-		List<Screen> screens = Screen.getScreensForRectangle(WindowManager.getStage().getX(),
+		final List<Screen> screens = Screen.getScreensForRectangle(WindowManager.getStage().getX(),
 				WindowManager.getStage().getY(), 1, 1);
 		if (Double.isNaN(WindowManager.getStage().getX()) || Double.isNaN(WindowManager.getStage().getY())
 				|| screens.isEmpty())
@@ -39,6 +22,23 @@ public final class SystemProperties {
 
 	public Rectangle2D getCurrentScreenBounds() {
 		return getCurrentScreen().getBounds();
+	}
+
+	public int getScreenCount() {
+		return Screen.getScreens().size();
+	}
+
+	/**
+	 * If the current screen is not the primary screen, this will return -2.
+	 *
+	 * @return The dots-per-inch of the current screen (or -2 if unknown).
+	 */
+	public final double getScreenDotsPerInch() {
+		// System.out.println(getCurrentScreen().getDpi());
+		// ??? 0.0 ???
+		if (!Screen.getPrimary().equals(getCurrentScreen()))
+			return -2;
+		return Toolkit.getDefaultToolkit().getScreenResolution();
 	}
 
 	/**

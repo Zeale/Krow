@@ -21,7 +21,7 @@ public class Settings extends Page {
 		private String text;
 		private Togglable togglable;
 
-		private ArrayList<TreeItem<Setting>> children = new ArrayList<>();
+		private final ArrayList<TreeItem<Setting>> children = new ArrayList<>();
 
 		public Setting(final String text) {
 			this.text = text;
@@ -33,11 +33,15 @@ public class Settings extends Page {
 		}
 
 		@SafeVarargs
-		public Setting(String text, Togglable togglable, TreeItem<Setting>... children) {
+		public Setting(final String text, final Togglable togglable, final TreeItem<Setting>... children) {
 			this.text = text;
 			this.togglable = togglable;
-			for (TreeItem<Setting> s : children)
+			for (final TreeItem<Setting> s : children)
 				this.children.add(s);
+		}
+
+		public ArrayList<TreeItem<Setting>> getChildren() {
+			return children;
 		}
 
 		/**
@@ -70,10 +74,6 @@ public class Settings extends Page {
 			this.togglable = togglable;
 		}
 
-		public ArrayList<TreeItem<Setting>> getChildren() {
-			return children;
-		}
-
 	}
 
 	public final class SettingTab {
@@ -86,9 +86,11 @@ public class Settings extends Page {
 				this.children.add(c);
 		}
 
-		@Override
-		public String toString() {
-			return super.toString() + "text=[" + text + "],child-count=[" + children.size() + "]";
+		/**
+		 * @return the children
+		 */
+		public final ArrayList<Setting> getChildren() {
+			return children;
 		}
 
 		/**
@@ -102,15 +104,13 @@ public class Settings extends Page {
 		 * @param text
 		 *            the text to set
 		 */
-		public final void setText(String text) {
+		public final void setText(final String text) {
 			this.text = text;
 		}
 
-		/**
-		 * @return the children
-		 */
-		public final ArrayList<Setting> getChildren() {
-			return children;
+		@Override
+		public String toString() {
+			return super.toString() + "text=[" + text + "],child-count=[" + children.size() + "]";
 		}
 
 	}
@@ -165,41 +165,32 @@ public class Settings extends Page {
 															? "Normal" : "Lengthy"));
 								}))));
 
-		TreeItem<SettingTab> program = new TreeItem<>(new SettingTab("Program"));
+		final TreeItem<SettingTab> program = new TreeItem<>(new SettingTab("Program"));
 
-		TreeItem<Setting> openOnDoubleClick = new TreeItem<Setting>(new Setting(
+		final TreeItem<Setting> openOnDoubleClick = new TreeItem<>(new Setting(
 				"Open with tray icon: "
 						+ (Kröw.getProgramSettings().isOpenProgramOnDoubleClickTrayIcon() ? "Yes" : "No"),
-				new Togglable() {
-
-					@Override
-					public void onToggled(TreeCell<Setting> cell) {
-						Kröw.getProgramSettings().setOpenProgramOnDoubleClickTrayIcon(
-								!Kröw.getProgramSettings().isOpenProgramOnDoubleClickTrayIcon());
-						cell.getTreeItem().getValue().setText("Open with tray icon: "
-								+ (Kröw.getProgramSettings().isOpenProgramOnDoubleClickTrayIcon() ? "Yes" : "No"));
-					}
+				(Togglable) cell -> {
+					Kröw.getProgramSettings().setOpenProgramOnDoubleClickTrayIcon(
+							!Kröw.getProgramSettings().isOpenProgramOnDoubleClickTrayIcon());
+					cell.getTreeItem().getValue().setText("Open with tray icon: "
+							+ (Kröw.getProgramSettings().isOpenProgramOnDoubleClickTrayIcon() ? "Yes" : "No"));
 				}));
 
-		Setting useTrayIcon = new Setting(
+		final Setting useTrayIcon = new Setting(
 				"Use tray icon: " + (Kröw.getProgramSettings().isUseTrayIcon() ? "Yes" : "No"));
 
-		useTrayIcon.setTogglable(new Togglable() {
+		useTrayIcon.setTogglable(cell -> {
+			Kröw.getProgramSettings().setUseTrayIcon(!Kröw.getProgramSettings().isUseTrayIcon());
+			useTrayIcon.setText("Use tray icon: " + (Kröw.getProgramSettings().isUseTrayIcon() ? "Yes" : "No"));
 
-			@Override
-			public void onToggled(TreeCell<Setting> cell) {
-				Kröw.getProgramSettings().setUseTrayIcon(!Kröw.getProgramSettings().isUseTrayIcon());
-				useTrayIcon.setText("Use tray icon: " + (Kröw.getProgramSettings().isUseTrayIcon() ? "Yes" : "No"));
+			if (Kröw.getProgramSettings().isUseTrayIcon()) {
+				useTrayIcon.getChildren().add(openOnDoubleClick);
+				openOnDoubleClick.getValue().setText("Open with tray icon: "
+						+ (Kröw.getProgramSettings().isOpenProgramOnDoubleClickTrayIcon() ? "Yes" : "No"));
+			} else
+				useTrayIcon.getChildren().remove(openOnDoubleClick);
 
-				if (Kröw.getProgramSettings().isUseTrayIcon()) {
-					useTrayIcon.getChildren().add(openOnDoubleClick);
-					openOnDoubleClick.getValue().setText("Open with tray icon: "
-							+ (Kröw.getProgramSettings().isOpenProgramOnDoubleClickTrayIcon() ? "Yes" : "No"));
-				} else {
-					useTrayIcon.getChildren().remove(openOnDoubleClick);
-				}
-
-			}
 		});
 
 		if (Kröw.getProgramSettings().isUseTrayIcon())
@@ -334,7 +325,7 @@ public class Settings extends Page {
 						setText(item.getText());
 					if (!(getTreeItem() == null)) {
 						getTreeItem().getChildren().clear();
-						for (TreeItem<Setting> s : getTreeItem().getValue().getChildren())
+						for (final TreeItem<Setting> s : getTreeItem().getValue().getChildren())
 							getTreeItem().getChildren().add(s);
 
 					}
