@@ -3,6 +3,7 @@ package krow.guis;
 import java.io.IOException;
 import java.util.EmptyStackException;
 import java.util.List;
+import java.util.Random;
 
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
@@ -172,7 +173,7 @@ public final class GUIHelper {
 
 			@Override
 			public void handle(Event event) {
-				backgroundmngr.setColor(Color.GREEN);
+				backgroundmngr.setColorsEvenly(Color.RED, Color.BLUE, Color.GREEN);
 			}
 		});
 

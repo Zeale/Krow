@@ -12,6 +12,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Effect;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -137,7 +138,14 @@ public final class BackgroundBuilder {
 		}
 
 		private void fadeShapeColor(Shape s, Color color) {
-			fadeShapeColor(s, color, null);
+			fadeShapeColor(s, color, new EventHandler<ActionEvent>() {
+
+				@Override
+				public void handle(ActionEvent event) {
+					if (s.getEffect() != null && s.getEffect() instanceof DropShadow)
+						((DropShadow) s.getEffect()).setColor(color);
+				}
+			});
 		}
 
 		private void fadeShapeColor(Shape s, Color color, EventHandler<ActionEvent> onFinished) {
@@ -156,7 +164,45 @@ public final class BackgroundBuilder {
 				fadeShapeColor(s, colors[(int) (Math.random() * colors.length)]);
 		}
 
-		public void setColorsSequentially(Color... colors) {
+		public void setRandomColor() {
+			setColor(generateRandomColor());
+		}
+
+		public void setRandomColors() {
+			for (Shape s : getShapes())
+				fadeShapeColor(s, generateRandomColor());
+		}
+
+		public void disableGlow() {
+			for (Shape s : getShapes())
+				disableGlow(s);
+		}
+
+		public void setCustomGlowColor() {
+			// TODO Store custom color in shape properties and check for it in
+			// #fadeShapeColor(...)
+		}
+
+		public void enableGlow() {
+			for (Shape s : getShapes())
+				enableGlow(s);
+		}
+
+		public void enableGlow(Shape s) {
+			if (s.getProperties().containsKey(EFFECT_KEY))
+				s.setEffect((Effect) s.getProperties().get(EFFECT_KEY));
+		}
+
+		public void disableGlow(Shape s) {
+			if (s.getProperties().containsKey(EFFECT_KEY))
+				s.setEffect(null);
+		}
+
+		private Color generateRandomColor() {
+			return new Color(random.nextDouble(), random.nextDouble(), random.nextDouble(), 1);
+		}
+
+		public void setColorsEvenly(Color... colors) {
 			if (colors.length == 0)
 				return;
 			int i = 0;
@@ -242,19 +288,28 @@ public final class BackgroundBuilder {
 		private void buildShape(Shape s) {
 			if (s.getProperties().containsKey(BUILT_KEY) && s.getProperties().get(BUILT_KEY).equals(true))
 				return;
+
 			s.setStroke(SHAPE_COLOR);
 			s.setFill(Color.TRANSPARENT);
-			s.setEffect(new DropShadow(BlurType.GAUSSIAN, SHAPE_COLOR, 20, 0.5, 0, 0));
+
+			Effect effect = new DropShadow(BlurType.GAUSSIAN, SHAPE_COLOR, 20, 0.5, 0, 0);
+			s.setEffect(effect);
+			s.getProperties().put(EFFECT_KEY, effect);
+
 			s.setLayoutX(0);
 			s.setLayoutY(0);
+
 			s.setTranslateX(random.nextInt((int) Kröw.getSystemProperties().getScreenWidth()) - customShapeSize);
 			s.setTranslateY(random.nextInt((int) Kröw.getSystemProperties().getScreenHeight()) - customShapeSize);
+
 			final TranslateTransition translator = new TranslateTransition();
 			final RotateTransition rotator = new RotateTransition();
 			final StrokeTransition colorer = new StrokeTransition();
+
 			translator.setNode(s);
 			rotator.setNode(s);
 			colorer.setShape(s);
+
 			s.getProperties().put(TRANSLATOR_KEY, translator);
 			s.getProperties().put(ROTATOR_KEY, rotator);
 			s.getProperties().put(COLORER_KEY, colorer);
@@ -417,8 +472,7 @@ public final class BackgroundBuilder {
 
 	private static final Object TRANSLATOR_KEY = new Object(), ROTATOR_KEY = new Object(), COLORER_KEY = new Object();
 
-	private static final Object IS_BEING_SHOVED_KEY = new Object(), BUILT_KEY = new Object(),
-			DROP_SHADOW_KEY = new Object();
+	private static final Object IS_BEING_SHOVED_KEY = new Object(), BUILT_KEY = new Object(), EFFECT_KEY = new Object();
 
 	public static ShapeBackgroundManager shapeBackground(final Pane pane, final Node... mouseDetectionNodes) {
 		ShapeBackgroundManager manager = new ShapeBackgroundManager(pane);
