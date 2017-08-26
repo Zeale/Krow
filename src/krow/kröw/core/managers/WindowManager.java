@@ -33,14 +33,12 @@ public class WindowManager {
 		private static final long serialVersionUID = 1L;
 
 		private final Window<? extends Page> currentWindow;
-		private final Parent newRoot;
 		private final Page controller;
 		private final Class<? extends Page> controllerClass;
 
-		public NotSwitchableException(final Window<? extends Page> currentWindow, final Parent root,
-				final Page controller, final Class<? extends Page> cls) {
+		public NotSwitchableException(final Window<? extends Page> currentWindow, final Page controller,
+				final Class<? extends Page> cls) {
 			this.currentWindow = currentWindow;
-			newRoot = root;
 			this.controller = controller;
 			controllerClass = cls;
 		}
@@ -64,13 +62,6 @@ public class WindowManager {
 		 */
 		public final Window<? extends Page> getCurrentWindow() {
 			return currentWindow;
-		}
-
-		/**
-		 * @return the newRoot
-		 */
-		public final Parent getNewRoot() {
-			return newRoot;
 		}
 
 	}
@@ -335,13 +326,13 @@ public class WindowManager {
 		// Instantiate the loader
 		final FXMLLoader loader = new FXMLLoader(cls.getResource(controller.getWindowFile()));
 		loader.setController(controller);
-		final Parent root = loader.load();
 		if (currentWindow != null)
 			if (!currentWindow.getController().canSwitchScenes(cls))
-				throw new NotSwitchableException(currentWindow, root, controller, cls);
+				throw new NotSwitchableException(currentWindow, controller, cls);
 			else
 				WindowManager.history.push(currentWindow);
 
+		final Parent root = loader.load();
 		final Window<W> window = new Window<>(controller, root, stage, stage.getScene());
 
 		WindowManager.currentWindow = window;

@@ -24,77 +24,43 @@ import kröw.core.Kröw;
 
 public final class BackgroundBuilder {
 
-	private static final Random random = new Random();
-
-	private static final int SHAPE_COUNT = 50;
-	private static final double SHAPE_RADIUS = 50;
-	private static final Color SHAPE_COLOR = Color.BLACK;
-	private static final double SHAPE_MOVE_DURATION = 8;
-	private static final Object TRANSLATOR_KEY = new Object(), ROTATOR_KEY = new Object(), COLORER_KEY = new Object();
-	private static final Object IS_BEING_SHOVED_KEY = new Object();
-
-	private BackgroundBuilder() {
-	}
-
-	public static ShapeBackgroundManager shapeBackground(final Pane pane, final Node... mouseDetectionNodes) {
-		ShapeBackgroundManager manager = new ShapeBackgroundManager(pane);
-		manager.addRandomShapes(SHAPE_COUNT);
-
-		for (final Node n : mouseDetectionNodes)
-			n.setOnMouseMoved(manager.getMouseMovementHandler());
-
-		return manager;
-
-	}
-
 	public static class BackgroundManager {
 
 		private double animationDuration = SHAPE_MOVE_DURATION;
 		protected Pane currentPane;
 		private Color startColor = SHAPE_COLOR;
 
-		/**
-		 * @return the animationDuration
-		 */
-		public double getAnimationDuration() {
-			return animationDuration;
-		}
-
-		/**
-		 * @param animationDuration
-		 *            the animationDuration to set
-		 */
-		public void setAnimationDuration(double animationDuration) {
-			this.animationDuration = animationDuration;
-		}
-
 		private EventHandler<MouseEvent> mouseMovementHandler;
 
-		protected void setMouseMovementHandler(EventHandler<MouseEvent> mouseMovementHandler) {
-			this.mouseMovementHandler = mouseMovementHandler;
-			currentPane.setOnMouseMoved(mouseMovementHandler);
+		protected BackgroundManager(Pane pane) {
+			currentPane = pane;
+			pane.setOnMouseMoved(getMouseMovementHandler());
 		}
 
-		public void disableMouseInteraction() {
-			currentPane.setOnMouseMoved(null);
+		protected BackgroundManager(Pane currentPane, Color startColor) {
+			this(currentPane);
+			this.startColor = startColor;
 		}
 
-		public void enableMouseInteraction() {
+		/**
+		 * @return the currentPane
+		 */
+		public Pane getCurrentPane() {
+			return currentPane;
+		}
+
+		/**
+		 * @param currentPane
+		 *            the currentPane to set
+		 */
+		public void setCurrentPane(Pane currentPane) {
+			if (this.currentPane == currentPane)
+				return;
+			for (Node n : mouseDetectionNodes)
+				removeMouseDetectionNodes(n);
+			this.currentPane.setOnMouseMoved(null);
+			this.currentPane = currentPane;
 			currentPane.setOnMouseMoved(getMouseMovementHandler());
-		}
-
-		protected EventHandler<MouseEvent> getMouseMovementHandler() {
-			return mouseMovementHandler;
-		}
-
-		public void addMouseDetectionNodes(Node... nodes) {
-			for (Node n : nodes)
-				n.setOnMouseMoved(mouseMovementHandler);
-		}
-
-		public void removeMouseDetectionNodes(Node... nodes) {
-			for (Node n : nodes)
-				n.setOnMouseMoved(null);
 		}
 
 		protected BackgroundManager(Pane currentPane, Color startColor, Node... detectionNodes) {
@@ -110,42 +76,113 @@ public final class BackgroundBuilder {
 				n.setOnMouseMoved(getMouseMovementHandler());
 		}
 
-		protected BackgroundManager(Pane pane) {
-			currentPane = pane;
-			pane.setOnMouseMoved(getMouseMovementHandler());
+		private ArrayList<Node> mouseDetectionNodes = new ArrayList<>();
+
+		public void addMouseDetectionNodes(Node... nodes) {
+			for (Node n : nodes) {
+				n.setOnMouseMoved(mouseMovementHandler);
+				mouseDetectionNodes.add(n);
+			}
+		}
+
+		public void disableMouseInteraction() {
+			currentPane.setOnMouseMoved(null);
+		}
+
+		public void enableMouseInteraction() {
+			currentPane.setOnMouseMoved(getMouseMovementHandler());
+		}
+
+		/**
+		 * @return the animationDuration
+		 */
+		public double getAnimationDuration() {
+			return animationDuration;
+		}
+
+		protected EventHandler<MouseEvent> getMouseMovementHandler() {
+			return mouseMovementHandler;
 		}
 
 		public Color getStartColor() {
 			return startColor;
 		}
 
-		protected BackgroundManager(Pane currentPane, Color startColor) {
-			this(currentPane);
-			this.startColor = startColor;
+		public void removeMouseDetectionNodes(Node... nodes) {
+			for (Node n : nodes)
+				n.setOnMouseMoved(null);
+		}
+
+		/**
+		 * @param animationDuration
+		 *            the animationDuration to set
+		 */
+		public void setAnimationDuration(double animationDuration) {
+			this.animationDuration = animationDuration;
+		}
+
+		protected void setMouseMovementHandler(EventHandler<MouseEvent> mouseMovementHandler) {
+			this.mouseMovementHandler = mouseMovementHandler;
+			currentPane.setOnMouseMoved(mouseMovementHandler);
 		}
 
 	}
 
 	public static class ShapeBackgroundManager extends BackgroundManager {
 
+		public void setColor(Color newColor) {
+			for (Shape s : getShapes()) {
+				fadeShapeColor(s, newColor);
+			}
+		}
+
+		private void fadeShapeColor(Shape s, Color color) {
+			fadeShapeColor(s, color, null);
+		}
+
+		private void fadeShapeColor(Shape s, Color color, EventHandler<ActionEvent> onFinished) {
+			StrokeTransition st = (StrokeTransition) s.getProperties().get(COLORER_KEY);
+			st.stop();
+			st.setToValue(color);
+			st.setDuration(Duration.seconds(getAnimationDuration() * generateRandomMultiplier()));
+			st.setOnFinished(onFinished);
+			st.play();
+		}
+
+		public void setColorsRandomly(Color... colors) {
+			if (colors.length == 0)
+				return;
+			for (Shape s : getShapes())
+				fadeShapeColor(s, colors[(int) (Math.random() * colors.length)]);
+		}
+
+		public void setColorsSequentially(Color... colors) {
+			if (colors.length == 0)
+				return;
+			int i = 0;
+			for (Shape s : getShapes())
+				fadeShapeColor(s, colors[i++ % colors.length]);
+
+		}
+
+		public void resetColor() {
+			setColor(getStartColor());
+		}
+
+		@Override
+		public void setCurrentPane(Pane currentPane) {
+			if (this.currentPane == currentPane)
+				return;
+			for (Shape s : getShapes())
+				getCurrentPane().getChildren().remove(s);
+			super.setCurrentPane(currentPane);
+			for (Shape s : getShapes())
+				addShapeToPane(s);
+		}
+
 		private ArrayList<Shape> shapes = new ArrayList<>();
 
 		private double customShapeSize = SHAPE_RADIUS;
-
-		/**
-		 * @return the customShapeSize
-		 */
-		public double getCustomShapeSize() {
-			return customShapeSize;
-		}
-
-		/**
-		 * @param customShapeSize
-		 *            the customShapeSize to set
-		 */
-		public void setCustomShapeSize(double customShapeSize) {
-			this.customShapeSize = customShapeSize;
-		}
 
 		{
 			setMouseMovementHandler(event -> {
@@ -187,13 +224,53 @@ public final class BackgroundBuilder {
 			});
 		}
 
-		public void setShapeColor(Paint color) {
-			for (Shape s : shapes)
-				s.setStroke(color);
+		private boolean rotatable;
+
+		protected ShapeBackgroundManager(Pane pane) {
+			super(pane);
 		}
 
-		public void removeAllShapes() {
-			shapes.clear();
+		protected ShapeBackgroundManager(Pane currentPane, Color startColor) {
+			super(currentPane, startColor);
+		}
+
+		public void addRandomShape() {
+			buildShape(random.nextBoolean() ? new Circle(customShapeSize)
+					: new Rectangle(customShapeSize * 1.8, customShapeSize * 1.8));
+		}
+
+		private void buildShape(Shape s) {
+			if (s.getProperties().containsKey(BUILT_KEY) && s.getProperties().get(BUILT_KEY).equals(true))
+				return;
+			s.setStroke(SHAPE_COLOR);
+			s.setFill(Color.TRANSPARENT);
+			s.setEffect(new DropShadow(BlurType.GAUSSIAN, SHAPE_COLOR, 20, 0.5, 0, 0));
+			s.setLayoutX(0);
+			s.setLayoutY(0);
+			s.setTranslateX(random.nextInt((int) Kröw.getSystemProperties().getScreenWidth()) - customShapeSize);
+			s.setTranslateY(random.nextInt((int) Kröw.getSystemProperties().getScreenHeight()) - customShapeSize);
+			final TranslateTransition translator = new TranslateTransition();
+			final RotateTransition rotator = new RotateTransition();
+			final StrokeTransition colorer = new StrokeTransition();
+			translator.setNode(s);
+			rotator.setNode(s);
+			colorer.setShape(s);
+			s.getProperties().put(TRANSLATOR_KEY, translator);
+			s.getProperties().put(ROTATOR_KEY, rotator);
+			s.getProperties().put(COLORER_KEY, colorer);
+
+			translator.setDuration(Duration.seconds(generateRandomMultiplier() * getAnimationDuration()));
+			translator.setByX(calculateByX(s.getLayoutX(), s.getTranslateX()));
+			translator.setByY(calculateByY(s.getLayoutY(), s.getTranslateY()));
+			translator.setInterpolator(Interpolator.EASE_OUT);
+			translator.setOnFinished(event -> animate(s));
+
+			s.setCache(true);
+
+			shapes.add(s);
+			addShapeToPane(s);
+
+			s.getProperties().put(BUILT_KEY, true);
 		}
 
 		public void addRandomShapes(int count) {
@@ -201,36 +278,24 @@ public final class BackgroundBuilder {
 				addRandomShape();
 		}
 
+		private void addShapeToPane(Shape s) {
+			currentPane.getChildren().add(0, s);
+		}
+
+		private void animate(Shape c) {
+
+			TranslateTransition translator = (TranslateTransition) c.getProperties().get(TRANSLATOR_KEY);
+
+			final double multiplier = generateRandomMultiplier();
+			translator.setByX(calculateByX(c.getLayoutX(), c.getTranslateX()) * multiplier);
+			translator.setByY(calculateByY(c.getLayoutY(), c.getTranslateY()) * multiplier);
+			translator.setDuration(Duration.seconds(getAnimationDuration() * multiplier));
+			translator.play();
+		}
+
 		public void animateShapes() {
 			for (Shape s : shapes)
 				((TranslateTransition) s.getProperties().get(TRANSLATOR_KEY)).play();
-		}
-
-		private boolean rotatable;
-
-		public boolean isRotatable() {
-			return rotatable;
-		}
-
-		protected ShapeBackgroundManager(Pane currentPane, Color startColor) {
-			super(currentPane, startColor);
-		}
-
-		public void setRotatable(boolean rotatable) {
-			boolean wasRot = isRotatable();
-			this.rotatable = rotatable;
-
-			if (wasRot && !rotatable) {
-				realignRotations();
-			} else if (rotatable && !wasRot) {
-
-				for (Shape s : shapes) {
-					RotateTransition rt = (RotateTransition) s.getProperties().get(ROTATOR_KEY);
-					rt.stop();
-					buildRotator(rt);
-					rt.play();
-				}
-			}
 		}
 
 		public void buildRotator(RotateTransition rt) {
@@ -247,32 +312,6 @@ public final class BackgroundBuilder {
 					rt.play();
 				}
 			});
-		}
-
-		public void realignRotations() {
-			for (Shape s : shapes) {
-				RotateTransition rt = (RotateTransition) s.getProperties().get(ROTATOR_KEY);
-				rt.stop();
-				rt.setToAngle(0);
-				rt.setDuration(Duration.seconds(generateRandomMultiplier() * getAnimationDuration() / 2));
-				rt.setOnFinished(null);
-				rt.play();
-			}
-		}
-
-		private double generateRandomMultiplier() {
-			return 1 - random.nextDouble() / 8;
-		}
-
-		private void animate(Shape c) {
-
-			TranslateTransition translator = (TranslateTransition) c.getProperties().get(TRANSLATOR_KEY);
-
-			final double multiplier = generateRandomMultiplier();
-			translator.setByX(calculateByX(c.getLayoutX(), c.getTranslateX()) * multiplier);
-			translator.setByY(calculateByY(c.getLayoutY(), c.getTranslateY()) * multiplier);
-			translator.setDuration(Duration.seconds(getAnimationDuration() * multiplier));
-			translator.play();
 		}
 
 		private double calculateByX(double layoutX, double translateX) {
@@ -305,49 +344,94 @@ public final class BackgroundBuilder {
 			return (random.nextInt(50) + 50) * (positive ? 1 : -1);
 		}
 
-		public void addRandomShape() {
-			final Shape s = random.nextBoolean() ? new Circle(customShapeSize)
-					: new Rectangle(customShapeSize * 1.8, customShapeSize * 1.8);
-			s.setStroke(SHAPE_COLOR);
-			s.setFill(Color.TRANSPARENT);
-			s.setEffect(new DropShadow(BlurType.GAUSSIAN, SHAPE_COLOR, 20, 0.5, 0, 0));
-			s.setLayoutX(0);
-			s.setLayoutY(0);
-			s.setTranslateX(random.nextInt((int) Kröw.getSystemProperties().getScreenWidth()) - customShapeSize);
-			s.setTranslateY(random.nextInt((int) Kröw.getSystemProperties().getScreenHeight()) - customShapeSize);
-			final TranslateTransition translator = new TranslateTransition();
-			final RotateTransition rotator = new RotateTransition();
-			final StrokeTransition colorer = new StrokeTransition();
-			translator.setNode(s);
-			rotator.setNode(s);
-			colorer.setShape(s);
-			s.getProperties().put(TRANSLATOR_KEY, translator);
-			s.getProperties().put(ROTATOR_KEY, rotator);
-			s.getProperties().put(COLORER_KEY, colorer);
-
-			translator.setDuration(Duration.seconds(generateRandomMultiplier() * getAnimationDuration()));
-			translator.setByX(calculateByX(s.getLayoutX(), s.getTranslateX()));
-			translator.setByY(calculateByY(s.getLayoutY(), s.getTranslateY()));
-			translator.setInterpolator(Interpolator.EASE_OUT);
-			translator.setOnFinished(event -> animate(s));
-
-			s.setCache(true);
-
-			shapes.add(s);
-			addShapeToPane(s);
+		private double generateRandomMultiplier() {
+			return 1 - random.nextDouble() / 8;
 		}
 
-		private void addShapeToPane(Shape s) {
-			currentPane.getChildren().add(0, s);
+		/**
+		 * @return the customShapeSize
+		 */
+		public double getCustomShapeSize() {
+			return customShapeSize;
 		}
 
 		private ArrayList<Shape> getShapes() {
 			return shapes;
 		}
 
-		protected ShapeBackgroundManager(Pane pane) {
-			super(pane);
+		public boolean isRotatable() {
+			return rotatable;
 		}
+
+		public void realignRotations() {
+			for (Shape s : shapes) {
+				RotateTransition rt = (RotateTransition) s.getProperties().get(ROTATOR_KEY);
+				rt.stop();
+				rt.setToAngle(0);
+				rt.setDuration(Duration.seconds(generateRandomMultiplier() * getAnimationDuration() / 2));
+				rt.setOnFinished(null);
+				rt.play();
+			}
+		}
+
+		public void removeAllShapes() {
+			shapes.clear();
+		}
+
+		/**
+		 * @param customShapeSize
+		 *            the customShapeSize to set
+		 */
+		public void setCustomShapeSize(double customShapeSize) {
+			this.customShapeSize = customShapeSize;
+		}
+
+		public void setRotatable(boolean rotatable) {
+			boolean wasRot = isRotatable();
+			this.rotatable = rotatable;
+
+			if (wasRot && !rotatable) {
+				realignRotations();
+			} else if (rotatable && !wasRot) {
+
+				for (Shape s : shapes) {
+					RotateTransition rt = (RotateTransition) s.getProperties().get(ROTATOR_KEY);
+					rt.stop();
+					buildRotator(rt);
+					rt.play();
+				}
+			}
+		}
+
+		public void setShapeColor(Paint color) {
+			for (Shape s : shapes)
+				s.setStroke(color);
+		}
+	}
+
+	private static final Random random = new Random();
+	private static final int SHAPE_COUNT = 50;
+	private static final double SHAPE_RADIUS = 50;
+	private static final Color SHAPE_COLOR = Color.BLACK;
+	private static final double SHAPE_MOVE_DURATION = 8;
+
+	private static final Object TRANSLATOR_KEY = new Object(), ROTATOR_KEY = new Object(), COLORER_KEY = new Object();
+
+	private static final Object IS_BEING_SHOVED_KEY = new Object(), BUILT_KEY = new Object(),
+			DROP_SHADOW_KEY = new Object();
+
+	public static ShapeBackgroundManager shapeBackground(final Pane pane, final Node... mouseDetectionNodes) {
+		ShapeBackgroundManager manager = new ShapeBackgroundManager(pane);
+		manager.addRandomShapes(SHAPE_COUNT);
+
+		for (final Node n : mouseDetectionNodes)
+			n.setOnMouseMoved(manager.getMouseMovementHandler());
+
+		return manager;
+
+	}
+
+	private BackgroundBuilder() {
 	}
 
 }

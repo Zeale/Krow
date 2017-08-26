@@ -168,6 +168,13 @@ public final class GUIHelper {
 		});
 
 		sendProgramToBack.setOnMouseClicked(event -> WindowManager.getStage().toBack());
+		gotoBackgroundManager.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				backgroundmngr.setColor(Color.GREEN);
+			}
+		});
 
 		children.add(close);
 		children.add(goHome);
@@ -175,11 +182,20 @@ public final class GUIHelper {
 		children.add(systemTray);
 		children.add(hideProgram);
 		children.add(sendProgramToBack);
+		children.add(gotoBackgroundManager);
 		// children.add(synthesizerText);
 	}
 
+	private static ShapeBackgroundManager backgroundmngr;
+
 	public static void applyShapeBackground(final Pane pane, final Node... mouseDetectionNodes) {
-		BackgroundBuilder.shapeBackground(pane, mouseDetectionNodes).animateShapes();
+		if (backgroundmngr == null) {
+			backgroundmngr = BackgroundBuilder.shapeBackground(pane, mouseDetectionNodes);
+			backgroundmngr.animateShapes();
+		} else {
+			backgroundmngr.setCurrentPane(pane);
+			backgroundmngr.addMouseDetectionNodes(mouseDetectionNodes);
+		}
 	}
 
 	public static VBox buildMenu(final Pane pane) {
