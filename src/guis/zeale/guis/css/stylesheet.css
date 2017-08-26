@@ -60,3 +60,24 @@
 	-fx-font-weight: bold;
 	-fx-font-size: 20.0px;
 }
+
+#StatisticsListView .scroll-bar {
+	-fx-background-color: transparent;
+}
+
+#StatisticsListView .scroll-bar .increment-button {
+	-fx-background-color: red;
+}
+
+#StatisticsListView .scroll-bar .decrement-button {
+	-fx-background-color: blue;
+}
+
+#StatisticsListView .scroll-bar .thumb {
+	-fx-background-color: green;
+	
+}
+
+#StatisticsListView .scroll-bar .decrement-button .decrement-arrow ,#StatisticsListView .scroll-bar .increment-button .increment-button{
+	-fx-background-color: black;
+}
