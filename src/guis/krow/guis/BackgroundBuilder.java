@@ -62,8 +62,8 @@ public final class BackgroundBuilder {
 
 								translator.setByX(-distX * 3);
 								translator.setByY(-distY * 3);
-								translator.setDuration(
-										Duration.seconds((1 - random.nextDouble() / 8) * SHAPE_MOVE_DURATION / 3));
+								translator.setDuration(Duration
+										.seconds((1 - random.nextDouble() / 8) * manager.getAnimationDuration() / 3));
 
 								final EventHandler<ActionEvent> onFinished = translator.getOnFinished();
 								s.getProperties().put(IS_BEING_SHOVED_KEY, true);
@@ -94,7 +94,7 @@ public final class BackgroundBuilder {
 
 	public static class BackgroundManager {
 
-		private double animationDuration;
+		private double animationDuration = SHAPE_MOVE_DURATION;
 
 		/**
 		 * @return the animationDuration

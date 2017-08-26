@@ -118,7 +118,7 @@ public final class GUIHelper {
 
 		final Node close = new MenuOption(Color.RED, "Close"), goHome = new Text("Go Home"),
 				goBack = new Text("Go Back"), hideProgram = new Text("Hide Program"),
-				sendProgramToBack = new Text("Send to back"), setShapesRotatable = new Text("ROT");
+				sendProgramToBack = new Text("Send to back"), gotoBackgroundManager = new Text("Background...");
 		final Text systemTray = new Text(
 				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
 		close.setOnMouseClicked(Kröw.CLOSE_PROGRAM_EVENT_HANDLER);
@@ -169,32 +169,18 @@ public final class GUIHelper {
 
 		sendProgramToBack.setOnMouseClicked(event -> WindowManager.getStage().toBack());
 
-		setShapesRotatable.setOnMouseClicked(new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				sbm.setRotatable(sbm.isRotatable() ^ true);
-				System.out.println(sbm.isRotatable());
-			}
-		});
-
 		children.add(close);
 		children.add(goHome);
 		children.add(goBack);
 		children.add(systemTray);
 		children.add(hideProgram);
 		children.add(sendProgramToBack);
-		children.add(setShapesRotatable);
 		// children.add(synthesizerText);
 	}
 
 	public static void applyShapeBackground(final Pane pane, final Node... mouseDetectionNodes) {
-		ShapeBackgroundManager sbm = BackgroundBuilder.shapeBackground(pane, mouseDetectionNodes);
-		GUIHelper.sbm = sbm;
-		sbm.animateShapes();
+		BackgroundBuilder.shapeBackground(pane, mouseDetectionNodes).animateShapes();
 	}
-
-	private static ShapeBackgroundManager sbm;
 
 	public static VBox buildMenu(final Pane pane) {
 
