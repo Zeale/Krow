@@ -22,6 +22,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.effect.Reflection;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -485,6 +486,9 @@ public class Statistics extends WindowManager.Page {
 		searchBar.textProperty().addListener((ChangeListener<String>) (observable, oldValue, newValue) -> updateList());
 
 		searchItems.addListener((ListChangeListener<Object>) c -> updateList());
+
+		Reflection reflection = new Reflection(0, (double) 1 / 2, 0.05, 0);
+		searchList.setEffect(reflection);
 
 		/***/
 
