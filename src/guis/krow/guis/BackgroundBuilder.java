@@ -10,6 +10,7 @@ import javafx.animation.StrokeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
@@ -18,8 +19,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 import kröw.core.Kröw;
@@ -391,11 +390,6 @@ public final class BackgroundBuilder {
 				disableGlow(s);
 		}
 
-		public void setCustomGlowColor() {
-			// TODO Store custom color in shape properties and check for it in
-			// #fadeShapeColor(...)
-		}
-
 		public void enableGlow() {
 			for (Shape s : getShapes())
 				enableGlow(s);
@@ -454,7 +448,8 @@ public final class BackgroundBuilder {
 
 						final double distX = mouseX - shapeX, distY = mouseY - shapeY;
 						final double distance = Math.sqrt(distX * distX + distY * distY);
-						if (distance <= customShapeSize * 2) {
+
+						if (distance <= customShapeSize) {
 
 							final TranslateTransition translator = (TranslateTransition) s.getProperties()
 									.get(TRANSLATOR_KEY);
@@ -494,8 +489,20 @@ public final class BackgroundBuilder {
 		}
 
 		public void addRandomShape() {
-			buildShape(random.nextBoolean() ? new Circle(customShapeSize)
-					: new Rectangle(customShapeSize * 1.8, customShapeSize * 1.8));
+
+			buildShape(ShapeFactory.buildShape(100, random.nextInt(14) + 3));
+
+			/*
+			 * switch (random.nextInt(3)) {
+			 * 
+			 * case 1: buildShape(new Circle(customShapeSize / 2)); break; case
+			 * 2: buildShape(new Rectangle(customShapeSize, customShapeSize));
+			 * break;
+			 * 
+			 * default: case 0: buildShape(ShapeFactory.buildTriangle()); break;
+			 * }
+			 */
+
 		}
 
 		private void buildShape(Shape s) {
@@ -534,6 +541,7 @@ public final class BackgroundBuilder {
 			translator.setOnFinished(event -> animate(s));
 
 			s.setCache(true);
+			s.setCacheHint(CacheHint.SPEED);
 
 			shapes.add(s);
 			addShapeToPane(s);
@@ -679,7 +687,7 @@ public final class BackgroundBuilder {
 
 	private static final Random random = new Random();
 	private static final int SHAPE_COUNT = 50;
-	private static final double SHAPE_RADIUS = 50;
+	private static final double SHAPE_RADIUS = 100;
 	private static final Color SHAPE_COLOR = Color.BLACK;
 	private static final double SHAPE_MOVE_DURATION = 8;
 
