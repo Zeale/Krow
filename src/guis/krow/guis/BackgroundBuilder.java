@@ -490,7 +490,7 @@ public final class BackgroundBuilder {
 
 		public void addRandomShape() {
 
-			buildShape(ShapeFactory.buildShape(100, random.nextInt(14) + 3));
+			buildShape(ShapeFactory.buildRegularShape(100, random.nextInt(14) + 3));
 
 			/*
 			 * switch (random.nextInt(3)) {

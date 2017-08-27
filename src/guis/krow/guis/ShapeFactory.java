@@ -24,7 +24,7 @@ public final class ShapeFactory {
 		return new Circle(size / 2);
 	}
 
-	public static Shape buildShape(double size, int sides) {
+	public static Shape buildRegularShape(double size, int sides) {
 		sides = Math.abs(sides);
 		size = size == 0 ? 100 : Math.abs(size);
 		if (sides == Integer.MAX_VALUE)
@@ -55,24 +55,6 @@ public final class ShapeFactory {
 		Polygon p = new Polygon(points);
 		return p;
 	}
+	
 
-	public static Shape test() {
-
-		double[] d = new double[10];
-
-		for (int i = 2; i < d.length; i += 2) {
-
-			d[0] = 0;
-			d[1] = 0;
-			d[2] = 50 * Math.cos(Math.toRadians(36));
-			d[3] = 50 * Math.sin(Math.toRadians(36));
-			d[4] = d[2] + 50 * Math.cos(Math.toRadians(108));
-			d[5] = d[3] + 50 * Math.sin(Math.toRadians(108));
-			d[6] = d[4] + 50 * Math.cos(Math.toRadians(184));
-			d[7] = d[5] + 50 * Math.sin(Math.toRadians(184));
-		}
-
-		Polygon p = new Polygon(d);
-		return p;
-	}
 }
