@@ -6,10 +6,20 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 public class Client {
 
 	private final String hostname;
+
+	private ArrayList<ClientListener> listeners = new ArrayList<>();
+
+	public void addListener(ClientListener listener) {
+		listeners.add(listener);
+		if (!outputThread.isAlive())// Start thread; it kills itself if there
+									// are no listeners.
+			outputThread.start();
+	}
 
 	public String getHostname() {
 		return hostname;
@@ -26,12 +36,13 @@ public class Client {
 
 		@Override
 		public void run() {
-			while (!connectionClosed) {
+			while (!connectionClosed && listeners.size() > 0) {
 
-				Serializable ser;
+				Serializable obj;
 				try {
-					while ((ser = (Serializable) objIn.readObject()) != null) {
-						// Notify listeners...
+					while ((obj = (Serializable) objIn.readObject()) != null) {
+						for (ClientListener cl : listeners)
+							cl.objectReceived(obj);
 					}
 				} catch (ClassNotFoundException | IOException e1) {
 					e1.printStackTrace();
