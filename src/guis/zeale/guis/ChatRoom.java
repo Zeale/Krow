@@ -3,16 +3,18 @@ package zeale.guis;
 import java.net.Socket;
 import java.util.Stack;
 
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import krow.guis.GUIHelper;
 import kröw.core.managers.WindowManager;
@@ -87,6 +89,22 @@ public class ChatRoom extends WindowManager.Page {
 				}
 			}
 		});
+		
+		chatPane.getChildren().addListener(new ListChangeListener<Node>() {
+
+			/* (non-Javadoc)
+			 * @see javafx.collections.ListChangeListener#onChanged(javafx.collections.ListChangeListener.Change)
+			 */
+			@Override
+			public void onChanged(Change<? extends Node> c) {
+				while(c.next())
+					if(c.wasAdded())
+						for(Node n:c.getAddedSubList())
+							if(n instanceof Text){
+								
+							}
+			}
+		});
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 		GUIHelper.applyShapeBackground(pane, chatPane, chatBox);
@@ -94,7 +112,6 @@ public class ChatRoom extends WindowManager.Page {
 
 	private void sendMessage(String message) {
 		chatBox.setText("");
-		chatPane.getChildren().add(new Label(message));
 		// TODO Implement
 	}
 
