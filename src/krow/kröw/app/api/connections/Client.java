@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.StreamCorruptedException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -37,17 +38,24 @@ public class Client {
 
 		@Override
 		public void run() {
+			int socketExceptionCount = 0;
 			while (!connectionClosed && listeners.size() > 0) {
 
 				Serializable obj;
 				try {
+					System.out.println(socket.isClosed());
+					if (socket.isClosed())
+						closeConnection();
 					obj = (Serializable) objIn.readObject();
 					if (Kröw.DEBUG_MODE)
 						System.out.println("Client: Received object in class, calling listeners");
 					for (ClientListener cl : listeners)
 						cl.objectReceived(obj);
-				} catch (StreamCorruptedException e) {
-
+				} catch (SocketException e) {
+					socketExceptionCount++;
+					pause();
+					if (socketExceptionCount > 3)
+						closeConnection();
 				} catch (ClassNotFoundException | IOException e1) {
 					e1.printStackTrace();
 				}
@@ -64,6 +72,14 @@ public class Client {
 			return;
 		}
 	});
+
+	private void pause() {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public Client(String hostname, int port) throws UnknownHostException, IOException {
 		socket = new Socket(hostname, port);
