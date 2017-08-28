@@ -4,13 +4,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.io.StreamCorruptedException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-public class Client {
+import kröw.core.Kröw;
 
-	private final String hostname;
+public class Client {
 
 	private ArrayList<ClientListener> listeners = new ArrayList<>();
 
@@ -21,16 +22,16 @@ public class Client {
 			outputThread.start();
 	}
 
-	public String getHostname() {
-		return hostname;
-	}
-
 	private boolean connectionClosed;
 
 	private final Socket socket;
 
 	private final ObjectInputStream objIn;
 	private final ObjectOutputStream objOut;
+
+	public void removeListener(ClientListener listener) {
+		listeners.remove(listener);
+	}
 
 	private Thread outputThread = new Thread(new Runnable() {
 
@@ -40,10 +41,13 @@ public class Client {
 
 				Serializable obj;
 				try {
-					while ((obj = (Serializable) objIn.readObject()) != null) {
-						for (ClientListener cl : listeners)
-							cl.objectReceived(obj);
-					}
+					obj = (Serializable) objIn.readObject();
+					if (Kröw.DEBUG_MODE)
+						System.out.println("Client: Received object in class, calling listeners");
+					for (ClientListener cl : listeners)
+						cl.objectReceived(obj);
+				} catch (StreamCorruptedException e) {
+
 				} catch (ClassNotFoundException | IOException e1) {
 					e1.printStackTrace();
 				}
@@ -61,29 +65,54 @@ public class Client {
 		}
 	});
 
-	public Client(String hostname, short port) throws UnknownHostException, IOException {
-		this.hostname = hostname;
-
+	public Client(String hostname, int port) throws UnknownHostException, IOException {
 		socket = new Socket(hostname, port);
 
-		objIn = new ObjectInputStream(socket.getInputStream());
 		objOut = new ObjectOutputStream(socket.getOutputStream());
+		objIn = new ObjectInputStream(socket.getInputStream());
+
+	}
+
+	public Client(Socket socket) throws IOException {
+		this.socket = socket;
+
+		objOut = new ObjectOutputStream(socket.getOutputStream());
+		objIn = new ObjectInputStream(socket.getInputStream());
 
 	}
 
 	public void sendMessage(String message) throws IOException {
-		objOut.writeObject(message);
+		sendObject(message);
 	}
 
 	public void sendObject(Serializable object) throws IOException {
+		if (Kröw.DEBUG_MODE)
+			System.out.println("Client: Sending an object object");
 		objOut.writeObject(object);
+		objOut.flush();
 	}
 
 	public void closeConnection() {
+
+		try {
+			sendObject(Message.breakConnectionMesage());
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		connectionClosed = true;
 		for (ClientListener cl : listeners)
 			if (cl instanceof FullClientListener)
 				((FullClientListener) cl).connectionClosed();
+		try {
+			objIn.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			objOut.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
