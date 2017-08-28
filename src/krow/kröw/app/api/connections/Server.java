@@ -31,7 +31,8 @@ public class Server {
 			while (accept && running) {
 				try {
 					Socket connection = socket.accept();
-					System.out.println("Accepting connection");
+					if (Kröw.DEBUG_MODE)
+						System.out.println("Server: Accepting connection");
 					new Thread(new Runnable() {
 
 						@Override

@@ -43,7 +43,6 @@ public class Client {
 
 				Serializable obj;
 				try {
-					System.out.println(socket.isClosed());
 					if (socket.isClosed())
 						closeConnection();
 					obj = (Serializable) objIn.readObject();
