@@ -21,10 +21,18 @@ import krow.guis.GUIHelper;
 import kröw.app.api.connections.Client;
 import kröw.app.api.connections.ClientListener;
 import kröw.app.api.connections.Server;
+import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
 
 public class ChatRoom extends WindowManager.Page {
+
+	private final static double CHAT_PANE_PREF_WIDTH = 1277, CHAT_PANE_PREF_HEIGHT = 827, CHAT_PANE_LAYOUTX = 305,
+			CHAT_PANE_LAYOUTY = 14;
+	private final static double CHAT_BOX_PREF_WIDTH = 1920, CHAT_BOX_PREF_HEIGHT = 220, CHAT_BOX_LAYOUTX = 0,
+			CHAT_BOX_LAYOUTY = 860;
+	private final static double SEND_BUTTON_PREF_WIDTH = 55, SEND_BUTTON_PREF_HEIGHT = 24, SEND_BUTTON_LAYOUTX = 1851,
+			SEND_BUTTON_LAYOUTY = 958;
 
 	private Stack<String> messageQueue = new Stack<>();
 
@@ -66,6 +74,23 @@ public class ChatRoom extends WindowManager.Page {
 
 	@Override
 	public void initialize() {
+
+		chatPane.setPrefSize(Kröw.scaleWidth(CHAT_PANE_PREF_WIDTH), Kröw.scaleHeight(CHAT_PANE_PREF_HEIGHT));
+		chatPane.setLayoutX(Kröw.scaleWidth(CHAT_PANE_LAYOUTX));
+		chatPane.setLayoutY(Kröw.scaleHeight(CHAT_PANE_LAYOUTY));
+
+		System.out.println(Kröw.scaleHeight(CHAT_BOX_LAYOUTY));
+		System.out.println(CHAT_BOX_LAYOUTY);
+		System.out.println(Kröw.getSystemProperties().getScreenHeight());
+
+		chatBox.setPrefSize(Kröw.scaleWidth(CHAT_BOX_PREF_WIDTH), Kröw.scaleHeight(CHAT_BOX_PREF_HEIGHT));
+		chatBox.setLayoutX(Kröw.scaleWidth(CHAT_BOX_LAYOUTX));
+		chatBox.setLayoutY(Kröw.scaleHeight(CHAT_BOX_LAYOUTY));
+
+		sendButton.setPrefSize(Kröw.scaleWidth(SEND_BUTTON_PREF_WIDTH), Kröw.scaleHeight(SEND_BUTTON_PREF_HEIGHT));
+		sendButton.setLayoutX(Kröw.scaleWidth(SEND_BUTTON_LAYOUTX));
+		sendButton.setLayoutY(Kröw.scaleHeight(SEND_BUTTON_LAYOUTY));
+
 		sendButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -118,8 +143,8 @@ public class ChatRoom extends WindowManager.Page {
 
 		try {
 			// Commented out for export
-			// if (server == null)
-			// server = new Server(25565);
+			if (server == null)
+				server = new Server(25565);
 			if (client == null) {
 				client = new Client("dusttoash.org", 25565);
 				client.addListener(listener);
