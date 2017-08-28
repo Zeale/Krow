@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.io.StreamCorruptedException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -14,26 +13,15 @@ import kröw.core.Kröw;
 
 public class Client {
 
-	private ArrayList<ClientListener> listeners = new ArrayList<>();
-
-	public void addListener(ClientListener listener) {
-		listeners.add(listener);
-		if (!outputThread.isAlive())// Start thread; it kills itself if there
-									// are no listeners.
-			outputThread.start();
-	}
+	private final ArrayList<ClientListener> listeners = new ArrayList<>();
 
 	private boolean connectionClosed;
 
 	private final Socket socket;
 
 	private final ObjectInputStream objIn;
+
 	private final ObjectOutputStream objOut;
-
-	public void removeListener(ClientListener listener) {
-		listeners.remove(listener);
-	}
-
 	private Thread outputThread = new Thread(new Runnable() {
 
 		@Override
@@ -48,9 +36,9 @@ public class Client {
 					obj = (Serializable) objIn.readObject();
 					if (Kröw.DEBUG_MODE)
 						System.out.println("Client: Received object in class, calling listeners");
-					for (ClientListener cl : listeners)
+					for (final ClientListener cl : listeners)
 						cl.objectReceived(obj);
-				} catch (SocketException e) {
+				} catch (final SocketException e) {
 					socketExceptionCount++;
 					pause();
 					if (socketExceptionCount > 3)
@@ -61,7 +49,7 @@ public class Client {
 
 				try {
 					Thread.sleep(10);
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
@@ -72,23 +60,7 @@ public class Client {
 		}
 	});
 
-	private void pause() {
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public Client(String hostname, int port) throws UnknownHostException, IOException {
-		socket = new Socket(hostname, port);
-
-		objOut = new ObjectOutputStream(socket.getOutputStream());
-		objIn = new ObjectInputStream(socket.getInputStream());
-
-	}
-
-	public Client(Socket socket) throws IOException {
+	public Client(final Socket socket) throws IOException {
 		this.socket = socket;
 
 		objOut = new ObjectOutputStream(socket.getOutputStream());
@@ -96,38 +68,65 @@ public class Client {
 
 	}
 
-	public void sendMessage(String message) throws IOException {
-		sendObject(message);
+	public Client(final String hostname, final int port) throws UnknownHostException, IOException {
+		socket = new Socket(hostname, port);
+
+		objOut = new ObjectOutputStream(socket.getOutputStream());
+		objIn = new ObjectInputStream(socket.getInputStream());
+
 	}
 
-	public void sendObject(Serializable object) throws IOException {
-		if (Kröw.DEBUG_MODE)
-			System.out.println("Client: Sending an object object");
-		objOut.writeObject(object);
-		objOut.flush();
+	public void addListener(final ClientListener listener) {
+		listeners.add(listener);
+		if (!outputThread.isAlive())// Start thread; it kills itself if there
+									// are no listeners.
+			outputThread.start();
 	}
 
 	public void closeConnection() {
 
 		try {
 			sendObject(Message.breakConnectionMesage());
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 			e1.printStackTrace();
 		}
 		connectionClosed = true;
-		for (ClientListener cl : listeners)
+		for (final ClientListener cl : listeners)
 			if (cl instanceof FullClientListener)
 				((FullClientListener) cl).connectionClosed();
 		try {
 			objIn.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 		try {
 			objOut.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void pause() {
+		try {
+			Thread.sleep(1000);
+		} catch (final InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void removeListener(final ClientListener listener) {
+		listeners.remove(listener);
+	}
+
+	public void sendMessage(final String message) throws IOException {
+		sendObject(message);
+	}
+
+	public void sendObject(final Serializable object) throws IOException {
+		if (Kröw.DEBUG_MODE)
+			System.out.println("Client: Sending an object object");
+		objOut.writeObject(object);
+		objOut.flush();
 	}
 
 }

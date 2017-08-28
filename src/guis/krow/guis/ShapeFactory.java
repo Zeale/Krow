@@ -5,22 +5,11 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
 
 public final class ShapeFactory {
-	private ShapeFactory() {
-	}
-
-	public static Polygon buildTriangle() {
-		return buildTriangle(100);
-	}
-
-	public static Polygon buildTriangle(double size) {
-		return new Polygon(0, 0, -size / 2, size, size / 2, size);
-	}
-
 	public static Circle buildCircle() {
 		return buildCircle(50);
 	}
 
-	public static Circle buildCircle(double size) {
+	public static Circle buildCircle(final double size) {
 		return new Circle(size / 2);
 	}
 
@@ -34,17 +23,16 @@ public final class ShapeFactory {
 
 		points[0] = points[1] = 0;
 
-		final double turnInc = 180 - ((sides - 2) * 180) / sides;
+		final double turnInc = 180 - (sides - 2) * 180 / sides;
 		double turningDeg = 0 + (sides & 1) * (turnInc / 2);
 
-		double distance =
+		final double distance =
 
 				// Modified size code for shapes with even side count
 
 				// (sides & 1) == 0 ? (2 * Math.tan(Math.toRadians(180 / sides))
 				// * (size / 2)):
-				((2 * size)
-						/ (1 / (Math.tan(Math.toRadians(180 / sides))) + (1 / Math.sin(Math.toRadians(180 / sides)))));
+				2 * size / (1 / Math.tan(Math.toRadians(180 / sides)) + 1 / Math.sin(Math.toRadians(180 / sides)));
 
 		for (int i = 2; i < points.length; i++) {
 			points[i] = points[i++ - 2] + distance * Math.cos(Math.toRadians(turningDeg));
@@ -52,9 +40,19 @@ public final class ShapeFactory {
 			turningDeg += turnInc;
 		}
 
-		Polygon p = new Polygon(points);
+		final Polygon p = new Polygon(points);
 		return p;
 	}
-	
+
+	public static Polygon buildTriangle() {
+		return buildTriangle(100);
+	}
+
+	public static Polygon buildTriangle(final double size) {
+		return new Polygon(0, 0, -size / 2, size, size / 2, size);
+	}
+
+	private ShapeFactory() {
+	}
 
 }

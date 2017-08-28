@@ -13,71 +13,67 @@ public class Server {
 
 	private final ArrayList<Client> connections = new ArrayList<>();
 
-	public Server(int port) throws IOException {
-		this.socket = new ServerSocket(port);
-		acceptThread.start();
-	}
-
-	public Server() throws IOException {
-		socket = new ServerSocket(0);
-	}
-
 	private boolean accept = true, running = true;
 
 	private Thread acceptThread = new Thread(new Runnable() {
 
 		@Override
 		public void run() {
-			while (accept && running) {
+			while (accept && running)
 				try {
-					Socket connection = socket.accept();
+					final Socket connection = socket.accept();
 					if (Kröw.DEBUG_MODE)
 						System.out.println("Server: Accepting connection");
-					new Thread(new Runnable() {
-
-						@Override
-						public void run() {
-							acceptConnection(connection);
-						}
-					}).start();
-				} catch (IOException e) {
+					new Thread(() -> acceptConnection(connection)).start();
+				} catch (final IOException e) {
 					System.err.println("Failed to accept an incoming connection.");
 				}
-			}
 			acceptThread = new Thread(this);
 		}
 	});
 
-	protected void acceptConnection(Socket connection) {
+	public Server() throws IOException {
+		socket = new ServerSocket(0);
+	}
+
+	public Server(final int port) throws IOException {
+		socket = new ServerSocket(port);
+		acceptThread.start();
+	}
+
+	protected void acceptConnection(final Socket connection) {
 		try {
-			Client client = new Client(connection);
+			final Client client = new Client(connection);
 			if (Kröw.DEBUG_MODE)
 				System.out.println("Server: Made server-client: " + client);
 			connections.add(client);
 
-			client.addListener(new ClientListener() {
+			client.addListener(object -> {
 
-				@Override
-				public void objectReceived(Object object) {
-
-					if (Kröw.DEBUG_MODE)
-						System.out.println("Server: Object received");
-					for (Client cl : connections)
-						// if (cl != client)
-						try {
-							if (Kröw.DEBUG_MODE)
-								System.out.println(
-										"Server: Sending object to clients via server-client... (Ignore upcoming client send msgs...)");
-							cl.sendObject((Serializable) object);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-				}
+				if (Kröw.DEBUG_MODE)
+					System.out.println("Server: Object received");
+				for (final Client cl : connections)
+					// if (cl != client)
+					try {
+						if (Kröw.DEBUG_MODE)
+							System.out.println(
+									"Server: Sending object to clients via server-client... (Ignore upcoming client send msgs...)");
+						cl.sendObject((Serializable) object);
+					} catch (final IOException e) {
+						e.printStackTrace();
+					}
 			});
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 			return;
 		}
+	}
+
+	public void allowIncomingConnections() {
+		final boolean accept = this.accept;
+		this.accept = true;
+		if (!accept)
+			acceptThread.start();
 	}
 
 	public void blockIncomingConnections() {
@@ -85,17 +81,10 @@ public class Server {
 
 	}
 
-	public void allowIncomingConnections() {
-		boolean accept = this.accept;
-		this.accept = true;
-		if (!accept)
-			acceptThread.start();
-	}
-
 	public void stop() {
 		blockIncomingConnections();
 		running = false;
-		for (Client c : connections)
+		for (final Client c : connections)
 			c.closeConnection();
 	}
 

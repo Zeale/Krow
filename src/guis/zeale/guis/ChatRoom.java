@@ -5,14 +5,11 @@ import java.util.Stack;
 
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -34,42 +31,53 @@ public class ChatRoom extends WindowManager.Page {
 	private final static double SEND_BUTTON_PREF_WIDTH = 55, SEND_BUTTON_PREF_HEIGHT = 24, SEND_BUTTON_LAYOUTX = 1851,
 			SEND_BUTTON_LAYOUTY = 958;
 
-	private Stack<String> messageQueue = new Stack<>();
-
 	private static Client client;
+
 	private static Server server;
+	private final Stack<String> messageQueue = new Stack<>();
 
-	private Thread sendThread = new Thread(new Runnable() {
-
-		@Override
-		public void run() {
-			while (!messageQueue.isEmpty()) {
-
-			}
+	@SuppressWarnings("unused")
+	private final Thread sendThread = new Thread(() -> {
+		while (!messageQueue.isEmpty()) {
+			// TODO Implement
 		}
 	});
 
-	@Override
-	public String getWindowFile() {
-		return "ChatRoom.fxml";
-	}
-
 	@FXML
 	private TextFlow chatPane;
-	@FXML
-	private TextArea chatBox;
 
 	@FXML
+	private TextArea chatBox;
+	@FXML
 	private AnchorPane pane;
+
 	@FXML
 	private Button sendButton;
+	private final ClientListener listener = object -> {
+		System.out.println("Client: Received object");
+		Platform.runLater(() -> {
+			final Text t = new Text(object.toString());
+			t.setFill(Color.WHITE);
+			chatPane.getChildren().add(t);
+		});
+	};
+
+	@Override
+	public boolean canSwitchScenes(final Class<? extends Page> newSceneClass) {
+		client.removeListener(listener);
+		client.closeConnection();
+		if (server != null)
+			server.stop();
+		return true;
+	}
 
 	private void emptyMessageWarning() {
 		WindowManager.spawnLabelAtMousePos("Empty message...", Color.FIREBRICK);
 	}
 
-	private void sendingMessageNotification() {
-		WindowManager.spawnLabelAtMousePos("Sending...", Color.GREEN);
+	@Override
+	public String getWindowFile() {
+		return "ChatRoom.fxml";
 	}
 
 	@Override
@@ -91,54 +99,36 @@ public class ChatRoom extends WindowManager.Page {
 		sendButton.setLayoutX(Kröw.scaleWidth(SEND_BUTTON_LAYOUTX));
 		sendButton.setLayoutY(Kröw.scaleHeight(SEND_BUTTON_LAYOUTY));
 
-		sendButton.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent event) {
-				if (!chatBox.getText().isEmpty()) {
-					sendMessage(chatBox.getText());
-					sendingMessageNotification();
-				} else
-					emptyMessageWarning();
-			}
+		sendButton.setOnAction(event -> {
+			if (!chatBox.getText().isEmpty()) {
+				sendMessage(chatBox.getText());
+				sendingMessageNotification();
+			} else
+				emptyMessageWarning();
 		});
 
-		chatBox.setOnKeyPressed(new EventHandler<KeyEvent>() {
-
-			@Override
-			public void handle(KeyEvent event) {
-				if (event.getCode().equals(KeyCode.ENTER)) {
-					if (event.isShiftDown() ^ event.isControlDown())
-						chatBox.appendText("\n");
-					if (!event.isShiftDown()) {
-						event.consume();
-						if (!chatBox.getText().isEmpty()) {
-							sendMessage(chatBox.getText());
-							sendingMessageNotification();
-						} else
-							emptyMessageWarning();
-					}
+		chatBox.setOnKeyPressed(event -> {
+			if (event.getCode().equals(KeyCode.ENTER)) {
+				if (event.isShiftDown() ^ event.isControlDown())
+					chatBox.appendText("\n");
+				if (!event.isShiftDown()) {
+					event.consume();
+					if (!chatBox.getText().isEmpty()) {
+						sendMessage(chatBox.getText());
+						sendingMessageNotification();
+					} else
+						emptyMessageWarning();
 				}
 			}
 		});
 
-		chatPane.getChildren().addListener(new ListChangeListener<Node>() {
+		chatPane.getChildren().addListener((ListChangeListener<Node>) c -> {
+			while (c.next())
+				if (c.wasAdded())
+					for (final Node n : c.getAddedSubList())
+						if (n instanceof Text) {
 
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see javafx.collections.ListChangeListener#onChanged(javafx.
-			 * collections.ListChangeListener.Change)
-			 */
-			@Override
-			public void onChanged(Change<? extends Node> c) {
-				while (c.next())
-					if (c.wasAdded())
-						for (Node n : c.getAddedSubList())
-							if (n instanceof Text) {
-
-							}
-			}
+						}
 		});
 
 		try {
@@ -150,7 +140,7 @@ public class ChatRoom extends WindowManager.Page {
 				client.addListener(listener);
 			}
 
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 
@@ -158,39 +148,17 @@ public class ChatRoom extends WindowManager.Page {
 		GUIHelper.applyShapeBackground(pane, chatPane, chatBox);
 	}
 
-	private void sendMessage(String message) {
+	private void sendingMessageNotification() {
+		WindowManager.spawnLabelAtMousePos("Sending...", Color.GREEN);
+	}
+
+	private void sendMessage(final String message) {
 		chatBox.setText("");
 		try {
 			client.sendMessage(message);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private ClientListener listener = new ClientListener() {
-
-		@Override
-		public void objectReceived(Object object) {
-			System.out.println("Client: Received object");
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					Text t = new Text(object.toString());
-					t.setFill(Color.WHITE);
-					chatPane.getChildren().add(t);
-				}
-			});
-		}
-	};
-
-	@Override
-	public boolean canSwitchScenes(Class<? extends Page> newSceneClass) {
-		client.removeListener(listener);
-		client.closeConnection();
-		if (server != null)
-			server.stop();
-		return true;
 	}
 
 }
