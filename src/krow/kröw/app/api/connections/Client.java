@@ -61,13 +61,14 @@ public class Client {
 		}
 	});
 
-	private Client(String hostname, short port) throws UnknownHostException, IOException {
+	public Client(String hostname, short port) throws UnknownHostException, IOException {
 		this.hostname = hostname;
 
 		socket = new Socket(hostname, port);
 
 		objIn = new ObjectInputStream(socket.getInputStream());
 		objOut = new ObjectOutputStream(socket.getOutputStream());
+
 	}
 
 	public void sendMessage(String message) throws IOException {
@@ -80,6 +81,9 @@ public class Client {
 
 	public void closeConnection() {
 		connectionClosed = true;
+		for (ClientListener cl : listeners)
+			if (cl instanceof FullClientListener)
+				((FullClientListener) cl).connectionClosed();
 	}
 
 }
