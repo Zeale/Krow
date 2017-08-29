@@ -85,11 +85,8 @@ public class Client {
 
 	public void closeConnection() {
 
-		try {
-			sendObject(Message.breakConnectionMesage());
-		} catch (final IOException e1) {
-			e1.printStackTrace();
-		}
+		// TODO Send end connection msg
+
 		connectionClosed = true;
 		for (final ClientListener cl : listeners)
 			if (cl instanceof FullClientListener)
@@ -119,6 +116,10 @@ public class Client {
 	}
 
 	public void sendMessage(final String message) throws IOException {
+		sendObject(message);
+	}
+
+	public void sendMessage(Message message) throws IOException {
 		sendObject(message);
 	}
 

@@ -1,7 +1,7 @@
 package zeale.guis;
 
 import java.io.IOException;
-import java.util.Stack;
+import java.util.Date;
 
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import krow.guis.GUIHelper;
+import krow.guis.chatroom.ChatRoomMessage;
 import kröw.app.api.connections.Client;
 import kröw.app.api.connections.ClientListener;
 import kröw.app.api.connections.Server;
@@ -34,15 +35,6 @@ public class ChatRoom extends WindowManager.Page {
 	private static Client client;
 
 	private static Server server;
-	private final Stack<String> messageQueue = new Stack<>();
-
-	@SuppressWarnings("unused")
-	private final Thread sendThread = new Thread(() -> {
-		while (!messageQueue.isEmpty()) {
-			// TODO Implement
-		}
-	});
-
 	@FXML
 	private TextFlow chatPane;
 
@@ -54,13 +46,37 @@ public class ChatRoom extends WindowManager.Page {
 	@FXML
 	private Button sendButton;
 	private final ClientListener listener = object -> {
-		System.out.println("Client: Received object");
 		Platform.runLater(() -> {
-			final Text t = new Text(object.toString());
-			t.setFill(Color.WHITE);
+			Text t;
+
+			if (object instanceof ChatRoomMessage) {
+				t = new ChatRoomText((ChatRoomMessage) object);
+			} else
+				t = new Text("Message unreceived!" + (Kröw.DEBUG_MODE ? object.toString() : "") + "\n");
+
 			chatPane.getChildren().add(t);
 		});
 	};
+
+	private static class ChatRoomText extends Text {
+		private ChatRoomMessage message;
+
+		public ChatRoomText(ChatRoomMessage message) {
+			this.message = message;
+			setText(message.getAuthor() + " > " + message.getText() + "\n");
+		}
+
+		{
+			setFill(Color.WHITE);
+		}
+
+		public ChatRoomMessage getMessage() {
+			return message;
+		}
+
+	}
+
+	private String user;
 
 	@Override
 	public boolean canSwitchScenes(final Class<? extends Page> newSceneClass) {
@@ -86,10 +102,6 @@ public class ChatRoom extends WindowManager.Page {
 		chatPane.setPrefSize(Kröw.scaleWidth(CHAT_PANE_PREF_WIDTH), Kröw.scaleHeight(CHAT_PANE_PREF_HEIGHT));
 		chatPane.setLayoutX(Kröw.scaleWidth(CHAT_PANE_LAYOUTX));
 		chatPane.setLayoutY(Kröw.scaleHeight(CHAT_PANE_LAYOUTY));
-
-		System.out.println(Kröw.scaleHeight(CHAT_BOX_LAYOUTY));
-		System.out.println(CHAT_BOX_LAYOUTY);
-		System.out.println(Kröw.getSystemProperties().getScreenHeight());
 
 		chatBox.setPrefSize(Kröw.scaleWidth(CHAT_BOX_PREF_WIDTH), Kröw.scaleHeight(CHAT_BOX_PREF_HEIGHT));
 		chatBox.setLayoutX(Kröw.scaleWidth(CHAT_BOX_LAYOUTX));
@@ -122,15 +134,6 @@ public class ChatRoom extends WindowManager.Page {
 			}
 		});
 
-		chatPane.getChildren().addListener((ListChangeListener<Node>) c -> {
-			while (c.next())
-				if (c.wasAdded())
-					for (final Node n : c.getAddedSubList())
-						if (n instanceof Text) {
-
-						}
-		});
-
 		try {
 			// Commented out for export
 			if (server == null)
@@ -155,7 +158,7 @@ public class ChatRoom extends WindowManager.Page {
 	private void sendMessage(final String message) {
 		chatBox.setText("");
 		try {
-			client.sendMessage(message);
+			client.sendMessage(new ChatRoomMessage(message, user == null ? "Unnamed" : user, new Date().getTime()));
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
