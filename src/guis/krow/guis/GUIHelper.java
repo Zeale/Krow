@@ -123,7 +123,7 @@ public final class GUIHelper {
 				goBack = new Text("Go Back"), hideProgram = new Text("Hide Program"),
 				sendProgramToBack = new Text("Send to back"), gotoBackgroundManager = new Text("Background...");
 		// TODO Start delete
-		final Node test = new Text("Test");
+		final Node goToChatRoom = new Text("Chat Room");
 		// End delete
 
 		final Text systemTray = new Text(
@@ -185,14 +185,14 @@ public final class GUIHelper {
 			backgroundmngr.playColorAnimations();
 		});
 		// TODO Start delete
-		test.setOnMouseClicked(event -> {
+		goToChatRoom.setOnMouseClicked(event -> {
 			try {
 				WindowManager.setScene(ChatRoom.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}
 		});
-		children.add(test);
+		children.add(goToChatRoom);
 		// End delete
 
 		children.add(close);
