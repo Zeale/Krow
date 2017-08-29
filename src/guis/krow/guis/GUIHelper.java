@@ -3,14 +3,12 @@ package krow.guis;
 import java.io.IOException;
 import java.util.EmptyStackException;
 import java.util.List;
-import java.util.Random;
 
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
@@ -31,6 +29,8 @@ import javafx.util.Duration;
 import krow.guis.BackgroundBuilder.ShapeBackgroundManager;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
+import kröw.core.managers.WindowManager.NotSwitchableException;
+import zeale.guis.ChatRoom;
 import zeale.guis.Home;
 
 public final class GUIHelper {
@@ -114,12 +114,18 @@ public final class GUIHelper {
 		MENU_CHILD_NODE_FONT_SIZE = (int) Math.round(size);
 	}
 
+	private static ShapeBackgroundManager backgroundmngr;
+
 	public static void addDefaultSettings(final VBox vbox) {
 		final List<Node> children = vbox.getChildren();
 
 		final Node close = new MenuOption(Color.RED, "Close"), goHome = new Text("Go Home"),
 				goBack = new Text("Go Back"), hideProgram = new Text("Hide Program"),
 				sendProgramToBack = new Text("Send to back"), gotoBackgroundManager = new Text("Background...");
+		// TODO Start delete
+		final Node test = new Text("Test");
+		// End delete
+
 		final Text systemTray = new Text(
 				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
 		close.setOnMouseClicked(Kröw.CLOSE_PROGRAM_EVENT_HANDLER);
@@ -169,19 +175,25 @@ public final class GUIHelper {
 		});
 
 		sendProgramToBack.setOnMouseClicked(event -> WindowManager.getStage().toBack());
-		gotoBackgroundManager.setOnMouseClicked(new EventHandler<Event>() {
+		gotoBackgroundManager.setOnMouseClicked(event -> {
+			backgroundmngr.setColorAnimations(false,
+					BackgroundBuilder.ShapeBackgroundManager.ColorAnimation.generateRandomColorAnimation(50));
 
-			@Override
-			public void handle(Event event) {
-				backgroundmngr.setColorAnimations(false,
-						BackgroundBuilder.ShapeBackgroundManager.ColorAnimation.generateRandomColorAnimation(50));
+			backgroundmngr.setRepeatColorAnimations(true);
+			backgroundmngr.setRotatable(true);
 
-				backgroundmngr.setRepeatColorAnimations(true);
-				backgroundmngr.setRotatable(true);
-
-				backgroundmngr.playColorAnimations();
+			backgroundmngr.playColorAnimations();
+		});
+		// TODO Start delete
+		test.setOnMouseClicked(event -> {
+			try {
+				WindowManager.setScene(ChatRoom.class);
+			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+				e.printStackTrace();
 			}
 		});
+		children.add(test);
+		// End delete
 
 		children.add(close);
 		children.add(goHome);
@@ -192,8 +204,6 @@ public final class GUIHelper {
 		children.add(gotoBackgroundManager);
 		// children.add(synthesizerText);
 	}
-
-	private static ShapeBackgroundManager backgroundmngr;
 
 	public static void applyShapeBackground(final Pane pane, final Node... mouseDetectionNodes) {
 		if (backgroundmngr == null) {

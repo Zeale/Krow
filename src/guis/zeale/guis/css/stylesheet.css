@@ -1,5 +1,9 @@
-.background, .background > .viewport {
+.background {
 	-fx-background-color: #000000C4;
+}
+
+.rgba-background {
+	-fx-background-color: rgba(0.0, 0.0, 0.0, 0.3);
 }
 
 .label.option-name {
@@ -80,4 +84,24 @@
 
 #StatisticsListView .scroll-bar .decrement-button .decrement-arrow ,#StatisticsListView .scroll-bar .increment-button .increment-button{
 	-fx-background-color: black;
+}
+
+.text-area .scroll-pane .content, .text-area .scroll-pane .viewport, .text-area .scroll-pane  {
+	-fx-background-color: transparent;
+}
+
+.pop-button {
+	-fx-font-family: Consolas;
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+	-fx-border-color: black;
+	-fx-border-width: 0.0 0.0 2.0px 2.0px;
+	-fx-background-color: #00000015;
+}
+
+.pop-button:armed {
+	-fx-border-color: black;
+	-fx-border-width: 2.0px 2.0px 0.0 0.0;
+	-fx-text-fill: #535353;
+	-fx-label-padding: 2.0px 2.0px 0.0 0.0;
 }

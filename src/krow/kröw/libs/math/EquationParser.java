@@ -66,6 +66,7 @@ public class EquationParser {
 		return Function.getFunction(name, equation.substring(posSubEquOpen, position - 1));
 	}
 
+	@SuppressWarnings("unused")
 	private String getNextChar() {
 		return equation.substring(position + 1, position + 1);
 	}
@@ -113,6 +114,7 @@ public class EquationParser {
 		return operation;
 	}
 
+	@SuppressWarnings("unused")
 	private String getPreviousChar() {
 		return equation.substring(position - 1, position);
 	}
@@ -192,6 +194,7 @@ public class EquationParser {
 	 *
 	 * @return The current character.
 	 */
+	@SuppressWarnings("unused")
 	private String previousChar() {
 		return equation.substring(position, position-- + 1);
 	}

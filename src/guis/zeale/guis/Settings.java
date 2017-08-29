@@ -198,6 +198,31 @@ public class Settings extends Page {
 
 		program.getValue().getChildren().add(useTrayIcon);
 		addItem(program);
+
+		SettingTab appsTab = new SettingTab("Apps");
+		SettingTab chatRoomTab = new SettingTab("Chat Room");
+		{
+			Setting hostServerSetting = new Setting("Start server when the Chat Room app opens: "
+					+ (Kröw.getProgramSettings().isChatRoomHostServer() ? "Yes" : "No"));
+			Togglable hostServerTogglable = new Togglable() {
+
+				@Override
+				public void onToggled(TreeCell<Setting> cell) {
+					Kröw.getProgramSettings().setChatRoomHostServer(!Kröw.getProgramSettings().isChatRoomHostServer());
+					hostServerSetting.setText("Start server when the Chat Room app opens: "
+							+ (Kröw.getProgramSettings().isChatRoomHostServer() ? "Yes" : "No"));
+				}
+			};
+
+			hostServerSetting.setTogglable(hostServerTogglable);
+			chatRoomTab.getChildren().add(hostServerSetting);
+		}
+
+		TreeItem<SettingTab> appsItem = new TreeItem<Settings.SettingTab>(appsTab);
+		appsItem.getChildren().add(new TreeItem<Settings.SettingTab>(chatRoomTab));
+
+		addItem(appsItem);
+
 		/*
 		 * TreeItem<SettingTab> settingTab = new TreeItem<>(new
 		 * SettingTab("Menu1", new Setting("Okay")));
@@ -245,6 +270,7 @@ public class Settings extends Page {
 		optionBox.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
 		tabList.setRoot(new TreeItem<>());
 		optionBox.setRoot(new TreeItem<>());
+
 		tabList.setCellFactory(param -> {
 			final TreeCell<SettingTab> cell = new TreeCell<SettingTab>() {
 				@Override

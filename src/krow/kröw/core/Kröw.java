@@ -994,11 +994,11 @@ public final class Kröw extends Application {
 	}
 
 	public static double scaleHeight(final double height) {
-		return height * 1920 / Kröw.getSystemProperties().getScreenHeight();
+		return height * 1080 / Kröw.getSystemProperties().getScreenHeight();
 	}
 
 	public static int scaleHeight(final int height) {
-		return (int) ((double) height * 1920 / Kröw.getSystemProperties().getScreenHeight());
+		return (int) ((double) height * 1080 / Kröw.getSystemProperties().getScreenHeight());
 	}
 
 	public static double scaleWidth(final double width) {
