@@ -29,9 +29,9 @@ import kröw.core.managers.WindowManager.Page;
 
 public class ChatRoom extends WindowManager.Page {
 
-	private static final Color NOTIFICATION_COLOR = Color.GOLD;
-	private static final Color ERROR_COLOR = Color.FIREBRICK;
-	private static final Color SUCCESS_COLOR = Color.GREEN;
+	private static final Color NOTIFICATION_COLOR = Color.LIGHTBLUE, ERROR_COLOR = Color.FIREBRICK,
+			SUCCESS_COLOR = Color.GREEN, WARNING_COLOR = Color.GOLD;
+
 	private static final boolean canHostServer;
 
 	static {
@@ -409,8 +409,23 @@ public class ChatRoom extends WindowManager.Page {
 				}
 
 		} else if (cmd.equalsIgnoreCase("disconnect")) {
-			client.closeConnection();
-			client = null;
+			if (client == null) {
+				println("You are not connected to a server.", WARNING_COLOR);
+				if (server != null)
+					println("\tYou are hosting one though...", WARNING_COLOR);
+			} else {
+				println("Attempting to disconnect...", NOTIFICATION_COLOR);
+				if (server != null)
+					println("\tYou're still hosting a server though...", WARNING_COLOR);
+				try {
+					client.closeConnection();
+					client = null;
+				} catch (Exception e) {
+					println("Failed to close the connection...", ERROR_COLOR);
+					return;
+				}
+				println("The connection was closed successfully...", SUCCESS_COLOR);
+			}
 		} else
 			WindowManager.spawnLabelAtMousePos("Unknown Command", ERROR_COLOR);
 
