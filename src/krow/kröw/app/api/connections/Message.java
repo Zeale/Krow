@@ -9,13 +9,13 @@ public class Message implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public final String text;
+	public final Object text;
 
-	public Message(final String text) {
+	public Message(final Object text) {
 		this.text = text;
 	}
 
-	public String getText() {
+	public Object getText() {
 		return text;
 	}
 
