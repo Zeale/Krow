@@ -14,7 +14,6 @@ import krow.guis.GUIHelper;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
-import zeale.guis.Settings.Setting;
 
 public class Settings extends Page {
 
@@ -271,6 +270,7 @@ public class Settings extends Page {
 		optionBox.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
 		tabList.setRoot(new TreeItem<>());
 		optionBox.setRoot(new TreeItem<>());
+
 		tabList.setCellFactory(param -> {
 			final TreeCell<SettingTab> cell = new TreeCell<SettingTab>() {
 				@Override

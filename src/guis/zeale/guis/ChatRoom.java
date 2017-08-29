@@ -198,10 +198,9 @@ public class ChatRoom extends WindowManager.Page {
 
 		try {
 			// Commented out for export
-			if (server == null)
-				server = new Server(25565);
-			if (client == null) {
-				client = new Client("dusttoash.org", 25565);
+			if (canCreateServer()) {
+				createServer();
+				client = new Client("localhost", 25000);
 				client.addListener(listener);
 			}
 

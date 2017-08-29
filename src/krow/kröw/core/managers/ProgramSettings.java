@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import kröw.core.Kröw;
+import zeale.guis.ChatRoom;
 
 public class ProgramSettings implements Serializable {
 
@@ -18,7 +19,7 @@ public class ProgramSettings implements Serializable {
 	private static final long version = 0;
 
 	public static final File DEFAULT_FILE_PATH = new File(Kröw.MANAGER_DIRECTORY, "ProgramSettings.kmgr");
-	
+
 	private boolean chatRoomHostServer;
 
 	/**
@@ -29,10 +30,18 @@ public class ProgramSettings implements Serializable {
 	}
 
 	/**
-	 * @param chatRoomHostServer the chatRoomHostServer to set
+	 * @param chatRoomHostServer
+	 *            the chatRoomHostServer to set
 	 */
 	public final void setChatRoomHostServer(boolean chatRoomHostServer) {
+		boolean temp = this.chatRoomHostServer;
 		this.chatRoomHostServer = chatRoomHostServer;
+
+		if (chatRoomHostServer == temp)
+			return;
+		if (!chatRoomHostServer && ChatRoom.isServerOpen())
+			ChatRoom.closeServer();
+
 	}
 
 	public static final ProgramSettings createManager(final File systemPath) throws IOException {
