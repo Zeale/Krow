@@ -42,7 +42,8 @@ public class Client {
 						for (ClientListener cl : listeners)
 							if (cl instanceof FullClientListener)
 								((FullClientListener) cl).connectionClosed();
-						closeConnection();
+						connectionClosed = true;
+						socket.close();
 						return;
 					}
 					for (final ClientListener cl : listeners)
@@ -100,20 +101,19 @@ public class Client {
 
 	public void closeConnection() {
 
-		// TODO Send end connection msg
+		try {
+			sendCloseMsg();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 
 		connectionClosed = true;
 		for (final ClientListener cl : listeners)
 			if (cl instanceof FullClientListener)
 				((FullClientListener) cl).connectionClosed();
 		try {
-			objIn.close();
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			objOut.close();
-		} catch (final IOException e) {
+			socket.close();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -158,7 +158,13 @@ public class Client {
 	public void sendObject(final Serializable object) throws IOException {
 		if (Kröw.DEBUG_MODE)
 			System.out.println("Client: Sending an object object");
-		objOut.writeObject(object);
+		try {
+			objOut.writeObject(object);
+		} catch (SocketException e) {
+			for (ClientListener cl : listeners)
+				if (cl instanceof FullClientListener)
+					((FullClientListener) cl).connectionLost();
+		}
 		objOut.flush();
 	}
 

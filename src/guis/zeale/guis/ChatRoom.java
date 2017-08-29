@@ -21,7 +21,7 @@ import krow.guis.chatroom.ChatRoomMessage;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.app.api.connections.Client;
-import kröw.app.api.connections.ClientListener;
+import kröw.app.api.connections.FullClientListener;
 import kröw.app.api.connections.Server;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
@@ -61,11 +61,6 @@ public class ChatRoom extends WindowManager.Page {
 
 	@AutoLoad(LoadTime.PROGRAM_EXIT)
 	public static void closeServer() {
-		if (client != null) {
-			client.closeConnection();
-			client = null;
-		}
-		client = null;
 		try {
 			if (server != null)
 				server.stop();
@@ -85,16 +80,35 @@ public class ChatRoom extends WindowManager.Page {
 
 	@FXML
 	private Button sendButton;
-	private final ClientListener listener = object -> {
-		Platform.runLater(() -> {
+	private final FullClientListener listener = new FullClientListener() {
 
-			if (object instanceof ChatRoomMessage) {
-				new ChatRoomText((ChatRoomMessage) object).add(chatPane);
-			} else
+		@Override
+		public void objectReceived(Object object) {
+			Platform.runLater(() -> {
 
-				chatPane.getChildren()
-						.add(new Text("Message unreceived!" + (Kröw.DEBUG_MODE ? object.toString() : "") + "\n"));
-		});
+				if (object instanceof ChatRoomMessage) {
+					new ChatRoomText((ChatRoomMessage) object).add(chatPane);
+				} else
+
+					chatPane.getChildren()
+							.add(new Text("Message unreceived!" + (Kröw.DEBUG_MODE ? object.toString() : "") + "\n"));
+			});
+		}
+
+		@Override
+		public void connectionLost() {
+			client = null;
+		}
+
+		@Override
+		public void connectionEstablished() {
+
+		}
+
+		@Override
+		public void connectionClosed() {
+			client = null;
+		}
 	};
 
 	private static class ChatRoomText {
@@ -129,8 +143,10 @@ public class ChatRoom extends WindowManager.Page {
 
 	@Override
 	public boolean canSwitchScenes(final Class<? extends Page> newSceneClass) {
-		client.removeListener(listener);
-		client.closeConnection();
+		if (client != null) {
+			client.removeListener(listener);
+			client.closeConnection();
+		}
 		if (server != null)
 			try {
 				server.stop();
@@ -208,7 +224,7 @@ public class ChatRoom extends WindowManager.Page {
 		try {
 			// Commented out for export
 			if (canCreateServer() && Kröw.getProgramSettings().isChatRoomHostServer()) {
-				println("Starting a server and connecting to it...", NOTIFICATION_COLOR);
+				println("Starting a server...", NOTIFICATION_COLOR);
 				createServer();
 				println("Created a server successfully!", SUCCESS_COLOR);
 			} else {
@@ -229,8 +245,8 @@ public class ChatRoom extends WindowManager.Page {
 		if (!canCreateServer())
 			return false;
 		server = new Server(port);
-		client = new Client("localhost", port);
-		client.addListener(listener);
+		if (client == null)
+			setClient("localhost", port);
 		return true;
 	}
 
@@ -239,9 +255,7 @@ public class ChatRoom extends WindowManager.Page {
 	}
 
 	public boolean canCreateServer() {
-		if (server != null || !canHostServer || client != null)
-			return false;
-		return true;
+		return server == null;
 	}
 
 	public static boolean isClientConnected() {
@@ -356,7 +370,7 @@ public class ChatRoom extends WindowManager.Page {
 			}
 
 		} else if (cmd.equalsIgnoreCase("help")) {
-
+			// TODO Implement
 		} else if (cmd.equalsIgnoreCase("connect")) {
 			if (args == null || args.length == 0 || args.length > 2) {
 				println("Usage: /connect (address) [port]", ERROR_COLOR);
@@ -375,7 +389,7 @@ public class ChatRoom extends WindowManager.Page {
 
 						print("Connected to server ", SUCCESS_COLOR);
 						print(args[0] + ":" + 25000, Color.DARKGREEN);
-						print(" successfully.", SUCCESS_COLOR);
+						println(" successfully.", SUCCESS_COLOR);
 					} catch (IOException e) {
 						print("Couldn't connect to ", ERROR_COLOR);
 						print(args[0], Color.BLUEVIOLET);
@@ -387,7 +401,7 @@ public class ChatRoom extends WindowManager.Page {
 						setClient(strings[0], strings[1]);
 						print("Connected to server ", SUCCESS_COLOR);
 						print(strings[0] + ":" + strings[1], Color.DARKGREEN);
-						print(" successfully.", SUCCESS_COLOR);
+						println(" successfully.", SUCCESS_COLOR);
 					} catch (IOException e) {
 						println("An error ocurred while connecting to the server.", ERROR_COLOR);
 					} catch (NumberFormatException e) {
@@ -399,7 +413,11 @@ public class ChatRoom extends WindowManager.Page {
 			} else
 
 				try {
+					println("Attempting to connect...", NOTIFICATION_COLOR);
 					setClient(args[0], args[1]);
+					print("Connected to server ", SUCCESS_COLOR);
+					print(args[0] + ":" + args[1], Color.DARKGREEN);
+					println(" successfully.", SUCCESS_COLOR);
 				} catch (IOException e) {
 					println("An error ocurred while connecting to the server.", ERROR_COLOR);
 				} catch (NumberFormatException e) {

@@ -89,6 +89,7 @@ public class Server {
 		running = false;
 		socket.close();
 		for (final Client c : connections) {
+			c.sendCloseMsg();
 			c.closeConnection();
 		}
 	}
