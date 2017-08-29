@@ -57,9 +57,14 @@ public class ChatRoom extends WindowManager.Page {
 
 	@AutoLoad(LoadTime.PROGRAM_EXIT)
 	public static void closeServer() {
-		client.closeConnection();
+		if (client != null) {
+			client.closeConnection();
+			client = null;
+		}
+		client = null;
 		try {
-			server.stop();
+			if (server != null)
+				server.stop();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -198,10 +203,8 @@ public class ChatRoom extends WindowManager.Page {
 
 		try {
 			// Commented out for export
-			if (canCreateServer()) {
+			if (canCreateServer() && Kröw.getProgramSettings().isChatRoomHostServer()) {
 				createServer();
-				client = new Client("localhost", 25000);
-				client.addListener(listener);
 			}
 
 		} catch (final IOException e) {
@@ -216,6 +219,8 @@ public class ChatRoom extends WindowManager.Page {
 		if (!canCreateServer())
 			return false;
 		server = new Server(port);
+		client = new Client("localhost", port);
+		client.addListener(listener);
 		return true;
 	}
 
@@ -224,16 +229,17 @@ public class ChatRoom extends WindowManager.Page {
 	}
 
 	public boolean canCreateServer() {
-		if (server != null || !Kröw.getProgramSettings().isChatRoomHostServer() || !canHostServer)
+		if (server != null || !canHostServer || client != null)
 			return false;
 		return true;
 	}
 
-	public static boolean isConnected() {
+	public static boolean isClientConnected() {
 		return client != null;
 	}
 
 	public void parseInput(String input) {
+
 		if (input.startsWith("/")) {
 			String cmd;
 			String[] args;
@@ -253,25 +259,95 @@ public class ChatRoom extends WindowManager.Page {
 		chatBox.setText("");
 	}
 
-	public void printTextToConsole(String text, Color color) {
-		Text t = new Text(text + "\n");
+	public void printToConsole(String text, Color color) {
+		Text t = new Text(text);
 		t.setFill(color);
 		chatPane.getChildren().add(t);
 	}
 
-	public void printTextToConsole(String text) {
-		printTextToConsole(text, Color.WHITE);
+	public void printLineToConsole(String text) {
+		printLineToConsole(text, Color.WHITE);
+	}
+
+	public void println(String text) {
+		printLineToConsole(text);
+	}
+
+	public void println(String text, Color color) {
+		printLineToConsole(text, color);
+	}
+
+	public void print(String text) {
+		printToConsole(text);
+	}
+
+	public void print(String text, Color color) {
+		printToConsole(text, color);
+	}
+
+	public void printToConsole(String text) {
+		printLineToConsole(text, Color.WHITE);
+	}
+
+	public void printLineToConsole(String line, Color color) {
+		printToConsole(line + "\n", color);
 	}
 
 	private void parseCommand(String cmd, String[] args) {
+
+		if (cmd.startsWith("/")) {
+			String message = cmd.substring(1);
+			for (String s : args)
+				message += " " + s;
+			sendMessage(message);
+			sendingMessageNotification();
+		}
+
 		if (cmd.equalsIgnoreCase("setname") || cmd.equalsIgnoreCase("set-name"))
 			if (args == null || args.length == 0 || args[0].trim().isEmpty())
-				printTextToConsole("Command usage: /setname (name)", Color.RED);
+				printLineToConsole("Command usage: /setname (name)", Color.RED);
 			else {
 				user = args[0];
-				printTextToConsole("Your name has been changed to: " + user, Color.AQUA);
+				printLineToConsole("Your name has been changed to: " + user, Color.AQUA);
 			}
-		else
+		else if (cmd.equalsIgnoreCase("start-server") || cmd.equalsIgnoreCase("startserver")) {
+			if (!canCreateServer()) {
+				println("The server already exists!", Color.FIREBRICK);
+				print("Use ", Color.FIREBRICK);
+				print("/stop-server ", Color.RED);
+				println("to stop it.", Color.FIREBRICK);
+			} else
+				try {
+					if (args != null && args.length > 0)
+						createServer(Short.parseShort(args[0]));
+					else
+						createServer();
+					println("The server was created successfully!", Color.GREEN);
+				} catch (IOException e) {
+					println("The server could not be created! (Perhaps the port number is taken :(  )",
+							Color.FIREBRICK);
+					e.printStackTrace();
+				} catch (NumberFormatException e) {
+					println("the port number must not exceed 65535 or precede 1.", Color.FIREBRICK);
+				}
+
+		} else if (cmd.equalsIgnoreCase("stopserver") || cmd.equalsIgnoreCase("stop-server")) {
+			if (isServerOpen()) {
+				closeServer();
+				println("The server is being closed...", Color.GREEN);
+			} else {
+				println("The server wasn't open...", Color.FIREBRICK);
+				print("Use ", Color.FIREBRICK);
+				print("/start-server ", Color.RED);
+				println("to start it.", Color.FIREBRICK);
+			}
+
+		} else if (cmd.equalsIgnoreCase("help")) {
+
+		} else if (cmd.equalsIgnoreCase("connect")) {
+			if (args == null || args.length == 0)
+				println("Usage: /connect (address) [port]", Color.FIREBRICK);
+		} else
 			WindowManager.spawnLabelAtMousePos("Unknown Command", Color.FIREBRICK);
 
 	}
@@ -284,7 +360,11 @@ public class ChatRoom extends WindowManager.Page {
 
 	private void sendMessage(final String message) {
 		try {
-			client.sendMessage(new ChatRoomMessage(message, user == null ? "" : user, new Date().getTime()));
+			if (client != null)
+				client.sendMessage(new ChatRoomMessage(message, user == null ? "" : user, new Date().getTime()));
+			else
+				println("You can't send messages without being connected to a server! See /help for details...",
+						Color.FIREBRICK);
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}

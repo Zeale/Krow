@@ -202,15 +202,15 @@ public class Settings extends Page {
 		SettingTab appsTab = new SettingTab("Apps");
 		SettingTab chatRoomTab = new SettingTab("Chat Room");
 		{
-			Setting hostServerSetting = new Setting(
-					"Host Server: " + (Kröw.getProgramSettings().isChatRoomHostServer() ? "Yes" : "No"));
+			Setting hostServerSetting = new Setting("Start server when the Chat Room app opens: "
+					+ (Kröw.getProgramSettings().isChatRoomHostServer() ? "Yes" : "No"));
 			Togglable hostServerTogglable = new Togglable() {
 
 				@Override
 				public void onToggled(TreeCell<Setting> cell) {
 					Kröw.getProgramSettings().setChatRoomHostServer(!Kröw.getProgramSettings().isChatRoomHostServer());
-					hostServerSetting.setText(
-							"Host Server: " + (Kröw.getProgramSettings().isChatRoomHostServer() ? "Yes" : "No"));
+					hostServerSetting.setText("Start server when the Chat Room app opens: "
+							+ (Kröw.getProgramSettings().isChatRoomHostServer() ? "Yes" : "No"));
 				}
 			};
 
