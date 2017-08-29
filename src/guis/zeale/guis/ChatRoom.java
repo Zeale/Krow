@@ -324,25 +324,28 @@ public class ChatRoom extends WindowManager.Page {
 	public void parseInput(String input) {
 		input = input.trim();
 		boolean del = false;
-		String temp = "";
-		for (char c : input.toCharArray())
-			if (c == ' ')
-				if (del)
-					continue;
-				else
-					temp += c;
-			else if (c == '\n')
-				continue;
-			else
-				temp += c;
-		input = temp;
 
 		if (input == null || input.isEmpty())
 			return;
-		if (history.isEmpty() || !input.equals(history.peek()))
-			history.add(chatBox.getText());
 
 		if (input.startsWith("/")) {
+
+			String temp = "";
+			for (char c : input.toCharArray())
+				if (c == ' ')
+					if (del)
+						continue;
+					else
+						temp += c;
+				else if (c == '\n')
+					continue;
+				else
+					temp += c;
+			input = temp;
+
+			if (history.isEmpty() || !input.equals(history.peek().trim()))
+				history.add(chatBox.getText());
+
 			String cmd;
 			String[] args;
 			if (input.contains(" ")) {
@@ -357,6 +360,8 @@ public class ChatRoom extends WindowManager.Page {
 		} else {
 			sendMessage(input);
 			sendingMessageNotification();
+			if (history.isEmpty() || !input.equals(history.peek()))
+				history.add(chatBox.getText());
 		}
 		chatBox.setText("");
 	}
