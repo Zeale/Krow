@@ -40,16 +40,6 @@ public class ChatRoom extends WindowManager.Page {
 		canHostServer = chs;
 	}
 
-	@AutoLoad(LoadTime.PROGRAM_EXIT)
-	private void closeConnections() {
-		try {
-			server.stop();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		client.closeConnection();
-	}
-
 	private final static double CHAT_PANE_PREF_WIDTH = 1277, CHAT_PANE_PREF_HEIGHT = 827, CHAT_PANE_LAYOUTX = 305,
 			CHAT_PANE_LAYOUTY = 14;
 	private final static double CHAT_BOX_PREF_WIDTH = 1920, CHAT_BOX_PREF_HEIGHT = 220, CHAT_BOX_LAYOUTX = 0,
@@ -60,6 +50,22 @@ public class ChatRoom extends WindowManager.Page {
 	private static Client client;
 
 	private static Server server;
+
+	public static boolean isServerOpen() {
+		return server != null;
+	}
+
+	@AutoLoad(LoadTime.PROGRAM_EXIT)
+	public static void closeServer() {
+		client.closeConnection();
+		try {
+			server.stop();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		server = null;
+	}
+
 	@FXML
 	private TextFlow chatPane;
 
@@ -205,6 +211,27 @@ public class ChatRoom extends WindowManager.Page {
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 		GUIHelper.applyShapeBackground(pane, chatPane, chatBox);
+	}
+
+	public boolean createServer(int port) throws IOException {
+		if (!canCreateServer())
+			return false;
+		server = new Server(port);
+		return true;
+	}
+
+	public boolean createServer() throws IOException {
+		return createServer(25000);
+	}
+
+	public boolean canCreateServer() {
+		if (server != null || !Kröw.getProgramSettings().isChatRoomHostServer() || !canHostServer)
+			return false;
+		return true;
+	}
+
+	public static boolean isConnected() {
+		return client != null;
 	}
 
 	public void parseInput(String input) {
