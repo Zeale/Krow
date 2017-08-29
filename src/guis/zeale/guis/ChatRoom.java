@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import javafx.application.Platform;
-import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
@@ -113,8 +111,7 @@ public class ChatRoom extends WindowManager.Page {
 
 		sendButton.setOnAction(event -> {
 			if (!chatBox.getText().isEmpty()) {
-				sendMessage(chatBox.getText());
-				sendingMessageNotification();
+				parseInput(chatBox.getText());
 			} else
 				emptyMessageWarning();
 		});
@@ -126,8 +123,7 @@ public class ChatRoom extends WindowManager.Page {
 				if (!event.isShiftDown()) {
 					event.consume();
 					if (!chatBox.getText().isEmpty()) {
-						sendMessage(chatBox.getText());
-						sendingMessageNotification();
+						parseInput(chatBox.getText());
 					} else
 						emptyMessageWarning();
 				}
@@ -151,12 +147,54 @@ public class ChatRoom extends WindowManager.Page {
 		GUIHelper.applyShapeBackground(pane, chatPane, chatBox);
 	}
 
+	public void parseInput(String input) {
+		if (input.startsWith("/")) {
+			String cmd;
+			String[] args;
+			if (input.contains(" ")) {
+				cmd = input.substring(1, input.indexOf(" "));
+				input = input.substring(input.indexOf(" ") + 1);
+				args = input.split(" ");
+			} else {
+				cmd = input.substring(1);
+				args = null;
+			}
+			parseCommand(cmd, args);
+		} else {
+			sendMessage(input);
+			sendingMessageNotification();
+		}
+		chatBox.setText("");
+	}
+
+	public void printTextToConsole(String text, Color color) {
+		Text t = new Text(text + "\n");
+		t.setFill(color);
+		chatPane.getChildren().add(t);
+	}
+
+	public void printTextToConsole(String text) {
+		printTextToConsole(text, Color.WHITE);
+	}
+
+	private void parseCommand(String cmd, String[] args) {
+		if (cmd.equalsIgnoreCase("setname") || cmd.equalsIgnoreCase("set-name"))
+			if (args == null || args.length == 0)
+				printTextToConsole("Command usage: /setname (name)", Color.RED);
+			else {
+				user = args[0];
+				printTextToConsole("Your name has been changed to: " + user, Color.AQUA);
+			}
+		else
+			WindowManager.spawnLabelAtMousePos("Unknown Command", Color.FIREBRICK);
+
+	}
+
 	private void sendingMessageNotification() {
 		WindowManager.spawnLabelAtMousePos("Sending...", Color.GREEN);
 	}
 
 	private void sendMessage(final String message) {
-		chatBox.setText("");
 		try {
 			client.sendMessage(new ChatRoomMessage(message, user == null ? "Unnamed" : user, new Date().getTime()));
 		} catch (final IOException e) {
