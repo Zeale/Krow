@@ -164,6 +164,7 @@ public class Client {
 			for (ClientListener cl : listeners)
 				if (cl instanceof FullClientListener)
 					((FullClientListener) cl).connectionLost();
+			return;
 		}
 		objOut.flush();
 	}

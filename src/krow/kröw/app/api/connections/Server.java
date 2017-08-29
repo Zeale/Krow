@@ -51,20 +51,38 @@ public class Server {
 				System.out.println("Server: Made server-client: " + client);
 			connections.add(client);
 
-			client.addListener(object -> {
+			client.addListener(new FullClientListener() {
 
-				if (Kröw.DEBUG_MODE)
-					System.out.println("Server: Object received");
-				for (final Client cl : connections)
-					// if (cl != client)
-					try {
-						if (Kröw.DEBUG_MODE)
-							System.out.println(
-									"Server: Sending object to clients via server-client... (Ignore upcoming client send msgs...)");
-						cl.sendObject((Serializable) object);
-					} catch (final IOException e) {
-						e.printStackTrace();
-					}
+				@Override
+				public void objectReceived(Object object) {
+					if (Kröw.DEBUG_MODE)
+						System.out.println("Server: Object received");
+					for (final Client cl : connections)
+						// if (cl != client)
+						try {
+							if (Kröw.DEBUG_MODE)
+								System.out.println(
+										"Server: Sending object to clients via server-client... (Ignore upcoming client send msgs...)");
+							cl.sendObject((Serializable) object);
+						} catch (final IOException e) {
+							e.printStackTrace();
+						}
+				}
+
+				@Override
+				public void connectionLost() {
+					connections.remove(client);
+				}
+
+				@Override
+				public void connectionEstablished() {
+
+				}
+
+				@Override
+				public void connectionClosed() {
+					connections.remove(client);
+				}
 			});
 		} catch (final IOException e) {
 			e.printStackTrace();
@@ -88,7 +106,8 @@ public class Server {
 		blockIncomingConnections();
 		running = false;
 		socket.close();
-		for (final Client c : connections) {
+		for (final Object o : connections.toArray()) {
+			Client c = (Client) o;
 			c.sendCloseMsg();
 			c.closeConnection();
 		}
