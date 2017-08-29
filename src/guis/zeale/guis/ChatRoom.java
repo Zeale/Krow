@@ -234,7 +234,7 @@ public class ChatRoom extends WindowManager.Page {
 							&& !chatBox.getText().equals(history.peek()))
 						history.push(chatBox.getText());
 					chatBox.setText(history.get(history.size() - historyPos.get()));
-					System.out.println(historyPos.get());
+					chatBox.positionCaret(chatBox.getText().length());
 
 					historyPos.addListener(this);
 				}
