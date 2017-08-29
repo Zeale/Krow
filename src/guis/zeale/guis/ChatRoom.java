@@ -3,14 +3,20 @@ package zeale.guis;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.Stack;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -32,16 +38,10 @@ public class ChatRoom extends WindowManager.Page {
 	private static final Color NOTIFICATION_COLOR = Color.LIGHTBLUE, ERROR_COLOR = Color.FIREBRICK,
 			SUCCESS_COLOR = Color.GREEN, WARNING_COLOR = Color.GOLD;
 
-	private static final boolean canHostServer;
+	private Stack<String> history = new Stack<>();
 
 	static {
-		boolean chs = true;
-		try {
-			Kröw.addReflectionClass(ChatRoom.class);
-		} catch (Exception e) {
-			chs = false;
-		}
-		canHostServer = chs;
+		Kröw.addReflectionClass(ChatRoom.class);
 	}
 
 	private final static double CHAT_PANE_PREF_WIDTH = 1277, CHAT_PANE_PREF_HEIGHT = 827, CHAT_PANE_LAYOUTX = 305,
@@ -90,8 +90,8 @@ public class ChatRoom extends WindowManager.Page {
 					new ChatRoomText((ChatRoomMessage) object).add(chatPane);
 				} else
 
-					chatPane.getChildren()
-							.add(new Text("Message unreceived!" + (Kröw.DEBUG_MODE ? object.toString() : "") + "\n"));
+					chatPane.getChildren().add(
+							new Text("Message unreceived!   " + (Kröw.DEBUG_MODE ? object.toString() : "") + "\n"));
 			});
 		}
 
@@ -207,22 +207,81 @@ public class ChatRoom extends WindowManager.Page {
 			}
 		});
 
-		chatBox.setOnKeyPressed(event -> {
-			if (event.getCode().equals(KeyCode.ENTER)) {
-				if (event.isShiftDown() ^ event.isControlDown())
-					chatBox.appendText("\n");
-				if (!event.isShiftDown()) {
-					event.consume();
-					if (!chatBox.getText().isEmpty()) {
-						parseInput(chatBox.getText());
-					} else
-						emptyMessageWarning();
+		chatBox.setOnKeyPressed(new EventHandler<KeyEvent>() {
+
+			private SimpleIntegerProperty historyPos = new SimpleIntegerProperty();
+			private ChangeListener<Number> listener = new ChangeListener<Number>() {
+
+				@Override
+				public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+
+					if (oldValue.intValue() == newValue.intValue() || history.isEmpty())
+						return;
+
+					historyPos.removeListener(this);
+
+					// When subtracting 0 from array's size, you get the
+					// array's size.
+					// Getting a value at arr.get(arr.size()) throws an
+					// exception.
+					if (historyPos.get() <= 0)
+						historyPos.set(1);
+
+					if (historyPos.get() > history.size())
+						historyPos.set(history.size());
+
+					if (historyPos.get() == 1 && !(oldValue.intValue() > 1) && !chatBox.getText().isEmpty()
+							&& !chatBox.getText().equals(history.peek()))
+						history.push(chatBox.getText());
+					chatBox.setText(history.get(history.size() - historyPos.get()));
+					System.out.println(historyPos.get());
+
+					historyPos.addListener(this);
 				}
+			};
+			{
+				historyPos.addListener(listener);
+			}
+
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode().equals(KeyCode.UP) && event.isShiftDown()) {
+
+					event.consume();
+
+					historyPos.set(historyPos.get() + 1);
+
+					return;
+				} else if (event.getCode().equals(KeyCode.DOWN) && event.isShiftDown()) {
+					event.consume();
+					if (historyPos.get() <= 1) {
+						chatBox.setText("");
+						return;
+					}
+					historyPos.set(historyPos.get() - 1);
+					return;
+				} else if (event.getCode().equals(KeyCode.ENTER)) {
+					if (event.isShiftDown() ^ event.isControlDown())
+						chatBox.appendText("\n");
+					if (!event.isShiftDown()) {
+						event.consume();
+						if (!chatBox.getText().isEmpty()) {
+							parseInput(chatBox.getText());
+						} else
+							emptyMessageWarning();
+					}
+				}
+
+				if (event.getText().length() == 1) {
+					historyPos.removeListener(listener);
+					historyPos.set(0);
+					historyPos.addListener(listener);
+				}
+
 			}
 		});
 
 		try {
-			// Commented out for export
 			if (canCreateServer() && Kröw.getProgramSettings().isChatRoomHostServer()) {
 				println("Starting a server...", NOTIFICATION_COLOR);
 				createServer();
@@ -263,6 +322,10 @@ public class ChatRoom extends WindowManager.Page {
 	}
 
 	public void parseInput(String input) {
+		if (input == null || input.isEmpty())
+			return;
+		if (history.isEmpty() || !input.equals(history.peek()))
+			history.add(chatBox.getText());
 
 		if (input.startsWith("/")) {
 			String cmd;
@@ -331,6 +394,12 @@ public class ChatRoom extends WindowManager.Page {
 			sendingMessageNotification();
 		}
 
+		if (cmd.equalsIgnoreCase("test")) {
+			for (String s : history)
+				System.out.println(s);
+			return;
+		}
+
 		if (cmd.equalsIgnoreCase("setname") || cmd.equalsIgnoreCase("set-name"))
 			if (args == null || args.length == 0 || args[0].trim().isEmpty())
 				printLineToConsole("Command usage: /setname (name)", Color.RED);
@@ -355,7 +424,8 @@ public class ChatRoom extends WindowManager.Page {
 					println("The server could not be created! (Perhaps the port number is taken :(  )", ERROR_COLOR);
 					e.printStackTrace();
 				} catch (NumberFormatException e) {
-					println("the port number must not exceed 65535 or precede 1.", ERROR_COLOR);
+					println("The port number must not exceed 65535 or precede 1. It also must be a valid port number.",
+							ERROR_COLOR);
 				}
 
 		} else if (cmd.equalsIgnoreCase("stopserver") || cmd.equalsIgnoreCase("stop-server")) {
