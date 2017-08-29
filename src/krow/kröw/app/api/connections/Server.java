@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 
 import kröw.core.Kröw;
@@ -25,6 +26,8 @@ public class Server {
 					if (Kröw.DEBUG_MODE)
 						System.out.println("Server: Accepting connection");
 					new Thread(() -> acceptConnection(connection)).start();
+				} catch (SocketException e) {
+					// Server terminated
 				} catch (final IOException e) {
 					System.err.println("Failed to accept an incoming connection.");
 				}
@@ -81,11 +84,13 @@ public class Server {
 
 	}
 
-	public void stop() {
+	public void stop() throws IOException {
 		blockIncomingConnections();
 		running = false;
-		for (final Client c : connections)
+		socket.close();
+		for (final Client c : connections) {
 			c.closeConnection();
+		}
 	}
 
 }

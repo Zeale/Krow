@@ -1,5 +1,6 @@
 package kröw.app.api.connections;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -36,8 +37,22 @@ public class Client {
 					obj = (Serializable) objIn.readObject();
 					if (Kröw.DEBUG_MODE)
 						System.out.println("Client: Received object in class, calling listeners");
+
+					if (obj instanceof CloseMessage) {
+						for (ClientListener cl : listeners)
+							if (cl instanceof FullClientListener)
+								((FullClientListener) cl).connectionClosed();
+						closeConnection();
+						return;
+					}
 					for (final ClientListener cl : listeners)
 						cl.objectReceived(obj);
+				} catch (EOFException e) {
+					closeConnection();
+					for (ClientListener cl : listeners)
+						if (cl instanceof FullClientListener)
+							((FullClientListener) cl).connectionLost();
+					return;
 				} catch (final SocketException e) {
 					socketExceptionCount++;
 					pause();
@@ -121,6 +136,23 @@ public class Client {
 
 	public void sendMessage(Message message) throws IOException {
 		sendObject(message);
+	}
+
+	public void sendCloseMsg() throws IOException {
+		sendObject(new CloseMessage());
+	}
+
+	private static final class CloseMessage extends Message {
+
+		/**
+		 * SUID
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public CloseMessage() {
+			super("end");
+		}
+
 	}
 
 	public void sendObject(final Serializable object) throws IOException {

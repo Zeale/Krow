@@ -17,6 +17,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import krow.guis.GUIHelper;
 import krow.guis.chatroom.ChatRoomMessage;
+import kröw.annotations.AutoLoad;
+import kröw.annotations.LoadTime;
 import kröw.app.api.connections.Client;
 import kröw.app.api.connections.ClientListener;
 import kröw.app.api.connections.Server;
@@ -25,6 +27,28 @@ import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
 
 public class ChatRoom extends WindowManager.Page {
+
+	private static final boolean canHostServer;
+
+	static {
+		boolean chs = true;
+		try {
+			Kröw.addReflectionClass(ChatRoom.class);
+		} catch (Exception e) {
+			chs = false;
+		}
+		canHostServer = chs;
+	}
+
+	@AutoLoad(LoadTime.PROGRAM_EXIT)
+	private void closeConnections() {
+		try {
+			server.stop();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		client.closeConnection();
+	}
 
 	private final static double CHAT_PANE_PREF_WIDTH = 1277, CHAT_PANE_PREF_HEIGHT = 827, CHAT_PANE_LAYOUTX = 305,
 			CHAT_PANE_LAYOUTY = 14;
@@ -93,7 +117,11 @@ public class ChatRoom extends WindowManager.Page {
 		client.removeListener(listener);
 		client.closeConnection();
 		if (server != null)
-			server.stop();
+			try {
+				server.stop();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		return true;
 	}
 
