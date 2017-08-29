@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.util.Date;
 
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import krow.guis.GUIHelper;
@@ -45,31 +48,40 @@ public class ChatRoom extends WindowManager.Page {
 	private Button sendButton;
 	private final ClientListener listener = object -> {
 		Platform.runLater(() -> {
-			Text t;
 
 			if (object instanceof ChatRoomMessage) {
-				t = new ChatRoomText((ChatRoomMessage) object);
+				new ChatRoomText((ChatRoomMessage) object).add(chatPane);
 			} else
-				t = new Text("Message unreceived!" + (Kröw.DEBUG_MODE ? object.toString() : "") + "\n");
 
-			chatPane.getChildren().add(t);
+				chatPane.getChildren()
+						.add(new Text("Message unreceived!" + (Kröw.DEBUG_MODE ? object.toString() : "") + "\n"));
 		});
 	};
 
-	private static class ChatRoomText extends Text {
+	private static class ChatRoomText {
 		private ChatRoomMessage message;
 
 		public ChatRoomText(ChatRoomMessage message) {
 			this.message = message;
-			setText(message.getAuthor() + " > " + message.getText() + "\n");
 		}
 
-		{
-			setFill(Color.WHITE);
-		}
+		public void add(TextFlow pane) {
+			Text name = new Text();
+			if (message.getAuthor().isEmpty()) {
+				name.setText("Unnamed");
+				// TODO Ask server to send color from a queue
+				name.setFill(Color.FIREBRICK);
+			} else {
+				name.setText(message.getAuthor());
+				name.setFill(Color.LIGHTGOLDENRODYELLOW);
+			}
+			Text splitter = new Text(" > ");
+			Text message = new Text(this.message.getText() + "\n");
+			message.setFill(Color.WHITE);
+			splitter.setFill(Color.BLUE);
 
-		public ChatRoomMessage getMessage() {
-			return message;
+			pane.getChildren().addAll(name, splitter, message);
+
 		}
 
 	}
@@ -114,6 +126,26 @@ public class ChatRoom extends WindowManager.Page {
 				parseInput(chatBox.getText());
 			} else
 				emptyMessageWarning();
+		});
+
+		chatPane.getChildren().addListener(new ListChangeListener<Node>() {
+
+			@Override
+			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Node> c) {
+				while (c.next())
+					if (c.wasAdded())
+						for (Node n : c.getAddedSubList())
+							if (n instanceof Text) {
+								Text t = (Text) n;
+								t.setFont(Font.font(16));
+								if (t.getProperties().containsKey(TEXT_FONT_FAMILY_KEY))
+									t.setFont(Font.font((String) t.getProperties().get(TEXT_FONT_FAMILY_KEY)));
+								if (t.getProperties().containsKey(TEXT_FONT_SIZE_KEY))
+									t.setFont(Font.font(t.getFont().getFamily(),
+											(double) t.getProperties().get(TEXT_FONT_SIZE_KEY)));
+							}
+
+			}
 		});
 
 		chatBox.setOnKeyPressed(event -> {
@@ -179,7 +211,7 @@ public class ChatRoom extends WindowManager.Page {
 
 	private void parseCommand(String cmd, String[] args) {
 		if (cmd.equalsIgnoreCase("setname") || cmd.equalsIgnoreCase("set-name"))
-			if (args == null || args.length == 0)
+			if (args == null || args.length == 0 || args[0].trim().isEmpty())
 				printTextToConsole("Command usage: /setname (name)", Color.RED);
 			else {
 				user = args[0];
@@ -190,13 +222,15 @@ public class ChatRoom extends WindowManager.Page {
 
 	}
 
+	private static final Object TEXT_FONT_SIZE_KEY = new Object(), TEXT_FONT_FAMILY_KEY = new Object();
+
 	private void sendingMessageNotification() {
 		WindowManager.spawnLabelAtMousePos("Sending...", Color.GREEN);
 	}
 
 	private void sendMessage(final String message) {
 		try {
-			client.sendMessage(new ChatRoomMessage(message, user == null ? "Unnamed" : user, new Date().getTime()));
+			client.sendMessage(new ChatRoomMessage(message, user == null ? "" : user, new Date().getTime()));
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
