@@ -449,8 +449,9 @@ public class ChatRoom extends WindowManager.Page {
 
 		if (cmd.startsWith("/")) {
 			String message = cmd.substring(1);
-			for (String s : args)
-				message += " " + s;
+			if (args != null)
+				for (String s : args)
+					message += " " + s;
 			sendMessage(message);
 			sendingMessageNotification();
 		}
