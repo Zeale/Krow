@@ -1,18 +1,15 @@
 package kröw.app.api.connections;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
+import java.util.List;
 
 import kröw.core.Kröw;
 
-public class Server {
+public abstract class Server {
 	private final ServerSocket socket;
-
-	private final ArrayList<Client> connections = new ArrayList<>();
 
 	private boolean accept = true, running = true;
 
@@ -44,51 +41,7 @@ public class Server {
 		acceptThread.start();
 	}
 
-	protected void acceptConnection(final Socket connection) {
-		try {
-			final Client client = new Client(connection);
-			if (Kröw.DEBUG_MODE)
-				System.out.println("Server: Made server-client: " + client);
-			connections.add(client);
-
-			client.addListener(new FullClientListener() {
-
-				@Override
-				public void objectReceived(Object object) {
-					if (Kröw.DEBUG_MODE)
-						System.out.println("Server: Object received");
-					for (final Client cl : connections)
-						// if (cl != client)
-						try {
-							if (Kröw.DEBUG_MODE)
-								System.out.println(
-										"Server: Sending object to clients via server-client... (Ignore upcoming client send msgs...)");
-							cl.sendObject((Serializable) object);
-						} catch (final IOException e) {
-							e.printStackTrace();
-						}
-				}
-
-				@Override
-				public void connectionLost() {
-					connections.remove(client);
-				}
-
-				@Override
-				public void connectionEstablished() {
-
-				}
-
-				@Override
-				public void connectionClosed() {
-					connections.remove(client);
-				}
-			});
-		} catch (final IOException e) {
-			e.printStackTrace();
-			return;
-		}
-	}
+	protected abstract void acceptConnection(final Socket connection);
 
 	public void allowIncomingConnections() {
 		final boolean accept = this.accept;
@@ -102,13 +55,15 @@ public class Server {
 
 	}
 
+	protected abstract List<Client> getAllConnections();
+
 	public void stop() throws IOException {
 		blockIncomingConnections();
 		running = false;
 		socket.close();
-		for (final Object o : connections.toArray()) {
+		for (final Object o : getAllConnections().toArray()) {
 			Client c = (Client) o;
-			c.sendCloseMsg();
+			c.sendEndConnectionMsg();
 			c.closeConnection();
 		}
 	}

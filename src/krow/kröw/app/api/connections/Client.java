@@ -38,7 +38,7 @@ public class Client {
 					if (Kröw.DEBUG_MODE)
 						System.out.println("Client: Received object in class, calling listeners");
 
-					if (obj instanceof CloseMessage) {
+					if (obj instanceof EndConnectionMessage) {
 						for (ClientListener cl : listeners)
 							if (cl instanceof FullClientListener)
 								((FullClientListener) cl).connectionClosed();
@@ -102,7 +102,7 @@ public class Client {
 	public void closeConnection() {
 
 		try {
-			sendCloseMsg();
+			sendEndConnectionMsg();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -138,21 +138,25 @@ public class Client {
 		sendObject(message);
 	}
 
-	public void sendCloseMsg() throws IOException {
-		sendObject(new CloseMessage());
+	public void sendEndConnectionMsg() throws IOException {
+		sendObject(new EndConnectionMessage());
 	}
 
-	private static final class CloseMessage extends Message {
+	private static final class EndConnectionMessage extends Message {
 
 		/**
 		 * SUID
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public CloseMessage() {
+		public EndConnectionMessage() {
 			super("end");
 		}
 
+	}
+
+	public static boolean isEndConnectionMessage(Message message) {
+		return message instanceof EndConnectionMessage;
 	}
 
 	public void sendObject(final Serializable object) throws IOException {

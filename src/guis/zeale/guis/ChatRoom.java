@@ -24,6 +24,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import krow.guis.GUIHelper;
 import krow.guis.chatroom.ChatRoomMessage;
+import krow.guis.chatroom.ChatRoomServer;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.app.api.connections.Client;
@@ -344,7 +345,7 @@ public class ChatRoom extends WindowManager.Page {
 	public boolean createServer(int port) throws IOException {
 		if (!canCreateServer())
 			return false;
-		server = new Server(port);
+		server = new ChatRoomServer(port);
 		if (client == null)
 			setClient("localhost", port);
 		return true;
@@ -448,12 +449,12 @@ public class ChatRoom extends WindowManager.Page {
 	private void parseCommand(String cmd, String[] args) {
 
 		if (cmd.startsWith("/")) {
-			String message = cmd.substring(1);
 			if (args != null)
 				for (String s : args)
-					message += " " + s;
-			sendMessage(message);
+					cmd += " " + s;
+			sendMessage(cmd);
 			sendingMessageNotification();
+			return;
 		}
 
 		if (cmd.equalsIgnoreCase("test")) {
