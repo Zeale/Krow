@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import krow.guis.chatroom.messages.ChatRoomMessage;
 import kröw.app.api.connections.Client;
 import kröw.app.api.connections.FullClientListener;
 import kröw.app.api.connections.Message;

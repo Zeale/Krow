@@ -1,4 +1,4 @@
-package krow.guis.chatroom;
+package krow.guis.chatroom.messages;
 
 import java.util.ArrayList;
 import java.util.Collections;
