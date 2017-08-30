@@ -4,6 +4,10 @@ import kröw.app.api.connections.Message;
 
 public class CommandMessage extends Message {
 
+	/**
+	 * SUID
+	 */
+	private static final long serialVersionUID = 1L;
 	private final String[] args;
 
 	public CommandMessage(String command, String... args) {

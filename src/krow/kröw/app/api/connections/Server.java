@@ -55,7 +55,7 @@ public abstract class Server {
 
 	}
 
-	protected abstract List<Client> getAllConnections();
+	protected abstract List<? extends Client> getAllConnections();
 
 	public void stop() throws IOException {
 		blockIncomingConnections();

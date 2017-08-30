@@ -25,6 +25,7 @@ import javafx.scene.text.TextFlow;
 import krow.guis.GUIHelper;
 import krow.guis.chatroom.ChatRoomServer;
 import krow.guis.chatroom.messages.ChatRoomMessage;
+import krow.guis.chatroom.messages.CommandMessage;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.app.api.connections.Client;
@@ -447,6 +448,13 @@ public class ChatRoom extends WindowManager.Page {
 	}
 
 	private void parseCommand(String cmd, String[] args) {
+
+		try {
+			if (client != null)
+				client.sendMessage(new CommandMessage(cmd, args));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 
 		if (cmd.startsWith("/")) {
 			if (args != null)

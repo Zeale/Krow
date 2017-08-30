@@ -1,6 +1,7 @@
 package krow.guis.chatroom;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.net.UnknownHostException;
 
 import kröw.app.api.connections.Client;
@@ -11,7 +12,11 @@ public class ChatRoomClient extends Client {
 		super(hostname, port);
 	}
 
-	private String name;
+	public ChatRoomClient(Socket socket) throws IOException {
+		super(socket);
+	}
+
+	private String name = "An unknown person";
 
 	/**
 	 * @return the name

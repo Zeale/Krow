@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import krow.guis.chatroom.messages.ChatRoomMessage;
+import krow.guis.chatroom.messages.CommandMessage;
 import kröw.app.api.connections.Client;
 import kröw.app.api.connections.FullClientListener;
 import kröw.app.api.connections.Message;
@@ -16,7 +17,7 @@ import kröw.core.Kröw;
 
 public class ChatRoomServer extends Server {
 
-	protected List<Client> connections = new ArrayList<>();
+	protected List<ChatRoomClient> connections = new ArrayList<>();
 
 	public ChatRoomServer() throws IOException {
 		super();
@@ -30,7 +31,7 @@ public class ChatRoomServer extends Server {
 	protected void acceptConnection(Socket connection) {
 
 		try {
-			final Client client = new Client(connection);
+			final ChatRoomClient client = new ChatRoomClient(connection);
 			if (Kröw.DEBUG_MODE)
 				System.out.println("Server: Made server-client: " + client);
 			connections.add(client);
@@ -49,6 +50,22 @@ public class ChatRoomServer extends Server {
 								c.sendObject(new ChatRoomMessage("A user has left the chatroom...", "Server",
 										new Date().getTime()));
 							}
+
+						if (object instanceof CommandMessage) {
+							CommandMessage cm = (CommandMessage) object;
+							if (cm.getCommand().equalsIgnoreCase("setname")
+									|| cm.getCommand().equalsIgnoreCase("set-name") && cm.getArgs() != null
+											&& cm.getArgs().length > 0) {
+								String prevName = client.getName();
+								client.setName(cm.getArgs()[0]);
+								for (Client cl : connections)
+									if (cl != client)
+										cl.sendMessage(new ChatRoomMessage(
+												prevName + " has changed their name to " + client.getName() + ".",
+												"Server", new Date().getTime()));
+							}
+							return;
+						}
 
 						for (final Client cl : connections)
 							// if (cl != client)
@@ -88,7 +105,7 @@ public class ChatRoomServer extends Server {
 	}
 
 	@Override
-	protected List<Client> getAllConnections() {
+	protected List<ChatRoomClient> getAllConnections() {
 		return connections;
 	}
 
