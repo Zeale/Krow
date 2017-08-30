@@ -29,8 +29,6 @@ import javafx.util.Duration;
 import krow.guis.BackgroundBuilder.ShapeBackgroundManager;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.NotSwitchableException;
-import zeale.guis.ChatRoom;
 import zeale.guis.Home;
 
 public final class GUIHelper {
@@ -122,9 +120,6 @@ public final class GUIHelper {
 		final Node close = new MenuOption(Color.RED, "Close"), goHome = new Text("Go Home"),
 				goBack = new Text("Go Back"), hideProgram = new Text("Hide Program"),
 				sendProgramToBack = new Text("Send to back"), gotoBackgroundManager = new Text("Background...");
-		// TODO Start delete
-		final Node goToChatRoom = new Text("Chat Room");
-		// End delete
 
 		final Text systemTray = new Text(
 				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
@@ -184,16 +179,6 @@ public final class GUIHelper {
 
 			backgroundmngr.playColorAnimations();
 		});
-		// TODO Start delete
-		goToChatRoom.setOnMouseClicked(event -> {
-			try {
-				WindowManager.setScene(ChatRoom.class);
-			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-				e.printStackTrace();
-			}
-		});
-		children.add(goToChatRoom);
-		// End delete
 
 		children.add(close);
 		children.add(goHome);

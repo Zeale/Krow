@@ -44,7 +44,7 @@ public class Home extends Page {
 			IMAGE_HEIGHT = (int) ((double) 100 / 1080 * Kröw.getSystemProperties().getScreenHeight()),
 			IMAGE_SPACING = IMAGE_WIDTH / 2;
 
-	private static final Image CONSTRUCT_MENU_ICON = new Image("krow/resources/ConstructIcon_hd.png");
+	private static final Image CHAT_ROOM_MENU_ICON = new Image("krow/resources/ChatRoomIcon_hd.png");
 
 	@FXML
 	private AnchorPane pane;
@@ -183,9 +183,15 @@ public class Home extends Page {
 
 	private final void loadDefaultImages() {
 		// Now to add the default images to our horizontal scroll container.
-		final ImageView constructs = new ImageView(CONSTRUCT_MENU_ICON);
-		constructs.setOnMouseClicked(event -> WindowManager.spawnLabelAtMousePos("WIP", Color.WHITE));
-		constructs.setPickOnBounds(true);
+		final ImageView chatRoom = new ImageView(CHAT_ROOM_MENU_ICON);
+		chatRoom.setOnMouseClicked(event -> {
+			try {
+				WindowManager.setScene(ChatRoom.class);
+			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e1) {
+				e1.printStackTrace();
+			}
+		});
+		chatRoom.setPickOnBounds(true);
 
 		final ImageView krow = new ImageView(Kröw.IMAGE_KRÖW);
 		// This code assures that clicking in a transparent portion of the image
@@ -223,7 +229,7 @@ public class Home extends Page {
 
 		addImage(settings);
 		addImage(krow);
-		addImage(constructs);
+		addImage(chatRoom);
 		addImage(statistics);
 	}
 
