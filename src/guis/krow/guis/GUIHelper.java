@@ -204,14 +204,18 @@ public final class GUIHelper {
 				Shape octicon = ShapeFactory.buildOcticon(4);
 				octicon.setOnMouseClicked(event -> {
 					if (event.getButton() == MouseButton.PRIMARY) {
-						octicon.setStroke(Color.rgb(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256)));
+						Color color = Color.rgb(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256));
+						octicon.setStroke(color);
 
 						if (event.getClickCount() == 2)
 							try {
 								Desktop.getDesktop().browse(new URI("https://github.com/Zeale/Krow"));
+								((DropShadow) octicon.getEffect()).setColor(color);
 							} catch (IOException | URISyntaxException e) {
 								e.printStackTrace();
 							}
+						else
+							((DropShadow) octicon.getEffect()).setColor(Color.BLACK);
 					}
 				});
 				octicon.setPickOnBounds(true);
