@@ -511,7 +511,8 @@ public class ChatRoom extends WindowManager.Page {
 			}
 
 		} else if (cmd.equalsIgnoreCase("help")) {
-			// TODO Implement
+			println("You need it.");
+			return;
 		} else if (cmd.equalsIgnoreCase("connect")) {
 			if (args == null || args.length == 0 || args.length > 2) {
 				println("Usage: /connect (address) [port]", ERROR_COLOR);
