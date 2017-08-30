@@ -271,21 +271,45 @@ public class ChatRoom extends WindowManager.Page {
 							emptyMessageWarning();
 					}
 				} else if (event.getCode().equals(KeyCode.LEFT)) {
-					if (event.isShiftDown())
+					if (event.isShiftDown()) {
 						if (event.isControlDown())
 							chatBox.selectPositionCaret(0);
 						else if (event.isAltDown())
 							chatBox.selectPreviousWord();
 						else
 							chatBox.positionCaret(0);
+						event.consume();
+					}
 				} else if (event.getCode().equals(KeyCode.RIGHT)) {
-					if (event.isShiftDown())
+					if (event.isShiftDown()) {
 						if (event.isControlDown())
 							chatBox.selectPositionCaret(chatBox.getText().length());
 						else if (event.isAltDown())
 							chatBox.selectEndOfNextWord();
 						else
 							chatBox.positionCaret(chatBox.getText().length());
+						event.consume();
+					}
+
+				} else if (event.getCode().equals(KeyCode.D)) {
+					if (event.isAltDown() && event.isControlDown())
+						chatBox.setText("");
+					else if (event.isControlDown()) {
+						if (chatBox.getText().isEmpty())
+							return;
+
+						while (chatBox.deleteNextChar())
+							;
+						event.consume();
+
+					} else if (event.isAltDown()) {
+						if (chatBox.getText().isEmpty())
+							return;
+						while (chatBox.deletePreviousChar())
+							;
+						event.consume();
+					}
+
 				}
 				if (event.getText().length() == 1) {
 					historyPos.removeListener(listener);
