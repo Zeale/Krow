@@ -21,7 +21,8 @@ public final class ShapeFactory {
 
 		final double[] points = new double[sides * 2];
 
-		points[0] = points[1] = 0;
+		points[0] = 0;
+		points[1] = -size / 2;
 
 		final double turnInc = 180 - (sides - 2) * 180 / sides;
 		double turningDeg = 0 + (sides & 1) * (turnInc / 2);
