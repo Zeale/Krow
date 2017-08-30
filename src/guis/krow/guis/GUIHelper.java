@@ -1,8 +1,12 @@
 package krow.guis;
 
+import java.awt.Desktop;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.EmptyStackException;
 import java.util.List;
+import java.util.Random;
 
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
@@ -12,6 +16,7 @@ import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -32,6 +37,8 @@ import kröw.core.managers.WindowManager;
 import zeale.guis.Home;
 
 public final class GUIHelper {
+
+	private static final Random RANDOM = new Random();
 
 	public static final class MenuOption extends Text {
 		private Color fadeColor, startColor;
@@ -193,6 +200,23 @@ public final class GUIHelper {
 	public static void applyShapeBackground(final Pane pane, final Node... mouseDetectionNodes) {
 		if (backgroundmngr == null) {
 			backgroundmngr = BackgroundBuilder.shapeBackground(pane, mouseDetectionNodes);
+			if (RANDOM.nextBoolean()) {
+				Shape octicon = ShapeFactory.buildOcticon(4);
+				octicon.setOnMouseClicked(event -> {
+					if (event.getButton() == MouseButton.PRIMARY) {
+						octicon.setStroke(Color.rgb(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256)));
+
+						if (event.getClickCount() == 2)
+							try {
+								Desktop.getDesktop().browse(new URI("https://github.com/Zeale/Krow"));
+							} catch (IOException | URISyntaxException e) {
+								e.printStackTrace();
+							}
+					}
+				});
+				octicon.setPickOnBounds(true);
+				backgroundmngr.addShape(octicon);
+			}
 			backgroundmngr.animateShapes();
 		} else {
 			backgroundmngr.setCurrentPane(pane);
