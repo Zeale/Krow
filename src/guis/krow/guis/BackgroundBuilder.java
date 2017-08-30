@@ -294,6 +294,15 @@ public final class BackgroundBuilder {
 			super(currentPane, startColor);
 		}
 
+		public void addShape(Shape shape) {
+			buildShape(shape);
+		}
+
+		public void addShapes(Shape... shapes) {
+			for (Shape s : shapes)
+				buildShape(s);
+		}
+
 		public void addColorAnimations(final ColorAnimation... animations) {
 			for (final ColorAnimation ca : animations)
 				animation.add(0, ca);
