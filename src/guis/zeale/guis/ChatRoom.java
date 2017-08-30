@@ -292,7 +292,9 @@ public class ChatRoom extends WindowManager.Page {
 					}
 
 				} else if (event.getCode().equals(KeyCode.D)) {
-					if (event.isAltDown() && event.isControlDown())
+					if (event.isAltDown() && event.isControlDown() && event.isShiftDown())
+						chatPane.getChildren().clear();
+					else if (event.isAltDown() && event.isControlDown())
 						chatBox.setText("");
 					else if (event.isControlDown()) {
 						if (chatBox.getText().isEmpty())
