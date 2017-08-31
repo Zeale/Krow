@@ -16,6 +16,7 @@ import kröw.app.api.collections.ObservableListWrapper;
 import kröw.libs.mindset.MindsetObject;
 import kröw.libs.mindset.ObjectAlreadyExistsException;
 
+@Deprecated
 public class Backup implements Serializable {
 
 	/**

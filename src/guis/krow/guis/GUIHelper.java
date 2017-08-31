@@ -13,7 +13,6 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
@@ -25,7 +24,6 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
@@ -39,8 +37,6 @@ import kröw.core.managers.WindowManager;
 import zeale.guis.Home;
 
 public final class GUIHelper {
-
-	private static final Random RANDOM = new Random();
 
 	public static final class MenuOption extends Text {
 		private Color fadeColor, startColor;
@@ -90,6 +86,8 @@ public final class GUIHelper {
 		}
 
 	}
+
+	private static final Random RANDOM = new Random();
 
 	private static final Color MENU_BAR_SHADOW_COLOR = Color.BLACK;
 	private static final int MENU_BAR_SHADOW_RADIUS = 7;
@@ -190,10 +188,10 @@ public final class GUIHelper {
 			 * backgroundmngr.setColorAnimations(false,
 			 * BackgroundBuilder.ShapeBackgroundManager.ColorAnimation.
 			 * generateRandomColorAnimation(50));
-			 * 
+			 *
 			 * backgroundmngr.setRepeatColorAnimations(true);
 			 * backgroundmngr.setRotatable(true);
-			 * 
+			 *
 			 * backgroundmngr.playColorAnimations();
 			 */
 		});
@@ -211,10 +209,10 @@ public final class GUIHelper {
 		if (backgroundmngr == null) {
 			backgroundmngr = BackgroundBuilder.shapeBackground(pane, mouseDetectionNodes);
 			if (RANDOM.nextBoolean()) {
-				Shape octicon = ShapeFactory.buildOcticon(4);
+				final Shape octicon = ShapeFactory.buildOcticon(4);
 				octicon.setOnMouseClicked(event -> {
 					if (event.getButton() == MouseButton.PRIMARY) {
-						Color color = Color.rgb(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256));
+						final Color color = Color.rgb(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256));
 						octicon.setStroke(color);
 
 						if (event.getClickCount() == 2)
