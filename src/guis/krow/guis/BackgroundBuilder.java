@@ -25,7 +25,15 @@ import kröw.core.Kröw;
 
 public final class BackgroundBuilder {
 
-	public static class BackgroundManager {
+	public static abstract class BackgroundManager {
+
+		public abstract void fadeOut();
+
+		public abstract void fadeIn();
+
+		public abstract void disable();
+
+		public abstract void enable();
 
 		private double animationDuration = SHAPE_MOVE_DURATION;
 		protected Pane currentPane;
@@ -680,6 +688,32 @@ public final class BackgroundBuilder {
 			for (final Shape s : getShapes())
 				((StrokeTransition) s.getProperties().get(COLORER_KEY)).stop();
 		}
+
+		@Override
+		public void fadeOut() {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void fadeIn() {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void disable() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void enable() {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		private boolean disabled;
 	}
 
 	private static final Random random = new Random();
