@@ -13,6 +13,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
@@ -24,6 +25,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
@@ -126,7 +128,8 @@ public final class GUIHelper {
 
 		final Node close = new MenuOption(Color.RED, "Close"), goHome = new Text("Go Home"),
 				goBack = new Text("Go Back"), hideProgram = new Text("Hide Program"),
-				sendProgramToBack = new Text("Send to back"), gotoBackgroundManager = new Text("Background...");
+				sendProgramToBack = new Text("Send to back"), background = new Text("Background..."),
+				test = new Text("Test");
 
 		final Text systemTray = new Text(
 				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
@@ -177,14 +180,31 @@ public final class GUIHelper {
 		});
 
 		sendProgramToBack.setOnMouseClicked(event -> WindowManager.getStage().toBack());
-		gotoBackgroundManager.setOnMouseClicked(event -> {
-			backgroundmngr.setColorAnimations(false,
-					BackgroundBuilder.ShapeBackgroundManager.ColorAnimation.generateRandomColorAnimation(50));
+		background.setOnMouseClicked(event -> {
 
-			backgroundmngr.setRepeatColorAnimations(true);
-			backgroundmngr.setRotatable(true);
+			if (backgroundmngr.isDisabled())
+				backgroundmngr.fadeIn();
+			else
+				backgroundmngr.fadeOut();
 
-			backgroundmngr.playColorAnimations();
+			/*
+			 * backgroundmngr.setColorAnimations(false,
+			 * BackgroundBuilder.ShapeBackgroundManager.ColorAnimation.
+			 * generateRandomColorAnimation(50));
+			 * 
+			 * backgroundmngr.setRepeatColorAnimations(true);
+			 * backgroundmngr.setRotatable(true);
+			 * 
+			 * backgroundmngr.playColorAnimations();
+			 */
+		});
+
+		test.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				// TODO ZOOOOOOOOOM
+			}
 		});
 
 		children.add(close);
@@ -193,8 +213,8 @@ public final class GUIHelper {
 		children.add(systemTray);
 		children.add(hideProgram);
 		children.add(sendProgramToBack);
-		children.add(gotoBackgroundManager);
-		// children.add(synthesizerText);
+		children.add(background);
+		children.add(test);
 	}
 
 	public static void applyShapeBackground(final Pane pane, final Node... mouseDetectionNodes) {
