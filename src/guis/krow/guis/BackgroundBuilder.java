@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.StrokeTransition;
@@ -251,12 +252,27 @@ public final class BackgroundBuilder {
 
 		private double customShapeSize = SHAPE_RADIUS;
 
+		/**
+		 * @return the disabled
+		 */
+		public final boolean isDisabled() {
+			return disabled;
+		}
+
+		/**
+		 * @param disabled
+		 *            the disabled to set
+		 */
+		public final void setDisabled(boolean disabled) {
+			this.disabled = disabled;
+		}
+
 		{
 			setMouseMovementHandler(event -> {
 				final double mouseX = event.getSceneX(), mouseY = event.getSceneY();
 				for (final Shape s : getShapes())
 					if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY)
-							&& Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement()) {
+							&& Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement() && !isDisabled()) {
 						final double shapeX = s.getLayoutX() + s.getTranslateX(),
 								shapeY = s.getLayoutY() + s.getTranslateY();
 
@@ -431,14 +447,17 @@ public final class BackgroundBuilder {
 			final TranslateTransition translator = new TranslateTransition();
 			final RotateTransition rotator = new RotateTransition();
 			final StrokeTransition colorer = new StrokeTransition();
+			final FadeTransition fader = new FadeTransition();
 
 			translator.setNode(s);
 			rotator.setNode(s);
 			colorer.setShape(s);
+			fader.setNode(s);
 
 			s.getProperties().put(TRANSLATOR_KEY, translator);
 			s.getProperties().put(ROTATOR_KEY, rotator);
 			s.getProperties().put(COLORER_KEY, colorer);
+			s.getProperties().put(FADER_KEY, fader);
 
 			translator.setDuration(Duration.seconds(generateRandomMultiplier() * getAnimationDuration()));
 			translator.setByX(calculateByX(s.getLayoutX(), s.getTranslateX()));
@@ -691,28 +710,83 @@ public final class BackgroundBuilder {
 
 		@Override
 		public void fadeOut() {
-			// TODO Auto-generated method stub
+			fadeOut(Duration.seconds(generateRandomMultiplier() * getAnimationDuration() / 6));
+		}
 
+		public void fadeOut(Duration time) {
+			disable();
+			for (Shape s : getShapes()) {
+				FadeTransition fader = (FadeTransition) s.getProperties().get(FADER_KEY);
+				fader.stop();
+				fader.setOnFinished(null);
+				fader.setDuration(time);
+				fader.setToValue(0);
+				fader.play();
+			}
 		}
 
 		@Override
 		public void fadeIn() {
-			// TODO Auto-generated method stub
+			fadeIn(Duration.seconds(generateRandomMultiplier() * getAnimationDuration() / 6));
+		}
 
+		public void fadeIn(Duration time) {
+
+			new Object() {
+				private volatile int amountFaded = 0;
+				{
+
+					for (Shape s : getShapes()) {
+						FadeTransition fader = (FadeTransition) s.getProperties().get(FADER_KEY);
+						fader.stop();
+						fader.setOnFinished(new EventHandler<ActionEvent>() {
+
+							@Override
+							public void handle(ActionEvent event) {
+								amountFaded++;
+								fader.setOnFinished(null);
+								if (amountFaded == getShapes().size())
+									enable();
+							}
+						});
+						fader.setDuration(time);
+						fader.setToValue(1);
+						fader.play();
+					}
+				}
+			};
+		}
+
+		public void stopAnimations() {
+			for (Shape s : getShapes()) {
+				TranslateTransition translator = (TranslateTransition) s.getProperties().get(TRANSLATOR_KEY);
+				RotateTransition rotator = (RotateTransition) s.getProperties().get(ROTATOR_KEY);
+				StrokeTransition colorer = (StrokeTransition) s.getProperties().get(COLORER_KEY);
+				translator.stop();
+				rotator.stop();
+				colorer.stop();
+			}
 		}
 
 		@Override
 		public void disable() {
-			// TODO Auto-generated method stub
-			
+			disabled = true;
+			stopAnimations();
 		}
 
 		@Override
 		public void enable() {
-			// TODO Auto-generated method stub
-			
+			disabled = false;
+			for (Shape s : getShapes()) {
+				TranslateTransition translator = (TranslateTransition) s.getProperties().get(TRANSLATOR_KEY);
+				RotateTransition rotator = (RotateTransition) s.getProperties().get(ROTATOR_KEY);
+				StrokeTransition colorer = (StrokeTransition) s.getProperties().get(COLORER_KEY);
+				translator.play();
+				rotator.play();
+				colorer.play();
+			}
 		}
-		
+
 		private boolean disabled;
 	}
 
@@ -722,7 +796,8 @@ public final class BackgroundBuilder {
 	private static final Color SHAPE_COLOR = Color.BLACK;
 	private static final double SHAPE_MOVE_DURATION = 8;
 
-	private static final Object TRANSLATOR_KEY = new Object(), ROTATOR_KEY = new Object(), COLORER_KEY = new Object();
+	private static final Object TRANSLATOR_KEY = new Object(), ROTATOR_KEY = new Object(), COLORER_KEY = new Object(),
+			FADER_KEY = new Object();
 
 	private static final Object IS_BEING_SHOVED_KEY = new Object(), BUILT_KEY = new Object(), EFFECT_KEY = new Object();
 
