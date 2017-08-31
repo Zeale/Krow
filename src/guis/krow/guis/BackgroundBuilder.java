@@ -7,6 +7,7 @@ import java.util.Stack;
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
+import javafx.animation.ScaleTransition;
 import javafx.animation.StrokeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
@@ -448,16 +449,19 @@ public final class BackgroundBuilder {
 			final RotateTransition rotator = new RotateTransition();
 			final StrokeTransition colorer = new StrokeTransition();
 			final FadeTransition fader = new FadeTransition();
+			final ScaleTransition scaler = new ScaleTransition();
 
 			translator.setNode(s);
 			rotator.setNode(s);
 			colorer.setShape(s);
 			fader.setNode(s);
+			scaler.setNode(s);
 
 			s.getProperties().put(TRANSLATOR_KEY, translator);
 			s.getProperties().put(ROTATOR_KEY, rotator);
 			s.getProperties().put(COLORER_KEY, colorer);
 			s.getProperties().put(FADER_KEY, fader);
+			s.getProperties().put(SCALER_KEY, scaler);
 
 			translator.setDuration(Duration.seconds(generateRandomMultiplier() * getAnimationDuration()));
 			translator.setByX(calculateByX(s.getLayoutX(), s.getTranslateX()));
@@ -774,6 +778,92 @@ public final class BackgroundBuilder {
 			stopAnimations();
 		}
 
+		public void zoomIn() {
+			stopAnimations();
+			for (Shape s : getShapes()) {
+				ScaleTransition scaler = (ScaleTransition) s.getProperties().get(SCALER_KEY);
+				TranslateTransition translator = (TranslateTransition) s.getProperties().get(TRANSLATOR_KEY);
+				FadeTransition fader = (FadeTransition) s.getProperties().get(FADER_KEY);
+				scaler.stop();
+				translator.stop();
+				fader.stop();
+
+				Duration duration = Duration.seconds(1.5);
+				scaler.setDuration(duration);
+				translator.setDuration(duration);
+				fader.setDuration(Duration.seconds(0.95));
+
+				Interpolator interpolator = Interpolator.SPLINE(0.9, 0.9, 0.3, 0.3);
+
+				scaler.setInterpolator(interpolator);
+				translator.setInterpolator(interpolator);
+				fader.setInterpolator(interpolator);
+
+				scaler.setToX(s.getScaleX() * 5);
+				scaler.setToY(s.getScaleY() * 5);
+
+				double distX = s.getLayoutX() + s.getTranslateX() - Kröw.getSystemProperties().getScreenWidth() / 2,
+						distY = s.getLayoutY() + s.getTranslateY() - Kröw.getSystemProperties().getScreenHeight() / 2;
+				// Subtracting half the screen size sets the coord (0,0) in the
+				// center of the screen, rather than the top left,
+				// (conceptually, of course...).
+
+				translator.setByX(distX * 5);
+				translator.setByY(distY * 5);
+
+				fader.setToValue(0);
+
+				scaler.setOnFinished(null);
+				translator.setOnFinished(null);
+				fader.setOnFinished(null);
+
+				scaler.play();
+				translator.play();
+				fader.play();
+
+			}
+		}
+
+		public void zoomOut() {
+			for (Shape s : getShapes()) {
+				ScaleTransition scaler = (ScaleTransition) s.getProperties().get(SCALER_KEY);
+				TranslateTransition translator = (TranslateTransition) s.getProperties().get(TRANSLATOR_KEY);
+				FadeTransition fader = (FadeTransition) s.getProperties().get(FADER_KEY);
+				scaler.stop();
+				translator.stop();
+				fader.stop();
+
+				Duration duration = Duration.seconds(1.5);
+				scaler.setDuration(duration);
+				translator.setDuration(duration);
+				fader.setDuration(Duration.seconds(1.3));
+
+				scaler.setInterpolator(Interpolator.TANGENT(Duration.seconds(4), 0.9, Duration.seconds(9), 0.3));
+				translator.setInterpolator(Interpolator.TANGENT(Duration.seconds(4), 0.9, Duration.seconds(9), 0.3));
+				fader.setInterpolator(Interpolator.TANGENT(Duration.seconds(4), 0.9, Duration.seconds(9), 0.3));
+
+				scaler.setToX(s.getScaleX() / 5);
+				scaler.setToY(s.getScaleY() / 5);
+
+				double distX = s.getLayoutX() + s.getTranslateX() - Kröw.getSystemProperties().getScreenWidth() / 2,
+						distY = s.getLayoutY() + s.getTranslateY() - Kröw.getSystemProperties().getScreenHeight() / 2;
+
+				translator.setByX(distX / 5);
+				translator.setByY(distY / 5);
+
+				fader.setToValue(1);
+
+				scaler.setOnFinished(null);
+				translator.setOnFinished(event -> animate(s));
+				fader.setOnFinished(null);
+
+				scaler.play();
+				translator.play();
+				fader.play();
+			}
+
+		}
+
 		@Override
 		public void enable() {
 			disabled = false;
@@ -797,7 +887,7 @@ public final class BackgroundBuilder {
 	private static final double SHAPE_MOVE_DURATION = 8;
 
 	private static final Object TRANSLATOR_KEY = new Object(), ROTATOR_KEY = new Object(), COLORER_KEY = new Object(),
-			FADER_KEY = new Object();
+			FADER_KEY = new Object(), SCALER_KEY = new Object();
 
 	private static final Object IS_BEING_SHOVED_KEY = new Object(), BUILT_KEY = new Object(), EFFECT_KEY = new Object();
 

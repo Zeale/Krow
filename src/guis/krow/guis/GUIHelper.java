@@ -128,8 +128,7 @@ public final class GUIHelper {
 
 		final Node close = new MenuOption(Color.RED, "Close"), goHome = new Text("Go Home"),
 				goBack = new Text("Go Back"), hideProgram = new Text("Hide Program"),
-				sendProgramToBack = new Text("Send to back"), background = new Text("Background..."),
-				test = new Text("Test");
+				sendProgramToBack = new Text("Send to back"), background = new Text("Background...");
 
 		final Text systemTray = new Text(
 				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
@@ -199,14 +198,6 @@ public final class GUIHelper {
 			 */
 		});
 
-		test.setOnMouseClicked(new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				// TODO ZOOOOOOOOOM
-			}
-		});
-
 		children.add(close);
 		children.add(goHome);
 		children.add(goBack);
@@ -214,7 +205,6 @@ public final class GUIHelper {
 		children.add(hideProgram);
 		children.add(sendProgramToBack);
 		children.add(background);
-		children.add(test);
 	}
 
 	public static void applyShapeBackground(final Pane pane, final Node... mouseDetectionNodes) {
