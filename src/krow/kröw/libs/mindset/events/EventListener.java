@@ -6,6 +6,7 @@ package kröw.libs.mindset.events;
  * @param <E>
  *            The Event type that will be listened to.
  */
+@Deprecated
 public interface EventListener<E extends Event> {
 
 	void eventOccurred(E event);

@@ -8,6 +8,7 @@ import javafx.scene.control.TableView;
 import javafx.util.Callback;
 import kröw.libs.mindset.Construct;
 
+@Deprecated
 public interface TableViewable {
 	/**
 	 * <p>

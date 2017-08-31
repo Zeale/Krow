@@ -10,6 +10,10 @@ public final class SystemProperties {
 
 	private String osName;
 
+	{
+		osName = System.getProperty("os.name");
+	}
+
 	public Screen getCurrentScreen() {
 
 		final List<Screen> screens = Screen.getScreensForRectangle(WindowManager.getStage().getX(),

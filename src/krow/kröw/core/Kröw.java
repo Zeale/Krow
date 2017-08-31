@@ -65,13 +65,7 @@ import sun.awt.shell.ShellFolder;
 import zeale.guis.Home;
 
 /**
- * This class is the main class of the program.
- *
- * The JVM loads up the JavaFX toolkit if the main class extends Application. If
- * this class did not extend {@link Application}, the toolkit would not be
- * loaded and the {@link #IMAGE_LIGHT_CROW} and {@link #IMAGE_DARK_CROW} images
- * found below, could not be created during <code>clinit</code> (the
- * <code>static</code> constructor).
+ * The main class of Krow. It contains many useful methods.
  *
  * @author Zeale
  *
@@ -94,6 +88,7 @@ public final class Kröw extends Application {
 	 * The {@link ConstructMindset} object of {@link Kröw}. This tracks all of
 	 * {@link Kröw}'s {@link MindsetObject}s.
 	 */
+	@Deprecated
 	public final static ConstructMindset CONSTRUCT_MINDSET = new ConstructMindset();
 
 	/*
@@ -560,6 +555,7 @@ public final class Kröw extends Application {
 	 * @return An {@link ArrayList} of all the dead {@link Construct}s managed
 	 *         by this program.
 	 */
+	@Deprecated
 	public static ArrayList<Construct> getDeadConstructs() {
 		final ArrayList<Construct> list = new ArrayList<>();
 		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
@@ -572,6 +568,7 @@ public final class Kröw extends Application {
 	 * @return An {@link ArrayList} of all the female {@link Construct}s managed
 	 *         by this program.
 	 */
+	@Deprecated
 	public static ArrayList<Construct> getFemaleConstructs() {
 		final ArrayList<Construct> list = new ArrayList<>();
 		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
@@ -590,6 +587,7 @@ public final class Kröw extends Application {
 	 * @return An {@link ArrayList} of all the living {@link Construct}s managed
 	 *         by this program.
 	 */
+	@Deprecated
 	public static ArrayList<Construct> getLivingConstructs() {
 		final ArrayList<Construct> list = new ArrayList<>();
 		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
@@ -602,6 +600,7 @@ public final class Kröw extends Application {
 	 * @return An {@link ArrayList} of all the male {@link Construct}s managed
 	 *         by this program.
 	 */
+	@Deprecated
 	public static ArrayList<Construct> getMaleConstructs() {
 		final ArrayList<Construct> list = new ArrayList<>();
 		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())

@@ -31,6 +31,7 @@ import kröw.libs.mindset.tables.TableViewable;
  * @author Zeale
  *
  */
+@Deprecated
 public final class Law extends MindsetObject implements TableViewable {
 	public static final String TYPE = "Law";
 

@@ -37,6 +37,7 @@ import kröw.libs.mindset.tables.TableViewable;
  * @author Zeale
  *
  */
+@Deprecated
 public final class Construct extends MindsetObject implements TableViewable {
 
 	/**

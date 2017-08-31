@@ -9,6 +9,7 @@ import kröw.libs.mindset.MindsetObject;
  * @author Zeale
  *
  */
+@Deprecated
 public class ChangeEvent extends Event {
 	public final boolean isAddEvent;
 	public final MindsetObject effectedObject;

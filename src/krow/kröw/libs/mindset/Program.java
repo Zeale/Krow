@@ -18,6 +18,7 @@ import kröw.libs.mindset.tables.TableViewable;
  * @author Zeale
  *
  */
+@Deprecated
 public final class Program extends MindsetObject implements TableViewable {
 
 	/**

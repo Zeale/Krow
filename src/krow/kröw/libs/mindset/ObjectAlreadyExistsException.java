@@ -1,5 +1,6 @@
 package kröw.libs.mindset;
 
+@Deprecated
 public class ObjectAlreadyExistsException extends Exception {
 
 	/**

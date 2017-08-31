@@ -43,6 +43,7 @@ import kröw.libs.mindset.tables.TableViewable;
  * @author Zeale
  *
  */
+@Deprecated
 public abstract class MindsetObject implements Serializable, TableViewable {
 
 	public class ConstructMindsetModel {

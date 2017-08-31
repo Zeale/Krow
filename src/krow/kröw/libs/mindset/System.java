@@ -29,6 +29,7 @@ import kröw.libs.mindset.tables.TableViewable;
  * @author Zeale
  *
  */
+@Deprecated
 public final class System extends MindsetObject implements TableViewable {
 
 	public final static String TYPE = "System";

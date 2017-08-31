@@ -8,6 +8,7 @@ import kröw.libs.mindset.MindsetObject;
  * @author Zeale
  *
  */
+@Deprecated
 public class RemoveEvent extends Event {
 	public final MindsetObject objectRemoved;
 

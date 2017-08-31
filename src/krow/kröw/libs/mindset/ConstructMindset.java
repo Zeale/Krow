@@ -10,6 +10,7 @@ import kröw.libs.mindset.events.ChangeEvent;
 import kröw.libs.mindset.events.EventListener;
 import kröw.libs.mindset.events.RemoveEvent;
 
+@Deprecated
 public class ConstructMindset {
 
 	private final UniqueArrayList<MindsetObject> saveQueue = new UniqueArrayList<>();
