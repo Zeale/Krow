@@ -279,7 +279,7 @@ public class Statistics extends WindowManager.Page {
 	private static final double SEARCH_BAR_LAYOUT_X = 340, SEARCH_BAR_LAYOUT_Y = 24;
 
 	private static final double SEARCH_BAR_FONT_SIZE = 18;
-	private static final double SEARCH_LIST_WIDTH = 1875, SEARCH_LIST_HEIGHT = 350;
+	private static final double SEARCH_LIST_WIDTH = 1875, SEARCH_LIST_HEIGHT = 900;
 	private static final double SEARCH_LIST_LAYOUT_X = 22, SEARCH_LIST_LAYOUT_Y = 118;
 
 	@FXML
