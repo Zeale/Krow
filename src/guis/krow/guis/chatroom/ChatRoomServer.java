@@ -23,12 +23,12 @@ public class ChatRoomServer extends Server {
 		super();
 	}
 
-	public ChatRoomServer(int port) throws IOException {
+	public ChatRoomServer(final int port) throws IOException {
 		super(port);
 	}
 
 	@Override
-	protected void acceptConnection(Socket connection) {
+	protected void acceptConnection(final Socket connection) {
 
 		try {
 			final ChatRoomClient client = new ChatRoomClient(connection);
@@ -39,26 +39,40 @@ public class ChatRoomServer extends Server {
 			client.addListener(new FullClientListener() {
 
 				@Override
-				public void objectReceived(Object object) {
+				public void connectionClosed() {
+					connections.remove(client);
+				}
+
+				@Override
+				public void connectionEstablished() {
+
+				}
+
+				@Override
+				public void connectionLost() {
+					connections.remove(client);
+				}
+
+				@Override
+				public void objectReceived(final Object object) {
 					if (Kröw.DEBUG_MODE)
 						System.out.println("Server: Object received");
 
 					try {
 
 						if (Client.isEndConnectionMessage((Message) object))
-							for (Client c : connections) {
+							for (final Client c : connections)
 								c.sendObject(new ChatRoomMessage("A user has left the chatroom...", "Server",
 										new Date().getTime()));
-							}
 
 						if (object instanceof CommandMessage) {
-							CommandMessage cm = (CommandMessage) object;
+							final CommandMessage cm = (CommandMessage) object;
 							if (cm.getCommand().equalsIgnoreCase("setname")
 									|| cm.getCommand().equalsIgnoreCase("set-name") && cm.getArgs() != null
 											&& cm.getArgs().length > 0) {
-								String prevName = client.getName();
+								final String prevName = client.getName();
 								client.setName(cm.getArgs()[0]);
-								for (Client cl : connections)
+								for (final Client cl : connections)
 									if (cl != client)
 										cl.sendMessage(new ChatRoomMessage(
 												prevName + " has changed their name to " + client.getName() + ".",
@@ -78,23 +92,8 @@ public class ChatRoomServer extends Server {
 								e.printStackTrace();
 							}
 
-					} catch (IOException e) {
+					} catch (final IOException e) {
 					}
-				}
-
-				@Override
-				public void connectionLost() {
-					connections.remove(client);
-				}
-
-				@Override
-				public void connectionEstablished() {
-
-				}
-
-				@Override
-				public void connectionClosed() {
-					connections.remove(client);
 				}
 			});
 		} catch (final IOException e) {

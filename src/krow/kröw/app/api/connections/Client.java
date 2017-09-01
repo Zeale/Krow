@@ -14,15 +14,32 @@ import kröw.core.Kröw;
 
 public class Client {
 
+	private static final class EndConnectionMessage extends Message {
+
+		/**
+		 * SUID
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public EndConnectionMessage() {
+			super("end");
+		}
+
+	}
+
+	public static boolean isEndConnectionMessage(final Message message) {
+		return message instanceof EndConnectionMessage;
+	}
+
 	private final ArrayList<ClientListener> listeners = new ArrayList<>();
 
 	private boolean connectionClosed;
 
 	private final Socket socket;
-
 	private final ObjectInputStream objIn;
 
 	private final ObjectOutputStream objOut;
+
 	private Thread outputThread = new Thread(new Runnable() {
 
 		@Override
@@ -39,7 +56,7 @@ public class Client {
 						System.out.println("Client: Received object in class, calling listeners");
 
 					if (obj instanceof EndConnectionMessage) {
-						for (ClientListener cl : listeners)
+						for (final ClientListener cl : listeners)
 							if (cl instanceof FullClientListener)
 								((FullClientListener) cl).connectionClosed();
 						connectionClosed = true;
@@ -48,9 +65,9 @@ public class Client {
 					}
 					for (final ClientListener cl : listeners)
 						cl.objectReceived(obj);
-				} catch (EOFException e) {
+				} catch (final EOFException e) {
 					closeConnection();
-					for (ClientListener cl : listeners)
+					for (final ClientListener cl : listeners)
 						if (cl instanceof FullClientListener)
 							((FullClientListener) cl).connectionLost();
 					return;
@@ -103,7 +120,7 @@ public class Client {
 
 		try {
 			sendEndConnectionMsg();
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 			e1.printStackTrace();
 		}
 
@@ -113,7 +130,7 @@ public class Client {
 				((FullClientListener) cl).connectionClosed();
 		try {
 			socket.close();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -130,33 +147,16 @@ public class Client {
 		listeners.remove(listener);
 	}
 
-	public void sendMessage(final String message) throws IOException {
-		sendObject(message);
-	}
-
-	public void sendMessage(Message message) throws IOException {
-		sendObject(message);
-	}
-
 	public void sendEndConnectionMsg() throws IOException {
 		sendObject(new EndConnectionMessage());
 	}
 
-	private static final class EndConnectionMessage extends Message {
-
-		/**
-		 * SUID
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public EndConnectionMessage() {
-			super("end");
-		}
-
+	public void sendMessage(final Message message) throws IOException {
+		sendObject(message);
 	}
 
-	public static boolean isEndConnectionMessage(Message message) {
-		return message instanceof EndConnectionMessage;
+	public void sendMessage(final String message) throws IOException {
+		sendObject(message);
 	}
 
 	public void sendObject(final Serializable object) throws IOException {
@@ -164,8 +164,8 @@ public class Client {
 			System.out.println("Client: Sending an object object");
 		try {
 			objOut.writeObject(object);
-		} catch (SocketException e) {
-			for (ClientListener cl : listeners)
+		} catch (final SocketException e) {
+			for (final ClientListener cl : listeners)
 				if (cl instanceof FullClientListener)
 					((FullClientListener) cl).connectionLost();
 			return;

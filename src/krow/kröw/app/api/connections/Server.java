@@ -23,7 +23,7 @@ public abstract class Server {
 					if (Kröw.DEBUG_MODE)
 						System.out.println("Server: Accepting connection");
 					new Thread(() -> acceptConnection(connection)).start();
-				} catch (SocketException e) {
+				} catch (final SocketException e) {
 					// Server terminated
 				} catch (final IOException e) {
 					System.err.println("Failed to accept an incoming connection.");
@@ -62,7 +62,7 @@ public abstract class Server {
 		running = false;
 		socket.close();
 		for (final Object o : getAllConnections().toArray()) {
-			Client c = (Client) o;
+			final Client c = (Client) o;
 			c.sendEndConnectionMsg();
 			c.closeConnection();
 		}

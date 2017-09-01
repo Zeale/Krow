@@ -276,12 +276,6 @@ public final class Kröw extends Application {
 		try {
 			Kröw.createFolder(Kröw.KRÖW_HOME_DIRECTORY);
 			Kröw.createFolder(Kröw.DATA_DIRECTORY);
-			Kröw.createFolder(Kröw.CONSTRUCT_SAVE_DIRECTORY);
-			Kröw.createFolder(Kröw.TASK_SAVE_DIRECTORY);
-			Kröw.createFolder(Kröw.PROGRAM_SAVE_DIRECTORY);
-			Kröw.createFolder(Kröw.SYSTEM_SAVE_DIRECTORY);
-			Kröw.createFolder(Kröw.LAW_SAVE_DIRECTORY);
-			Kröw.createFolder(Backup.BACKUP_SAVE_DIRECTORY);
 			Kröw.createFolder(MANAGER_DIRECTORY);
 
 			try {
@@ -399,6 +393,7 @@ public final class Kröw extends Application {
 	 *
 	 * @return A {@link Backup} made prior to the clear.
 	 */
+	@Deprecated
 	public static Backup clearAllObjects() {
 		final Backup b = new Backup();
 		for (final MindsetObject obj : Kröw.CONSTRUCT_MINDSET.getAllObjects())
@@ -774,6 +769,7 @@ public final class Kröw extends Application {
 	 * @throws IOException
 	 *             As specified by {@link ObjectInputStream#readObject()}.
 	 */
+	@Deprecated
 	public static MindsetObject loadMindsetObject(final File file)
 			throws ClassNotFoundException, FileNotFoundException, IOException {
 		return (MindsetObject) ((ObjectInputStream) OldVersionLoader.getInputStream(file)).readObject();
@@ -971,6 +967,7 @@ public final class Kröw extends Application {
 		}
 	}
 
+	@Deprecated
 	public static void saveObjects() {
 		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
 			try {

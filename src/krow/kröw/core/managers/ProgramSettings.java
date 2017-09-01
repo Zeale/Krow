@@ -20,30 +20,6 @@ public class ProgramSettings implements Serializable {
 
 	public static final File DEFAULT_FILE_PATH = new File(Kröw.MANAGER_DIRECTORY, "ProgramSettings.kmgr");
 
-	private boolean chatRoomHostServer;
-
-	/**
-	 * @return the chatRoomHostServer
-	 */
-	public final boolean isChatRoomHostServer() {
-		return chatRoomHostServer;
-	}
-
-	/**
-	 * @param chatRoomHostServer
-	 *            the chatRoomHostServer to set
-	 */
-	public final void setChatRoomHostServer(boolean chatRoomHostServer) {
-		boolean temp = this.chatRoomHostServer;
-		this.chatRoomHostServer = chatRoomHostServer;
-
-		if (chatRoomHostServer == temp)
-			return;
-		if (!chatRoomHostServer && ChatRoom.isServerOpen())
-			ChatRoom.closeServer();
-
-	}
-
 	public static final ProgramSettings createManager(final File systemPath) throws IOException {
 		final ProgramSettings gsm = new ProgramSettings();
 		gsm.save(systemPath);
@@ -71,9 +47,12 @@ public class ProgramSettings implements Serializable {
 		return loadManager(Paths.get(path));
 	}
 
+	private boolean chatRoomHostServer;
+
 	private boolean launchOnSystemLogIn, launchOnUserLogIn;
 
 	private boolean shapeBackgroundRespondToMouseMovement = false;
+
 	private int currentAnimationMode = 0;
 
 	private boolean useTrayIcon = false;
@@ -88,6 +67,13 @@ public class ProgramSettings implements Serializable {
 	 */
 	public final int getCurrentAnimationMode() {
 		return currentAnimationMode;
+	}
+
+	/**
+	 * @return the chatRoomHostServer
+	 */
+	public final boolean isChatRoomHostServer() {
+		return chatRoomHostServer;
 	}
 
 	/**
@@ -146,6 +132,21 @@ public class ProgramSettings implements Serializable {
 		final ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(savePath));
 		os.writeObject(this);
 		os.close();
+
+	}
+
+	/**
+	 * @param chatRoomHostServer
+	 *            the chatRoomHostServer to set
+	 */
+	public final void setChatRoomHostServer(final boolean chatRoomHostServer) {
+		final boolean temp = this.chatRoomHostServer;
+		this.chatRoomHostServer = chatRoomHostServer;
+
+		if (chatRoomHostServer == temp)
+			return;
+		if (!chatRoomHostServer && ChatRoom.isServerOpen())
+			ChatRoom.closeServer();
 
 	}
 

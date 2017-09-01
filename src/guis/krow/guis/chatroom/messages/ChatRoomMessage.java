@@ -13,22 +13,25 @@ public class ChatRoomMessage extends Message {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public ChatRoomMessage(String text, String author, long timeSent) {
+	private final String author;
+
+	private final long timeSent;
+
+	private ArrayList<String> recipients;
+
+	public ChatRoomMessage(final String text, final String author, final long timeSent) {
 		super(text);
 		this.author = author;
 		this.timeSent = timeSent;
 	}
 
-	public ChatRoomMessage(String text, String author, long timeSent, String... recipients) {
+	public ChatRoomMessage(final String text, final String author, final long timeSent, final String... recipients) {
 		super(text);
 		this.author = author;
 		this.timeSent = timeSent;
-		for (String s : recipients)
+		for (final String s : recipients)
 			this.recipients.add(s);
 	}
-
-	private String author;
-	private long timeSent;
 
 	/**
 	 * @return the author
@@ -37,13 +40,11 @@ public class ChatRoomMessage extends Message {
 		return author;
 	}
 
-	public Date getTimeSent() {
-		return new Date(timeSent);
-	}
-
-	private ArrayList<String> recipients;
-
 	public List<String> getRecipients() {
 		return Collections.unmodifiableList(recipients);
+	}
+
+	public Date getTimeSent() {
+		return new Date(timeSent);
 	}
 }

@@ -10,14 +10,14 @@ public class CommandMessage extends Message {
 	private static final long serialVersionUID = 1L;
 	private final String[] args;
 
-	public CommandMessage(String command, String... args) {
-		super(command);
-		this.args = args;
-	}
-
-	public CommandMessage(String command) {
+	public CommandMessage(final String command) {
 		super(command);
 		args = null;
+	}
+
+	public CommandMessage(final String command, final String... args) {
+		super(command);
+		this.args = args;
 	}
 
 	public String[] getArgs() {
