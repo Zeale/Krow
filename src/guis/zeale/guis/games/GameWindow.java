@@ -1,6 +1,7 @@
 package zeale.guis.games;
 
 import java.util.Random;
+import java.util.Timer;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
@@ -11,7 +12,7 @@ import kröw.core.Kröw;
 import kröw.core.managers.WindowManager.Page;
 
 public class GameWindow extends Page {
-	
+
 	@FXML
 	private static final String MEDIA_FOLDER = "";
 
@@ -43,8 +44,8 @@ public class GameWindow extends Page {
 		bg.setLayoutX(0);
 		bg.setLayoutY(0);
 
-		bg.setMediaPlayer(new MediaPlayer(
-				new Media(MEDIA_FOLDER + new Random().nextInt(2) + ".mp4")));
+		bg.setMediaPlayer(new MediaPlayer(new Media(MEDIA_FOLDER + new Random().nextInt(2) + ".mp4")));
+
 	}
 
 }

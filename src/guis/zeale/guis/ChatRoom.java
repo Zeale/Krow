@@ -156,6 +156,11 @@ public class ChatRoom extends WindowManager.Page {
 
 	@Override
 	public boolean canSwitchPage(final Class<? extends Page> newSceneClass) {
+		return true;
+	}
+
+	@Override
+	protected void onPageSwitched() {
 		if (client != null) {
 			client.removeListener(listener);
 			client.closeConnection();
@@ -166,7 +171,6 @@ public class ChatRoom extends WindowManager.Page {
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}
-		return true;
 	}
 
 	public boolean createServer() throws IOException {
