@@ -144,7 +144,7 @@ public class ChatRoom extends WindowManager.Page {
 	private String user;
 
 	@Override
-	public boolean canSwitchScenes(final Class<? extends Page> newSceneClass) {
+	public boolean canSwitchPage(final Class<? extends Page> newSceneClass) {
 		if (client != null) {
 			client.removeListener(listener);
 			client.closeConnection();

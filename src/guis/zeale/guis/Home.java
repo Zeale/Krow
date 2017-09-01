@@ -95,7 +95,7 @@ public class Home extends Page {
 	}
 
 	@Override
-	public boolean canSwitchScenes(final Class<? extends Page> newSceneClass) {
+	public boolean canSwitchPage(final Class<? extends Page> newSceneClass) {
 		if (newSceneClass.equals(Home.class))
 			return false;
 		return true;

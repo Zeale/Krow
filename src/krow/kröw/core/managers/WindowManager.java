@@ -75,18 +75,22 @@ public class WindowManager {
 
 		}
 
+		protected void pageSwitched() {
+
+		}
+
 		/**
 		 * <p>
-		 * Checked when switching {@link Scene}s to verify that the current
-		 * window permits the user to go to a different window. This should be
+		 * Checked when switching {@link Page}s to verify that the current
+		 * page permits the user to go to a different page. This should be
 		 * overridden to return false when a window reaches a scenario in which
 		 * it does not want its user to leave.
 		 * <p>
-		 * Basically, return false when {@link Scene}s shouldn't be switched.
+		 * Basically, return false when {@link Page}s shouldn't be switched.
 		 *
 		 * @return Whether or not the scene can currently be switched.
 		 */
-		public boolean canSwitchScenes(final Class<? extends Page> newSceneClass) {
+		public boolean canSwitchPage(final Class<? extends Page> newSceneClass) {
 			return true;
 		}
 
@@ -327,7 +331,7 @@ public class WindowManager {
 		final FXMLLoader loader = new FXMLLoader(cls.getResource(controller.getWindowFile()));
 		loader.setController(controller);
 		if (currentWindow != null)
-			if (!currentWindow.getController().canSwitchScenes(cls))
+			if (!currentWindow.getController().canSwitchPage(cls))
 				throw new NotSwitchableException(currentWindow, controller, cls);
 			else
 				WindowManager.history.push(currentWindow);
