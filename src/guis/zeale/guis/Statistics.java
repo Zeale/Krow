@@ -356,7 +356,7 @@ public class Statistics extends WindowManager.Page {
 	}
 
 	@Override
-	public boolean canSwitchScenes(final Class<? extends Page> newSceneClass) {
+	public boolean canSwitchPage(final Class<? extends Page> newSceneClass) {
 		closing = true;
 		return true;
 	}
