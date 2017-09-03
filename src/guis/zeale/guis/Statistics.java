@@ -157,13 +157,19 @@ public class Statistics extends WindowManager.Page {
 				throw new IllegalArgumentException("Private timeout cannot be below 1.");
 		}
 
-		public void start() {
-			assert privateTimeout > 0;
-			if (!(privateTimeout > 0))
-				return;
+		/**
+		 * @return <code>null</code> incase this {@link AutoUpdatingStatistic}
+		 *         was not started. Such should only occur when the
+		 *         {@link #privateTimeout} is below 1.
+		 */
+		public AutoUpdatingStatistic start() {
+			assert privateTimeout > 1;
+			if (!(privateTimeout > 1))
+				return null;
 			update = true;
 			privateUpdater.start();
 
+			return this;
 		}
 
 		private boolean update;
