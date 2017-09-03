@@ -2,10 +2,12 @@ package zeale.guis;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -430,6 +432,12 @@ public class Statistics extends WindowManager.Page {
 				(ParameterizedTask<AutoUpdatingStatistic>) param -> param
 						.setVal(ZonedDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME)));
 
+		final Statistic currentDate = new AutoUpdatingStatistic("Date",
+				LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE),
+				(ParameterizedTask<AutoUpdatingStatistic>) param -> param
+						.setVal(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)),
+				TimeUnit.MINUTES.toMillis(30)).start();
+
 		if (windowMovedListener == null)
 			windowMovedListener = (observable, oldValue, newValue) -> {
 				dpi.setVal(Kröw.getSystemProperties().getScreenDotsPerInch() < 0 ? "???"
@@ -438,9 +446,9 @@ public class Statistics extends WindowManager.Page {
 				screenWidth.setVal(Kröw.getSystemProperties().getScreenWidth());
 			};
 
-		addListObjects(dpi, screenWidth, screenHeight, currentTime, username, countryCode, osName, osVer, timezone,
-				processorsAvailable, totalAvailableMemory, freeAvailableMemory, usedMemory, homeDir, pathSeparator,
-				fileEncoding, executionaryCommand, vendorURL, javaRuntimeName);
+		addListObjects(dpi, screenWidth, screenHeight, currentTime, currentDate, username, countryCode, osName, osVer,
+				timezone, processorsAvailable, totalAvailableMemory, freeAvailableMemory, usedMemory, homeDir,
+				pathSeparator, fileEncoding, executionaryCommand, vendorURL, javaRuntimeName);
 
 	}
 
