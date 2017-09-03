@@ -2,6 +2,8 @@ package zeale.guis;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -336,6 +338,11 @@ public class Statistics extends WindowManager.Page {
 		final Statistic javaRuntimeName = new Statistic("Java Runtime Name",
 				System.getProperty("java.runtime.name", "???"));
 
+		final Statistic currentTime = new AutoUpdatingStatistic("Time",
+				ZonedDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME),
+				(ParameterizedTask<AutoUpdatingStatistic>) param -> param
+						.setVal(ZonedDateTime.now().format(DateTimeFormatter.ISO_LOCAL_TIME)));
+
 		if (windowMovedListener == null)
 			windowMovedListener = (observable, oldValue, newValue) -> {
 				dpi.setVal(Kröw.getSystemProperties().getScreenDotsPerInch() < 0 ? "???"
@@ -344,7 +351,7 @@ public class Statistics extends WindowManager.Page {
 				screenWidth.setVal(Kröw.getSystemProperties().getScreenWidth());
 			};
 
-		addListObjects(dpi, screenWidth, screenHeight, username, countryCode, osName, osVer, timezone,
+		addListObjects(dpi, screenWidth, screenHeight, currentTime, username, countryCode, osName, osVer, timezone,
 				processorsAvailable, totalAvailableMemory, freeAvailableMemory, usedMemory, homeDir, pathSeparator,
 				fileEncoding, executionaryCommand, vendorURL, javaRuntimeName);
 
