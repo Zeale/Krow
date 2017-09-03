@@ -44,7 +44,7 @@ import kröw.core.managers.WindowManager.Page;
 public class Statistics extends WindowManager.Page {
 
 	public static class AutoUpdatingStatistic extends Statistic {
-		private static Thread updater = new Thread(new Runnable() {
+		private static Thread globalUpdater = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -59,25 +59,29 @@ public class Statistics extends WindowManager.Page {
 							e.printStackTrace();
 						}
 					try {
-						Thread.sleep(timeout);
+						Thread.sleep(globalTimeout);
 					} catch (final InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
 				Thread.currentThread().interrupt();
-				updater = new Thread(this);
+				globalUpdater = new Thread(this);
 			}
 		});
 
+		static {
+			globalUpdater.setDaemon(true);
+		}
+
 		private static Collection<AutoUpdatingStatistic> statistics = new ConcurrentLinkedQueue<>();
 
-		private static long timeout = 1000;
+		private static long globalTimeout = 1000;
 
 		/**
 		 * @return the timeout
 		 */
 		public static final long getTimeout() {
-			return timeout;
+			return globalTimeout;
 		}
 
 		/**
@@ -85,24 +89,21 @@ public class Statistics extends WindowManager.Page {
 		 *            the timeout to set
 		 */
 		public static final void setTimeout(final long timeout) {
-			AutoUpdatingStatistic.timeout = timeout;
+			AutoUpdatingStatistic.globalTimeout = timeout;
 		}
 
 		public static void startChecker() {
-			if (!AutoUpdatingStatistic.updater.isInterrupted() && !AutoUpdatingStatistic.updater.isAlive()
+			if (!AutoUpdatingStatistic.globalUpdater.isInterrupted() && !AutoUpdatingStatistic.globalUpdater.isAlive()
 					&& statistics.size() > 0)
-				AutoUpdatingStatistic.updater.start();
+				AutoUpdatingStatistic.globalUpdater.start();
 		}
 
 		private ParameterizedTask<AutoUpdatingStatistic> updateTask;
 
-		{
-			statistics.add(this);
-		}
-
 		public AutoUpdatingStatistic(final ParameterizedTask<AutoUpdatingStatistic> updater) {
 			updateTask = updater;
-
+			statistics.add(this);
+			startChecker();
 		}
 
 		public AutoUpdatingStatistic(final String stat, final Number val,
@@ -115,12 +116,92 @@ public class Statistics extends WindowManager.Page {
 			super(stat, val, statColor);
 			updateTask = updater;
 			startChecker();
+			statistics.add(this);
 		}
 
 		public AutoUpdatingStatistic(final String stat, final String val,
 				final ParameterizedTask<AutoUpdatingStatistic> updater) {
 			this(stat, val, null, updater);
+		}
 
+		private long privateTimeout;
+
+		public AutoUpdatingStatistic(ParameterizedTask<AutoUpdatingStatistic> updateTask, long privateTimeout)
+				throws IllegalArgumentException {
+			this.updateTask = updateTask;
+			if (!setPrivateTimeout(privateTimeout))
+				throw new IllegalArgumentException("Private timeout cannot be below 1.");
+		}
+
+		public AutoUpdatingStatistic(String stat, Number val, ParameterizedTask<AutoUpdatingStatistic> updateTask,
+				long privateTimeout) throws IllegalArgumentException {
+			super(stat, val);
+			this.updateTask = updateTask;
+			if (!setPrivateTimeout(privateTimeout))
+				throw new IllegalArgumentException("Private timeout cannot be below 1.");
+		}
+
+		public AutoUpdatingStatistic(String stat, String val, Paint statColor,
+				ParameterizedTask<AutoUpdatingStatistic> updateTask, long privateTimeout, boolean update,
+				Thread privateUpdater) throws IllegalArgumentException {
+			super(stat, val, statColor);
+			this.updateTask = updateTask;
+			if (!setPrivateTimeout(privateTimeout))
+				throw new IllegalArgumentException("Private timeout cannot be below 1.");
+		}
+
+		public AutoUpdatingStatistic(String stat, String val, ParameterizedTask<AutoUpdatingStatistic> updateTask,
+				long privateTimeout) throws IllegalArgumentException {
+			super(stat, val);
+			this.updateTask = updateTask;
+			if (!setPrivateTimeout(privateTimeout))
+
+				throw new IllegalArgumentException("Private timeout cannot be below 1.");
+		}
+
+		public void start() {
+			assert privateTimeout > 0;
+			if (!(privateTimeout > 0))
+				return;
+			update = true;
+			privateUpdater.start();
+
+		}
+
+		private boolean update;
+
+		public void stop() {
+			update = false;
+		}
+
+		private Thread privateUpdater = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				while (update) {
+					if (getUpdateTask() != null)
+						getUpdateTask().execute(AutoUpdatingStatistic.this);
+					try {
+						Thread.sleep(privateTimeout);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					// TODO Add a stop event
+					privateUpdater = new Thread(this);
+				}
+			}
+		});
+
+		public boolean setPrivateTimeout(long privateTimeout) {
+			if (privateTimeout < 1)
+				return false;
+			else
+				this.privateTimeout = privateTimeout;
+			return true;
+		}
+
+		{
+			privateUpdater.setDaemon(true);
 		}
 
 		public void dispose() {
