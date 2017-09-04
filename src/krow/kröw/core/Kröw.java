@@ -40,6 +40,7 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
@@ -1129,6 +1130,8 @@ public final class Kröw extends Application {
 
 		primaryStage.getScene().setOnKeyPressed(CLOSE_ON_ESCAPE_HANADLER);
 
+		programInit();
+
 		primaryStage.show();
 
 	}
@@ -1145,5 +1148,7 @@ public final class Kröw extends Application {
 
 		super.stop();
 	}
+
+	public static final void programInit() {	}
 
 }
