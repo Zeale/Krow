@@ -56,6 +56,7 @@ import kröw.core.managers.SoundManager;
 import kröw.core.managers.SystemProperties;
 import kröw.core.managers.SystemTrayManager;
 import kröw.core.managers.WindowManager;
+import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.libs.mindset.Construct;
 import kröw.libs.mindset.ConstructMindset;
 import kröw.libs.mindset.Law;
@@ -64,6 +65,7 @@ import kröw.libs.mindset.ObjectAlreadyExistsException;
 import kröw.program.api.Timer;
 import sun.awt.shell.ShellFolder;
 import zeale.guis.Home;
+import zeale.guis.gamehub.GameHub;
 
 /**
  * The main class of Krow. It contains many useful methods.
@@ -1149,6 +1151,25 @@ public final class Kröw extends Application {
 		super.stop();
 	}
 
-	public static final void programInit() {	}
+	public static final void programInit() {
+		WindowManager.getStage().getScene().addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see javafx.event.EventHandler#handle(javafx.event.Event)
+			 */
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode().equals(KeyCode.G) && event.isShiftDown())
+					try {
+						WindowManager.setScene(GameHub.class);
+					} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+						e.printStackTrace();
+					}
+			}
+		});
+
+	}
 
 }
