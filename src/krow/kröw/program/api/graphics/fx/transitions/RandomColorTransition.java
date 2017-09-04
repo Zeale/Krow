@@ -1,4 +1,4 @@
-package kröw.app.api.graphics.fx.transitions;
+package kröw.program.api.graphics.fx.transitions;
 
 import javafx.animation.Transition;
 import javafx.beans.property.ObjectProperty;

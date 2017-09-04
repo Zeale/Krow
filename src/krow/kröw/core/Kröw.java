@@ -50,7 +50,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
-import kröw.app.api.Timer;
 import kröw.core.managers.ProgramSettings;
 import kröw.core.managers.SoundManager;
 import kröw.core.managers.SystemProperties;
@@ -61,6 +60,7 @@ import kröw.libs.mindset.ConstructMindset;
 import kröw.libs.mindset.Law;
 import kröw.libs.mindset.MindsetObject;
 import kröw.libs.mindset.ObjectAlreadyExistsException;
+import kröw.program.api.Timer;
 import sun.awt.shell.ShellFolder;
 import zeale.guis.Home;
 

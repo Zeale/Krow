@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import kröw.app.api.connections.Client;
+import kröw.program.api.connections.Client;
 
 public class ChatRoomClient extends Client {
 
