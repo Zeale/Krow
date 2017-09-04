@@ -29,16 +29,10 @@ public final class BackgroundBuilder {
 
 	public static abstract class BackgroundManager {
 
-		public abstract void fadeOut();
-
-		public abstract void fadeIn();
-
-		public abstract void disable();
-
-		public abstract void enable();
-
 		private double animationDuration = SHAPE_MOVE_DURATION;
+
 		protected Pane currentPane;
+
 		private Color startColor = SHAPE_COLOR;
 
 		private EventHandler<MouseEvent> mouseMovementHandler;
@@ -75,13 +69,21 @@ public final class BackgroundBuilder {
 			}
 		}
 
+		public abstract void disable();
+
 		public void disableMouseInteraction() {
 			currentPane.setOnMouseMoved(null);
 		}
 
+		public abstract void enable();
+
 		public void enableMouseInteraction() {
 			currentPane.setOnMouseMoved(getMouseMovementHandler());
 		}
+
+		public abstract void fadeIn();
+
+		public abstract void fadeOut();
 
 		/**
 		 * @return the animationDuration
@@ -253,21 +255,6 @@ public final class BackgroundBuilder {
 
 		private double customShapeSize = SHAPE_RADIUS;
 
-		/**
-		 * @return the disabled
-		 */
-		public final boolean isDisabled() {
-			return disabled;
-		}
-
-		/**
-		 * @param disabled
-		 *            the disabled to set
-		 */
-		public final void setDisabled(boolean disabled) {
-			this.disabled = disabled;
-		}
-
 		{
 			setMouseMovementHandler(event -> {
 				final double mouseX = event.getSceneX(), mouseY = event.getSceneY();
@@ -311,21 +298,14 @@ public final class BackgroundBuilder {
 
 		private boolean rotatable;
 
+		private boolean disabled;
+
 		protected ShapeBackgroundManager(final Pane pane) {
 			super(pane);
 		}
 
 		protected ShapeBackgroundManager(final Pane currentPane, final Color startColor) {
 			super(currentPane, startColor);
-		}
-
-		public void addShape(Shape shape) {
-			buildShape(shape);
-		}
-
-		public void addShapes(Shape... shapes) {
-			for (Shape s : shapes)
-				buildShape(s);
 		}
 
 		public void addColorAnimations(final ColorAnimation... animations) {
@@ -353,6 +333,15 @@ public final class BackgroundBuilder {
 		public void addRandomShapes(int count) {
 			for (; count > 0; count--)
 				addRandomShape();
+		}
+
+		public void addShape(final Shape shape) {
+			buildShape(shape);
+		}
+
+		public void addShapes(final Shape... shapes) {
+			for (final Shape s : shapes)
+				buildShape(s);
 		}
 
 		private void addShapeToPane(final Shape s) {
@@ -500,6 +489,12 @@ public final class BackgroundBuilder {
 			return numb;
 		}
 
+		@Override
+		public void disable() {
+			disabled = true;
+			stopAnimations();
+		}
+
 		public void disableGlow() {
 			for (final Shape s : getShapes())
 				disableGlow(s);
@@ -508,6 +503,19 @@ public final class BackgroundBuilder {
 		public void disableGlow(final Shape s) {
 			if (s.getProperties().containsKey(EFFECT_KEY))
 				s.setEffect(null);
+		}
+
+		@Override
+		public void enable() {
+			disabled = false;
+			for (final Shape s : getShapes()) {
+				final TranslateTransition translator = (TranslateTransition) s.getProperties().get(TRANSLATOR_KEY);
+				final RotateTransition rotator = (RotateTransition) s.getProperties().get(ROTATOR_KEY);
+				final StrokeTransition colorer = (StrokeTransition) s.getProperties().get(COLORER_KEY);
+				translator.play();
+				rotator.play();
+				colorer.play();
+			}
 		}
 
 		public void enableGlow() {
@@ -520,6 +528,51 @@ public final class BackgroundBuilder {
 				s.setEffect((Effect) s.getProperties().get(EFFECT_KEY));
 		}
 
+		@Override
+		public void fadeIn() {
+			fadeIn(Duration.seconds(generateRandomMultiplier() * getAnimationDuration() / 6));
+		}
+
+		public void fadeIn(final Duration time) {
+
+			new Object() {
+				private volatile int amountFaded = 0;
+				{
+
+					for (final Shape s : getShapes()) {
+						final FadeTransition fader = (FadeTransition) s.getProperties().get(FADER_KEY);
+						fader.stop();
+						fader.setOnFinished(event -> {
+							amountFaded++;
+							fader.setOnFinished(null);
+							if (amountFaded == getShapes().size())
+								enable();
+						});
+						fader.setDuration(time);
+						fader.setToValue(1);
+						fader.play();
+					}
+				}
+			};
+		}
+
+		@Override
+		public void fadeOut() {
+			fadeOut(Duration.seconds(generateRandomMultiplier() * getAnimationDuration() / 6));
+		}
+
+		public void fadeOut(final Duration time) {
+			disable();
+			for (final Shape s : getShapes()) {
+				final FadeTransition fader = (FadeTransition) s.getProperties().get(FADER_KEY);
+				fader.stop();
+				fader.setOnFinished(null);
+				fader.setDuration(time);
+				fader.setToValue(0);
+				fader.play();
+			}
+		}
+
 		private void fadeShapesToColor(final Shape s, final Color color) {
 			fadeShapeToColor(s, color, Duration.seconds(getAnimationDuration() * generateRandomMultiplier()));
 		}
@@ -529,15 +582,6 @@ public final class BackgroundBuilder {
 			st.stop();
 			st.setToValue(color);
 			st.setDuration(duration);
-			st.play();
-		}
-
-		private void fadeShapeToColor(final Shape s, final Color color, final EventHandler<ActionEvent> onFinished) {
-			final StrokeTransition st = (StrokeTransition) s.getProperties().get(COLORER_KEY);
-			st.stop();
-			st.setToValue(color);
-			st.setDuration(Duration.seconds(getAnimationDuration() * generateRandomMultiplier()));
-			st.setOnFinished(onFinished);
 			st.play();
 		}
 
@@ -562,6 +606,13 @@ public final class BackgroundBuilder {
 
 		private ArrayList<Shape> getShapes() {
 			return shapes;
+		}
+
+		/**
+		 * @return the disabled
+		 */
+		public final boolean isDisabled() {
+			return disabled;
 		}
 
 		public boolean isRotatable() {
@@ -648,6 +699,14 @@ public final class BackgroundBuilder {
 			this.customShapeSize = customShapeSize;
 		}
 
+		/**
+		 * @param disabled
+		 *            the disabled to set
+		 */
+		public final void setDisabled(final boolean disabled) {
+			this.disabled = disabled;
+		}
+
 		public void setEvenShapeColorsSynchronously(final Color... colors) {
 			final int i = 0;
 			for (final Shape s : getShapes())
@@ -707,93 +766,38 @@ public final class BackgroundBuilder {
 				s.setStroke(color);
 		}
 
-		public void stopColorAnimations() {
-			for (final Shape s : getShapes())
-				((StrokeTransition) s.getProperties().get(COLORER_KEY)).stop();
-		}
-
-		@Override
-		public void fadeOut() {
-			fadeOut(Duration.seconds(generateRandomMultiplier() * getAnimationDuration() / 6));
-		}
-
-		public void fadeOut(Duration time) {
-			disable();
-			for (Shape s : getShapes()) {
-				FadeTransition fader = (FadeTransition) s.getProperties().get(FADER_KEY);
-				fader.stop();
-				fader.setOnFinished(null);
-				fader.setDuration(time);
-				fader.setToValue(0);
-				fader.play();
-			}
-		}
-
-		@Override
-		public void fadeIn() {
-			fadeIn(Duration.seconds(generateRandomMultiplier() * getAnimationDuration() / 6));
-		}
-
-		public void fadeIn(Duration time) {
-
-			new Object() {
-				private volatile int amountFaded = 0;
-				{
-
-					for (Shape s : getShapes()) {
-						FadeTransition fader = (FadeTransition) s.getProperties().get(FADER_KEY);
-						fader.stop();
-						fader.setOnFinished(new EventHandler<ActionEvent>() {
-
-							@Override
-							public void handle(ActionEvent event) {
-								amountFaded++;
-								fader.setOnFinished(null);
-								if (amountFaded == getShapes().size())
-									enable();
-							}
-						});
-						fader.setDuration(time);
-						fader.setToValue(1);
-						fader.play();
-					}
-				}
-			};
-		}
-
 		public void stopAnimations() {
-			for (Shape s : getShapes()) {
-				TranslateTransition translator = (TranslateTransition) s.getProperties().get(TRANSLATOR_KEY);
-				RotateTransition rotator = (RotateTransition) s.getProperties().get(ROTATOR_KEY);
-				StrokeTransition colorer = (StrokeTransition) s.getProperties().get(COLORER_KEY);
+			for (final Shape s : getShapes()) {
+				final TranslateTransition translator = (TranslateTransition) s.getProperties().get(TRANSLATOR_KEY);
+				final RotateTransition rotator = (RotateTransition) s.getProperties().get(ROTATOR_KEY);
+				final StrokeTransition colorer = (StrokeTransition) s.getProperties().get(COLORER_KEY);
 				translator.stop();
 				rotator.stop();
 				colorer.stop();
 			}
 		}
 
-		@Override
-		public void disable() {
-			disabled = true;
-			stopAnimations();
+		public void stopColorAnimations() {
+			for (final Shape s : getShapes())
+				((StrokeTransition) s.getProperties().get(COLORER_KEY)).stop();
 		}
 
 		public void zoomIn() {
 			stopAnimations();
-			for (Shape s : getShapes()) {
-				ScaleTransition scaler = (ScaleTransition) s.getProperties().get(SCALER_KEY);
-				TranslateTransition translator = (TranslateTransition) s.getProperties().get(TRANSLATOR_KEY);
-				FadeTransition fader = (FadeTransition) s.getProperties().get(FADER_KEY);
+			for (final Shape s : getShapes()) {
+				final ScaleTransition scaler = (ScaleTransition) s.getProperties().get(SCALER_KEY);
+				final TranslateTransition translator = (TranslateTransition) s.getProperties().get(TRANSLATOR_KEY);
+				final FadeTransition fader = (FadeTransition) s.getProperties().get(FADER_KEY);
 				scaler.stop();
 				translator.stop();
 				fader.stop();
 
-				Duration duration = Duration.seconds(1.5);
+				final Duration duration = Duration.seconds(1.5);
 				scaler.setDuration(duration);
 				translator.setDuration(duration);
 				fader.setDuration(Duration.seconds(0.95));
 
-				Interpolator interpolator = Interpolator.SPLINE(0.9, 0.9, 0.3, 0.3);
+				final Interpolator interpolator = Interpolator.SPLINE(0.9, 0.9, 0.3, 0.3);
 
 				scaler.setInterpolator(interpolator);
 				translator.setInterpolator(interpolator);
@@ -802,7 +806,8 @@ public final class BackgroundBuilder {
 				scaler.setToX(s.getScaleX() * 5);
 				scaler.setToY(s.getScaleY() * 5);
 
-				double distX = s.getLayoutX() + s.getTranslateX() - Kröw.getSystemProperties().getScreenWidth() / 2,
+				final double distX = s.getLayoutX() + s.getTranslateX()
+						- Kröw.getSystemProperties().getScreenWidth() / 2,
 						distY = s.getLayoutY() + s.getTranslateY() - Kröw.getSystemProperties().getScreenHeight() / 2;
 				// Subtracting half the screen size sets the coord (0,0) in the
 				// center of the screen, rather than the top left,
@@ -825,15 +830,15 @@ public final class BackgroundBuilder {
 		}
 
 		public void zoomOut() {
-			for (Shape s : getShapes()) {
-				ScaleTransition scaler = (ScaleTransition) s.getProperties().get(SCALER_KEY);
-				TranslateTransition translator = (TranslateTransition) s.getProperties().get(TRANSLATOR_KEY);
-				FadeTransition fader = (FadeTransition) s.getProperties().get(FADER_KEY);
+			for (final Shape s : getShapes()) {
+				final ScaleTransition scaler = (ScaleTransition) s.getProperties().get(SCALER_KEY);
+				final TranslateTransition translator = (TranslateTransition) s.getProperties().get(TRANSLATOR_KEY);
+				final FadeTransition fader = (FadeTransition) s.getProperties().get(FADER_KEY);
 				scaler.stop();
 				translator.stop();
 				fader.stop();
 
-				Duration duration = Duration.seconds(1.5);
+				final Duration duration = Duration.seconds(1.5);
 				scaler.setDuration(duration);
 				translator.setDuration(duration);
 				fader.setDuration(Duration.seconds(1.3));
@@ -845,7 +850,8 @@ public final class BackgroundBuilder {
 				scaler.setToX(s.getScaleX() / 5);
 				scaler.setToY(s.getScaleY() / 5);
 
-				double distX = s.getLayoutX() + s.getTranslateX() - Kröw.getSystemProperties().getScreenWidth() / 2,
+				final double distX = s.getLayoutX() + s.getTranslateX()
+						- Kröw.getSystemProperties().getScreenWidth() / 2,
 						distY = s.getLayoutY() + s.getTranslateY() - Kröw.getSystemProperties().getScreenHeight() / 2;
 
 				translator.setByX(distX / 5);
@@ -863,21 +869,6 @@ public final class BackgroundBuilder {
 			}
 
 		}
-
-		@Override
-		public void enable() {
-			disabled = false;
-			for (Shape s : getShapes()) {
-				TranslateTransition translator = (TranslateTransition) s.getProperties().get(TRANSLATOR_KEY);
-				RotateTransition rotator = (RotateTransition) s.getProperties().get(ROTATOR_KEY);
-				StrokeTransition colorer = (StrokeTransition) s.getProperties().get(COLORER_KEY);
-				translator.play();
-				rotator.play();
-				colorer.play();
-			}
-		}
-
-		private boolean disabled;
 	}
 
 	private static final Random random = new Random();

@@ -8,15 +8,15 @@ import kröw.app.api.connections.Client;
 
 public class ChatRoomClient extends Client {
 
-	public ChatRoomClient(String hostname, int port) throws UnknownHostException, IOException {
-		super(hostname, port);
-	}
+	private String name = "An unknown person";
 
-	public ChatRoomClient(Socket socket) throws IOException {
+	public ChatRoomClient(final Socket socket) throws IOException {
 		super(socket);
 	}
 
-	private String name = "An unknown person";
+	public ChatRoomClient(final String hostname, final int port) throws UnknownHostException, IOException {
+		super(hostname, port);
+	}
 
 	/**
 	 * @return the name
@@ -29,7 +29,7 @@ public class ChatRoomClient extends Client {
 	 * @param name
 	 *            the name to set
 	 */
-	public final void setName(String name) {
+	public final void setName(final String name) {
 		this.name = name;
 	}
 

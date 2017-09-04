@@ -75,16 +75,16 @@ public class WindowManager {
 
 		}
 
-		protected void pageSwitched() {
+		protected void onPageSwitched() {
 
 		}
 
 		/**
 		 * <p>
-		 * Checked when switching {@link Page}s to verify that the current
-		 * page permits the user to go to a different page. This should be
-		 * overridden to return false when a window reaches a scenario in which
-		 * it does not want its user to leave.
+		 * Checked when switching {@link Page}s to verify that the current page
+		 * permits the user to go to a different page. This should be overridden
+		 * to return false when a window reaches a scenario in which it does not
+		 * want its user to leave.
 		 * <p>
 		 * Basically, return false when {@link Page}s shouldn't be switched.
 		 *
@@ -128,7 +128,7 @@ public class WindowManager {
 		 * method which is called only when the {@link WindowManager#goBack()}
 		 * method shows this {@link Page}.
 		 */
-		public void onRevertToThisWindow() {
+		public void onBack() {
 
 		}
 
@@ -179,7 +179,7 @@ public class WindowManager {
 
 	private static final Stack<Window<? extends Page>> history = new Stack<>();
 
-	private static Window<? extends Page> currentWindow;
+	private static Window<? extends Page> currentPage;
 
 	/**
 	 * The current {@link Stage}. This is set when the program starts.
@@ -220,7 +220,7 @@ public class WindowManager {
 		}
 
 		// Call this method.
-		WindowManager.currentWindow.controller.onRevertToThisWindow();
+		WindowManager.currentPage.controller.onBack();
 
 	}
 
@@ -330,16 +330,18 @@ public class WindowManager {
 		// Instantiate the loader
 		final FXMLLoader loader = new FXMLLoader(cls.getResource(controller.getWindowFile()));
 		loader.setController(controller);
-		if (currentWindow != null)
-			if (!currentWindow.getController().canSwitchPage(cls))
-				throw new NotSwitchableException(currentWindow, controller, cls);
-			else
-				WindowManager.history.push(currentWindow);
+		if (currentPage != null)
+			if (!currentPage.getController().canSwitchPage(cls))
+				throw new NotSwitchableException(currentPage, controller, cls);
+			else {
+				WindowManager.history.push(currentPage);
+				currentPage.getController().onPageSwitched();
+			}
 
 		final Parent root = loader.load();
 		final Window<W> window = new Window<>(controller, root, stage, stage.getScene());
 
-		WindowManager.currentWindow = window;
+		WindowManager.currentPage = window;
 		// Set the new root.
 		WindowManager.stage.getScene().setRoot(root);
 
@@ -369,7 +371,7 @@ public class WindowManager {
 
 		final Window<? extends Page> window = new Window<>(controller, root, stage, stage.getScene());
 
-		WindowManager.currentWindow = window;
+		WindowManager.currentPage = window;
 		// Set the new root.
 		WindowManager.stage.setScene(new Scene(root));
 
