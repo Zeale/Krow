@@ -1152,23 +1152,6 @@ public final class Kröw extends Application {
 	}
 
 	public static final void programInit() {
-		WindowManager.getStage().getScene().addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-
-			/*
-			 * (non-Javadoc)
-			 * 
-			 * @see javafx.event.EventHandler#handle(javafx.event.Event)
-			 */
-			@Override
-			public void handle(KeyEvent event) {
-				if (event.getCode().equals(KeyCode.G) && event.isShiftDown())
-					try {
-						WindowManager.setScene(GameHub.class);
-					} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-						e.printStackTrace();
-					}
-			}
-		});
 
 	}
 

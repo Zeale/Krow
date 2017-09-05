@@ -9,10 +9,12 @@ import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -22,6 +24,7 @@ import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
+import zeale.guis.gamehub.GameHub;
 
 public class Home extends Page {
 	private class Item {
@@ -175,6 +178,20 @@ public class Home extends Page {
 		horizontalScroll.toFront();
 
 		loadDefaultImages();
+
+		horizontalScroll.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {
+				if (event.getCode().equals(KeyCode.G) && event.isControlDown()) {
+					try {
+						WindowManager.setScene(GameHub.class);
+					} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 		GUIHelper.applyShapeBackground(pane);
