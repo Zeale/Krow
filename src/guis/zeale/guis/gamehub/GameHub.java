@@ -2,7 +2,6 @@ package zeale.guis.gamehub;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -49,6 +48,15 @@ public class GameHub extends Page {
 		showRandomBGVideo();
 
 		addMenuItem(new MenuItem("Games", new ImageView("/krow/resources/games.png"), event -> {
+			// TODO Auto-generated method stub
+		}));
+		addMenuItem(new MenuItem("Tools", new ImageView("/krow/resources/gamehub/tools.png"), event -> {
+			// TODO Auto-generated method stub
+		}));
+		addMenuItem(new MenuItem("Options", new ImageView("/krow/resources/gamehub/options.png"), event -> {
+			// TODO Auto-generated method stub
+		}));
+		addMenuItem(new MenuItem("Back", new ImageView("krow/resources/gamehub/back.png"), event -> {
 			// TODO Auto-generated method stub
 		}));
 
