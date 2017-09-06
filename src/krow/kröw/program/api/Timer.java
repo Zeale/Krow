@@ -1,4 +1,4 @@
-package kröw.app.api;
+package kröw.program.api;
 
 public class Timer {
 	private long time = System.nanoTime();

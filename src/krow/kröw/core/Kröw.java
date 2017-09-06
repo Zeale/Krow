@@ -40,6 +40,7 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
@@ -50,7 +51,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
-import kröw.app.api.Timer;
 import kröw.core.managers.ProgramSettings;
 import kröw.core.managers.SoundManager;
 import kröw.core.managers.SystemProperties;
@@ -61,6 +61,7 @@ import kröw.libs.mindset.ConstructMindset;
 import kröw.libs.mindset.Law;
 import kröw.libs.mindset.MindsetObject;
 import kröw.libs.mindset.ObjectAlreadyExistsException;
+import kröw.program.api.Timer;
 import sun.awt.shell.ShellFolder;
 import zeale.guis.Home;
 
@@ -1129,6 +1130,8 @@ public final class Kröw extends Application {
 
 		primaryStage.getScene().setOnKeyPressed(CLOSE_ON_ESCAPE_HANADLER);
 
+		programInit();
+
 		primaryStage.show();
 
 	}
@@ -1145,5 +1148,7 @@ public final class Kröw extends Application {
 
 		super.stop();
 	}
+
+	public static final void programInit() {	}
 
 }

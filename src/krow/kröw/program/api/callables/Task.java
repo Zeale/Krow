@@ -1,4 +1,4 @@
-package kröw.app.api.callables;
+package kröw.program.api.callables;
 
 public interface Task {
 	void execute();

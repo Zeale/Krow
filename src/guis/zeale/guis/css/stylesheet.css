@@ -6,6 +6,10 @@
 	-fx-background-color: rgba(0.0, 0.0, 0.0, 0.3);
 }
 
+.transparent {
+	-fx-background-color: transparent;
+}
+
 .label.option-name {
 	-fx-text-fill: black;
 	-fx-font-weight: bold;

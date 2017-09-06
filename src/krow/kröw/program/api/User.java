@@ -1,4 +1,4 @@
-package kröw.app.api;
+package kröw.program.api;
 
 public class User {
 	private final String username;
