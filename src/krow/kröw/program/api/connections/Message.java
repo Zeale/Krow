@@ -1,4 +1,4 @@
-package kröw.app.api.connections;
+package kröw.program.api.connections;
 
 import java.io.Serializable;
 

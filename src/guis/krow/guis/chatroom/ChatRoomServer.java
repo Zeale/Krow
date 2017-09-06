@@ -9,11 +9,11 @@ import java.util.List;
 
 import krow.guis.chatroom.messages.ChatRoomMessage;
 import krow.guis.chatroom.messages.CommandMessage;
-import kröw.app.api.connections.Client;
-import kröw.app.api.connections.FullClientListener;
-import kröw.app.api.connections.Message;
-import kröw.app.api.connections.Server;
 import kröw.core.Kröw;
+import kröw.program.api.connections.Client;
+import kröw.program.api.connections.FullClientListener;
+import kröw.program.api.connections.Message;
+import kröw.program.api.connections.Server;
 
 public class ChatRoomServer extends Server {
 

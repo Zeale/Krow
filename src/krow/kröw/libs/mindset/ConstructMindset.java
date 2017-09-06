@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import kröw.app.api.collections.UniqueArrayList;
 import kröw.libs.mindset.events.AddEvent;
 import kröw.libs.mindset.events.ChangeEvent;
 import kröw.libs.mindset.events.EventListener;
 import kröw.libs.mindset.events.RemoveEvent;
+import kröw.program.api.collections.UniqueArrayList;
 
 @Deprecated
 public class ConstructMindset {

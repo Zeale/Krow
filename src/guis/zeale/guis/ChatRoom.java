@@ -28,12 +28,12 @@ import krow.guis.chatroom.messages.ChatRoomMessage;
 import krow.guis.chatroom.messages.CommandMessage;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
-import kröw.app.api.connections.Client;
-import kröw.app.api.connections.FullClientListener;
-import kröw.app.api.connections.Server;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
+import kröw.program.api.connections.Client;
+import kröw.program.api.connections.FullClientListener;
+import kröw.program.api.connections.Server;
 
 public class ChatRoom extends WindowManager.Page {
 
