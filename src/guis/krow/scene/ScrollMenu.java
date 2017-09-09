@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -96,6 +97,23 @@ public abstract class ScrollMenu extends Page {
 
 	@Override
 	public void initialize() {
+
+		if (verticalScroll == null)
+			verticalScroll = new VBox();
+		if (horizontalScroll == null)
+			horizontalScroll = new HBox();
+		if (pane == null)
+			throw new RuntimeException("Unspecified pane.");
+
+		pane.setPrefSize(Kr�w.scaleWidth(Kr�w.getSystemProperties().getScreenWidth()),
+				Kr�w.scaleHeight(Kr�w.getSystemProperties().getScreenHeight()));
+		pane.setLayoutX(0);
+		pane.setLayoutY(0);
+
+		if (!pane.getChildren().contains(verticalScroll))
+			pane.getChildren().add(verticalScroll);
+		if (!pane.getChildren().contains(horizontalScroll))
+			pane.getChildren().add(horizontalScroll);
 
 		// TODO Actually implement a vertical bar.
 		verticalScroll.setVisible(false);
