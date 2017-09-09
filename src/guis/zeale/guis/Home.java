@@ -43,8 +43,6 @@ public class Home extends ScrollMenu {
 		horizontalScroll.setStyle(
 				"-fx-background-color:  linear-gradient(to right, #00000020 0%, #000000A8 45%, #000000A8 55%, #00000020 100%);");
 
-		loadDefaultImages();
-
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 		GUIHelper.applyShapeBackground(pane);
 	}

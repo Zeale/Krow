@@ -1,7 +1,9 @@
 package zeale.guis.math_module;
 
+import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import krow.guis.GUIHelper;
 import krow.scene.ScrollMenu;
 
 public class MathModule extends ScrollMenu {
@@ -26,6 +28,20 @@ public class MathModule extends ScrollMenu {
 	@Override
 	protected void loadDefaultImages() {
 		addImage(new ImageView(CALCULATOR_ICON));
+		addImage(new ImageView(CALCULATOR_ICON));
+
+	}
+
+	@Override
+	public void initialize() {
+		super.initialize();
+
+		pane.getStyleClass().add("background");
+		horizontalScroll.setId("HorizontalScroll");
+		horizontalScroll.setEffect(new Reflection());
+
+		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
+		GUIHelper.applyShapeBackground(pane);
 	}
 
 }

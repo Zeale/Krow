@@ -63,6 +63,26 @@
     -fx-background-color: transparent;
 }
 
+.text-area .scroll-pane .content, .text-area .scroll-pane .viewport, .text-area .scroll-pane  {
+	-fx-background-color: transparent;
+}
+
+.pop-button {
+	-fx-font-family: Consolas;
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+	-fx-border-color: black;
+	-fx-border-width: 0.0 0.0 2.0px 2.0px;
+	-fx-background-color: #00000015;
+}
+
+.pop-button:armed {
+	-fx-border-color: black;
+	-fx-border-width: 2.0px 2.0px 0.0 0.0;
+	-fx-text-fill: #535353;
+	-fx-label-padding: 2.0px 2.0px 0.0 0.0;
+}
+
 #StatisticsListView .list-cell {
 	-fx-alignment: center;
 	-fx-font-weight: bold;
@@ -90,22 +110,6 @@
 	-fx-background-color: black;
 }
 
-.text-area .scroll-pane .content, .text-area .scroll-pane .viewport, .text-area .scroll-pane  {
-	-fx-background-color: transparent;
-}
-
-.pop-button {
-	-fx-font-family: Consolas;
-	-fx-text-fill: white;
-	-fx-font-weight: bold;
-	-fx-border-color: black;
-	-fx-border-width: 0.0 0.0 2.0px 2.0px;
-	-fx-background-color: #00000015;
-}
-
-.pop-button:armed {
-	-fx-border-color: black;
-	-fx-border-width: 2.0px 2.0px 0.0 0.0;
-	-fx-text-fill: #535353;
-	-fx-label-padding: 2.0px 2.0px 0.0 0.0;
+#HorizontalScroll {
+	-fx-background-color:  linear-gradient(to right, #00000020 0.0%, #000000A8 45.0%, #000000A8 55.0%, #00000020 100.0%);
 }

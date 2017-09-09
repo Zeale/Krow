@@ -10,7 +10,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -167,7 +166,7 @@ public abstract class ScrollMenu extends Page {
 
 		// Put this in front of the verticalScroll container.
 		horizontalScroll.toFront();
-
+		loadDefaultImages();
 	}
 
 	public boolean removeImage(final ImageView imageView) {
