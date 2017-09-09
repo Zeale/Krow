@@ -3,20 +3,19 @@ package zeale.guis;
 
 import java.io.IOException;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.MouseEvent;
 import krow.guis.GUIHelper;
 import krow.scene.ScrollMenu;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
+import zeale.guis.math_module.MathModule;
 
 public class Home extends ScrollMenu {
 
@@ -96,10 +95,24 @@ public class Home extends ScrollMenu {
 		});
 		statistics.setPickOnBounds(true);
 
+		ImageView mathModule = new ImageView(MathModule.CALCULATOR_ICON);
+		mathModule.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				try {
+					WindowManager.setScene(MathModule.class);
+				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
 		addImage(settings);
 		addImage(krow);
 		addImage(chatRoom);
 		addImage(statistics);
+		addImage(mathModule);
 	}
 
 }

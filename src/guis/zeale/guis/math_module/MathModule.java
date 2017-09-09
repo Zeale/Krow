@@ -1,5 +1,6 @@
 package zeale.guis.math_module;
 
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import krow.scene.ScrollMenu;
 
@@ -19,13 +20,12 @@ public class MathModule extends ScrollMenu {
 	 * visualize what a calculator icon would look like when placed in this
 	 * scroll menu.
 	 */
-	private static final ImageView CALCULATOR_ICON = new ImageView(
-			"/krow/resources/graphics/math-module/calculator-icon.png");// TODO
-																		// Change
+	public static final Image CALCULATOR_ICON = new Image("/krow/resources/graphics/math-module/calculator-icon.png");// TODO
+																														// Change
 
 	@Override
 	protected void loadDefaultImages() {
-		addImage(CALCULATOR_ICON);
+		addImage(new ImageView(CALCULATOR_ICON));
 	}
 
 }
