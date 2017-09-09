@@ -28,8 +28,6 @@ public class MathModule extends ScrollMenu {
 	@Override
 	protected void loadDefaultImages() {
 		addImage(new ImageView(CALCULATOR_ICON));
-		addImage(new ImageView(CALCULATOR_ICON));
-
 	}
 
 	@Override
