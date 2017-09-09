@@ -105,8 +105,8 @@ public abstract class ScrollMenu extends Page {
 		if (pane == null)
 			throw new RuntimeException("Unspecified pane.");
 
-		pane.setPrefSize(Krï¿½w.scaleWidth(Krï¿½w.getSystemProperties().getScreenWidth()),
-				Krï¿½w.scaleHeight(Krï¿½w.getSystemProperties().getScreenHeight()));
+		pane.setPrefSize(Kröw.scaleWidth(Kröw.getSystemProperties().getScreenWidth()),
+				Kröw.scaleHeight(Kröw.getSystemProperties().getScreenHeight()));
 		pane.setLayoutX(0);
 		pane.setLayoutY(0);
 
