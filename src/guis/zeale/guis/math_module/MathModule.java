@@ -1,10 +1,17 @@
 package zeale.guis.math_module;
 
+import java.io.IOException;
+
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import krow.guis.GUIHelper;
 import krow.scene.ScrollMenu;
+import kröw.core.managers.WindowManager;
+import kröw.core.managers.WindowManager.NotSwitchableException;
 
 public class MathModule extends ScrollMenu {
 
@@ -27,7 +34,19 @@ public class MathModule extends ScrollMenu {
 
 	@Override
 	protected void loadDefaultImages() {
-		addImage(new ImageView(CALCULATOR_ICON));
+		ImageView calculator = new ImageView(CALCULATOR_ICON);
+		calculator.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				try {
+					WindowManager.setScene(Calculator.class);
+				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		addImage(calculator);
 	}
 
 	@Override
