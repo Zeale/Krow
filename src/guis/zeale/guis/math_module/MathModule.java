@@ -34,7 +34,8 @@ public class MathModule extends ScrollMenu {
 
 	@Override
 	protected void loadDefaultImages() {
-		ImageView calculator = new ImageView(CALCULATOR_ICON);
+		ImageView calculator = new ImageView(CALCULATOR_ICON),
+				statistics = new ImageView("/krow/resources/Statistics.png");
 		calculator.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<Event>() {
 
 			@Override
@@ -46,7 +47,18 @@ public class MathModule extends ScrollMenu {
 				}
 			}
 		});
+
+		statistics.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				// TODO Add statistics page
+				// WindowManager.setScene(Statistics.class);
+			}
+		});
+
 		addImage(calculator);
+		addImage(statistics);
 	}
 
 	@Override
