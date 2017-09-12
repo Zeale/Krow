@@ -67,6 +67,24 @@
 	-fx-background-color: transparent;
 }
 
+/* General Tab Panes */
+
+.tab-pane .tab-header-area .header-region, .tab-pane .tab-header-area .tab-header-background {
+	-fx-background-color: #00000030;
+	-fx-border-color: #00000050;
+}
+
+.tab-pane .tab-header-area .tab {
+	-fx-background-color: black;
+	-fx-text-fill: gold;
+	-fx-font-weight: bold;
+}
+
+.tab-pane .tab-header-area .tab .tab-label {
+	-fx-text-fill: gold;
+}
+
+/* Pop Buttons */
 .pop-button {
 	-fx-font-family: Consolas;
 	-fx-text-fill: white;
