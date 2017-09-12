@@ -5,14 +5,14 @@ import java.text.DecimalFormat;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import kröw.core.managers.WindowManager.Page;
 import kröw.libs.math.EquationParser;
 import kröw.libs.math.exceptions.EmptyEquationException;
@@ -37,24 +37,19 @@ public class Calculator extends Page {
 	@FXML
 	private TabPane buttonTabPane;
 	@FXML
-	private Tab arithmetic, functions;
+	private Tab arithmeticTab, functionsTab;
 
 	@Override
 	public void initialize() {
-		done.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent event) {
-				try {
-					input.setText("" + new EquationParser().evaluate(input.getText()));
-				} catch (EmptyEquationException | UnmatchedParenthesisException | IrregularCharacterException e) {
-					e.printStackTrace();
-				}
-			}
-
-		});
+		done.setOnAction(event -> evaluate());
 
 		TEXT.addListener(textListener);
+		for (Node n : ((Pane) arithmeticTab.getContent()).getChildren())
+			if (n instanceof Button) {
+				Button b = (Button) n;
+				if (b.getOnAction() == null)
+					b.setOnAction(event -> TEXT.set((TEXT.get() == null ? "" : TEXT.get()) + b.getText()));
+			}
 
 	}
 
