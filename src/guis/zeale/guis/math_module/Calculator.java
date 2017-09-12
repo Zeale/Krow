@@ -5,6 +5,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import kröw.core.managers.WindowManager.Page;
 import kröw.libs.math.EquationParser;
 import kröw.libs.math.exceptions.EmptyEquationException;
@@ -22,6 +23,8 @@ public class Calculator extends Page {
 	private TextField input;
 	@FXML
 	private Button done;
+	@FXML
+	private AnchorPane pane;
 
 	@Override
 	public void initialize() {
