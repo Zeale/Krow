@@ -167,7 +167,6 @@ public abstract class ScrollMenu extends Page {
 
 	protected void slideImages(int amount) {
 		if (amount + totalShift > views.size()) {
-			amount = views.size() - totalShift;
 			totalShift = (short) views.size();
 			return;// Omit below loop; it's useless.
 		} else if (amount + totalShift < 1) {
