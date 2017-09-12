@@ -105,6 +105,7 @@ public class Home extends ScrollMenu {
 				}
 			}
 		});
+		mathModule.setPickOnBounds(true);
 
 		addImage(settings);
 		addImage(krow);

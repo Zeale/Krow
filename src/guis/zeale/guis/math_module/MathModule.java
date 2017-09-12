@@ -47,6 +47,7 @@ public class MathModule extends ScrollMenu {
 				}
 			}
 		});
+		calculator.setPickOnBounds(true);
 
 		statistics.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<Event>() {
 
