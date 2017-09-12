@@ -1,11 +1,7 @@
 package zeale.guis.math_module.scene.calculator;
 
-import javafx.beans.property.StringProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import zeale.guis.math_module.Calculator;
 
 public class CalculatorButton extends Button {
 
@@ -42,34 +38,6 @@ public class CalculatorButton extends Button {
 	public CalculatorButton(String text, Node graphic, String output) {
 		super(text, graphic);
 		this.output = output;
-	}
-
-	{
-		setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent event) {
-				outputProperty.set(outputProperty.get() + output);
-			}
-		});
-
-		getStyleClass().add("pop-button");
-	}
-
-	private StringProperty outputProperty = Calculator.TEXT;
-
-	/**
-	 * @return the outputProperty
-	 */
-	public final StringProperty getOutputProperty() {
-		return outputProperty;
-	}
-
-	/**
-	 * @param outputProperty the outputProperty to set
-	 */
-	public final void setOutputProperty(StringProperty outputProperty) {
-		this.outputProperty = outputProperty;
 	}
 
 }

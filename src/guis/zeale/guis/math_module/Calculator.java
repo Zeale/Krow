@@ -1,10 +1,5 @@
 package zeale.guis.math_module;
 
-import java.text.DecimalFormat;
-
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -21,7 +16,11 @@ import kröw.libs.math.exceptions.UnmatchedParenthesisException;
 
 public class Calculator extends Page {
 
-	public static final StringProperty TEXT = new SimpleStringProperty();
+	/**
+	 * This text controls what is inside this {@link Page}'s {@link #calcIO}
+	 * field.
+	 */
+	private static String cachedText;
 
 	@Override
 	public String getWindowFile() {
@@ -29,7 +28,7 @@ public class Calculator extends Page {
 	}
 
 	@FXML
-	private TextField input;
+	private TextField calcIO;
 	@FXML
 	private Button done;
 	@FXML
@@ -41,29 +40,32 @@ public class Calculator extends Page {
 
 	@Override
 	public void initialize() {
+
+		calcIO.setText(cachedText);
 		done.setOnAction(event -> evaluate());
 
-		TEXT.addListener(textListener);
+		// This assures that regular buttons will automatically append their
+		// visual content to the TEXT content.
+		//
+		// That will then copy its contents to text
 		for (Node n : ((Pane) arithmeticTab.getContent()).getChildren())
 			if (n instanceof Button) {
 				Button b = (Button) n;
 				if (b.getOnAction() == null)
-					b.setOnAction(event -> TEXT.set((TEXT.get() == null ? "" : TEXT.get()) + b.getText()));
+					b.setOnAction(event -> calcIO.appendText(b.getText()));
 			}
 
 	}
 
-	private ChangeListener<String> textListener = (observable, oldValue, newValue) -> input.setText(newValue);
-
 	@Override
 	protected void onPageSwitched() {
-		TEXT.removeListener(textListener);
+		cachedText = calcIO.getText();
 	}
 
 	@FXML
 	private void evaluate() {
 		try {
-			TEXT.set(new DecimalFormat().format(new EquationParser().evaluate(TEXT.get())));
+			calcIO.setText("" + new EquationParser().evaluate(calcIO.getText()));
 		} catch (EmptyEquationException | UnmatchedParenthesisException | IrregularCharacterException e) {
 			e.printStackTrace();
 		}

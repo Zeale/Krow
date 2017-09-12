@@ -131,3 +131,9 @@
 #HorizontalScroll {
 	-fx-background-color:  linear-gradient(to right, #00000020 0.0%, #000000A8 45.0%, #000000A8 55.0%, #00000020 100.0%);
 }
+
+#CalculatorIO {
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+	-fx-font-size: 18.0px;
+}
