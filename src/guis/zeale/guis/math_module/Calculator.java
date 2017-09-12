@@ -27,10 +27,20 @@ public class Calculator extends Page {
 		return "Calculator.fxml";
 	}
 
+	@Override
+	protected void onPageSwitched() {
+		cachedText = calcIO.getText();
+	}
+
+	/*******************************************************************************************
+	 *********************************** DEFINING INJECTED NODES *******************************
+	 *******************************************************************************************/
+
+	/* Basic Nodes */
 	@FXML
 	private TextField calcIO;
 	@FXML
-	private Button done;
+	private Button solve;
 	@FXML
 	private AnchorPane pane;
 	@FXML
@@ -38,11 +48,15 @@ public class Calculator extends Page {
 	@FXML
 	private Tab arithmeticTab, functionsTab;
 
+	/*****************************************************************************************
+	 *********************************** INITIALIZATION METHOD *******************************
+	 *****************************************************************************************/
+
 	@Override
 	public void initialize() {
 
 		calcIO.setText(cachedText);
-		done.setOnAction(event -> evaluate());
+		solve.setOnAction(event -> evaluate());
 
 		// This assures that regular buttons will automatically append their
 		// visual content to the TEXT content.
@@ -57,10 +71,9 @@ public class Calculator extends Page {
 
 	}
 
-	@Override
-	protected void onPageSwitched() {
-		cachedText = calcIO.getText();
-	}
+	/*********************************************************************************
+	 *********************************** EVENT METHODS *******************************
+	 *********************************************************************************/
 
 	@FXML
 	private void evaluate() {
