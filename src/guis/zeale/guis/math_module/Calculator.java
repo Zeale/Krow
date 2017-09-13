@@ -63,15 +63,6 @@ public class Calculator extends Page {
 	@Override
 	public void initialize() {
 
-		// TODO Remove testing code below.
-		pane.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent event) {
-				System.out.println(event.getPickResult().getIntersectedNode());
-			}
-		});
-
 		/******************************
 		 **** INJECTED NODE SIZING ****
 		 ******************************/
