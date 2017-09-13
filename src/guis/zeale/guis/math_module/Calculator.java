@@ -8,6 +8,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import kröw.core.Kröw;
 import kröw.core.managers.WindowManager.Page;
 import kröw.libs.math.EquationParser;
 import kröw.libs.math.exceptions.EmptyEquationException;
@@ -59,6 +60,17 @@ public class Calculator extends Page {
 		 **** INJECTED NODE SIZING ****
 		 ******************************/
 
+		calcIO.setPrefSize(Kröw.scaleWidth(954), Kröw.scaleHeight(42));
+		calcIO.setLayoutX(Kröw.scaleWidth(485));
+		calcIO.setLayoutY(Kröw.scaleHeight(175));
+
+		buttonTabPane.setPrefSize(Kröw.scaleWidth(954), Kröw.scaleHeight(478));
+		buttonTabPane.setLayoutX(Kröw.scaleWidth(485));
+		buttonTabPane.setLayoutY(Kröw.scaleHeight(248));
+
+		/**********************************
+		 **** INJECTED NODE PROPERTIES ****
+		 **********************************/
 		calcIO.setText(cachedText);
 		solve.setOnAction(event -> evaluate());
 
