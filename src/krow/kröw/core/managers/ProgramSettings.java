@@ -11,7 +11,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import kröw.core.Kröw;
-import zeale.guis.ChatRoom;
 
 public class ProgramSettings implements Serializable {
 
@@ -47,65 +46,21 @@ public class ProgramSettings implements Serializable {
 		return loadManager(Paths.get(path));
 	}
 
-	private boolean chatRoomHostServer;
+	public boolean chatRoomHostServer;
 
-	private boolean launchOnSystemLogIn, launchOnUserLogIn;
+	public boolean launchOnSystemLogIn, launchOnUserLogIn;
 
-	private boolean shapeBackgroundRespondToMouseMovement = false;
+	public boolean shapeBackgroundRespondToMouseMovement = false;
 
-	private int currentAnimationMode = 0;
+	public int currentAnimationMode = 0;
 
-	private boolean useTrayIcon = false;
-	private boolean openProgramOnDoubleClickTrayIcon = true;
+	public boolean useTrayIcon = false;
+	public boolean openProgramOnDoubleClickTrayIcon = true;
+
+	public boolean calculatorUseOuterZoomAnimation = false;
 
 	private void bootup() {
 
-	}
-
-	/**
-	 * @return the currentAnimationMode
-	 */
-	public final int getCurrentAnimationMode() {
-		return currentAnimationMode;
-	}
-
-	/**
-	 * @return the chatRoomHostServer
-	 */
-	public final boolean isChatRoomHostServer() {
-		return chatRoomHostServer;
-	}
-
-	/**
-	 * @return the launchOnSystemLogIn
-	 */
-	public final boolean isLaunchOnSystemLogIn() {
-		return launchOnSystemLogIn;
-	}
-
-	/**
-	 * @return the launchOnUserLogIn
-	 */
-	public final boolean isLaunchOnUserLogIn() {
-		return launchOnUserLogIn;
-	}
-
-	/**
-	 * @return the openProgramOnDoubleClickTrayIcon
-	 */
-	public final boolean isOpenProgramOnDoubleClickTrayIcon() {
-		return openProgramOnDoubleClickTrayIcon;
-	}
-
-	public boolean isShapeBackgroundRespondToMouseMovement() {
-		return shapeBackgroundRespondToMouseMovement;
-	}
-
-	/**
-	 * @return the useTrayIcon
-	 */
-	public final boolean isUseTrayIcon() {
-		return useTrayIcon;
 	}
 
 	private void readObject(final ObjectInputStream is) throws IOException {
@@ -133,73 +88,6 @@ public class ProgramSettings implements Serializable {
 		os.writeObject(this);
 		os.close();
 
-	}
-
-	/**
-	 * @param chatRoomHostServer
-	 *            the chatRoomHostServer to set
-	 */
-	public final void setChatRoomHostServer(final boolean chatRoomHostServer) {
-		final boolean temp = this.chatRoomHostServer;
-		this.chatRoomHostServer = chatRoomHostServer;
-
-		if (chatRoomHostServer == temp)
-			return;
-		if (!chatRoomHostServer && ChatRoom.isServerOpen())
-			ChatRoom.closeServer();
-
-	}
-
-	/**
-	 * @param currentAnimationMode
-	 *            the currentAnimationMode to set
-	 */
-	public final void setCurrentAnimationMode(final int currentAnimationMode) {
-		this.currentAnimationMode = currentAnimationMode;
-	}
-
-	/**
-	 * @param launchOnSystemLogIn
-	 *            the launchOnSystemLogIn to set
-	 */
-	public final void setLaunchOnSystemLogIn(final boolean launchOnSystemLogIn) {
-		this.launchOnSystemLogIn = launchOnSystemLogIn;
-	}
-
-	/**
-	 * @param launchOnUserLogIn
-	 *            the launchOnUserLogIn to set
-	 */
-	public final void setLaunchOnUserLogIn(final boolean launchOnUserLogIn) {
-		this.launchOnUserLogIn = launchOnUserLogIn;
-	}
-
-	/**
-	 * @param openProgramOnDoubleClickTrayIcon
-	 *            the openProgramOnDoubleClickTrayIcon to set
-	 */
-	public final void setOpenProgramOnDoubleClickTrayIcon(final boolean openProgramOnDoubleClickTrayIcon) {
-		this.openProgramOnDoubleClickTrayIcon = openProgramOnDoubleClickTrayIcon;
-		if (openProgramOnDoubleClickTrayIcon)
-			Kröw.getSystemTrayManager().addActionListener();
-		else
-			Kröw.getSystemTrayManager().removeActionListener();
-	}
-
-	public void setShapeBackgroundRespondToMouseMovement(final boolean shapeBackgroundRespondToMouseMovement) {
-		this.shapeBackgroundRespondToMouseMovement = shapeBackgroundRespondToMouseMovement;
-	}
-
-	/**
-	 * @param useTrayIcon
-	 *            the useTrayIcon to set
-	 */
-	public final void setUseTrayIcon(final boolean useTrayIcon) {
-		this.useTrayIcon = useTrayIcon;
-		if (useTrayIcon)
-			Kröw.getSystemTrayManager().showIcon();
-		else
-			Kröw.getSystemTrayManager().hideIcon();
 	}
 
 	private void writeObject(final ObjectOutputStream os) throws IOException {
