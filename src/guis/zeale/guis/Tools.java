@@ -511,8 +511,7 @@ public class Tools extends Page {
 
 	}
 
-	private static final double PANE_VGAP = (double) 85 / 1080 * Kröw.getSystemProperties().getScreenHeight(),
-			PANE_HGAP = (double) 70 / 1920 * Kröw.getSystemProperties().getScreenWidth();
+	private static final double PANE_VGAP = Kröw.scaleHeight(85), PANE_HGAP = Kröw.scaleWidth(70);
 
 	private static final double ICON_HEIGHT = (double) 100 / 1080 * Kröw.getSystemProperties().getScreenHeight(),
 			ICON_WIDTH = (double) 100 / 1920 * Kröw.getSystemProperties().getScreenWidth();
@@ -593,6 +592,10 @@ public class Tools extends Page {
 
 	@Override
 	public void initialize() {
+
+		subPane.setPrefSize(Kröw.scaleWidth(1920), Kröw.scaleHeight(900));
+		subPane.setLayoutY(Kröw.scaleHeight(50));
+
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 		if (Kröw.getSystemProperties().isDPIOversized()) {
 			final Label label = new Label("Your screen's DPI is too large. Program icons may appear to be cut off.");
