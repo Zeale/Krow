@@ -181,6 +181,7 @@
                               <Font size="14.0" />
                            </font>
                         </Button>
+                        <Button layoutX="815.0" layoutY="347.0" mnemonicParsing="false" onAction="#_event_clear" styleClass="pop-button" text="Clear" />
                      </children></AnchorPane>
             </content>
           </Tab>
@@ -191,19 +192,19 @@
           </Tab>
         </tabs>
       </TabPane>
-      <Accordion layoutX="1718.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <Accordion id="CalculatorAccordion" layoutX="1718.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <panes>
-          <TitledPane animated="false" text="Statistics">
+          <TitledPane animated="false" style="-fx-text-fill: gold;" text="Statistics">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
             </content>
           </TitledPane>
-          <TitledPane animated="false" text="Chemistry">
+          <TitledPane animated="false" style="-fx-text-fill: gold;" text="Chemistry">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
             </content>
           </TitledPane>
-          <TitledPane animated="false" text="Calculus">
+          <TitledPane animated="false" style="-fx-text-fill: gold;" text="Calculus">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
             </content>
