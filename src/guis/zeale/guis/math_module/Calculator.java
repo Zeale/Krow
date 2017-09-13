@@ -87,19 +87,21 @@ public class Calculator extends Page {
 		// visual content to the TEXT content.
 		//
 		// That will then copy its contents to text
-		for (Node n : ((Pane) arithmeticTab.getContent()).getChildren()) {
-			n.setLayoutX(Kröw.scaleWidth(n.getLayoutX()));
-			n.setLayoutY(Kröw.scaleWidth(n.getLayoutY()));
-			if (n instanceof Region) {
-				Region r = (Region) n;
-				r.setPrefSize(Kröw.scaleWidth(r.getPrefWidth()), Kröw.scaleHeight(r.getPrefHeight()));
-				if (n instanceof Button) {
-					Button b = (Button) n;
-					if (b.getOnAction() == null)
-						b.setOnAction(event -> appendText(b.getText()));
+		for (Tab t : buttonTabPane.getTabs())
+			if (!(isTabDiscrete(t)))
+				for (Node n : ((Pane) t.getContent()).getChildren()) {
+					n.setLayoutX(Kröw.scaleWidth(n.getLayoutX()));
+					n.setLayoutY(Kröw.scaleWidth(n.getLayoutY()));
+					if (n instanceof Region) {
+						Region r = (Region) n;
+						r.setPrefSize(Kröw.scaleWidth(r.getPrefWidth()), Kröw.scaleHeight(r.getPrefHeight()));
+						if (n instanceof Button) {
+							Button b = (Button) n;
+							if (b.getOnAction() == null)
+								b.setOnAction(event -> appendText(b.getText()));
+						}
+					}
 				}
-			}
-		}
 
 		if (Kröw.getProgramSettings().calculatorUseOuterZoomAnimation)
 			addHoverAnimation(1.02, pane.getChildren());
@@ -202,6 +204,23 @@ public class Calculator extends Page {
 			});
 
 		}
+	}
+
+	private void makeTabDiscrete(Tab tab) {
+		tab.getProperties().put(PropertyKeys.DISCRETE_TAB, true);
+	}
+
+	private boolean isTabDiscrete(Tab tab) {
+		return tab.getProperties().containsKey(PropertyKeys.DISCRETE_TAB)
+				&& tab.getProperties().get(PropertyKeys.DISCRETE_TAB).equals(true);
+	}
+
+	private void makeTabNormal(Tab tab) {
+		tab.getProperties().remove(PropertyKeys.DISCRETE_TAB);
+	}
+
+	private static enum PropertyKeys {
+		DISCRETE_TAB;
 	}
 
 	/***************************************************************************************
