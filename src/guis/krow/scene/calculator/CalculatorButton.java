@@ -1,4 +1,4 @@
-package zeale.guis.math_module.scene.calculator;
+package krow.scene.calculator;
 
 import javafx.scene.Node;
 import javafx.scene.control.Button;
