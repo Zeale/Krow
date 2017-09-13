@@ -22,6 +22,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.effect.Reflection;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -459,6 +460,16 @@ public class Statistics extends WindowManager.Page {
 
 	@Override
 	public void initialize() {
+
+		WindowManager.getStage().getScene().addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				System.out.println(event.getScreenX());
+				System.out.println(event.getScreenY());
+			}
+		});
+
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 
 		searchBar.setPrefWidth(Kröw.scaleWidth(SEARCH_BAR_WIDTH));
@@ -575,11 +586,12 @@ public class Statistics extends WindowManager.Page {
 		contains.setToggleGroup(searchTypesGroup);
 		endsWith.setToggleGroup(searchTypesGroup);
 
-		startsWith.setLayoutY(44);
+		startsWith.setLayoutX(Kröw.scaleWidth(1593));
+		startsWith.setLayoutY(Kröw.scaleHeight(44));
 		contains.setLayoutX(startsWith.getLayoutX());
-		contains.setLayoutY(startsWith.getLayoutY() + startsWith.getPrefHeight() + 25);
+		contains.setLayoutY(startsWith.getLayoutY() + startsWith.getPrefHeight() + Kröw.scaleHeight(25));
 		endsWith.setLayoutX(contains.getLayoutX());
-		endsWith.setLayoutY(contains.getLayoutY() + contains.getPrefHeight() + 25);
+		endsWith.setLayoutY(contains.getLayoutY() + contains.getPrefHeight() + Kröw.scaleHeight(25));
 
 		startsWith.setSelected(true);
 
