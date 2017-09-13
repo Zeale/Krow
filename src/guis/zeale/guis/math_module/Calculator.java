@@ -66,6 +66,7 @@ public class Calculator extends Page {
 		/******************************
 		 **** INJECTED NODE SIZING ****
 		 ******************************/
+		pane.setPrefSize(Kröw.scaleWidth(1920), Kröw.scaleHeight(1080));
 
 		calcIO.setPrefSize(Kröw.scaleWidth(954), Kröw.scaleHeight(42));
 		calcIO.setLayoutX(Kröw.scaleWidth(485));
