@@ -81,7 +81,6 @@ public class Calculator extends Page {
 		 **** INJECTED NODE PROPERTIES ****
 		 **********************************/
 		calcIO.setText(cachedText);
-		solve.setOnAction(event -> evaluate());
 
 		// This loop assures that regular buttons will automatically append
 		// their
@@ -113,7 +112,7 @@ public class Calculator extends Page {
 	 *************************************************************************************/
 
 	@FXML
-	private void evaluate() {
+	private void _event_evaluate() {
 		try {
 			calcIO.setText("" + new EquationParser().evaluate(calcIO.getText()));
 		} catch (EmptyEquationException | UnmatchedParenthesisException | IrregularCharacterException e) {
@@ -122,17 +121,17 @@ public class Calculator extends Page {
 	}
 
 	@FXML
-	private void cube() {
+	private void _event_cube() {
 		appendText("^3");
 	}
 
 	@FXML
-	private void square() {
+	private void _event_square() {
 		appendText("^2");
 	}
 
 	@FXML
-	private void sqrt() {
+	private void _event_sqrt() {
 		appendText((char) 8730 + "(");
 	}
 
