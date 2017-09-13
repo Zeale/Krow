@@ -101,7 +101,8 @@ public class Calculator extends Page {
 					b.setOnAction(event -> appendText(b.getText()));
 			}
 
-		addHoverAnimation(1.02, pane.getChildren());
+		if (Kröw.getProgramSettings().calculatorUseOuterZoomAnimation)
+			addHoverAnimation(1.02, pane.getChildren());
 		addHoverAnimation(1.1, ((AnchorPane) arithmeticTab.getContent()).getChildren());
 
 	}

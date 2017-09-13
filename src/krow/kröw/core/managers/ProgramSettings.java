@@ -58,6 +58,9 @@ public class ProgramSettings implements Serializable {
 	private boolean useTrayIcon = false;
 	private boolean openProgramOnDoubleClickTrayIcon = true;
 
+	// TODO Add options to change this.
+	public boolean calculatorUseOuterZoomAnimation = false;
+
 	private void bootup() {
 
 	}
