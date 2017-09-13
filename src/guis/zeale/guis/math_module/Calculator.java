@@ -15,8 +15,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager.Page;
@@ -70,8 +68,6 @@ public class Calculator extends Page {
 		 **** INJECTED NODE SIZING ****
 		 ******************************/
 		pane.setPrefSize(Kröw.scaleWidth(1920), Kröw.scaleHeight(1080));
-		// TODO Fix scaling issue
-		System.out.println(Kröw.scaleWidth(1920));
 
 		calcIO.setPrefSize(Kröw.scaleWidth(954), Kröw.scaleHeight(42));
 		calcIO.setLayoutX(Kröw.scaleWidth(485));
