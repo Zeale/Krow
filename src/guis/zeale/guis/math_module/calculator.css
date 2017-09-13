@@ -11,3 +11,8 @@
 	-fx-border-width: 0 0.5px 0.5px 0.5px;
 	-fx-border-style: solid;
 }
+
+.pop-button {
+	-fx-font-size: 16px;
+	-fx-font-weight: bold;
+}
