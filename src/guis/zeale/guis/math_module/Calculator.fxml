@@ -76,6 +76,46 @@
                               <Font size="14.0" />
                            </font>
                         </Button>
+                        <Button focusTraversable="false" layoutX="564.0" layoutY="121.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="/">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                        <Button focusTraversable="false" layoutX="564.0" layoutY="169.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="*">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                        <Button focusTraversable="false" layoutX="564.0" layoutY="266.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="+">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                        <Button focusTraversable="false" layoutX="564.0" layoutY="218.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="-">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                        <Button focusTraversable="false" layoutX="612.0" layoutY="121.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="\%">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                        <Button focusTraversable="false" layoutX="612.0" layoutY="266.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="^">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="square" focusTraversable="false" layoutX="612.0" layoutY="169.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-font-size: 10;" styleClass="pop-button" text="2">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="cube" focusTraversable="false" layoutX="612.0" layoutY="218.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-font-size: 10;" styleClass="pop-button" text="3">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
                      </children></AnchorPane>
             </content>
           </Tab>

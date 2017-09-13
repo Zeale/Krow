@@ -67,6 +67,8 @@ public class Calculator extends Page {
 		 **** INJECTED NODE SIZING ****
 		 ******************************/
 		pane.setPrefSize(Kröw.scaleWidth(1920), Kröw.scaleHeight(1080));
+		// TODO Fix scaling issue
+		System.out.println(Kröw.scaleWidth(1920));
 
 		calcIO.setPrefSize(Kröw.scaleWidth(954), Kröw.scaleHeight(42));
 		calcIO.setLayoutX(Kröw.scaleWidth(485));
@@ -110,6 +112,16 @@ public class Calculator extends Page {
 		} catch (EmptyEquationException | UnmatchedParenthesisException | IrregularCharacterException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@FXML
+	private void cube() {
+		appendText("^3");
+	}
+
+	@FXML
+	private void square() {
+		appendText("^2");
 	}
 
 	/**************************************************************************************
