@@ -22,7 +22,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.effect.Reflection;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -460,15 +459,6 @@ public class Statistics extends WindowManager.Page {
 
 	@Override
 	public void initialize() {
-
-		WindowManager.getStage().getScene().addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent event) {
-				System.out.println(event.getScreenX());
-				System.out.println(event.getScreenY());
-			}
-		});
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 
