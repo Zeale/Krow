@@ -14,6 +14,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager.Page;
@@ -84,16 +87,24 @@ public class Calculator extends Page {
 		calcIO.setText(cachedText);
 		solve.setOnAction(event -> evaluate());
 
-		// This assures that regular buttons will automatically append their
+		// This loop assures that regular buttons will automatically append
+		// their
 		// visual content to the TEXT content.
 		//
 		// That will then copy its contents to text
-		for (Node n : ((Pane) arithmeticTab.getContent()).getChildren())
-			if (n instanceof Button) {
-				Button b = (Button) n;
-				if (b.getOnAction() == null)
-					b.setOnAction(event -> appendText(b.getText()));
+		for (Node n : ((Pane) arithmeticTab.getContent()).getChildren()) {
+			n.setLayoutX(Kröw.scaleWidth(n.getLayoutX()));
+			n.setLayoutY(Kröw.scaleWidth(n.getLayoutY()));
+			if (n instanceof Region) {
+				Region r = (Region) n;
+				r.setPrefSize(Kröw.scaleWidth(r.getPrefWidth()), Kröw.scaleHeight(r.getPrefHeight()));
+				if (n instanceof Button) {
+					Button b = (Button) n;
+					if (b.getOnAction() == null)
+						b.setOnAction(event -> appendText(b.getText()));
+				}
 			}
+		}
 
 		if (Kröw.getProgramSettings().calculatorUseOuterZoomAnimation)
 			addHoverAnimation(1.02, pane.getChildren());
