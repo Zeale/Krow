@@ -55,6 +55,10 @@ public class Calculator extends Page {
 	@Override
 	public void initialize() {
 
+		/******************************
+		 **** INJECTED NODE SIZING ****
+		 ******************************/
+
 		calcIO.setText(cachedText);
 		solve.setOnAction(event -> evaluate());
 
@@ -66,14 +70,14 @@ public class Calculator extends Page {
 			if (n instanceof Button) {
 				Button b = (Button) n;
 				if (b.getOnAction() == null)
-					b.setOnAction(event -> calcIO.appendText(b.getText()));
+					b.setOnAction(event -> appendText(b.getText()));
 			}
 
 	}
 
-	/*********************************************************************************
-	 *********************************** EVENT METHODS *******************************
-	 *********************************************************************************/
+	/*************************************************************************************
+	 *********************************** EVENT METHODS ***********************************
+	 *************************************************************************************/
 
 	@FXML
 	private void evaluate() {
@@ -82,6 +86,15 @@ public class Calculator extends Page {
 		} catch (EmptyEquationException | UnmatchedParenthesisException | IrregularCharacterException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/***************************************************************************************
+	 *********************************** INSTANCE METHODS **********************************
+	 ***************************************************************************************/
+
+	private void appendText(String text) {
+		calcIO.appendText(text);
+		calcIO.positionCaret(calcIO.getLength());
 	}
 
 }
