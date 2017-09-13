@@ -1,13 +1,20 @@
 package zeale.guis.math_module;
 
+import java.util.List;
+
+import javafx.animation.ScaleTransition;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager.Page;
 import kröw.libs.math.EquationParser;
@@ -56,6 +63,15 @@ public class Calculator extends Page {
 	@Override
 	public void initialize() {
 
+		// TODO Remove testing code below.
+		pane.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				System.out.println(event.getPickResult().getIntersectedNode());
+			}
+		});
+
 		/******************************
 		 **** INJECTED NODE SIZING ****
 		 ******************************/
@@ -85,6 +101,9 @@ public class Calculator extends Page {
 					b.setOnAction(event -> appendText(b.getText()));
 			}
 
+		addHoverAnimation(1.02, pane.getChildren());
+		addHoverAnimation(1.1, ((AnchorPane) arithmeticTab.getContent()).getChildren());
+
 	}
 
 	/*************************************************************************************
@@ -97,6 +116,70 @@ public class Calculator extends Page {
 			calcIO.setText("" + new EquationParser().evaluate(calcIO.getText()));
 		} catch (EmptyEquationException | UnmatchedParenthesisException | IrregularCharacterException e) {
 			e.printStackTrace();
+		}
+	}
+
+	/**************************************************************************************
+	 *********************************** HELPER METHODS ***********************************
+	 **************************************************************************************/
+
+	private void addHoverAnimation(double size, Node... nodes) {
+		for (Node n : nodes) {
+
+			ScaleTransition buttonTabPaneScaleTransition = new ScaleTransition(Duration.seconds(0.1));
+			buttonTabPaneScaleTransition.setNode(n);
+
+			n.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<Event>() {
+
+				@Override
+				public void handle(Event event) {
+					buttonTabPaneScaleTransition.stop();
+					buttonTabPaneScaleTransition.setToX(size);
+					buttonTabPaneScaleTransition.setToY(size);
+					buttonTabPaneScaleTransition.play();
+				}
+			});
+			n.addEventHandler(MouseEvent.MOUSE_EXITED, new EventHandler<Event>() {
+
+				@Override
+				public void handle(Event event) {
+					buttonTabPaneScaleTransition.stop();
+					buttonTabPaneScaleTransition.setToX(1);
+					buttonTabPaneScaleTransition.setToY(1);
+					buttonTabPaneScaleTransition.play();
+				}
+			});
+
+		}
+	}
+
+	private void addHoverAnimation(double size, List<Node> nodes) {
+		for (Node n : nodes) {
+
+			ScaleTransition buttonTabPaneScaleTransition = new ScaleTransition(Duration.seconds(0.1));
+			buttonTabPaneScaleTransition.setNode(n);
+
+			n.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<Event>() {
+
+				@Override
+				public void handle(Event event) {
+					buttonTabPaneScaleTransition.stop();
+					buttonTabPaneScaleTransition.setToX(size);
+					buttonTabPaneScaleTransition.setToY(size);
+					buttonTabPaneScaleTransition.play();
+				}
+			});
+			n.addEventHandler(MouseEvent.MOUSE_EXITED, new EventHandler<Event>() {
+
+				@Override
+				public void handle(Event event) {
+					buttonTabPaneScaleTransition.stop();
+					buttonTabPaneScaleTransition.setToX(1);
+					buttonTabPaneScaleTransition.setToY(1);
+					buttonTabPaneScaleTransition.play();
+				}
+			});
+
 		}
 	}
 

@@ -1,0 +1,13 @@
+.tab-pane .tab-header-area {
+	-fx-padding: 0;
+}
+
+.tab-pane .tab-header-area .headers-region {
+	-fx-padding: 0;
+}
+
+.tab-pane .tab-content-area {
+	-fx-border-color: black;
+	-fx-border-width: 0 0.5px 0.5px 0.5px;
+	-fx-border-style: solid;
+}
