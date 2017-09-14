@@ -2,20 +2,31 @@ package zeale.guis.math_module;
 
 import java.util.List;
 
+import javafx.animation.Animation;
+import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
+import javafx.animation.Transition;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import krow.guis.math_module.TabGroup;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager.Page;
 import kröw.libs.math.EquationParser;
@@ -56,6 +67,10 @@ public class Calculator extends Page {
 	private TabPane buttonTabPane;
 	@FXML
 	private Tab arithmeticTab, functionsTab;
+	@FXML
+	private Accordion menu;
+
+	private TabGroup statistics, calculus, chemistry, dflt;
 
 	/*****************************************************************************************
 	 *********************************** INITIALIZATION METHOD *******************************
@@ -63,6 +78,8 @@ public class Calculator extends Page {
 
 	@Override
 	public void initialize() {
+
+		dflt = new TabGroup(buttonTabPane.getTabs());
 
 		/******************************
 		 **** INJECTED NODE SIZING ****
@@ -81,6 +98,51 @@ public class Calculator extends Page {
 		 **** INJECTED NODE PROPERTIES ****
 		 **********************************/
 		calcIO.setText(cachedText);
+
+		// This gives accordion buttons animations.
+		for (TitledPane tp : menu.getPanes())
+			if (tp.getContent() instanceof Pane)
+				for (Node n : ((Pane) tp.getContent()).getChildren())
+					if (n instanceof Button) {
+						new Transition() {
+
+							private Color toColor, fromColor;
+
+							{
+								setCycleDuration(Duration.seconds(0.4));
+								setInterpolator(Interpolator.EASE_OUT);
+
+								((Button) n).setTextFill(Color.GOLD);
+
+								n.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<Event>() {
+
+									@Override
+									public void handle(Event event) {
+										stop();
+										fromColor = (Color) ((Button) n).getTextFill();
+										toColor = Color.RED;
+										play();
+									}
+								});
+								n.addEventHandler(MouseEvent.MOUSE_EXITED, new EventHandler<Event>() {
+
+									@Override
+									public void handle(Event event) {
+										stop();
+										fromColor = (Color) ((Button) n).getTextFill();
+										toColor = Color.GOLD;
+										play();
+									}
+								});
+							}
+
+							@Override
+							protected void interpolate(double frac) {
+								((Button) n).setTextFill((fromColor).interpolate(toColor, frac));
+							}
+						};
+
+					}
 
 		// This loop assures that regular buttons will automatically append
 		// their
@@ -140,6 +202,26 @@ public class Calculator extends Page {
 	@FXML
 	private void _event_clear() {
 		calcIO.clear();
+	}
+
+	@FXML
+	private void _event_enableStatsMode() {
+		// TODO Implement
+	}
+
+	@FXML
+	private void _event_enableCalculusMode() {
+		// TODO Implement
+	}
+
+	@FXML
+	private void _event_enableChemistryMode() {
+		// TODO Implement
+	}
+
+	@FXML
+	private void _event_enableDefaultMode() {
+		// TODO Implement
 	}
 
 	/**************************************************************************************

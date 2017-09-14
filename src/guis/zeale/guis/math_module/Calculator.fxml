@@ -192,11 +192,14 @@
           </Tab>
         </tabs>
       </TabPane>
-      <Accordion id="CalculatorAccordion" layoutX="1718.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <Accordion id="CalculatorAccordion" fx:id="menu" layoutX="1718.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <panes>
           <TitledPane animated="false" style="-fx-text-fill: gold;" text="Statistics">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="200.0" text="Statistics Page" />
+                     </children></AnchorPane>
             </content>
           </TitledPane>
           <TitledPane animated="false" style="-fx-text-fill: gold;" text="Chemistry">

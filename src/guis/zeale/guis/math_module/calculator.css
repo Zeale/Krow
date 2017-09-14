@@ -6,6 +6,14 @@
 	-fx-text-fill: gold;
 }
 
+#CalculatorAccordion .titled-pane .content .button{
+	-fx-background-color: #00000020;
+	-fx-font-size: 12.0px;
+}
+
+#CalculatorAccordion .titled-pane .content .button:first {
+	-fx-border-width: 1.0px 1.0px 0.5px 1.0px;
+}
 .accordion .titled-pane .title {
 	-fx-font-weight: bold;
 	-fx-background-color: #00000060;
