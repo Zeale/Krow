@@ -69,6 +69,9 @@ public class Calculator extends Page {
 	@FXML
 	private Accordion menu;
 
+	@FXML
+	private TextField statsMinProperty, statsQ1Property, statsMedianProperty, statsQ3Property, statsMaxProperty;
+
 	private TabGroup statistics, calculus, chemistry, dflt;
 
 	/*****************************************************************************************
@@ -240,6 +243,11 @@ public class Calculator extends Page {
 
 	@FXML
 	private void _event_enableDefaultMode() {
+		// TODO Implement
+	}
+
+	@FXML
+	private void _event_evaluateStatsFromProperties() {
 		// TODO Implement
 	}
 
