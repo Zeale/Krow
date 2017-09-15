@@ -12,6 +12,7 @@ import krow.guis.GUIHelper;
 import krow.scene.ScrollMenu;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
+import zeale.guis.math_module.calculator.Calculator;
 
 public class MathModule extends ScrollMenu {
 

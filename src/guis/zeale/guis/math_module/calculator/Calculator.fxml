@@ -198,7 +198,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="200.0" text="Statistics Page" />
+                        <Button mnemonicParsing="false" onAction="#_event_enableStatsMode" prefHeight="25.0" prefWidth="200.0" text="Statistics Page" />
                      </children></AnchorPane>
             </content>
           </TitledPane>
@@ -216,7 +216,7 @@
       </Accordion>
    </children>
    <stylesheets>
-      <URL value="@../css/stylesheet.css" />
+      <URL value="@../../css/stylesheet.css" />
       <URL value="@calculator.css" />
    </stylesheets>
 </AnchorPane>

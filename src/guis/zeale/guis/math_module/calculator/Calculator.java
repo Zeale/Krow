@@ -1,15 +1,16 @@
-package zeale.guis.math_module;
+package zeale.guis.math_module.calculator;
 
+import java.io.IOException;
 import java.util.List;
 
-import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
@@ -19,15 +20,13 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import krow.guis.math_module.TabGroup;
 import kröw.core.Kröw;
+import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
 import kröw.libs.math.EquationParser;
 import kröw.libs.math.exceptions.EmptyEquationException;
@@ -206,7 +205,27 @@ public class Calculator extends Page {
 
 	@FXML
 	private void _event_enableStatsMode() {
-		// TODO Implement
+		if (statistics == null)
+			try {
+				statistics = new TabGroup(
+						FXMLLoader.<TabPane>load(getClass().getResource("StatisticsTabs.fxml")).getTabs());
+			} catch (IOException e) {
+				WindowManager.spawnLabelAtMousePos("Failure", Color.FIREBRICK);
+				e.printStackTrace();
+				return;
+			}
+		statistics.show(buttonTabPane);
+
+		// TODO Remove testing code
+		buttonTabPane.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				System.out.println(event.getPickResult().getIntersectedNode());
+			}
+
+		});
+
 	}
 
 	@FXML
