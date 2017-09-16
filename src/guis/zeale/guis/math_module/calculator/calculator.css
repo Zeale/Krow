@@ -80,7 +80,7 @@
 	-fx-font-weight: bold;
 }
 
-.text-field {
+.text-field, .text-area, .text-area .scroll-pane, .text-area .scroll-pane .content {
 	-fx-text-fill: white;
 	-fx-font-weight: bold;
 	-fx-background-color:  rgba(0.0,0.0,0.0,0.3);

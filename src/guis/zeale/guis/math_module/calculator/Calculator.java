@@ -1,7 +1,11 @@
 package zeale.guis.math_module.calculator;
 
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
@@ -15,6 +19,7 @@ import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
@@ -22,6 +27,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 import krow.guis.math_module.TabGroup;
 import kröw.core.Kröw;
@@ -71,6 +77,10 @@ public class Calculator extends Page {
 	@FXML
 	private TextField statsMinProperty, statsQ1Property, statsMedianProperty, statsQ3Property, statsMaxProperty,
 			statsUBoundProperty, statsLBoundProperty, statsIQRProperty;
+	@FXML
+	private TextArea statsData;
+	@FXML
+	private Text statsDataErrorText;
 
 	private TabGroup statistics, calculus, chemistry, dflt;
 
@@ -245,6 +255,32 @@ public class Calculator extends Page {
 				- Double.parseDouble(statsIQRProperty.getText()) * 1.5));
 		statsUBoundProperty.setText("" + (Double.parseDouble(statsQ3Property.getText())
 				+ Double.parseDouble(statsIQRProperty.getText()) * 1.5));
+	}
+
+	@FXML
+	private void _event_evaluateStats() {
+		ArrayList<Number> numbs = new ArrayList<>();
+		StringBuilder curr = new StringBuilder();
+		int pos = -1;
+		while (++pos < statsData.getText().length()) {
+			char c = statsData.getText().charAt(pos);
+			if ((Character.isDigit(c) || c == '.' || c == ','))
+				curr.append(c);
+			else if (!curr.toString().isEmpty())
+				try {
+					numbs.add(NumberFormat.getNumberInstance(Locale.getDefault()).parse(curr.toString()));
+					curr = new StringBuilder();
+				} catch (ParseException e) {
+					statsDataErrorText.setText("Could not parse the number at " + pos);
+				}
+		}
+
+		try {
+			numbs.add(NumberFormat.getNumberInstance(Locale.getDefault()).parse(curr.toString()));
+		} catch (ParseException e) {
+			statsDataErrorText.setText("Could not parse the number at " + pos);
+		}
+
 	}
 
 	/**************************************************************************************
