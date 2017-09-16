@@ -1,4 +1,4 @@
-package krow.guis.math_module.calculator;
+package krow.guis.math_module.controllers;
 
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;

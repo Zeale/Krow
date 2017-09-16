@@ -1,4 +1,4 @@
-package zeale.guis.math_module.calculator;
+package zeale.guis.math_module.controllers;
 
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -33,7 +33,7 @@ import javafx.scene.text.Text;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import krow.guis.math_module.TabGroup;
-import krow.guis.math_module.calculator.Statistic;
+import krow.guis.math_module.controllers.Statistic;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
@@ -80,17 +80,9 @@ public class Calculator extends Page {
 	@FXML
 	private Accordion menu;
 
-	@FXML
-	private TextField statsMinProperty, statsQ1Property, statsMedianProperty, statsQ3Property, statsMaxProperty,
-			statsUBoundProperty, statsLBoundProperty, statsIQRProperty;
-	@FXML
-	private TextArea statsData;
-	@FXML
-	private Text statsDataErrorText;
-	@FXML
-	private ListView<Statistic> statsOutputListView;
+	private TabGroup calculus, chemistry, dflt;
 
-	private TabGroup statistics, calculus, chemistry, dflt;
+	private StatisticsController statistics = new StatisticsController();
 
 	/*****************************************************************************************
 	 *********************************** INITIALIZATION METHOD *******************************
@@ -229,18 +221,8 @@ public class Calculator extends Page {
 
 	@FXML
 	private void _event_enableStatsMode() {
-		if (statistics == null)
-			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("StatisticsTabs.fxml"));
-				loader.setController(this);
-				statistics = new TabGroup(loader.<TabPane>load().getTabs());
-			} catch (IOException e) {
-				WindowManager.spawnLabelAtMousePos("An error has occurred.", Color.FIREBRICK);
-				e.printStackTrace();
-				return;
-			}
-		statistics.show(buttonTabPane);
-
+		if (statistics.show(buttonTabPane) == null)
+			WindowManager.spawnLabelAtMousePos("An error has occurred.", Color.FIREBRICK);
 	}
 
 	@FXML
@@ -256,53 +238,6 @@ public class Calculator extends Page {
 	@FXML
 	private void _event_enableDefaultMode() {
 		// TODO Implement
-	}
-
-	@FXML
-	private void _event_evaluateStatsFromProperties() {
-		statsIQRProperty.setText(
-				"" + (Double.parseDouble(statsQ3Property.getText()) - Double.parseDouble(statsQ1Property.getText())));
-		statsLBoundProperty.setText("" + (Double.parseDouble(statsQ1Property.getText())
-				- Double.parseDouble(statsIQRProperty.getText()) * 1.5));
-		statsUBoundProperty.setText("" + (Double.parseDouble(statsQ3Property.getText())
-				+ Double.parseDouble(statsIQRProperty.getText()) * 1.5));
-	}
-
-	@FXML
-	private void _event_evaluateStats() {
-		if (statsData.getText().isEmpty()) {
-			statsDataErrorText.setText("Input some values...");
-			return;
-		}
-
-		statsDataErrorText.setText("");
-
-		ArrayList<Number> numbs = new ArrayList<>();
-		StringBuilder curr = new StringBuilder();
-		int pos = -1;
-		while (++pos < statsData.getText().length()) {
-			char c = statsData.getText().charAt(pos);
-			if ((Character.isDigit(c) || c == '.' || c == ','))
-				curr.append(c);
-			else if (!curr.toString().isEmpty())
-				try {
-					numbs.add(NumberFormat.getNumberInstance(Locale.getDefault()).parse(curr.toString()));
-					curr = new StringBuilder();
-				} catch (ParseException e) {
-					statsDataErrorText.setText("Could not parse the number at " + pos);
-				}
-		}
-
-		try {
-			numbs.add(NumberFormat.getNumberInstance(Locale.getDefault()).parse(curr.toString()));
-		} catch (ParseException e) {
-			statsDataErrorText.setText("Could not parse the number at " + pos);
-		}
-
-		double sum = 0;
-		for (Number n : numbs)
-			sum += n.doubleValue();
-
 	}
 
 	/**************************************************************************************
