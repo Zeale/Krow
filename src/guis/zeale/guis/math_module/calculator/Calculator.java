@@ -8,7 +8,6 @@ import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -70,7 +69,8 @@ public class Calculator extends Page {
 	private Accordion menu;
 
 	@FXML
-	private TextField statsMinProperty, statsQ1Property, statsMedianProperty, statsQ3Property, statsMaxProperty;
+	private TextField statsMinProperty, statsQ1Property, statsMedianProperty, statsQ3Property, statsMaxProperty,
+			statsUBoundProperty, statsLBoundProperty, statsIQRProperty;
 
 	private TabGroup statistics, calculus, chemistry, dflt;
 
@@ -210,24 +210,15 @@ public class Calculator extends Page {
 	private void _event_enableStatsMode() {
 		if (statistics == null)
 			try {
-				statistics = new TabGroup(
-						FXMLLoader.<TabPane>load(getClass().getResource("StatisticsTabs.fxml")).getTabs());
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("StatisticsTabs.fxml"));
+				loader.setController(this);
+				statistics = new TabGroup(loader.<TabPane>load().getTabs());
 			} catch (IOException e) {
-				WindowManager.spawnLabelAtMousePos("Failure", Color.FIREBRICK);
+				WindowManager.spawnLabelAtMousePos("An error has occurred.", Color.FIREBRICK);
 				e.printStackTrace();
 				return;
 			}
 		statistics.show(buttonTabPane);
-
-		// TODO Remove testing code
-		buttonTabPane.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent event) {
-				System.out.println(event.getPickResult().getIntersectedNode());
-			}
-
-		});
 
 	}
 
@@ -248,7 +239,12 @@ public class Calculator extends Page {
 
 	@FXML
 	private void _event_evaluateStatsFromProperties() {
-		// TODO Implement
+		statsIQRProperty.setText(
+				"" + (Double.parseDouble(statsQ3Property.getText()) - Double.parseDouble(statsQ1Property.getText())));
+		statsLBoundProperty.setText("" + (Double.parseDouble(statsQ1Property.getText())
+				- Double.parseDouble(statsIQRProperty.getText()) * 1.5));
+		statsUBoundProperty.setText("" + (Double.parseDouble(statsQ3Property.getText())
+				+ Double.parseDouble(statsIQRProperty.getText()) * 1.5));
 	}
 
 	/**************************************************************************************
