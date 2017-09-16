@@ -17,6 +17,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
@@ -28,8 +30,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
 import javafx.util.Duration;
 import krow.guis.math_module.TabGroup;
+import krow.guis.math_module.calculator.Statistic;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
@@ -39,6 +43,8 @@ import kröw.libs.math.exceptions.IrregularCharacterException;
 import kröw.libs.math.exceptions.UnmatchedParenthesisException;
 
 public class Calculator extends Page {
+
+	private boolean hasLoaded;
 
 	/**
 	 * This text controls what is inside this {@link Page}'s {@link #calcIO}
@@ -81,6 +87,8 @@ public class Calculator extends Page {
 	private TextArea statsData;
 	@FXML
 	private Text statsDataErrorText;
+	@FXML
+	private ListView<Statistic> statsOutputListView;
 
 	private TabGroup statistics, calculus, chemistry, dflt;
 
@@ -90,6 +98,9 @@ public class Calculator extends Page {
 
 	@Override
 	public void initialize() {
+		if (hasLoaded)
+			return;
+		hasLoaded = true;
 
 		dflt = new TabGroup(buttonTabPane.getTabs());
 
@@ -259,6 +270,13 @@ public class Calculator extends Page {
 
 	@FXML
 	private void _event_evaluateStats() {
+		if (statsData.getText().isEmpty()) {
+			statsDataErrorText.setText("Input some values...");
+			return;
+		}
+
+		statsDataErrorText.setText("");
+
 		ArrayList<Number> numbs = new ArrayList<>();
 		StringBuilder curr = new StringBuilder();
 		int pos = -1;
@@ -280,6 +298,10 @@ public class Calculator extends Page {
 		} catch (ParseException e) {
 			statsDataErrorText.setText("Could not parse the number at " + pos);
 		}
+
+		double sum = 0;
+		for (Number n : numbs)
+			sum += n.doubleValue();
 
 	}
 
