@@ -1,7 +1,16 @@
 package krow.guis.math_module.controllers;
 
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
 
 public final class Statistic {
@@ -13,6 +22,11 @@ public final class Statistic {
 		this.value = value;
 	}
 
+	public Statistic(String name, Number value) {
+		this.name = name;
+		this.value = value.toString();
+	}
+
 	public static Callback<ListView<Statistic>, ListCell<Statistic>> getStatisticListCellFactory() {
 		return new Callback<ListView<Statistic>, ListCell<Statistic>>() {
 
@@ -22,10 +36,24 @@ public final class Statistic {
 					@Override
 					protected void updateItem(Statistic item, boolean empty) {
 						super.updateItem(item, empty);
-						if (empty)
+						if (empty) {
 							setText("");
-						else
+							setBackground(new Background(
+									new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
+							return;// Don't run below code.
+						} else
 							setText(item.name + ": " + item.value);
+
+						setTextAlignment(TextAlignment.CENTER);
+						setAlignment(Pos.CENTER);
+						setTextFill(Color.WHITE);
+						setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, Font.getDefault().getSize()));
+
+						final BackgroundFill[] backgrounds = {
+								new BackgroundFill(Color.gray(0.2, 0.3), CornerRadii.EMPTY, Insets.EMPTY),
+								new BackgroundFill(Color.gray(0.4, 0.2), CornerRadii.EMPTY, Insets.EMPTY) };
+
+						setBackground(new Background(backgrounds[param.getItems().indexOf(item) % backgrounds.length]));
 					}
 				};
 				return cell;

@@ -15,8 +15,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import krow.guis.math_module.TabGroup;
+import krow.guis.math_module.controllers.Statistic;
 import kröw.core.managers.WindowManager;
-import zeale.guis.Statistics.Statistic;
 
 public class StatisticsController {
 
@@ -55,6 +55,8 @@ public class StatisticsController {
 		if (loaded)
 			return;
 		loaded = false;
+
+		statsOutputListView.setCellFactory(Statistic.getStatisticListCellFactory());
 	}
 
 	@FXML
@@ -69,6 +71,7 @@ public class StatisticsController {
 
 	@FXML
 	void _event_evaluateStats() {
+
 		if (statsData.getText().isEmpty()) {
 			statsDataErrorText.setText("Input some values...");
 			return;
@@ -79,8 +82,13 @@ public class StatisticsController {
 		ArrayList<Number> numbs = new ArrayList<>();
 		StringBuilder curr = new StringBuilder();
 		int pos = -1;
-		while (++pos < statsData.getText().length()) {
-			char c = statsData.getText().charAt(pos);
+		StringBuilder text = new StringBuilder(statsData.getText());
+		while (!(Character.isDigit(text.charAt(text.length() - 1)) || (text.charAt(text.length() - 1) == '.')
+				|| (text.charAt(text.length() - 1) == ',')))
+			text.deleteCharAt(text.length() - 1);
+
+		while (++pos < text.toString().length()) {
+			char c = text.toString().charAt(pos);
 			if ((Character.isDigit(c) || c == '.' || c == ','))
 				curr.append(c);
 			else if (!curr.toString().isEmpty())
@@ -95,12 +103,17 @@ public class StatisticsController {
 		try {
 			numbs.add(NumberFormat.getNumberInstance(Locale.getDefault()).parse(curr.toString()));
 		} catch (ParseException e) {
-			statsDataErrorText.setText("Could not parse the number at " + pos);
+			statsDataErrorText.setText("Could not parse the number at character " + pos);
 		}
 
+		statsOutputListView.getItems().clear();
+
 		double sum = 0;
+
 		for (Number n : numbs)
 			sum += n.doubleValue();
+
+		statsOutputListView.getItems().add(new Statistic("Sum", sum));
 
 	}
 
