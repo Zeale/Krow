@@ -16,6 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import krow.guis.math_module.TabGroup;
+import krow.guis.math_module.controllers.NumericalStatistic;
 import krow.guis.math_module.controllers.Statistic;
 import kröw.core.managers.WindowManager;
 
@@ -115,11 +116,13 @@ public class StatisticsController {
 
 		pane.getSelectionModel().select(output);
 
-		double sum = 0;
+		NumericalStatistic count = new NumericalStatistic("Count", numbs.size()),
+				sum = new NumericalStatistic("Sum", 0), mean = new NumericalStatistic("Mean", 0),
+				mode = new NumericalStatistic("Mode", 0), median = new NumericalStatistic("Median", 0);
 		for (Number n : numbs)
-			sum += n.doubleValue();
-		statsOutputListView.getItems().addAll(new Statistic("Sum", sum), new Statistic("Count", numbs.size()),
-				new Statistic("Average (Mean)", sum / numbs.size()));
+			sum.value += n.doubleValue();
+		mean.value = sum.value / count.value;
+		
 
 	}
 

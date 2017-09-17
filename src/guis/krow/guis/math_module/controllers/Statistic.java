@@ -13,18 +13,18 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
 
-public final class Statistic {
+public abstract class Statistic {
 	public final String name;
-	public final String value;
 
-	public Statistic(String name, String value) {
+	public Statistic(String name) {
 		this.name = name;
-		this.value = value;
 	}
 
-	public Statistic(String name, Number value) {
-		this.name = name;
-		this.value = value.toString();
+	protected abstract String getValue();
+
+	@Override
+	public String toString() {
+		return name + ": " + getValue();
 	}
 
 	public static Callback<ListView<Statistic>, ListCell<Statistic>> getStatisticListCellFactory() {
@@ -42,7 +42,7 @@ public final class Statistic {
 									new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
 							return;// Don't run below code.
 						} else
-							setText(item.name + ": " + item.value);
+							setText(item.name + ": " + item.toString());
 
 						setTextAlignment(TextAlignment.CENTER);
 						setAlignment(Pos.CENTER);
