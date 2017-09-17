@@ -9,6 +9,7 @@ import java.util.Locale;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -21,6 +22,7 @@ import kröw.core.managers.WindowManager;
 public class StatisticsController {
 
 	private TabGroup tabs;
+	private TabPane pane;
 	private boolean loaded;
 
 	StatisticsController() {
@@ -49,6 +51,9 @@ public class StatisticsController {
 	Text statsDataErrorText;
 	@FXML
 	ListView<Statistic> statsOutputListView;
+
+	@FXML
+	private Tab dataSet, properties, output;
 
 	@FXML
 	private void initialize() {
@@ -108,12 +113,13 @@ public class StatisticsController {
 
 		statsOutputListView.getItems().clear();
 
-		double sum = 0;
+		pane.getSelectionModel().select(output);
 
+		double sum = 0;
 		for (Number n : numbs)
 			sum += n.doubleValue();
-
-		statsOutputListView.getItems().add(new Statistic("Sum", sum));
+		statsOutputListView.getItems().addAll(new Statistic("Sum", sum), new Statistic("Count", numbs.size()),
+				new Statistic("Average (Mean)", sum / numbs.size()));
 
 	}
 
@@ -127,7 +133,7 @@ public class StatisticsController {
 			e.printStackTrace();
 			return null;
 		}
-
+		this.pane = pane;
 		return tabs.show(pane);
 	}
 
