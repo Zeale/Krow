@@ -1,5 +1,7 @@
 package krow.guis.math_module.controllers;
 
+import java.text.DecimalFormat;
+
 public final class NumericalStatistic extends Statistic {
 
 	public double value;
@@ -11,7 +13,7 @@ public final class NumericalStatistic extends Statistic {
 
 	@Override
 	protected String getValue() {
-		return "" + value;
+		return DecimalFormat.getNumberInstance().format(value);
 	}
 
 }

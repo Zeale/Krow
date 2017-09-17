@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -116,13 +119,34 @@ public class StatisticsController {
 
 		pane.getSelectionModel().select(output);
 
+		numbs.sort(null);
+
 		NumericalStatistic count = new NumericalStatistic("Count", numbs.size()),
-				sum = new NumericalStatistic("Sum", 0), mean = new NumericalStatistic("Mean", 0),
-				mode = new NumericalStatistic("Mode", 0), median = new NumericalStatistic("Median", 0);
+				sum = new NumericalStatistic("Sum", 0), min = new NumericalStatistic("Min", numbs.get(0).doubleValue()),
+				mean = new NumericalStatistic("Mean", 0),
+				max = new NumericalStatistic("Max", numbs.get(numbs.size() - 1).doubleValue()),
+				mode = new NumericalStatistic("Mode", 0),
+				median = new NumericalStatistic("Median", (numbs.size() & 1) == 0
+						? (numbs.get(numbs.size() / 2 - 1).doubleValue() + numbs.get(numbs.size() / 2).doubleValue())
+								/ 2
+						: numbs.get(numbs.size() / 2).doubleValue());
 		for (Number n : numbs)
 			sum.value += n.doubleValue();
 		mean.value = sum.value / count.value;
-		
+
+		Map<Double, Integer> numbmap = new HashMap<>();
+		for (Number n : numbs)
+			numbmap.put(n.doubleValue(), (numbmap.containsKey(n.doubleValue())) ? numbmap.get(n.doubleValue()) + 1 : 1);
+		double nmax = 0;
+		int ncount = 0;
+		for (Double d : numbmap.keySet())
+			if (numbmap.get(d) > ncount) {
+				ncount = numbmap.get(d);
+				nmax = d;
+			}
+		mode.value = nmax;
+
+		statsOutputListView.getItems().addAll(count, sum, min, mean, max, mode, median);
 
 	}
 

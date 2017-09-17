@@ -42,7 +42,7 @@ public abstract class Statistic {
 									new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
 							return;// Don't run below code.
 						} else
-							setText(item.name + ": " + item.toString());
+							setText(item.toString());
 
 						setTextAlignment(TextAlignment.CENTER);
 						setAlignment(Pos.CENTER);
