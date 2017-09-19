@@ -85,3 +85,11 @@
 	-fx-font-weight: bold;
 	-fx-background-color:  rgba(0.0,0.0,0.0,0.3);
 }
+
+.check-box .box {
+	-fx-background-color: #00000050;
+}
+
+.check-box:selected .box .mark {
+	-fx-background-color: gold;
+}

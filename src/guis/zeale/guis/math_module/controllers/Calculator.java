@@ -1,11 +1,6 @@
 package zeale.guis.math_module.controllers;
 
-import java.io.IOException;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
@@ -13,15 +8,11 @@ import javafx.animation.Transition;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
@@ -29,11 +20,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
-import javafx.util.Callback;
 import javafx.util.Duration;
 import krow.guis.math_module.TabGroup;
-import krow.guis.math_module.controllers.Statistic;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
@@ -82,12 +70,16 @@ public class Calculator extends Page {
 
 	private TabGroup calculus, chemistry, dflt;
 
-	private StatisticsController statistics = new StatisticsController();
+	private StatisticsController statistics = new StatisticsController(this);
 
 	/*****************************************************************************************
 	 *********************************** INITIALIZATION METHOD *******************************
 	 *****************************************************************************************/
 
+	public void show(){
+		dflt.show(buttonTabPane);
+	}
+	
 	@Override
 	public void initialize() {
 		if (hasLoaded)

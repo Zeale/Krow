@@ -17,6 +17,12 @@
                   <TextArea fx:id="statsData" layoutX="215.0" layoutY="173.0" prefHeight="109.0" prefWidth="523.0" />
                   <Button focusTraversable="false" layoutX="425.0" layoutY="345.0" mnemonicParsing="false" onAction="#_event_evaluateStats" styleClass="pop-button" text="Calculate" />
                   <Text fx:id="statsDataErrorText" fill="#ff3100" layoutX="215.0" layoutY="74.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" textAlignment="CENTER" wrappingWidth="523.13671875" />
+                  <CheckBox fx:id="sampleCheckBox" layoutX="429.0" layoutY="64.0" mnemonicParsing="false" text="Sample" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </CheckBox>
+                  <Button focusTraversable="false" layoutX="879.0" layoutY="7.0" mnemonicParsing="false" onAction="#_event_goHome" styleClass="pop-button" text="Home" />
                </children></AnchorPane>
       </content>
     </Tab>

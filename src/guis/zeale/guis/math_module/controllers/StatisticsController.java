@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -28,9 +28,10 @@ public class StatisticsController {
 	private TabGroup tabs;
 	private TabPane pane;
 	private boolean loaded;
+	private Calculator calculator;
 
-	StatisticsController() {
-		// TODO Auto-generated constructor stub
+	StatisticsController(Calculator calcInst) {
+		calculator = calcInst;
 	}
 
 	@FXML
@@ -55,6 +56,8 @@ public class StatisticsController {
 	Text statsDataErrorText;
 	@FXML
 	ListView<Statistic> statsOutputListView;
+	@FXML
+	CheckBox sampleCheckBox;
 
 	@FXML
 	private Tab dataSet, properties, output;
@@ -129,7 +132,10 @@ public class StatisticsController {
 				median = new NumericalStatistic("Median", (numbs.size() & 1) == 0
 						? (numbs.get(numbs.size() / 2 - 1).doubleValue() + numbs.get(numbs.size() / 2).doubleValue())
 								/ 2
-						: numbs.get(numbs.size() / 2).doubleValue());
+						: numbs.get(numbs.size() / 2).doubleValue()),
+				variance = new NumericalStatistic("Variance", 0),
+				standardDeviation = new NumericalStatistic("Standard Deviation", 0),
+				z_index = new NumericalStatistic("z_index", 1);
 		for (Number n : numbs)
 			sum.value += n.doubleValue();
 		mean.value = sum.value / count.value;
@@ -146,7 +152,18 @@ public class StatisticsController {
 			}
 		mode.value = nmax;
 
-		statsOutputListView.getItems().addAll(count, sum, min, mean, max, mode, median);
+		double var = 0;
+		for (Number d : numbs) {
+			double dist = d.doubleValue() - mean.value;
+			var += dist * dist;
+		}
+
+		var = var / (numbs.size() + (sampleCheckBox.isSelected() ? -1 : 0));
+		variance.value = var;
+		standardDeviation.value = Math.sqrt(var);
+
+		statsOutputListView.getItems().addAll(count, sum, min, mean, max, mode, median, variance, standardDeviation,
+				z_index);
 
 	}
 
@@ -164,4 +181,8 @@ public class StatisticsController {
 		return tabs.show(pane);
 	}
 
+	@FXML
+	private void _event_goHome() {
+		calculator.show();
+	}
 }
