@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" styleClass="background" tabClosingPolicy="UNAVAILABLE" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+  <tabs>
+    <Tab text="Z Scores">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <Button focusTraversable="false" layoutX="266.0" layoutY="276.0" mnemonicParsing="false" onAction="#_event_evalZScores" styleClass="pop-button" text="Solve" />
+                  <TextField layoutX="220.0" layoutY="128.0" promptText="Input..." />
+                  <Button focusTraversable="false" layoutX="508.0" layoutY="14.0" mnemonicParsing="false" onAction="#_event_importDataToZScores" styleClass="pop-button" text="Import" />
+               </children></AnchorPane>
+      </content>
+    </Tab>
+  </tabs>
+   <stylesheets>
+      <URL value="@../../../css/stylesheet.css" />
+      <URL value="@../calculator.css" />
+   </stylesheets>
+</TabPane>

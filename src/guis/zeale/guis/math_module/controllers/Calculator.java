@@ -2,6 +2,9 @@ package zeale.guis.math_module.controllers;
 
 import java.util.List;
 
+import com.sun.org.apache.bcel.internal.classfile.JavaClass;
+import com.sun.org.glassfish.external.arc.Stability;
+
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
@@ -19,6 +22,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import krow.guis.math_module.TabGroup;
@@ -29,6 +33,7 @@ import kröw.libs.math.EquationParser;
 import kröw.libs.math.exceptions.EmptyEquationException;
 import kröw.libs.math.exceptions.IrregularCharacterException;
 import kröw.libs.math.exceptions.UnmatchedParenthesisException;
+import zeale.guis.math_module.controllers.StatisticsController.Mode;
 
 public class Calculator extends Page {
 
@@ -67,6 +72,8 @@ public class Calculator extends Page {
 	private Tab arithmeticTab, functionsTab;
 	@FXML
 	private Accordion menu;
+	@FXML
+	private VBox statisticsMenuBox;
 
 	private TabGroup calculus, chemistry, dflt;
 
@@ -76,10 +83,10 @@ public class Calculator extends Page {
 	 *********************************** INITIALIZATION METHOD *******************************
 	 *****************************************************************************************/
 
-	public void show(){
+	public void show() {
 		dflt.show(buttonTabPane);
 	}
-	
+
 	@Override
 	public void initialize() {
 		if (hasLoaded)
@@ -87,6 +94,8 @@ public class Calculator extends Page {
 		hasLoaded = true;
 
 		dflt = new TabGroup(buttonTabPane.getTabs());
+
+		statisticsMenuBox.setSpacing(Kröw.scaleHeight(10));
 
 		/******************************
 		 **** INJECTED NODE SIZING ****
@@ -213,8 +222,16 @@ public class Calculator extends Page {
 
 	@FXML
 	private void _event_enableStatsMode() {
-		if (statistics.show(buttonTabPane) == null)
-			WindowManager.spawnLabelAtMousePos("An error has occurred.", Color.FIREBRICK);
+		if (statistics.getCurrentMode() == Mode.DATA_SET)
+			return;
+		statistics.show(buttonTabPane);
+	}
+
+	@FXML
+	private void _event_enableStatsZScores() {
+		if (statistics.getCurrentMode() == Mode.Z_SCORES)
+			return;
+		statistics.show(buttonTabPane, Mode.Z_SCORES);
 	}
 
 	@FXML

@@ -46,4 +46,14 @@ public class TabGroup extends ArrayList<Tab> {
 			add(t);
 	}
 
+	public boolean isShowing(TabPane pane) {
+		if (size() != pane.getTabs().size())
+			return false;
+		for (int i = 0; i < size(); i++)
+			if (pane.getTabs().get(i) != get(i))
+				return false;
+		return true;
+
+	}
+
 }

@@ -25,7 +25,6 @@ import kröw.core.managers.WindowManager;
 
 public class StatisticsController {
 
-	private TabGroup tabs;
 	private TabPane pane;
 	private boolean loaded;
 	private Calculator calculator;
@@ -167,22 +166,90 @@ public class StatisticsController {
 
 	}
 
-	public TabGroup show(TabPane pane) {
+	public void show(TabPane pane) {
+		show(pane, Mode.values()[0]);
+	}
+
+	public void show(TabPane pane, Mode mode) {
+		TabGroup tg = loadMode(mode);
+		this.pane = pane;
+		tg.show(pane);
+		currentMode = mode;
+	}
+
+	private Mode currentMode;
+
+	public Mode getCurrentMode() {
+		return currentMode;
+	}
+
+	private TabGroup loadMode(Mode mode) {
+		if (mode.exists(this))
+			return mode.tabs;
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("_statistics/" + mode.location + ".fxml"));
+		loader.setController(this);
+
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("StatisticsTabs.fxml"));
-			loader.setController(this);
-			tabs = new TabGroup(loader.<TabPane>load().getTabs());
+			mode.controller = this;
+			return mode.tabs = new TabGroup(loader.<TabPane>load().getTabs());
 		} catch (IOException e) {
 			WindowManager.spawnLabelAtMousePos("An error has occurred.", Color.FIREBRICK);
 			e.printStackTrace();
+			mode.controller = null;
 			return null;
 		}
-		this.pane = pane;
-		return tabs.show(pane);
+	}
+
+	enum Mode {
+		DATA_SET("DataSet"), Z_SCORES("ZScores");
+
+		private Mode(String location) {
+			this.location = location;
+		}
+
+		private Mode() {
+			StringBuilder sb = new StringBuilder(name().toLowerCase());
+			String f = String.valueOf(sb.charAt(0)).toUpperCase();
+			sb.deleteCharAt(0);
+			sb.insert(0, f);
+
+			for (int i = 0; i < sb.length(); i++)
+				if (sb.charAt(i) == '_') {
+					String s = String.valueOf(sb.charAt(i + 1)).toUpperCase();
+					sb.delete(i, i + 2);
+					sb.insert(i, s);
+				}
+			location = sb.toString();
+
+		}
+
+		private final String location;
+		private TabGroup tabs;
+		private StatisticsController controller;
+
+		public TabGroup getTabs(StatisticsController controller) {
+			if (tabs == null || controller != this.controller)
+				tabs = controller.loadMode(this);
+			return tabs;
+		}
+
+		public boolean exists(StatisticsController controller) {
+			return tabs != null && controller == this.controller;
+		}
+
 	}
 
 	@FXML
 	private void _event_goHome() {
 		calculator.show();
+	}
+	
+	@FXML
+	private void _event_importDataToZScores(){
+		
+	}
+	
+	@FXML
+	private void _event_evalZScores(){
 	}
 }

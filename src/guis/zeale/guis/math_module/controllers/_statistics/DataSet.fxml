@@ -98,7 +98,7 @@
       </Tab>
   </tabs>
    <stylesheets>
-      <URL value="@../../css/stylesheet.css" />
-      <URL value="@calculator.css" />
+      <URL value="@../calculator.css" />
+      <URL value="@../../../css/stylesheet.css" />
    </stylesheets>
 </TabPane>
