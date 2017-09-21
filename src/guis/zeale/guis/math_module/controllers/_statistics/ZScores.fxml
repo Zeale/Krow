@@ -13,8 +13,10 @@
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
                   <Button focusTraversable="false" layoutX="266.0" layoutY="276.0" mnemonicParsing="false" onAction="#_event_evalZScores" styleClass="pop-button" text="Solve" />
-                  <TextField layoutX="220.0" layoutY="128.0" promptText="Input..." />
+                  <TextField fx:id="zscore_percentile" alignment="CENTER" layoutX="107.0" layoutY="125.0" promptText="Percentile" />
                   <Button focusTraversable="false" layoutX="508.0" layoutY="14.0" mnemonicParsing="false" onAction="#_event_importDataToZScores" styleClass="pop-button" text="Import" />
+                  <TextField fx:id="zscore_value" alignment="CENTER" layoutX="334.0" layoutY="125.0" promptText="Value" />
+                  <TextField fx:id="zscore_zscores" alignment="CENTER" layoutX="221.0" layoutY="215.0" promptText="ZScores" />
                </children></AnchorPane>
       </content>
     </Tab>
