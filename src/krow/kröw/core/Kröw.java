@@ -877,6 +877,9 @@ public final class Kröw extends Application {
 		Kröw.start(args);
 	}
 
+	public static final void programInit() {
+	}
+
 	/**
 	 * Saves a {@link Serializable} object given a {@link File} path.
 	 *
@@ -1147,7 +1150,5 @@ public final class Kröw extends Application {
 
 		super.stop();
 	}
-
-	public static final void programInit() {	}
 
 }

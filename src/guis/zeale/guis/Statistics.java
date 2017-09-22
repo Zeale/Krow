@@ -98,15 +98,57 @@ public class Statistics extends WindowManager.Page {
 
 		private ParameterizedTask<AutoUpdatingStatistic> updateTask;
 
+		private long privateTimeout;
+
+		private boolean update;
+
+		private Thread privateUpdater = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				while (update) {
+					if (getUpdateTask() != null)
+						getUpdateTask().execute(AutoUpdatingStatistic.this);
+					try {
+						Thread.sleep(privateTimeout);
+					} catch (final InterruptedException e) {
+						e.printStackTrace();
+					}
+					// TODO Add a stop event
+					privateUpdater = new Thread(this);
+				}
+			}
+		});
+
+		{
+			privateUpdater.setDaemon(true);
+		}
+
 		public AutoUpdatingStatistic(final ParameterizedTask<AutoUpdatingStatistic> updater) {
 			updateTask = updater;
 			statistics.add(this);
 			startChecker();
 		}
 
+		public AutoUpdatingStatistic(final ParameterizedTask<AutoUpdatingStatistic> updateTask,
+				final long privateTimeout) throws IllegalArgumentException {
+			this.updateTask = updateTask;
+			if (!setPrivateTimeout(privateTimeout))
+				throw new IllegalArgumentException("Private timeout cannot be below 1.");
+		}
+
 		public AutoUpdatingStatistic(final String stat, final Number val,
 				final ParameterizedTask<AutoUpdatingStatistic> updateTask) {
 			this(stat, val.toString(), null, updateTask);
+		}
+
+		public AutoUpdatingStatistic(final String stat, final Number val,
+				final ParameterizedTask<AutoUpdatingStatistic> updateTask, final long privateTimeout)
+				throws IllegalArgumentException {
+			super(stat, val);
+			this.updateTask = updateTask;
+			if (!setPrivateTimeout(privateTimeout))
+				throw new IllegalArgumentException("Private timeout cannot be below 1.");
 		}
 
 		public AutoUpdatingStatistic(final String stat, final String val, final Paint statColor,
@@ -117,44 +159,48 @@ public class Statistics extends WindowManager.Page {
 			statistics.add(this);
 		}
 
-		public AutoUpdatingStatistic(final String stat, final String val,
-				final ParameterizedTask<AutoUpdatingStatistic> updater) {
-			this(stat, val, null, updater);
-		}
-
-		private long privateTimeout;
-
-		public AutoUpdatingStatistic(ParameterizedTask<AutoUpdatingStatistic> updateTask, long privateTimeout)
-				throws IllegalArgumentException {
-			this.updateTask = updateTask;
-			if (!setPrivateTimeout(privateTimeout))
-				throw new IllegalArgumentException("Private timeout cannot be below 1.");
-		}
-
-		public AutoUpdatingStatistic(String stat, Number val, ParameterizedTask<AutoUpdatingStatistic> updateTask,
-				long privateTimeout) throws IllegalArgumentException {
-			super(stat, val);
-			this.updateTask = updateTask;
-			if (!setPrivateTimeout(privateTimeout))
-				throw new IllegalArgumentException("Private timeout cannot be below 1.");
-		}
-
-		public AutoUpdatingStatistic(String stat, String val, Paint statColor,
-				ParameterizedTask<AutoUpdatingStatistic> updateTask, long privateTimeout, boolean update,
-				Thread privateUpdater) throws IllegalArgumentException {
+		public AutoUpdatingStatistic(final String stat, final String val, final Paint statColor,
+				final ParameterizedTask<AutoUpdatingStatistic> updateTask, final long privateTimeout,
+				final boolean update, final Thread privateUpdater) throws IllegalArgumentException {
 			super(stat, val, statColor);
 			this.updateTask = updateTask;
 			if (!setPrivateTimeout(privateTimeout))
 				throw new IllegalArgumentException("Private timeout cannot be below 1.");
 		}
 
-		public AutoUpdatingStatistic(String stat, String val, ParameterizedTask<AutoUpdatingStatistic> updateTask,
-				long privateTimeout) throws IllegalArgumentException {
+		public AutoUpdatingStatistic(final String stat, final String val,
+				final ParameterizedTask<AutoUpdatingStatistic> updater) {
+			this(stat, val, null, updater);
+		}
+
+		public AutoUpdatingStatistic(final String stat, final String val,
+				final ParameterizedTask<AutoUpdatingStatistic> updateTask, final long privateTimeout)
+				throws IllegalArgumentException {
 			super(stat, val);
 			this.updateTask = updateTask;
 			if (!setPrivateTimeout(privateTimeout))
 
 				throw new IllegalArgumentException("Private timeout cannot be below 1.");
+		}
+
+		public void dispose() {
+			statistics.remove(this);
+		}
+
+		public ParameterizedTask<AutoUpdatingStatistic> getUpdateTask() {
+			return updateTask;
+		}
+
+		public boolean setPrivateTimeout(final long privateTimeout) {
+			if (privateTimeout < 1)
+				return false;
+			else
+				this.privateTimeout = privateTimeout;
+			return true;
+		}
+
+		public void setUpdateTask(final ParameterizedTask<AutoUpdatingStatistic> updateTask) {
+			this.updateTask = updateTask;
 		}
 
 		/**
@@ -172,52 +218,8 @@ public class Statistics extends WindowManager.Page {
 			return this;
 		}
 
-		private boolean update;
-
 		public void stop() {
 			update = false;
-		}
-
-		private Thread privateUpdater = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				while (update) {
-					if (getUpdateTask() != null)
-						getUpdateTask().execute(AutoUpdatingStatistic.this);
-					try {
-						Thread.sleep(privateTimeout);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					// TODO Add a stop event
-					privateUpdater = new Thread(this);
-				}
-			}
-		});
-
-		public boolean setPrivateTimeout(long privateTimeout) {
-			if (privateTimeout < 1)
-				return false;
-			else
-				this.privateTimeout = privateTimeout;
-			return true;
-		}
-
-		{
-			privateUpdater.setDaemon(true);
-		}
-
-		public void dispose() {
-			statistics.remove(this);
-		}
-
-		public ParameterizedTask<AutoUpdatingStatistic> getUpdateTask() {
-			return updateTask;
-		}
-
-		public void setUpdateTask(final ParameterizedTask<AutoUpdatingStatistic> updateTask) {
-			this.updateTask = updateTask;
 		}
 
 	}
@@ -448,11 +450,6 @@ public class Statistics extends WindowManager.Page {
 	}
 
 	@Override
-	protected void onPageSwitched() {
-		closing = true;
-	}
-
-	@Override
 	public String getWindowFile() {
 		return "Statistics.fxml";
 	}
@@ -601,6 +598,11 @@ public class Statistics extends WindowManager.Page {
 
 	@AutoLoad(value = LoadTime.PROGRAM_EXIT)
 	private void onClose() {
+		closing = true;
+	}
+
+	@Override
+	protected void onPageSwitched() {
 		closing = true;
 	}
 

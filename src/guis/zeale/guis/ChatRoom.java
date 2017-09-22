@@ -159,20 +159,6 @@ public class ChatRoom extends WindowManager.Page {
 		return true;
 	}
 
-	@Override
-	protected void onPageSwitched() {
-		if (client != null) {
-			client.removeListener(listener);
-			client.closeConnection();
-		}
-		if (server != null)
-			try {
-				server.stop();
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
-	}
-
 	public boolean createServer() throws IOException {
 		return createServer(25000);
 	}
@@ -364,6 +350,20 @@ public class ChatRoom extends WindowManager.Page {
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 		GUIHelper.applyShapeBackground(pane, chatPane, chatBox);
+	}
+
+	@Override
+	protected void onPageSwitched() {
+		if (client != null) {
+			client.removeListener(listener);
+			client.closeConnection();
+		}
+		if (server != null)
+			try {
+				server.stop();
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
 	}
 
 	private void parseCommand(String cmd, final String[] args) {

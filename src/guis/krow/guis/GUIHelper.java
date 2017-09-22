@@ -463,7 +463,7 @@ public final class GUIHelper {
 		pane.getChildren().add(menubarBottom);
 		pane.getChildren().add(cover);
 
-		ImageView github = new ImageView("/krow/resources/graphics/github120px.png");
+		final ImageView github = new ImageView("/krow/resources/graphics/github120px.png");
 		github.setFitHeight(Kröw.scaleHeight(40));
 		github.setFitWidth(Kröw.scaleWidth(40));
 		github.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -475,7 +475,7 @@ public final class GUIHelper {
 		});
 		github.setPickOnBounds(true);
 
-		HBox iconsBox = new HBox(Kröw.scaleWidth(5), github);
+		final HBox iconsBox = new HBox(Kröw.scaleWidth(5), github);
 		iconsBox.setAlignment(Pos.CENTER);
 		iconsBox.setTranslateY(Kröw.scaleHeight(800));
 		menu.getChildren().add(iconsBox);

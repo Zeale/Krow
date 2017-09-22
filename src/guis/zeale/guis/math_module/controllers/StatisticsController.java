@@ -24,13 +24,51 @@ import kröw.core.managers.WindowManager;
 
 public class StatisticsController {
 
+	enum Mode {
+		DATA_SET("DataSet"), Z_SCORES("ZScores");
+
+		private final String location;
+
+		private TabGroup tabs;
+
+		private StatisticsController controller;
+
+		private Mode() {
+			final StringBuilder sb = new StringBuilder(name().toLowerCase());
+			final String f = String.valueOf(sb.charAt(0)).toUpperCase();
+			sb.deleteCharAt(0);
+			sb.insert(0, f);
+
+			for (int i = 0; i < sb.length(); i++)
+				if (sb.charAt(i) == '_') {
+					final String s = String.valueOf(sb.charAt(i + 1)).toUpperCase();
+					sb.delete(i, i + 2);
+					sb.insert(i, s);
+				}
+			location = sb.toString();
+
+		}
+
+		private Mode(final String location) {
+			this.location = location;
+		}
+
+		public boolean exists(final StatisticsController controller) {
+			return tabs != null && controller == this.controller;
+		}
+
+		public TabGroup getTabs(final StatisticsController controller) {
+			if (tabs == null || controller != this.controller)
+				tabs = controller.loadMode(this);
+			return tabs;
+		}
+
+	}
+
 	private TabPane pane;
 	private boolean loaded;
-	private Calculator calculator;
 
-	StatisticsController(Calculator calcInst) {
-		calculator = calcInst;
-	}
+	private final Calculator calculator;
 
 	@FXML
 	TextField statsMinProperty;
@@ -56,31 +94,17 @@ public class StatisticsController {
 	ListView<Statistic> statsOutputListView;
 	@FXML
 	CheckBox sampleCheckBox;
-	
+
 	@FXML
-	private TextField
-	zscore_percentile, zscore_value, zscore_zscores;
+	private TextField zscore_percentile, zscore_value, zscore_zscores;
 
 	@FXML
 	private Tab dataSet, properties, output;
 
-	@FXML
-	private void initialize() {
-		if (loaded)
-			return;
-		loaded = false;
+	private Mode currentMode;
 
-		statsOutputListView.setCellFactory(Statistic.getStatisticListCellFactory());
-	}
-
-	@FXML
-	void _event_evaluateStatsFromProperties() {
-		statsIQRProperty.setText(
-				"" + (Double.parseDouble(statsQ3Property.getText()) - Double.parseDouble(statsQ1Property.getText())));
-		statsLBoundProperty.setText("" + (Double.parseDouble(statsQ1Property.getText())
-				- Double.parseDouble(statsIQRProperty.getText()) * 1.5));
-		statsUBoundProperty.setText("" + (Double.parseDouble(statsQ3Property.getText())
-				+ Double.parseDouble(statsIQRProperty.getText()) * 1.5));
+	StatisticsController(final Calculator calcInst) {
+		calculator = calcInst;
 	}
 
 	@FXML
@@ -93,30 +117,30 @@ public class StatisticsController {
 
 		statsDataErrorText.setText("");
 
-		ArrayList<Double> numbs = new ArrayList<>();
+		final ArrayList<Double> numbs = new ArrayList<>();
 		StringBuilder curr = new StringBuilder();
 		int pos = -1;
-		StringBuilder text = new StringBuilder(statsData.getText());
-		while (!(Character.isDigit(text.charAt(text.length() - 1)) || (text.charAt(text.length() - 1) == '.')
-				|| (text.charAt(text.length() - 1) == ',')))
+		final StringBuilder text = new StringBuilder(statsData.getText());
+		while (!(Character.isDigit(text.charAt(text.length() - 1)) || text.charAt(text.length() - 1) == '.'
+				|| text.charAt(text.length() - 1) == ','))
 			text.deleteCharAt(text.length() - 1);
 
 		while (++pos < text.toString().length()) {
-			char c = text.toString().charAt(pos);
-			if ((Character.isDigit(c) || c == '.' || c == ','))
+			final char c = text.toString().charAt(pos);
+			if (Character.isDigit(c) || c == '.' || c == ',')
 				curr.append(c);
 			else if (!curr.toString().isEmpty())
 				try {
 					numbs.add(NumberFormat.getNumberInstance(Locale.getDefault()).parse(curr.toString()).doubleValue());
 					curr = new StringBuilder();
-				} catch (ParseException e) {
+				} catch (final ParseException e) {
 					statsDataErrorText.setText("Could not parse the number at " + pos);
 				}
 		}
 
 		try {
 			numbs.add(NumberFormat.getNumberInstance(Locale.getDefault()).parse(curr.toString()).doubleValue());
-		} catch (ParseException e) {
+		} catch (final ParseException e) {
 			statsDataErrorText.setText("Could not parse the number at character " + pos);
 		}
 
@@ -126,9 +150,9 @@ public class StatisticsController {
 
 		numbs.sort(null);
 
-		Distribution distribution = new Distribution(numbs);
-		
-		NumericalStatistic count = new NumericalStatistic("Count", distribution.getCount()),
+		final Distribution distribution = new Distribution(numbs);
+
+		final NumericalStatistic count = new NumericalStatistic("Count", distribution.getCount()),
 				sum = new NumericalStatistic("Sum", distribution.getSum()),
 				min = new NumericalStatistic("Min", distribution.getMin()), mean = new NumericalStatistic("Mean", 0),
 				max = new NumericalStatistic("Max", distribution.getMax()),
@@ -144,76 +168,18 @@ public class StatisticsController {
 
 	}
 
-	public void show(TabPane pane) {
-		show(pane, Mode.values()[0]);
+	@FXML
+	void _event_evaluateStatsFromProperties() {
+		statsIQRProperty.setText(
+				"" + (Double.parseDouble(statsQ3Property.getText()) - Double.parseDouble(statsQ1Property.getText())));
+		statsLBoundProperty.setText("" + (Double.parseDouble(statsQ1Property.getText())
+				- Double.parseDouble(statsIQRProperty.getText()) * 1.5));
+		statsUBoundProperty.setText("" + (Double.parseDouble(statsQ3Property.getText())
+				+ Double.parseDouble(statsIQRProperty.getText()) * 1.5));
 	}
 
-	public void show(TabPane pane, Mode mode) {
-		TabGroup tg = loadMode(mode);
-		this.pane = pane;
-		tg.show(pane);
-		currentMode = mode;
-	}
-
-	private Mode currentMode;
-
-	public Mode getCurrentMode() {
-		return currentMode;
-	}
-
-	private TabGroup loadMode(Mode mode) {
-		if (mode.exists(this))
-			return mode.tabs;
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("_statistics/" + mode.location + ".fxml"));
-		loader.setController(this);
-
-		try {
-			mode.controller = this;
-			return mode.tabs = new TabGroup(loader.<TabPane>load().getTabs());
-		} catch (IOException e) {
-			WindowManager.spawnLabelAtMousePos("An error has occurred.", Color.FIREBRICK);
-			e.printStackTrace();
-			mode.controller = null;
-			return null;
-		}
-	}
-
-	enum Mode {
-		DATA_SET("DataSet"), Z_SCORES("ZScores");
-
-		private Mode(String location) {
-			this.location = location;
-		}
-
-		private Mode() {
-			StringBuilder sb = new StringBuilder(name().toLowerCase());
-			String f = String.valueOf(sb.charAt(0)).toUpperCase();
-			sb.deleteCharAt(0);
-			sb.insert(0, f);
-
-			for (int i = 0; i < sb.length(); i++)
-				if (sb.charAt(i) == '_') {
-					String s = String.valueOf(sb.charAt(i + 1)).toUpperCase();
-					sb.delete(i, i + 2);
-					sb.insert(i, s);
-				}
-			location = sb.toString();
-
-		}
-
-		private final String location;
-		private TabGroup tabs;
-		private StatisticsController controller;
-
-		public TabGroup getTabs(StatisticsController controller) {
-			if (tabs == null || controller != this.controller)
-				tabs = controller.loadMode(this);
-			return tabs;
-		}
-
-		public boolean exists(StatisticsController controller) {
-			return tabs != null && controller == this.controller;
-		}
+	@FXML
+	private void _event_evalZScores() {
 
 	}
 
@@ -227,8 +193,44 @@ public class StatisticsController {
 
 	}
 
+	public Mode getCurrentMode() {
+		return currentMode;
+	}
+
 	@FXML
-	private void _event_evalZScores() {
-		
+	private void initialize() {
+		if (loaded)
+			return;
+		loaded = false;
+
+		statsOutputListView.setCellFactory(Statistic.getStatisticListCellFactory());
+	}
+
+	private TabGroup loadMode(final Mode mode) {
+		if (mode.exists(this))
+			return mode.tabs;
+		final FXMLLoader loader = new FXMLLoader(getClass().getResource("_statistics/" + mode.location + ".fxml"));
+		loader.setController(this);
+
+		try {
+			mode.controller = this;
+			return mode.tabs = new TabGroup(loader.<TabPane>load().getTabs());
+		} catch (final IOException e) {
+			WindowManager.spawnLabelAtMousePos("An error has occurred.", Color.FIREBRICK);
+			e.printStackTrace();
+			mode.controller = null;
+			return null;
+		}
+	}
+
+	public void show(final TabPane pane) {
+		show(pane, Mode.values()[0]);
+	}
+
+	public void show(final TabPane pane, final Mode mode) {
+		final TabGroup tg = loadMode(mode);
+		this.pane = pane;
+		tg.show(pane);
+		currentMode = mode;
 	}
 }
