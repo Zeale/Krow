@@ -264,6 +264,11 @@ public class Settings extends Page {
 	public void initialize() {
 		settingsLabel.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
 		optionBox.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
+
+		tabList.setPrefSize(Kröw.scaleWidth(313), Kröw.scaleHeight(1040));
+		optionBox.setPrefSize(Kröw.scaleHeight(810), Kröw.scaleWidth(850));
+		optionBox.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
+
 		tabList.setRoot(new TreeItem<>());
 		optionBox.setRoot(new TreeItem<>());
 
@@ -327,7 +332,8 @@ public class Settings extends Page {
 							return;
 						}
 
-						getItem().getTogglable().onToggled(getThis());
+						if (!isEmpty())
+							getItem().getTogglable().onToggled(getThis());
 						updateItem(getItem(), isEmpty());
 					});
 

@@ -40,7 +40,6 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
@@ -991,19 +990,19 @@ public final class Kröw extends Application {
 	}
 
 	public static double scaleHeight(final double height) {
-		return height * 1080 / Kröw.getSystemProperties().getScreenHeight();
+		return height / 1080 * Kröw.getSystemProperties().getScreenHeight();
 	}
 
 	public static int scaleHeight(final int height) {
-		return (int) ((double) height * 1080 / Kröw.getSystemProperties().getScreenHeight());
+		return (int) ((double) height / 1080 * Kröw.getSystemProperties().getScreenHeight());
 	}
 
 	public static double scaleWidth(final double width) {
-		return width * 1920 / Kröw.getSystemProperties().getScreenWidth();
+		return width / 1920 * Kröw.getSystemProperties().getScreenWidth();
 	}
 
 	public static int scaleWidth(final int width) {
-		return (int) ((double) width * 1920 / Kröw.getSystemProperties().getScreenWidth());
+		return (int) ((double) width / 1920 * Kröw.getSystemProperties().getScreenWidth());
 	}
 
 	/**

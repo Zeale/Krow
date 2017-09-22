@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.text.*?>
+<?import java.net.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="478.0" prefWidth="954.0" styleClass="background" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+  <tabs>
+    <Tab fx:id="dataSet" text="Data Set">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <TextArea fx:id="statsData" layoutX="215.0" layoutY="173.0" prefHeight="109.0" prefWidth="523.0" />
+                  <Button focusTraversable="false" layoutX="425.0" layoutY="345.0" mnemonicParsing="false" onAction="#_event_evaluateStats" styleClass="pop-button" text="Calculate" />
+                  <Text fx:id="statsDataErrorText" fill="#ff3100" layoutX="215.0" layoutY="74.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" textAlignment="CENTER" wrappingWidth="523.13671875" />
+                  <CheckBox fx:id="sampleCheckBox" layoutX="429.0" layoutY="64.0" mnemonicParsing="false" text="Sample" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </CheckBox>
+                  <Button focusTraversable="false" layoutX="879.0" layoutY="7.0" mnemonicParsing="false" onAction="#_event_goHome" styleClass="pop-button" text="Home" />
+               </children></AnchorPane>
+      </content>
+    </Tab>
+    <Tab fx:id="properties" text="Properties">
+         <content>
+            <ScrollPane prefHeight="200.0" prefWidth="200.0" styleClass="background">
+               <content>
+                  <AnchorPane prefHeight="478.0" prefWidth="954.0">
+                     <children>
+                        <TextField fx:id="statsMinProperty" layoutX="27.0" layoutY="111.0" />
+                        <TextField fx:id="statsQ1Property" layoutX="211.0" layoutY="111.0" />
+                        <TextField fx:id="statsMedianProperty" layoutX="395.0" layoutY="111.0" />
+                        <TextField fx:id="statsQ3Property" layoutX="580.0" layoutY="111.0" />
+                        <TextField fx:id="statsMaxProperty" layoutX="766.0" layoutY="111.0" />
+                        <Label layoutX="443.0" layoutY="62.0" styleClass="header-label" text="Median" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="19.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="647.0" layoutY="62.0" styleClass="header-label" text="Q3" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="19.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="826.0" layoutY="62.0" styleClass="header-label" text="Max" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="19.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="278.0" layoutY="62.0" styleClass="header-label" text="Q1" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="19.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="89.0" layoutY="62.0" styleClass="header-label" text="Min" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="19.0" />
+                           </font>
+                        </Label>
+                        <Button focusTraversable="false" layoutX="441.0" layoutY="346.0" mnemonicParsing="false" onAction="#_event_evaluateStatsFromProperties" styleClass="pop-button" text="Solve" />
+                        <TextField fx:id="statsIQRProperty" editable="false" layoutX="398.0" layoutY="228.0" style="-fx-background-color: #FFFFFFC4; -fx-text-fill: black;" />
+                        <TextField fx:id="statsLBoundProperty" editable="false" layoutX="673.0" layoutY="284.0" style="-fx-background-color: #FFFFFFC4; -fx-text-fill: black;" />
+                        <Label layoutX="461.0" layoutY="169.0" styleClass="header-label" text="IQR" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="19.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="718.0" layoutY="225.0" styleClass="header-label" text="LBound" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="19.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="132.0" layoutY="227.0" styleClass="header-label" text="UBound" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="19.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="statsUBoundProperty" editable="false" layoutX="89.0" layoutY="287.0" style="-fx-background-color: #FFFFFFC4; -fx-text-fill: black;" />
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+         </content>
+    </Tab>
+      <Tab fx:id="output" text="Output">
+         <content>
+            <ScrollPane pannable="true" prefHeight="200.0" prefWidth="200.0" styleClass="background">
+               <content>
+                  <ListView fx:id="statsOutputListView" prefHeight="454.0" prefWidth="953.0" style="-fx-background-color: #0000004C;" />
+               </content>
+            </ScrollPane>
+         </content>
+      </Tab>
+  </tabs>
+   <stylesheets>
+      <URL value="@../calculator.css" />
+      <URL value="@../../../css/stylesheet.css" />
+   </stylesheets>
+</TabPane>

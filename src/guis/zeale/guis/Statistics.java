@@ -459,6 +459,7 @@ public class Statistics extends WindowManager.Page {
 
 	@Override
 	public void initialize() {
+
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 
 		searchBar.setPrefWidth(Kröw.scaleWidth(SEARCH_BAR_WIDTH));
@@ -575,11 +576,12 @@ public class Statistics extends WindowManager.Page {
 		contains.setToggleGroup(searchTypesGroup);
 		endsWith.setToggleGroup(searchTypesGroup);
 
-		startsWith.setLayoutY(44);
+		startsWith.setLayoutX(Kröw.scaleWidth(1593));
+		startsWith.setLayoutY(Kröw.scaleHeight(44));
 		contains.setLayoutX(startsWith.getLayoutX());
-		contains.setLayoutY(startsWith.getLayoutY() + startsWith.getPrefHeight() + 25);
+		contains.setLayoutY(startsWith.getLayoutY() + startsWith.getPrefHeight() + Kröw.scaleHeight(25));
 		endsWith.setLayoutX(contains.getLayoutX());
-		endsWith.setLayoutY(contains.getLayoutY() + contains.getPrefHeight() + 25);
+		endsWith.setLayoutY(contains.getLayoutY() + contains.getPrefHeight() + Kröw.scaleHeight(25));
 
 		startsWith.setSelected(true);
 

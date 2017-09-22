@@ -97,6 +97,23 @@ public abstract class ScrollMenu extends Page {
 	@Override
 	public void initialize() {
 
+		if (verticalScroll == null)
+			verticalScroll = new VBox();
+		if (horizontalScroll == null)
+			horizontalScroll = new HBox();
+		if (pane == null)
+			throw new RuntimeException("Unspecified pane.");
+
+		pane.setPrefSize(Kröw.scaleWidth(Kröw.getSystemProperties().getScreenWidth()),
+				Kröw.scaleHeight(Kröw.getSystemProperties().getScreenHeight()));
+		pane.setLayoutX(0);
+		pane.setLayoutY(0);
+
+		if (!pane.getChildren().contains(verticalScroll))
+			pane.getChildren().add(verticalScroll);
+		if (!pane.getChildren().contains(horizontalScroll))
+			pane.getChildren().add(horizontalScroll);
+
 		// TODO Actually implement a vertical bar.
 		verticalScroll.setVisible(false);
 
@@ -149,7 +166,7 @@ public abstract class ScrollMenu extends Page {
 
 		// Put this in front of the verticalScroll container.
 		horizontalScroll.toFront();
-
+		loadDefaultImages();
 	}
 
 	public boolean removeImage(final ImageView imageView) {
