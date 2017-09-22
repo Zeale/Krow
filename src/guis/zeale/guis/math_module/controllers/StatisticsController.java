@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -58,6 +56,10 @@ public class StatisticsController {
 	ListView<Statistic> statsOutputListView;
 	@FXML
 	CheckBox sampleCheckBox;
+	
+	@FXML
+	private TextField
+	zscore_percentile, zscore_value, zscore_zscores;
 
 	@FXML
 	private Tab dataSet, properties, output;
@@ -227,5 +229,6 @@ public class StatisticsController {
 
 	@FXML
 	private void _event_evalZScores() {
+		
 	}
 }
