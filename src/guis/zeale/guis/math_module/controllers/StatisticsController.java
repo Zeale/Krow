@@ -19,6 +19,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import krow.guis.math_module.TabGroup;
+import krow.guis.math_module.controllers.Distribution;
 import krow.guis.math_module.controllers.NumericalStatistic;
 import krow.guis.math_module.controllers.Statistic;
 import kröw.core.managers.WindowManager;
@@ -90,7 +91,7 @@ public class StatisticsController {
 
 		statsDataErrorText.setText("");
 
-		ArrayList<Number> numbs = new ArrayList<>();
+		ArrayList<Double> numbs = new ArrayList<>();
 		StringBuilder curr = new StringBuilder();
 		int pos = -1;
 		StringBuilder text = new StringBuilder(statsData.getText());
@@ -104,7 +105,7 @@ public class StatisticsController {
 				curr.append(c);
 			else if (!curr.toString().isEmpty())
 				try {
-					numbs.add(NumberFormat.getNumberInstance(Locale.getDefault()).parse(curr.toString()));
+					numbs.add(NumberFormat.getNumberInstance(Locale.getDefault()).parse(curr.toString()).doubleValue());
 					curr = new StringBuilder();
 				} catch (ParseException e) {
 					statsDataErrorText.setText("Could not parse the number at " + pos);
@@ -112,7 +113,7 @@ public class StatisticsController {
 		}
 
 		try {
-			numbs.add(NumberFormat.getNumberInstance(Locale.getDefault()).parse(curr.toString()));
+			numbs.add(NumberFormat.getNumberInstance(Locale.getDefault()).parse(curr.toString()).doubleValue());
 		} catch (ParseException e) {
 			statsDataErrorText.setText("Could not parse the number at character " + pos);
 		}
@@ -123,43 +124,18 @@ public class StatisticsController {
 
 		numbs.sort(null);
 
-		NumericalStatistic count = new NumericalStatistic("Count", numbs.size()),
-				sum = new NumericalStatistic("Sum", 0), min = new NumericalStatistic("Min", numbs.get(0).doubleValue()),
-				mean = new NumericalStatistic("Mean", 0),
-				max = new NumericalStatistic("Max", numbs.get(numbs.size() - 1).doubleValue()),
-				mode = new NumericalStatistic("Mode", 0),
-				median = new NumericalStatistic("Median", (numbs.size() & 1) == 0
-						? (numbs.get(numbs.size() / 2 - 1).doubleValue() + numbs.get(numbs.size() / 2).doubleValue())
-								/ 2
-						: numbs.get(numbs.size() / 2).doubleValue()),
-				variance = new NumericalStatistic("Variance", 0),
-				standardDeviation = new NumericalStatistic("Standard Deviation", 0),
+		Distribution distribution = new Distribution(numbs);
+		
+		NumericalStatistic count = new NumericalStatistic("Count", distribution.getCount()),
+				sum = new NumericalStatistic("Sum", distribution.getSum()),
+				min = new NumericalStatistic("Min", distribution.getMin()), mean = new NumericalStatistic("Mean", 0),
+				max = new NumericalStatistic("Max", distribution.getMax()),
+				mode = new NumericalStatistic("Mode", distribution.getMode()),
+				median = new NumericalStatistic("Median", distribution.getMedian()),
+				variance = new NumericalStatistic("Variance", distribution.getVariance(sampleCheckBox.isSelected())),
+				standardDeviation = new NumericalStatistic("Standard Deviation",
+						distribution.getStandardDeviation(sampleCheckBox.isSelected())),
 				z_index = new NumericalStatistic("z_index", 1);
-		for (Number n : numbs)
-			sum.value += n.doubleValue();
-		mean.value = sum.value / count.value;
-
-		Map<Double, Integer> numbmap = new HashMap<>();
-		for (Number n : numbs)
-			numbmap.put(n.doubleValue(), (numbmap.containsKey(n.doubleValue())) ? numbmap.get(n.doubleValue()) + 1 : 1);
-		double nmax = 0;
-		int ncount = 0;
-		for (Double d : numbmap.keySet())
-			if (numbmap.get(d) > ncount) {
-				ncount = numbmap.get(d);
-				nmax = d;
-			}
-		mode.value = nmax;
-
-		double var = 0;
-		for (Number d : numbs) {
-			double dist = d.doubleValue() - mean.value;
-			var += dist * dist;
-		}
-
-		var = var / (numbs.size() + (sampleCheckBox.isSelected() ? -1 : 0));
-		variance.value = var;
-		standardDeviation.value = Math.sqrt(var);
 
 		statsOutputListView.getItems().addAll(count, sum, min, mean, max, mode, median, variance, standardDeviation,
 				z_index);
@@ -243,13 +219,13 @@ public class StatisticsController {
 	private void _event_goHome() {
 		calculator.show();
 	}
-	
+
 	@FXML
-	private void _event_importDataToZScores(){
-		
+	private void _event_importDataToZScores() {
+
 	}
-	
+
 	@FXML
-	private void _event_evalZScores(){
+	private void _event_evalZScores() {
 	}
 }
