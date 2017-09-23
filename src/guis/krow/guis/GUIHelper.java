@@ -476,7 +476,7 @@ public final class GUIHelper {
 			}
 		});
 
-		ImageView cookie = new ImageView("krow/resources/graphics/cookie256px.png");
+		ImageView cookie = new ImageView("/krow/resources/graphics/cookie256px.png");
 		cookie.setFitHeight(Kröw.scaleHeight(40));
 		cookie.setFitWidth(Kröw.scaleWidth(40));
 		cookie.setPickOnBounds(true);
@@ -488,7 +488,19 @@ public final class GUIHelper {
 			}
 		});
 
-		final HBox iconsBox = new HBox(Kröw.scaleWidth(5), github, cookie);
+		ImageView krow = new ImageView("/krow/resources/Kröw_hd.png");
+		krow.setFitHeight(Kröw.scaleHeight(40));
+		krow.setFitWidth(Kröw.scaleWidth(40));
+		krow.setPickOnBounds(true);
+		krow.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			try {
+				Desktop.getDesktop().browse(new URI("https://github.com/Zeale/Krow/releases"));
+			} catch (IOException | URISyntaxException e) {
+				e.printStackTrace();
+			}
+		});
+
+		final HBox iconsBox = new HBox(Kröw.scaleWidth(5), github, krow, cookie);
 		iconsBox.setAlignment(Pos.CENTER);
 		iconsBox.setTranslateY(Kröw.scaleHeight(800));
 		menu.getChildren().add(iconsBox);
