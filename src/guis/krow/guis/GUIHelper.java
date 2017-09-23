@@ -16,6 +16,7 @@ import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -466,6 +467,7 @@ public final class GUIHelper {
 		final ImageView github = new ImageView("/krow/resources/graphics/github120px.png");
 		github.setFitHeight(Kröw.scaleHeight(40));
 		github.setFitWidth(Kröw.scaleWidth(40));
+		github.setPickOnBounds(true);
 		github.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			try {
 				Desktop.getDesktop().browse(new URI("https://github.com/Zeale/Krow"));
@@ -473,9 +475,20 @@ public final class GUIHelper {
 				e.printStackTrace();
 			}
 		});
-		github.setPickOnBounds(true);
 
-		final HBox iconsBox = new HBox(Kröw.scaleWidth(5), github);
+		ImageView cookie = new ImageView("krow/resources/graphics/cookie256px.png");
+		cookie.setFitHeight(Kröw.scaleHeight(40));
+		cookie.setFitWidth(Kröw.scaleWidth(40));
+		cookie.setPickOnBounds(true);
+		cookie.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			try {
+				Desktop.getDesktop().browse(new URI("https://github.com/Zeale/Cookie/releases"));
+			} catch (IOException | URISyntaxException e) {
+				e.printStackTrace();
+			}
+		});
+
+		final HBox iconsBox = new HBox(Kröw.scaleWidth(5), github, cookie);
 		iconsBox.setAlignment(Pos.CENTER);
 		iconsBox.setTranslateY(Kröw.scaleHeight(800));
 		menu.getChildren().add(iconsBox);
