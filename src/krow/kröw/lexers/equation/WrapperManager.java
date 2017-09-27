@@ -1,4 +1,4 @@
-package kröw.math;
+package kröw.lexers.equation;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,9 +1,9 @@
-package kröw.math;
+package kröw.lexers.equation;
 
-import kröw.math.exceptions.DuplicateDecimalException;
-import kröw.math.exceptions.EmptyEquationException;
-import kröw.math.exceptions.IrregularCharacterException;
-import kröw.math.exceptions.UnmatchedParenthesisException;
+import kröw.lexers.equation.exceptions.DuplicateDecimalException;
+import kröw.lexers.equation.exceptions.EmptyEquationException;
+import kröw.lexers.equation.exceptions.IrregularCharacterException;
+import kröw.lexers.equation.exceptions.UnmatchedParenthesisException;
 
 public class EquationParser {
 

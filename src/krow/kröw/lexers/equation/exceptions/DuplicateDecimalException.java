@@ -1,4 +1,4 @@
-package kröw.math.exceptions;
+package kröw.lexers.equation.exceptions;
 
 public class DuplicateDecimalException extends IrregularCharacterException {
 	private static final long serialVersionUID = 1L;

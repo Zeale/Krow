@@ -1,4 +1,4 @@
-package kröw.math.exceptions;
+package kröw.lexers.equation.exceptions;
 
 public class IrregularCharacterException extends Exception {
 

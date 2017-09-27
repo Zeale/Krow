@@ -1,4 +1,4 @@
-package kröw.math;
+package kröw.lexers.equation;
 
 interface Operation {
 
