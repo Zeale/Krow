@@ -290,7 +290,7 @@ public final class BackgroundBuilder {
 							});
 							translator.setInterpolator(Interpolator.EASE_OUT);
 							translator.play();
-							Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP, 0.7f);
+							Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP, 1f);
 						}
 					}
 			});

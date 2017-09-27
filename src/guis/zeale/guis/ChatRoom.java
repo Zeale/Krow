@@ -28,12 +28,12 @@ import krow.guis.chatroom.messages.ChatRoomMessage;
 import krow.guis.chatroom.messages.CommandMessage;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
+import kröw.connections.Client;
+import kröw.connections.FullClientListener;
+import kröw.connections.Server;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
-import kröw.program.api.connections.Client;
-import kröw.program.api.connections.FullClientListener;
-import kröw.program.api.connections.Server;
 
 public class ChatRoom extends WindowManager.Page {
 
@@ -157,20 +157,6 @@ public class ChatRoom extends WindowManager.Page {
 	@Override
 	public boolean canSwitchPage(final Class<? extends Page> newSceneClass) {
 		return true;
-	}
-
-	@Override
-	protected void onPageSwitched() {
-		if (client != null) {
-			client.removeListener(listener);
-			client.closeConnection();
-		}
-		if (server != null)
-			try {
-				server.stop();
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
 	}
 
 	public boolean createServer() throws IOException {
@@ -364,6 +350,20 @@ public class ChatRoom extends WindowManager.Page {
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 		GUIHelper.applyShapeBackground(pane, chatPane, chatBox);
+	}
+
+	@Override
+	protected void onPageSwitched() {
+		if (client != null) {
+			client.removeListener(listener);
+			client.closeConnection();
+		}
+		if (server != null)
+			try {
+				server.stop();
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
 	}
 
 	private void parseCommand(String cmd, final String[] args) {

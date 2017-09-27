@@ -75,10 +75,6 @@ public class WindowManager {
 
 		}
 
-		protected void onPageSwitched() {
-
-		}
-
 		/**
 		 * <p>
 		 * Checked when switching {@link Page}s to verify that the current page
@@ -129,6 +125,10 @@ public class WindowManager {
 		 * method shows this {@link Page}.
 		 */
 		public void onBack() {
+
+		}
+
+		protected void onPageSwitched() {
 
 		}
 

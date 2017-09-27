@@ -48,6 +48,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import kröw.Timer;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.core.managers.ProgramSettings;
@@ -55,12 +56,11 @@ import kröw.core.managers.SoundManager;
 import kröw.core.managers.SystemProperties;
 import kröw.core.managers.SystemTrayManager;
 import kröw.core.managers.WindowManager;
-import kröw.libs.mindset.Construct;
-import kröw.libs.mindset.ConstructMindset;
-import kröw.libs.mindset.Law;
-import kröw.libs.mindset.MindsetObject;
-import kröw.libs.mindset.ObjectAlreadyExistsException;
-import kröw.program.api.Timer;
+import kröw.mindset.Construct;
+import kröw.mindset.ConstructMindset;
+import kröw.mindset.Law;
+import kröw.mindset.MindsetObject;
+import kröw.mindset.ObjectAlreadyExistsException;
 import sun.awt.shell.ShellFolder;
 import zeale.guis.Home;
 
@@ -207,7 +207,7 @@ public final class Kröw extends Application {
 	public static final File PROGRAM_SAVE_DIRECTORY = new File(DATA_DIRECTORY, "Programs");
 
 	/**
-	 * The directory for storing {@link kröw.libs.mindset.System}s.
+	 * The directory for storing {@link kröw.mindset.System}s.
 	 */
 	public static final File SYSTEM_SAVE_DIRECTORY = new File(DATA_DIRECTORY, "Systems");
 
@@ -735,7 +735,7 @@ public final class Kröw extends Application {
 			System.out.println("Now attempting to load Systems from the file system.....");
 			for (final File f : Kröw.SYSTEM_SAVE_DIRECTORY.listFiles())
 				try {
-					final kröw.libs.mindset.System s = (kröw.libs.mindset.System) Kröw
+					final kröw.mindset.System s = (kröw.mindset.System) Kröw
 							.loadObjectFromFile(OldVersionLoader.getInputStream(f));
 					s.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
 					System.out.println("   \n---Loaded the System " + s.getName() + " successfully.");
@@ -877,6 +877,9 @@ public final class Kröw extends Application {
 		Kröw.start(args);
 	}
 
+	public static final void programInit() {
+	}
+
 	/**
 	 * Saves a {@link Serializable} object given a {@link File} path.
 	 *
@@ -981,7 +984,7 @@ public final class Kröw extends Application {
 			} catch (final IOException e) {
 				System.err.println("Could not save the Law " + l.getName());
 			}
-		for (final kröw.libs.mindset.System s : Kröw.CONSTRUCT_MINDSET.getSystemsUnmodifiable())
+		for (final kröw.mindset.System s : Kröw.CONSTRUCT_MINDSET.getSystemsUnmodifiable())
 			try {
 				Kröw.saveObject(s, s.getFile(), OldVersionLoader.getOutputStream(s.getFile()));
 			} catch (final IOException e) {
@@ -1147,7 +1150,5 @@ public final class Kröw extends Application {
 
 		super.stop();
 	}
-
-	public static final void programInit() {	}
 
 }

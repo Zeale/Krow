@@ -2,14 +2,9 @@ package zeale.guis.math_module.controllers;
 
 import java.util.List;
 
-import com.sun.org.apache.bcel.internal.classfile.JavaClass;
-import com.sun.org.glassfish.external.arc.Stability;
-
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
@@ -27,17 +22,18 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import krow.guis.math_module.TabGroup;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
-import kröw.libs.math.EquationParser;
-import kröw.libs.math.exceptions.EmptyEquationException;
-import kröw.libs.math.exceptions.IrregularCharacterException;
-import kröw.libs.math.exceptions.UnmatchedParenthesisException;
+import kröw.lexers.equation.EquationParser;
+import kröw.lexers.equation.exceptions.EmptyEquationException;
+import kröw.lexers.equation.exceptions.IrregularCharacterException;
+import kröw.lexers.equation.exceptions.UnmatchedParenthesisException;
 import zeale.guis.math_module.controllers.StatisticsController.Mode;
 
 public class Calculator extends Page {
 
-	private boolean hasLoaded;
+	private static enum PropertyKeys {
+		DISCRETE_TAB;
+	}
 
 	/**
 	 * This text controls what is inside this {@link Page}'s {@link #calcIO}
@@ -45,15 +41,7 @@ public class Calculator extends Page {
 	 */
 	private static String cachedText;
 
-	@Override
-	public String getWindowFile() {
-		return "Calculator.fxml";
-	}
-
-	@Override
-	protected void onPageSwitched() {
-		cachedText = calcIO.getText();
-	}
+	private boolean hasLoaded;
 
 	/*******************************************************************************************
 	 *********************************** DEFINING INJECTED NODES *******************************
@@ -62,6 +50,7 @@ public class Calculator extends Page {
 	/* Basic Nodes */
 	@FXML
 	private TextField calcIO;
+
 	@FXML
 	private Button solve;
 	@FXML
@@ -74,17 +63,132 @@ public class Calculator extends Page {
 	private Accordion menu;
 	@FXML
 	private VBox statisticsMenuBox;
-
 	private TabGroup calculus, chemistry, dflt;
 
-	private StatisticsController statistics = new StatisticsController(this);
+	private final StatisticsController statistics = new StatisticsController(this);
 
-	/*****************************************************************************************
-	 *********************************** INITIALIZATION METHOD *******************************
-	 *****************************************************************************************/
+	@FXML
+	private void _event_clear() {
+		calcIO.clear();
+	}
 
-	public void show() {
-		dflt.show(buttonTabPane);
+	@FXML
+	private void _event_cube() {
+		appendText("^3");
+	}
+
+	@FXML
+	private void _event_enableCalculusMode() {
+		// TODO Implement
+	}
+
+	@FXML
+	private void _event_enableChemistryMode() {
+		// TODO Implement
+	}
+
+	@FXML
+	private void _event_enableDefaultMode() {
+		// TODO Implement
+	}
+
+	@FXML
+	private void _event_enableStatsMode() {
+		if (statistics.getCurrentMode() == Mode.DATA_SET)
+			return;
+		statistics.show(buttonTabPane);
+	}
+
+	@FXML
+	private void _event_enableStatsZScores() {
+		if (statistics.getCurrentMode() == Mode.Z_SCORES)
+			return;
+		statistics.show(buttonTabPane, Mode.Z_SCORES);
+	}
+
+	/*************************************************************************************
+	 *********************************** EVENT METHODS ***********************************
+	 *************************************************************************************/
+
+	@FXML
+	private void _event_evaluate() {
+		try {
+			calcIO.setText("" + new EquationParser().evaluate(calcIO.getText()));
+		} catch (EmptyEquationException | UnmatchedParenthesisException | IrregularCharacterException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	private void _event_sqrt() {
+		appendText((char) 8730 + "(");
+	}
+
+	@FXML
+	private void _event_square() {
+		appendText("^2");
+	}
+
+	private void addHoverAnimation(final double size, final List<Node> nodes) {
+		for (final Node n : nodes) {
+
+			final ScaleTransition buttonTabPaneScaleTransition = new ScaleTransition(Duration.seconds(0.1));
+			buttonTabPaneScaleTransition.setNode(n);
+
+			n.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+				buttonTabPaneScaleTransition.stop();
+				buttonTabPaneScaleTransition.setToX(size);
+				buttonTabPaneScaleTransition.setToY(size);
+				buttonTabPaneScaleTransition.play();
+			});
+			n.addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
+				buttonTabPaneScaleTransition.stop();
+				buttonTabPaneScaleTransition.setToX(1);
+				buttonTabPaneScaleTransition.setToY(1);
+				buttonTabPaneScaleTransition.play();
+			});
+
+		}
+	}
+
+	/**************************************************************************************
+	 *********************************** HELPER METHODS ***********************************
+	 **************************************************************************************/
+
+	private void addHoverAnimation(final double size, final Node... nodes) {
+		for (final Node n : nodes) {
+
+			final ScaleTransition buttonTabPaneScaleTransition = new ScaleTransition(Duration.seconds(0.1));
+			buttonTabPaneScaleTransition.setNode(n);
+
+			n.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+				buttonTabPaneScaleTransition.stop();
+				buttonTabPaneScaleTransition.setToX(size);
+				buttonTabPaneScaleTransition.setToY(size);
+				buttonTabPaneScaleTransition.play();
+			});
+			n.addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
+				buttonTabPaneScaleTransition.stop();
+				buttonTabPaneScaleTransition.setToX(1);
+				buttonTabPaneScaleTransition.setToY(1);
+				buttonTabPaneScaleTransition.play();
+			});
+
+		}
+	}
+
+	/***************************************************************************************
+	 *********************************** INSTANCE METHODS **********************************
+	 ***************************************************************************************/
+
+	private void appendText(final String text) {
+		calcIO.appendText(text);
+		calcIO.positionCaret(calcIO.getLength());
+	}
+
+	@Override
+	public String getWindowFile() {
+		return "Calculator.fxml";
 	}
 
 	@Override
@@ -116,10 +220,10 @@ public class Calculator extends Page {
 		calcIO.setText(cachedText);
 
 		// This gives accordion buttons animations.
-		for (TitledPane tp : menu.getPanes())
+		for (final TitledPane tp : menu.getPanes())
 			if (tp.getContent() instanceof Pane)
-				for (Node n : ((Pane) tp.getContent()).getChildren())
-					if (n instanceof Button) {
+				for (final Node n : ((Pane) tp.getContent()).getChildren())
+					if (n instanceof Button)
 						new Transition() {
 
 							private Color toColor, fromColor;
@@ -130,51 +234,41 @@ public class Calculator extends Page {
 
 								((Button) n).setTextFill(Color.GOLD);
 
-								n.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<Event>() {
-
-									@Override
-									public void handle(Event event) {
-										stop();
-										fromColor = (Color) ((Button) n).getTextFill();
-										toColor = Color.RED;
-										play();
-									}
+								n.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
+									stop();
+									fromColor = (Color) ((Button) n).getTextFill();
+									toColor = Color.RED;
+									play();
 								});
-								n.addEventHandler(MouseEvent.MOUSE_EXITED, new EventHandler<Event>() {
-
-									@Override
-									public void handle(Event event) {
-										stop();
-										fromColor = (Color) ((Button) n).getTextFill();
-										toColor = Color.GOLD;
-										play();
-									}
+								n.addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
+									stop();
+									fromColor = (Color) ((Button) n).getTextFill();
+									toColor = Color.GOLD;
+									play();
 								});
 							}
 
 							@Override
-							protected void interpolate(double frac) {
-								((Button) n).setTextFill((fromColor).interpolate(toColor, frac));
+							protected void interpolate(final double frac) {
+								((Button) n).setTextFill(fromColor.interpolate(toColor, frac));
 							}
 						};
-
-					}
 
 		// This loop assures that regular buttons will automatically append
 		// their
 		// visual content to the TEXT content.
 		//
 		// That will then copy its contents to text
-		for (Tab t : buttonTabPane.getTabs())
-			if (!(isTabDiscrete(t)))
-				for (Node n : ((Pane) t.getContent()).getChildren()) {
+		for (final Tab t : buttonTabPane.getTabs())
+			if (!isTabDiscrete(t))
+				for (final Node n : ((Pane) t.getContent()).getChildren()) {
 					n.setLayoutX(Kröw.scaleWidth(n.getLayoutX()));
 					n.setLayoutY(Kröw.scaleWidth(n.getLayoutY()));
 					if (n instanceof Region) {
-						Region r = (Region) n;
+						final Region r = (Region) n;
 						r.setPrefSize(Kröw.scaleWidth(r.getPrefWidth()), Kröw.scaleHeight(r.getPrefHeight()));
 						if (n instanceof Button) {
-							Button b = (Button) n;
+							final Button b = (Button) n;
 							if (b.getOnAction() == null)
 								b.setOnAction(event -> appendText(b.getText()));
 						}
@@ -187,156 +281,30 @@ public class Calculator extends Page {
 
 	}
 
-	/*************************************************************************************
-	 *********************************** EVENT METHODS ***********************************
-	 *************************************************************************************/
-
-	@FXML
-	private void _event_evaluate() {
-		try {
-			calcIO.setText("" + new EquationParser().evaluate(calcIO.getText()));
-		} catch (EmptyEquationException | UnmatchedParenthesisException | IrregularCharacterException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@FXML
-	private void _event_cube() {
-		appendText("^3");
-	}
-
-	@FXML
-	private void _event_square() {
-		appendText("^2");
-	}
-
-	@FXML
-	private void _event_sqrt() {
-		appendText((char) 8730 + "(");
-	}
-
-	@FXML
-	private void _event_clear() {
-		calcIO.clear();
-	}
-
-	@FXML
-	private void _event_enableStatsMode() {
-		if (statistics.getCurrentMode() == Mode.DATA_SET)
-			return;
-		statistics.show(buttonTabPane);
-	}
-
-	@FXML
-	private void _event_enableStatsZScores() {
-		if (statistics.getCurrentMode() == Mode.Z_SCORES)
-			return;
-		statistics.show(buttonTabPane, Mode.Z_SCORES);
-	}
-
-	@FXML
-	private void _event_enableCalculusMode() {
-		// TODO Implement
-	}
-
-	@FXML
-	private void _event_enableChemistryMode() {
-		// TODO Implement
-	}
-
-	@FXML
-	private void _event_enableDefaultMode() {
-		// TODO Implement
-	}
-
-	/**************************************************************************************
-	 *********************************** HELPER METHODS ***********************************
-	 **************************************************************************************/
-
-	private void addHoverAnimation(double size, Node... nodes) {
-		for (Node n : nodes) {
-
-			ScaleTransition buttonTabPaneScaleTransition = new ScaleTransition(Duration.seconds(0.1));
-			buttonTabPaneScaleTransition.setNode(n);
-
-			n.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<Event>() {
-
-				@Override
-				public void handle(Event event) {
-					buttonTabPaneScaleTransition.stop();
-					buttonTabPaneScaleTransition.setToX(size);
-					buttonTabPaneScaleTransition.setToY(size);
-					buttonTabPaneScaleTransition.play();
-				}
-			});
-			n.addEventHandler(MouseEvent.MOUSE_EXITED, new EventHandler<Event>() {
-
-				@Override
-				public void handle(Event event) {
-					buttonTabPaneScaleTransition.stop();
-					buttonTabPaneScaleTransition.setToX(1);
-					buttonTabPaneScaleTransition.setToY(1);
-					buttonTabPaneScaleTransition.play();
-				}
-			});
-
-		}
-	}
-
-	private void addHoverAnimation(double size, List<Node> nodes) {
-		for (Node n : nodes) {
-
-			ScaleTransition buttonTabPaneScaleTransition = new ScaleTransition(Duration.seconds(0.1));
-			buttonTabPaneScaleTransition.setNode(n);
-
-			n.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<Event>() {
-
-				@Override
-				public void handle(Event event) {
-					buttonTabPaneScaleTransition.stop();
-					buttonTabPaneScaleTransition.setToX(size);
-					buttonTabPaneScaleTransition.setToY(size);
-					buttonTabPaneScaleTransition.play();
-				}
-			});
-			n.addEventHandler(MouseEvent.MOUSE_EXITED, new EventHandler<Event>() {
-
-				@Override
-				public void handle(Event event) {
-					buttonTabPaneScaleTransition.stop();
-					buttonTabPaneScaleTransition.setToX(1);
-					buttonTabPaneScaleTransition.setToY(1);
-					buttonTabPaneScaleTransition.play();
-				}
-			});
-
-		}
-	}
-
-	private void makeTabDiscrete(Tab tab) {
-		tab.getProperties().put(PropertyKeys.DISCRETE_TAB, true);
-	}
-
-	private boolean isTabDiscrete(Tab tab) {
+	private boolean isTabDiscrete(final Tab tab) {
 		return tab.getProperties().containsKey(PropertyKeys.DISCRETE_TAB)
 				&& tab.getProperties().get(PropertyKeys.DISCRETE_TAB).equals(true);
 	}
 
-	private void makeTabNormal(Tab tab) {
+	private void makeTabDiscrete(final Tab tab) {
+		tab.getProperties().put(PropertyKeys.DISCRETE_TAB, true);
+	}
+
+	private void makeTabNormal(final Tab tab) {
 		tab.getProperties().remove(PropertyKeys.DISCRETE_TAB);
 	}
 
-	private static enum PropertyKeys {
-		DISCRETE_TAB;
+	@Override
+	protected void onPageSwitched() {
+		cachedText = calcIO.getText();
 	}
 
-	/***************************************************************************************
-	 *********************************** INSTANCE METHODS **********************************
-	 ***************************************************************************************/
+	/*****************************************************************************************
+	 *********************************** INITIALIZATION METHOD *******************************
+	 *****************************************************************************************/
 
-	private void appendText(String text) {
-		calcIO.appendText(text);
-		calcIO.positionCaret(calcIO.getLength());
+	public void show() {
+		dflt.show(buttonTabPane);
 	}
 
 }

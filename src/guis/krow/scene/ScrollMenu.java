@@ -18,12 +18,6 @@ import kröw.core.Kröw;
 import kröw.core.managers.WindowManager.Page;
 
 public abstract class ScrollMenu extends Page {
-	protected final static long SLIDE_ANIMATION_DURATION = 1000;
-
-	protected static int IMAGE_WIDTH = (int) ((double) 100 / 1920 * Kröw.getSystemProperties().getScreenWidth()),
-			IMAGE_HEIGHT = (int) ((double) 100 / 1080 * Kröw.getSystemProperties().getScreenHeight()),
-			IMAGE_SPACING = IMAGE_WIDTH / 2;
-
 	protected class Item {
 
 		public final ImageView image;
@@ -36,6 +30,12 @@ public abstract class ScrollMenu extends Page {
 		}
 
 	}
+
+	protected final static long SLIDE_ANIMATION_DURATION = 1000;
+
+	protected static int IMAGE_WIDTH = (int) ((double) 100 / 1920 * Kröw.getSystemProperties().getScreenWidth()),
+			IMAGE_HEIGHT = (int) ((double) 100 / 1080 * Kröw.getSystemProperties().getScreenHeight()),
+			IMAGE_SPACING = IMAGE_WIDTH / 2;
 
 	@FXML
 	protected Pane pane;
@@ -169,6 +169,9 @@ public abstract class ScrollMenu extends Page {
 		loadDefaultImages();
 	}
 
+	protected void loadDefaultImages() {
+	}
+
 	public boolean removeImage(final ImageView imageView) {
 		for (int i = 0; i < views.size(); i++)
 			if (views.get(i).image == imageView) {
@@ -194,8 +197,5 @@ public abstract class ScrollMenu extends Page {
 
 		for (; amount != 0; amount -= amount > 0 ? 1 : -1)
 			animate(amount > 0);
-	}
-
-	protected void loadDefaultImages() {
 	}
 }

@@ -3,8 +3,6 @@ package zeale.guis;
 
 import java.io.IOException;
 
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -47,6 +45,7 @@ public class Home extends ScrollMenu {
 		GUIHelper.applyShapeBackground(pane);
 	}
 
+	@Override
 	protected final void loadDefaultImages() {
 		// Now to add the default images to our horizontal scroll container.
 		final ImageView chatRoom = new ImageView(CHAT_ROOM_MENU_ICON);
@@ -93,16 +92,12 @@ public class Home extends ScrollMenu {
 		});
 		statistics.setPickOnBounds(true);
 
-		ImageView mathModule = new ImageView(MathModule.CALCULATOR_ICON);
-		mathModule.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				try {
-					WindowManager.setScene(MathModule.class);
-				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-					e.printStackTrace();
-				}
+		final ImageView mathModule = new ImageView(MathModule.CALCULATOR_ICON);
+		mathModule.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			try {
+				WindowManager.setScene(MathModule.class);
+			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+				e.printStackTrace();
 			}
 		});
 		mathModule.setPickOnBounds(true);

@@ -7,12 +7,22 @@ public class CalculatorButton extends Button {
 
 	private String output;
 
-	public CalculatorButton(String text, Node graphic) {
+	public CalculatorButton(final String text) {
+		super(text);
+	}
+
+	public CalculatorButton(final String text, final Node graphic) {
 		super(text, graphic);
 	}
 
-	public CalculatorButton(String text) {
+	public CalculatorButton(final String text, final Node graphic, final String output) {
+		super(text, graphic);
+		this.output = output;
+	}
+
+	public CalculatorButton(final String text, final String output) {
 		super(text);
+		this.output = output;
 	}
 
 	/**
@@ -26,17 +36,7 @@ public class CalculatorButton extends Button {
 	 * @param output
 	 *            the output to set
 	 */
-	public final void setOutput(String output) {
-		this.output = output;
-	}
-
-	public CalculatorButton(String text, String output) {
-		super(text);
-		this.output = output;
-	}
-
-	public CalculatorButton(String text, Node graphic, String output) {
-		super(text, graphic);
+	public final void setOutput(final String output) {
 		this.output = output;
 	}
 

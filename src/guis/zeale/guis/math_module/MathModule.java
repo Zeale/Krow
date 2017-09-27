@@ -2,8 +2,6 @@ package zeale.guis.math_module;
 
 import java.io.IOException;
 
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,11 +13,6 @@ import kröw.core.managers.WindowManager.NotSwitchableException;
 import zeale.guis.math_module.controllers.Calculator;
 
 public class MathModule extends ScrollMenu {
-
-	@Override
-	public String getWindowFile() {
-		return "MathModule.fxml";
-	}
 
 	/**
 	 * <p>
@@ -34,33 +27,8 @@ public class MathModule extends ScrollMenu {
 																														// Change
 
 	@Override
-	protected void loadDefaultImages() {
-		ImageView calculator = new ImageView(CALCULATOR_ICON),
-				statistics = new ImageView("/krow/resources/Statistics.png");
-		calculator.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				try {
-					WindowManager.setScene(Calculator.class);
-				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		calculator.setPickOnBounds(true);
-
-		statistics.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				// TODO Add statistics page
-				// WindowManager.setScene(Statistics.class);
-			}
-		});
-
-		addImage(calculator);
-		addImage(statistics);
+	public String getWindowFile() {
+		return "MathModule.fxml";
 	}
 
 	@Override
@@ -73,6 +41,28 @@ public class MathModule extends ScrollMenu {
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 		GUIHelper.applyShapeBackground(pane);
+	}
+
+	@Override
+	protected void loadDefaultImages() {
+		final ImageView calculator = new ImageView(CALCULATOR_ICON),
+				statistics = new ImageView("/krow/resources/Statistics.png");
+		calculator.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			try {
+				WindowManager.setScene(Calculator.class);
+			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+				e.printStackTrace();
+			}
+		});
+		calculator.setPickOnBounds(true);
+
+		statistics.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+			// TODO Add statistics page
+			// WindowManager.setScene(Statistics.class);
+		});
+
+		addImage(calculator);
+		addImage(statistics);
 	}
 
 }
