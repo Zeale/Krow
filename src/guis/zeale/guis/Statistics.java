@@ -34,10 +34,10 @@ import javafx.util.Callback;
 import krow.guis.GUIHelper;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
+import kröw.callables.ParameterizedTask;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
-import kröw.program.api.callables.ParameterizedTask;
 
 public class Statistics extends WindowManager.Page {
 

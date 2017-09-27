@@ -23,10 +23,10 @@ import javafx.util.Duration;
 import krow.guis.math_module.TabGroup;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager.Page;
-import kröw.libs.math.EquationParser;
-import kröw.libs.math.exceptions.EmptyEquationException;
-import kröw.libs.math.exceptions.IrregularCharacterException;
-import kröw.libs.math.exceptions.UnmatchedParenthesisException;
+import kröw.math.EquationParser;
+import kröw.math.exceptions.EmptyEquationException;
+import kröw.math.exceptions.IrregularCharacterException;
+import kröw.math.exceptions.UnmatchedParenthesisException;
 import zeale.guis.math_module.controllers.StatisticsController.Mode;
 
 public class Calculator extends Page {
