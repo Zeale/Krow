@@ -116,12 +116,14 @@ public class EquationTokenizer {
 		while (hasNext()) {
 			char c = nextChar();// We don't NEED to cache this thanks to
 								// #getChar(), but whatever.
+
 			// Whitespace between tokens is ignorable.
 			if (Character.isWhitespace(c))
 				continue;
-
 			if (Character.isDigit(c) || c == '.') {
 				tokens.add(parseNumber(false));
+			} else if (Character.isAlphabetic(c) || c == '_') {
+				tokens.add(parseAlphabeticSequence(false, false));
 			}
 
 		}
@@ -211,17 +213,64 @@ public class EquationTokenizer {
 					token += c;
 
 				}
-			} else 
+			} else {
+				position--;
 				break;
-			
+			}
+
 		}
 
 		if (commaError) {
 			token = token.replaceAll(",", "");
-			System.out.println("Comma error");
 		}
 
 		return token.isEmpty() ? "0" : token;
+	}
+
+	private String parseAlphabeticSequence(boolean startAtNextChar, boolean multParentheses) throws ParserException {
+		String token = "";
+		char c = getChar();
+		boolean function = false// true for function, false for var
+				, identifierEnded = false;
+
+		if (startAtNextChar)
+			if (!hasNext())
+				return token;
+			else
+				nextChar();
+		position--;// So that we can call nextChar below.
+
+		while (hasNext()) {
+			c = nextChar();
+			if (Character.isWhitespace(c)) {
+				identifierEnded = true;
+				continue;
+			}
+			if (Character.isAlphabetic(c) || Character.isDigit(c) || c == '_') {
+				if (identifierEnded) {
+					throw new ParserException("Multiple identifiers next to each other.", position);
+				}
+				token += c;
+				continue;
+			}
+			if (c == '[') {
+				function = true;
+				// Start function loop.
+			} else if (c == '(')
+				if (multParentheses) {
+					function = false;
+					position--;
+					break;
+				} else {
+					function = true;
+					// Start function loop.
+				}
+			else {
+				position--;
+				break;
+			}
+		}
+		return token;
 	}
 
 	public EquationTokenizer(String equation) {
