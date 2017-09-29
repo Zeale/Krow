@@ -211,7 +211,9 @@ public class EquationTokenizer {
 					token += c;
 
 				}
-			}
+			} else 
+				break;
+			
 		}
 
 		if (commaError) {
