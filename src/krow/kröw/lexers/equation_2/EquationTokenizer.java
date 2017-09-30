@@ -253,23 +253,55 @@ public class EquationTokenizer {
 				token += c;
 				continue;
 			}
-			if (c == '[') {
+			if (c == '[' || (c == '(' && !multParentheses)) {
 				function = true;
-				// Start function loop.
+				String functionContents = parseFunctionContents(Wrapper.getWrapper(c, true));
+				token += functionContents;
+				break;
 			} else if (c == '(')
 				if (multParentheses) {
 					function = false;
 					position--;
 					break;
-				} else {
-					function = true;
-					// Start function loop.
-				}
+				} else
+					;
 			else {
 				position--;
 				break;
 			}
 		}
+		return token;
+	}
+
+	private String parseFunctionContents(Wrapper wrapper) {
+		// open & close wrappers will be used l8r.
+		String token = "", openWrapper = "", closeWrapper = "";
+
+		char c = getChar();
+		int layer = 1;
+		openWrapper += c;
+
+		while (hasNext()) {
+			c = nextChar();
+			if (c == wrapper.open)
+				layer++;
+			else if (c == wrapper.close)
+				layer--;
+
+			if (layer == 0) {
+				closeWrapper += c;
+				return openWrapper// Temp
+
+						+ token +
+
+						// Temp
+						closeWrapper;
+			}
+
+			token += c;
+
+		}
+
 		return token;
 	}
 
