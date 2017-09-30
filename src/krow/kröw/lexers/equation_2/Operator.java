@@ -35,4 +35,26 @@ public enum Operator {
 		return Collections.unmodifiableList(aliases);
 	}
 
+	public static Operator getOperator(String operator) {
+		for (Operator o : Operator.values()) {
+			if (operator.equals(o.operator))
+				return o;
+			for (String s : o.aliases)
+				if (operator.equals(s))
+					return o;
+		}
+		return null;
+	}
+
+	public static Operator getOperator(char operator) {
+		for (Operator o : Operator.values()) {
+			if (o.operator.length() == 1 && operator == o.operator.charAt(0))
+				return o;
+			for (String s : o.aliases)
+				if (s.length() == 1 && s.charAt(0) == operator)
+					return o;
+		}
+		return null;
+	}
+
 }
