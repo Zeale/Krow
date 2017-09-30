@@ -14,4 +14,18 @@ public enum Wrapper {
 		open = close = both;
 	}
 
+	public static Wrapper getWrapper(char c) {
+		for (Wrapper w : Wrapper.values())
+			if (w.close == c || w.open == c)
+				return w;
+		return null;
+	}
+
+	public static Wrapper getWrapper(char c, boolean open) {
+		for (Wrapper w : Wrapper.values())
+			if ((open ? w.open : w.close) == c)
+				return w;
+		return null;
+	}
+
 }
