@@ -2,8 +2,15 @@ package kröw.lexers.equation_2;
 
 import java.util.ArrayList;
 
-import kröw.lexers.equation_2.Token.Type;
 import kröw.lexers.equation_2.exceptions.ParserException;
+import kröw.lexers.equation_2.tokens.Function;
+import kröw.lexers.equation_2.tokens.FunctionToken;
+import kröw.lexers.equation_2.tokens.NullToken;
+import kröw.lexers.equation_2.tokens.NumericalToken;
+import kröw.lexers.equation_2.tokens.OperatorToken;
+import kröw.lexers.equation_2.tokens.Token;
+import kröw.lexers.equation_2.tokens.Token.Type;
+import kröw.lexers.equation_2.tokens.VariableToken;
 
 public class EquationTokenizer {
 
@@ -121,12 +128,20 @@ public class EquationTokenizer {
 			// Whitespace between tokens is ignorable.
 			if (Character.isWhitespace(c))
 				continue;
+
+			if (Operator.isOperator(c)) /* TODO: Fix operator size */ {
+				if (tokens.get(tokens.size() - 1).type == Type.OPERATOR)
+					throw new ParserException("Multiple consecutive operators detected.", position);
+				tokens.add(parseOperator());
+				continue;
+			} else {
+				if (tokens.size() > 0 && tokens.get(tokens.size() - 1).type != Type.OPERATOR)
+					tokens.add(new OperatorToken(Operator.MULTIPLICATION));
+			}
 			if (Character.isDigit(c) || c == '.') {
 				tokens.add(parseNumber(false));
 			} else if (Character.isAlphabetic(c) || c == '_') {
 				tokens.add(parseAlphabeticSequence(false, false));
-			} else if (Operator.isOperator(c)) /* TODO: Fix operator testing */ {
-				
 			}
 
 		}
@@ -135,6 +150,10 @@ public class EquationTokenizer {
 			System.out.println(s);
 
 		return tokens;
+	}
+
+	private Token parseOperator() /* TODO: Fix operator size */ {
+		return new OperatorToken(Operator.getOperator(getChar()));
 	}
 
 	/**
@@ -173,7 +192,7 @@ public class EquationTokenizer {
 
 		if (startAtNextChar)
 			if (!hasNext())
-				return new Token(0, Type.NUMBER);
+				return new NumericalToken(0);
 			else
 				nextChar();
 		position--;// So that we can call nextChar below.
@@ -227,7 +246,7 @@ public class EquationTokenizer {
 			token = token.replaceAll(",", "");
 		}
 
-		return token.isEmpty() ? new Token(0, Type.NUMBER) : new Token(Double.parseDouble(token), Type.NUMBER);
+		return token.isEmpty() ? new NumericalToken(0) : new NumericalToken(Double.parseDouble(token));
 	}
 
 	private Token parseAlphabeticSequence(boolean startAtNextChar, boolean multParentheses) throws ParserException {
@@ -238,7 +257,7 @@ public class EquationTokenizer {
 
 		if (startAtNextChar)
 			if (!hasNext())
-				return new Token(null, Type.NULL);
+				return new NullToken();
 			else
 				nextChar();
 		position--;// So that we can call nextChar below.
@@ -259,20 +278,20 @@ public class EquationTokenizer {
 			if (c == '[' || (c == '(' && !multParentheses)) {
 				function = true;
 				String functionContents = parseFunctionContents(Wrapper.getWrapper(c, true));
-				return new Token(new Function(token, functionContents), Type.FUNCTION);
+				return new FunctionToken(new Function(token, functionContents));
 			} else if (c == '(')
 				if (multParentheses) {
 					function = false;
 					position--;
-					return new Token(token, Type.VARIABLE);
+					return new VariableToken(token);
 				} else
 					;
 			else {
 				position--;
-				return new Token(token, Type.VARIABLE);
+				return new VariableToken(token);
 			}
 		}
-		return new Token(token, Type.VARIABLE);
+		return new VariableToken(token);
 	}
 
 	private String parseFunctionContents(Wrapper wrapper) {

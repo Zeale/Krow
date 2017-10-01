@@ -1,4 +1,4 @@
-package kröw.lexers.equation_2;
+package kröw.lexers.equation_2.tokens;
 
 public class Function {
 

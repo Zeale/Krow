@@ -1,16 +1,20 @@
-package kröw.lexers.equation_2;
+package kröw.lexers.equation_2.tokens;
 
 public class Token {
 
 	public final Object value;
 	public final Type type;
 
-	public Token(Object value, Type type) {
+	protected Token(Object value, Type type) {
 		this.value = value;
 		this.type = type;
 	}
 
-	enum Type {
+	public Object getValue() {
+		return value;
+	}
+
+	public enum Type {
 		NUMBER, FUNCTION, MODIFIER, VARIABLE, END, BEGIN, OPERATOR, NULL;
 	}
 
