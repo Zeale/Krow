@@ -1,7 +1,5 @@
 package kröw.lexers.equation_2;
 
-import java.util.ArrayList;
-
 import kröw.lexers.equation_2.exceptions.ParserException;
 
 public class EquationParser {
