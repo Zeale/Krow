@@ -2,6 +2,7 @@ package kröw.lexers.equation_2;
 
 import java.util.ArrayList;
 
+import kröw.lexers.equation_2.Token.Type;
 import kröw.lexers.equation_2.exceptions.ParserException;
 
 public class EquationTokenizer {
@@ -97,7 +98,7 @@ public class EquationTokenizer {
 	}
 
 	private String currentToken;
-	private ArrayList<String> tokens = new ArrayList<>();
+	private ArrayList<Token> tokens = new ArrayList<>();
 
 	/**
 	 * Runs by process of elimination to progressively eliminate what the next
@@ -105,7 +106,7 @@ public class EquationTokenizer {
 	 * 
 	 * @throws ParserException
 	 */
-	public ArrayList<String> tokenize() throws ParserException {
+	public ArrayList<Token> tokenize() throws ParserException {
 
 		tokens = new ArrayList<>();
 		currentToken = "";
@@ -124,11 +125,13 @@ public class EquationTokenizer {
 				tokens.add(parseNumber(false));
 			} else if (Character.isAlphabetic(c) || c == '_') {
 				tokens.add(parseAlphabeticSequence(false, false));
+			} else if (Operator.isOperator(c)) /* TODO: Fix operator testing */ {
+				
 			}
 
 		}
 
-		for (String s : tokens)
+		for (Token s : tokens)
 			System.out.println(s);
 
 		return tokens;
@@ -163,14 +166,14 @@ public class EquationTokenizer {
 	 * @return A token representing the number parsed.
 	 */
 
-	private String parseNumber(boolean startAtNextChar) throws ParserException {
+	private Token parseNumber(boolean startAtNextChar) throws ParserException {
 		String token = "";
 		char c = getChar();
 		boolean expectingComma = false, commaError = false;
 
 		if (startAtNextChar)
 			if (!hasNext())
-				return token;
+				return new Token(0, Type.NUMBER);
 			else
 				nextChar();
 		position--;// So that we can call nextChar below.
@@ -224,10 +227,10 @@ public class EquationTokenizer {
 			token = token.replaceAll(",", "");
 		}
 
-		return token.isEmpty() ? "0" : token;
+		return token.isEmpty() ? new Token(0, Type.NUMBER) : new Token(Double.parseDouble(token), Type.NUMBER);
 	}
 
-	private String parseAlphabeticSequence(boolean startAtNextChar, boolean multParentheses) throws ParserException {
+	private Token parseAlphabeticSequence(boolean startAtNextChar, boolean multParentheses) throws ParserException {
 		String token = "";
 		char c = getChar();
 		boolean function = false// true for function, false for var
@@ -235,7 +238,7 @@ public class EquationTokenizer {
 
 		if (startAtNextChar)
 			if (!hasNext())
-				return token;
+				return new Token(null, Type.NULL);
 			else
 				nextChar();
 		position--;// So that we can call nextChar below.
@@ -256,21 +259,20 @@ public class EquationTokenizer {
 			if (c == '[' || (c == '(' && !multParentheses)) {
 				function = true;
 				String functionContents = parseFunctionContents(Wrapper.getWrapper(c, true));
-				token += functionContents;
-				break;
+				return new Token(new Function(token, functionContents), Type.FUNCTION);
 			} else if (c == '(')
 				if (multParentheses) {
 					function = false;
 					position--;
-					break;
+					return new Token(token, Type.VARIABLE);
 				} else
 					;
 			else {
 				position--;
-				break;
+				return new Token(token, Type.VARIABLE);
 			}
 		}
-		return token;
+		return new Token(token, Type.VARIABLE);
 	}
 
 	private String parseFunctionContents(Wrapper wrapper) {
@@ -290,12 +292,15 @@ public class EquationTokenizer {
 
 			if (layer == 0) {
 				closeWrapper += c;
-				return openWrapper// Temp
+				return token;
 
-						+ token +
-
-						// Temp
-						closeWrapper;
+				/*
+				 * return openWrapper// Temp
+				 * 
+				 * + token +
+				 * 
+				 * // Temp closeWrapper;
+				 */
 			}
 
 			token += c;

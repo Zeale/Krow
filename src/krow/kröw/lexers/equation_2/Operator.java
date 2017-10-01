@@ -57,4 +57,12 @@ public enum Operator {
 		return null;
 	}
 
+	public static boolean isOperator(char c) {
+		return getOperator(c) != null;
+	}
+
+	public static boolean isOperator(String s) {
+		return getOperator(s) != null;
+	}
+
 }

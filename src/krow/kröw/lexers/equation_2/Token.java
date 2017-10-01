@@ -11,7 +11,12 @@ public class Token {
 	}
 
 	enum Type {
+		NUMBER, FUNCTION, MODIFIER, VARIABLE, END, BEGIN, OPERATOR, NULL;
+	}
 
+	@Override
+	public String toString() {
+		return "Token " + super.toString() + " value: " + value;
 	}
 
 }
