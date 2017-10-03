@@ -4,29 +4,37 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import kröw.math.Operations;
+
 public enum Operator {
-	ADDITION('+'), SUBTRACTION('-'), MULTIPLICATION('*', '\u22C5'), DIVISION('/', '\u00F7'), FACTORIAL(
-			'!'), LOGICAL_NEGATION('\u00AC'), GREATER_THAN('>'), LESS_THAN(
-					'<'), GREATER_THAN_OR_EQUAL_TO(">=", "\u2265"), LESS_THAN_OR_EQUAL_TO("<=", "\u2264");
+	ADDITION('+', Operations::add), SUBTRACTION('-', Operations::subtract), MULTIPLICATION('*', Operations::multiply,
+			'\u22C5'), DIVISION('/', Operations::divide, '\u00F7'), FACTORIAL('!', Operations::factorial),
+	// LOGICAL_NEGATION('\u00AC'), GREATER_THAN('>'), LESS_THAN('<'),
+	// GREATER_THAN_OR_EQUAL_TO(">=", "\u2265"), LESS_THAN_OR_EQUAL_TO("<=",
+	// "\u2264")
+	;
 	public final String operator;
 	private final ArrayList<String> aliases = new ArrayList<>();
+	private final Operation operation;
 
-	private Operator(String operator) {
+	private Operator(String operator, Operation operation) {
 		this.operator = operator;
+		this.operation = operation;
 	}
 
-	private Operator(char operator) {
+	private Operator(char operator, Operation operation) {
 		this.operator = "" + operator;
+		this.operation = operation;
 	}
 
-	private Operator(char operator, char... aliases) {
-		this(operator);
+	private Operator(char operator, Operation operation, char... aliases) {
+		this(operator, operation);
 		for (char a : aliases)
 			this.aliases.add("" + a);
 	}
 
-	private Operator(String operator, String... aliases) {
-		this(operator);
+	private Operator(String operator, Operation operation, String... aliases) {
+		this(operator, operation);
 		for (String s : aliases)
 			this.aliases.add(s);
 	}
@@ -63,6 +71,10 @@ public enum Operator {
 
 	public static boolean isOperator(String s) {
 		return getOperator(s) != null;
+	}
+
+	public double operate(double x, double y) {
+		return operation.operate(x, y);
 	}
 
 }

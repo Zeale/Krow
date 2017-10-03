@@ -4,13 +4,8 @@ import java.util.ArrayList;
 
 import kröw.lexers.equation_2.exceptions.ParserException;
 import kröw.lexers.equation_2.tokens.Function;
-import kröw.lexers.equation_2.tokens.FunctionToken;
-import kröw.lexers.equation_2.tokens.NullToken;
-import kröw.lexers.equation_2.tokens.NumericalToken;
-import kröw.lexers.equation_2.tokens.OperatorToken;
 import kröw.lexers.equation_2.tokens.Token;
 import kröw.lexers.equation_2.tokens.Token.Type;
-import kröw.lexers.equation_2.tokens.VariableToken;
 
 public class EquationTokenizer {
 
@@ -136,7 +131,7 @@ public class EquationTokenizer {
 				continue;
 			} else {
 				if (tokens.size() > 0 && tokens.get(tokens.size() - 1).type != Type.OPERATOR)
-					tokens.add(new OperatorToken(Operator.MULTIPLICATION));
+					tokens.add(new Token(Operator.MULTIPLICATION, Type.OPERATOR));
 			}
 			if (Character.isDigit(c) || c == '.') {
 				tokens.add(parseNumber(false));
@@ -153,7 +148,7 @@ public class EquationTokenizer {
 	}
 
 	private Token parseOperator() /* TODO: Fix operator size */ {
-		return new OperatorToken(Operator.getOperator(getChar()));
+		return new Token(Operator.getOperator(getChar()), Type.OPERATOR);
 	}
 
 	/**
@@ -192,7 +187,7 @@ public class EquationTokenizer {
 
 		if (startAtNextChar)
 			if (!hasNext())
-				return new NumericalToken(0);
+				return new Token(0, Type.NUMBER);
 			else
 				nextChar();
 		position--;// So that we can call nextChar below.
@@ -246,7 +241,7 @@ public class EquationTokenizer {
 			token = token.replaceAll(",", "");
 		}
 
-		return token.isEmpty() ? new NumericalToken(0) : new NumericalToken(Double.parseDouble(token));
+		return token.isEmpty() ? new Token(0, Type.NUMBER) : new Token(Double.parseDouble(token), Type.NUMBER);
 	}
 
 	private Token parseAlphabeticSequence(boolean startAtNextChar, boolean multParentheses) throws ParserException {
@@ -257,7 +252,7 @@ public class EquationTokenizer {
 
 		if (startAtNextChar)
 			if (!hasNext())
-				return new NullToken();
+				return new Token(null, Type.NULL);
 			else
 				nextChar();
 		position--;// So that we can call nextChar below.
@@ -278,20 +273,20 @@ public class EquationTokenizer {
 			if (c == '[' || (c == '(' && !multParentheses)) {
 				function = true;
 				String functionContents = parseFunctionContents(Wrapper.getWrapper(c, true));
-				return new FunctionToken(new Function(token, functionContents));
+				return new Token(new Function(token, functionContents), Type.FUNCTION);
 			} else if (c == '(')
 				if (multParentheses) {
 					function = false;
 					position--;
-					return new VariableToken(token);
+					return new Token(token, Type.VARIABLE);
 				} else
 					;
 			else {
 				position--;
-				return new VariableToken(token);
+				return new Token(token, Type.VARIABLE);
 			}
 		}
-		return new VariableToken(token);
+		return new Token(token, Type.VARIABLE);
 	}
 
 	private String parseFunctionContents(Wrapper wrapper) {
