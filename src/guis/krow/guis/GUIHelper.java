@@ -14,7 +14,10 @@ import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
 import javafx.event.Event;
+import javafx.event.EventDispatchChain;
+import javafx.event.EventDispatcher;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.effect.DropShadow;
@@ -24,6 +27,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -240,7 +244,7 @@ public final class GUIHelper {
 		}
 	}
 
-	public static VBox buildMenu(final Pane pane) {
+	public static MenuBox buildMenu(final Pane pane) {
 
 		final Shape menubarTop = new Rectangle(MENU_BUTTON_RECTANGLE_WIDTH, MENU_BUTTON_RECTANGLE_HEIGHT),
 				menubarBottom = new Rectangle(MENU_BUTTON_RECTANGLE_WIDTH, MENU_BUTTON_RECTANGLE_HEIGHT);
@@ -270,7 +274,7 @@ public final class GUIHelper {
 		final TranslateTransition topTrans = new TranslateTransition(MENU_BUTTON_ANIMATION_DURATION, menubarTop),
 				bottomTrans = new TranslateTransition(MENU_BUTTON_ANIMATION_DURATION, menubarBottom);
 
-		final VBox menu = new VBox(MENU_ITEM_SPACING);
+		final MenuBox menu = new MenuBox(MENU_ITEM_SPACING);
 		menu.setPrefSize(Kröw.getSystemProperties().getScreenWidth() / MENU_WIDTH_FRACTION,
 				Kröw.getSystemProperties().getScreenHeight());
 		menu.setLayoutX(Kröw.getSystemProperties().getScreenWidth());
@@ -459,10 +463,21 @@ public final class GUIHelper {
 
 		// Children will be added at the end.
 
-		pane.getChildren().add(menu);
-		pane.getChildren().add(menubarTop);
-		pane.getChildren().add(menubarBottom);
-		pane.getChildren().add(cover);
+		AnchorPane wrapper = new AnchorPane();
+
+		wrapper.setPickOnBounds(false);
+		wrapper.setEventDispatcher(null);
+
+		wrapper.setBackground(null);
+
+		wrapper.getChildren().add(menu);
+		wrapper.getChildren().add(menubarTop);
+		wrapper.getChildren().add(menubarBottom);
+		wrapper.getChildren().add(cover);
+
+		menu.setParentWrapper(wrapper);
+
+		pane.getChildren().add(wrapper);
 
 		final ImageView github = new ImageView("/krow/resources/graphics/github120px.png");
 		github.setFitHeight(Kröw.scaleHeight(40));
@@ -522,6 +537,38 @@ public final class GUIHelper {
 		menu.getChildren().add(iconsBox);
 
 		return menu;
+
+	}
+
+	public static class MenuBox extends VBox {
+		private AnchorPane parentWrapper;
+
+		public AnchorPane getParentWrapper() {
+			return parentWrapper;
+		}
+
+		public MenuBox() {
+			// TODO Auto-generated constructor stub
+		}
+
+		public MenuBox(double spacing, Node... children) {
+			super(spacing, children);
+			// TODO Auto-generated constructor stub
+		}
+
+		public MenuBox(double spacing) {
+			super(spacing);
+			// TODO Auto-generated constructor stub
+		}
+
+		public MenuBox(Node... children) {
+			super(children);
+			// TODO Auto-generated constructor stub
+		}
+
+		private void setParentWrapper(AnchorPane parentWrapper) {
+			this.parentWrapper = parentWrapper;
+		}
 
 	}
 

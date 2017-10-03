@@ -219,6 +219,7 @@
 				</TitledPane>
 			</panes>
 		</Accordion>
+      <Button fx:id="showMenuButton" focusTraversable="false" layoutX="1587.0" layoutY="36.0" mnemonicParsing="false" onAction="#_event_showSlideMenu" styleClass="pop-button" text="Show Menu" />
 	</children>
 	<stylesheets>
 		<URL value="@../../css/stylesheet.css" />
