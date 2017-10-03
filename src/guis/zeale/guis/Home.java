@@ -14,6 +14,7 @@ import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
 import zeale.guis.math_module.MathModule;
+import zeale.guis.math_module.controllers.Calculator;
 
 public class Home extends ScrollMenu {
 
@@ -95,7 +96,7 @@ public class Home extends ScrollMenu {
 		final ImageView mathModule = new ImageView(MathModule.CALCULATOR_ICON);
 		mathModule.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			try {
-				WindowManager.setScene(MathModule.class);
+				WindowManager.setScene(Calculator.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}

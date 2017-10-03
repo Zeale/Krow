@@ -5,6 +5,8 @@ import java.util.List;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
@@ -20,6 +22,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import krow.guis.GUIHelper;
 import krow.guis.math_module.TabGroup;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager.Page;
@@ -65,7 +68,12 @@ public class Calculator extends Page {
 	private VBox statisticsMenuBox;
 	private TabGroup calculus, chemistry, dflt;
 
+	@FXML
+	private Button showMenuButton;
+
 	private final StatisticsController statistics = new StatisticsController(this);
+
+	private GUIHelper.MenuBox slideMenu;
 
 	@FXML
 	private void _event_clear() {
@@ -90,6 +98,13 @@ public class Calculator extends Page {
 	@FXML
 	private void _event_enableDefaultMode() {
 		// TODO Implement
+	}
+
+	@FXML
+	private void _event_showSlideMenu() {
+		showMenuButton.setVisible(false);
+		menu.setVisible(false);
+		slideMenu.getParentWrapper().setVisible(true);
 	}
 
 	@FXML
@@ -278,6 +293,22 @@ public class Calculator extends Page {
 		if (Kröw.getProgramSettings().calculatorUseOuterZoomAnimation)
 			addHoverAnimation(1.02, pane.getChildren());
 		addHoverAnimation(1.1, ((AnchorPane) arithmeticTab.getContent()).getChildren());
+
+		slideMenu = GUIHelper.buildMenu(pane);
+		GUIHelper.addDefaultSettings(slideMenu);
+		slideMenu.getParentWrapper().setVisible(false);
+
+		Node showMathMenuItem = new GUIHelper.MenuOption(Color.ORANGE, "Show Math Menu");
+		showMathMenuItem.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				slideMenu.getParentWrapper().setVisible(false);
+				menu.setVisible(true);
+				showMenuButton.setVisible(true);
+			}
+		});
+		slideMenu.getChildren().add(showMathMenuItem);
 
 	}
 
