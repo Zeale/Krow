@@ -4,10 +4,20 @@ package zeale.guis;
 import java.io.IOException;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.stage.Popup;
 import krow.guis.GUIHelper;
+import krow.guis.PopupHelper;
 import krow.scene.ScrollMenu;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
@@ -108,6 +118,16 @@ public class Home extends ScrollMenu {
 		addImage(chatRoom);
 		addImage(statistics);
 		addImage(mathModule);
+
+		Popup p = new Popup();
+		AnchorPane test = new AnchorPane();
+		Label lbl = new Label("This is a test");
+		lbl.setTextFill(Color.WHITE);
+		lbl.setFont(Font.font(45));
+		test.setBackground(new Background(new BackgroundFill(Color.ORANGE, CornerRadii.EMPTY, Insets.EMPTY)));
+		test.getChildren().add(lbl);
+		p.getScene().setRoot(test);
+		PopupHelper.applyPopup(statistics, p);
 	}
 
 }
