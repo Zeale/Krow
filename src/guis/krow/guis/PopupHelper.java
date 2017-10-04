@@ -4,7 +4,20 @@ import javafx.animation.FadeTransition;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.InnerShadow;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 import kröw.core.Kröw;
@@ -90,6 +103,31 @@ public final class PopupHelper {
 			}
 		};
 
+	}
+
+	private static final Color basicPopupDefaultColor = new Color(1, 1, 1, 0.5);
+
+	public static VBox buildBasicPopup(Node boundNode, Label... labels) {
+		double defaultSize = new Label().getFont().getSize();
+		Popup popup = new Popup();
+		VBox box = new VBox(10);
+		for (Label l : labels) {
+			if (l.getFont().getSize() == defaultSize)
+				l.setFont(
+						Font.font(l.getFont().getFamily(), FontWeight.BOLD, FontPosture.REGULAR, Kröw.scaleHeight(18)));
+			l.setTextFill(Color.RED);
+			if (l.getEffect() == null)
+				l.setEffect(new InnerShadow());
+			box.getChildren().add(l);
+		}
+
+		box.setBorder(new Border(new BorderStroke(basicPopupDefaultColor, BorderStrokeStyle.DASHED, new CornerRadii(3),
+				new BorderWidths(5))));
+
+		popup.getScene().setRoot(box);
+
+		applyPopup(boundNode, popup);
+		return box;
 	}
 
 }

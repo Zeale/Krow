@@ -15,6 +15,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Popup;
 import krow.guis.GUIHelper;
 import krow.guis.PopupHelper;
@@ -119,15 +120,10 @@ public class Home extends ScrollMenu {
 		addImage(statistics);
 		addImage(mathModule);
 
-		Popup p = new Popup();
-		AnchorPane test = new AnchorPane();
-		Label lbl = new Label("This is a test");
-		lbl.setTextFill(Color.WHITE);
-		lbl.setFont(Font.font(45));
-		test.setBackground(new Background(new BackgroundFill(Color.ORANGE, CornerRadii.EMPTY, Insets.EMPTY)));
-		test.getChildren().add(lbl);
-		p.getScene().setRoot(test);
-		PopupHelper.applyPopup(statistics, p);
+		Label lbl = new Label("Testing text");
+		lbl.setFont(Font.font(Font.getFamilies().get((int) (Math.random() * Font.getFamilies().size())),
+				FontWeight.BOLD, 75));
+		PopupHelper.buildBasicPopup(statistics, lbl);
 	}
 
 }
