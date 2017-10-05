@@ -113,11 +113,11 @@ public class Home extends ScrollMenu {
 		addImage(statistics);
 		addImage(mathModule);
 
-		PopupHelper.buildBasicPopup(settings, GUIHelper.makeLabel("Settings Module", 18));
-		PopupHelper.buildBasicPopup(krow, GUIHelper.makeLabel("Tools Module", 18));
-		PopupHelper.buildBasicPopup(chatRoom, GUIHelper.makeLabel("Chat Room Module", 18));
-		PopupHelper.buildBasicPopup(statistics, GUIHelper.makeLabel("Statistics Module", 18));
-		PopupHelper.buildBasicPopup(mathModule, GUIHelper.makeLabel("Math Module", 18));
+		PopupHelper.buildHoverPopup(settings, GUIHelper.makeLabel("Settings Module", 18));
+		PopupHelper.buildHoverPopup(krow, GUIHelper.makeLabel("Tools Module", 18));
+		PopupHelper.buildHoverPopup(chatRoom, GUIHelper.makeLabel("Chat Room Module", 18));
+		PopupHelper.buildHoverPopup(statistics, GUIHelper.makeLabel("Statistics Module", 18));
+		PopupHelper.buildHoverPopup(mathModule, GUIHelper.makeLabel("Math Module", 18));
 
 	}
 
