@@ -20,6 +20,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -570,6 +571,12 @@ public final class GUIHelper {
 			this.parentWrapper = parentWrapper;
 		}
 
+	}
+
+	public static Label makeLabel(String text, double fontSize) {
+		Label lbl = new Label(text);
+		lbl.setFont(Font.font(lbl.getFont().getFamily(), fontSize));
+		return lbl;
 	}
 
 }
