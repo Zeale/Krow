@@ -4,19 +4,12 @@ package zeale.guis;
 import java.io.IOException;
 
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.stage.Popup;
 import krow.guis.GUIHelper;
 import krow.guis.PopupHelper;
 import krow.scene.ScrollMenu;
@@ -120,10 +113,12 @@ public class Home extends ScrollMenu {
 		addImage(statistics);
 		addImage(mathModule);
 
-		Label lbl = new Label("Testing text");
-		lbl.setFont(Font.font(Font.getFamilies().get((int) (Math.random() * Font.getFamilies().size())),
-				FontWeight.BOLD, 75));
-		PopupHelper.buildBasicPopup(statistics, lbl);
+		PopupHelper.buildBasicPopup(settings, GUIHelper.makeLabel("Settings Module", 18));
+		PopupHelper.buildBasicPopup(krow, GUIHelper.makeLabel("Tools Module", 18));
+		PopupHelper.buildBasicPopup(chatRoom, GUIHelper.makeLabel("Chat Room Module", 18));
+		PopupHelper.buildBasicPopup(statistics, GUIHelper.makeLabel("Statistics Module", 18));
+		PopupHelper.buildBasicPopup(mathModule, GUIHelper.makeLabel("Math Module", 18));
+
 	}
 
 }
