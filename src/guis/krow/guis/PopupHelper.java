@@ -17,6 +17,7 @@ import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -31,7 +32,7 @@ public final class PopupHelper {
 	private PopupHelper() {
 	}
 
-	public static void applyPopup(Node node, Popup popup) {
+	public static void applyHoverPopup(Node node, Popup popup) {
 		Parent popupRoot = popup.getScene().getRoot();
 		FadeTransition openTransition = new FadeTransition(Duration.millis(350), popupRoot),
 				closeTransition = new FadeTransition(Duration.millis(350), popupRoot);
@@ -46,43 +47,30 @@ public final class PopupHelper {
 			private byte prevEvent = -1;
 
 			{
-
 				node.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
 					prevEvent = 0;
 					open(event);
 				});
 
-				node.addEventFilter(MouseEvent.MOUSE_EXITED, new EventHandler<MouseEvent>() {
+				node.addEventFilter(MouseEvent.MOUSE_EXITED, event -> {
+					// Make sure we aren't leaving and going to this node.
+					if (event.getPickResult().getIntersectedNode() == node)
+						return;
 
-					@Override
-					public void handle(MouseEvent event) {
-						// Make sure we aren't leaving and going to this node.
-						if (event.getPickResult().getIntersectedNode() == node)
-							return;
-
-						prevEvent = 1;
-						close();
-					}
+					prevEvent = 1;
+					close();
 				});
 
-				popupRoot.addEventFilter(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
-
-					@Override
-					public void handle(MouseEvent event) {
-						prevEvent = 2;
-						open(event);
-					}
+				popupRoot.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
+					prevEvent = 2;
+					open(event);
 				});
 
-				popupRoot.addEventFilter(MouseEvent.MOUSE_EXITED, new EventHandler<MouseEvent>() {
-
-					@Override
-					public void handle(MouseEvent event) {
-						if (prevEvent == 0)
-							return;
-						prevEvent = 3;
-						close();
-					}
+				popupRoot.addEventFilter(MouseEvent.MOUSE_EXITED, event -> {
+					if (prevEvent == 0)
+						return;
+					prevEvent = 3;
+					close();
 				});
 
 			}
@@ -112,7 +100,14 @@ public final class PopupHelper {
 	private static final Color BASIC_POPUP_DEFAULT_BORDER_COLOR = new Color(0, 0, 0, 0.5);
 	private static final Color BASIC_POPUP_DEFAULT_SHADOW_COLOR = new Color(0, 0, 0, 0.25);
 
-	public static VBox buildBasicPopup(Node boundNode, Label... labels) {
+	public static VBox buildHoverPopup(Node boundNode, Label... labels) {
+		PopupWrapper<VBox> wrapper = buildPopup(labels);
+		applyHoverPopup(boundNode, wrapper.popup);
+		return wrapper.box;
+	}
+
+	public static PopupWrapper<VBox> buildPopup(Label... labels) {
+
 		double defaultSize = new Label().getFont().getSize();
 		Popup popup = new Popup();
 		VBox box = new VBox(10);
@@ -131,8 +126,25 @@ public final class PopupHelper {
 
 		popup.getScene().setRoot(box);
 
-		applyPopup(boundNode, popup);
-		return box;
+		return new PopupWrapper<VBox>(box, popup);
+
+	}
+
+	public static VBox buildRightClickPopup(Node boundNode, Label... labels) {
+		PopupWrapper<VBox> wrapper = buildPopup(labels);
+		applyRightClickPopup(boundNode, wrapper.popup);
+		return wrapper.box;
+	}
+
+	public static class PopupWrapper<BT extends Pane> {
+		public final BT box;
+		public final Popup popup;
+
+		private PopupWrapper(BT box, Popup popup) {
+			this.box = box;
+			this.popup = popup;
+		}
+
 	}
 
 	public static void applyRightClickPopup(Node node, Popup popup) {
@@ -142,24 +154,24 @@ public final class PopupHelper {
 		openTransition.setToValue(1);
 		closeTransition.setToValue(0);
 		popupRoot.setOpacity(0);
-	
+
 		closeTransition.setOnFinished(event -> popup.hide());
-	
+
 		new Object() {
-	
+
 			private byte prevEvent = -1;
-	
+
 			{
-	
+
 				node.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
 					if (!popup.isShowing())
 						return;
 					prevEvent = 0;
 					open(event);
 				});
-	
+
 				node.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-	
+
 					@Override
 					public void handle(MouseEvent event) {
 						if (event.getButton().equals(MouseButton.SECONDARY)) {
@@ -168,30 +180,30 @@ public final class PopupHelper {
 						}
 					}
 				});
-	
+
 				node.addEventFilter(MouseEvent.MOUSE_EXITED, event -> {
 					// Make sure we aren't leaving and going to this node.
 					if (event.getPickResult().getIntersectedNode() == node)
 						return;
-	
+
 					prevEvent = 1;
 					close();
 				});
-	
+
 				popupRoot.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
 					prevEvent = 2;
 					open(event);
 				});
-	
+
 				popupRoot.addEventFilter(MouseEvent.MOUSE_EXITED, event -> {
 					if (prevEvent == 0)
 						return;
 					prevEvent = 3;
 					close();
 				});
-	
+
 			}
-	
+
 			private void open(MouseEvent event) {
 				if (!popup.isShowing()) {
 					popup.show(node, event.getSceneX(), event.getSceneY());
@@ -203,7 +215,7 @@ public final class PopupHelper {
 				openTransition.setFromValue(openTransition.getNode().getOpacity());
 				openTransition.play();
 			}
-	
+
 			private void close() {
 				openTransition.stop();
 				closeTransition.stop();
@@ -211,7 +223,7 @@ public final class PopupHelper {
 				closeTransition.play();
 			}
 		};
-	
+
 	}
 
 }
