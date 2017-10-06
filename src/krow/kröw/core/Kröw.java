@@ -1,5 +1,6 @@
 package kröw.core;
 
+import java.awt.Desktop;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.RenderingHints;
@@ -22,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -1149,6 +1151,16 @@ public final class Kröw extends Application {
 		programSettings.save(ProgramSettings.DEFAULT_FILE_PATH);
 
 		super.stop();
+	}
+
+	public static boolean openLink(String link) {
+		try {
+			Desktop.getDesktop().browse(new URI(link));
+			return true;
+		} catch (IOException | URISyntaxException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 }

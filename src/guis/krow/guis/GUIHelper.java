@@ -1,9 +1,6 @@
 package krow.guis;
 
-import java.awt.Desktop;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Random;
@@ -221,14 +218,10 @@ public final class GUIHelper {
 						final Color color = Color.rgb(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256));
 						octicon.setStroke(color);
 
-						if (event.getClickCount() == 2)
-							try {
-								Desktop.getDesktop().browse(new URI("https://github.com/Zeale/Krow"));
-								((DropShadow) octicon.getEffect()).setColor(color);
-							} catch (IOException | URISyntaxException e) {
-								e.printStackTrace();
-							}
-						else
+						if (event.getClickCount() == 2) {
+							Kröw.openLink("https://github.com/Zeale/Krow");
+							((DropShadow) octicon.getEffect()).setColor(color);
+						} else
 							((DropShadow) octicon.getEffect()).setColor(Color.BLACK);
 					}
 				});
@@ -482,28 +475,31 @@ public final class GUIHelper {
 		github.setFitWidth(Kröw.scaleWidth(40));
 		github.setPickOnBounds(true);
 		github.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-			try {
-				Desktop.getDesktop().browse(new URI("https://github.com/Zeale/Krow"));
-			} catch (IOException | URISyntaxException e) {
-				e.printStackTrace();
-			}
+			Kröw.openLink("https://github.com/Zeale/Krow");
 		});
 
-		PopupHelper.buildHoverPopup(github, GUIHelper.makeBoldLabel("GitHub Page", 18));
+		PopupHelper.buildHoverPopup(github, GUIHelper.makeBoldLabel("GitHub", 18));
+		Label authorAccount = new Label("Author"), programPage = new Label("Program");
+		authorAccount.setOnMouseClicked(event -> {
+			if (event.getButton().equals(MouseButton.PRIMARY))
+				Kröw.openLink("https://github.com/Zeale");
+		});
+		programPage.setOnMouseClicked(event -> {
+			if (event.getButton().equals(MouseButton.PRIMARY))
+
+				Kröw.openLink("https://github.com/Zeale/Krow");
+
+		});
 
 		ImageView cookie = new ImageView("/krow/resources/graphics/cookie256px.png");
 		cookie.setFitHeight(Kröw.scaleHeight(40));
 		cookie.setFitWidth(Kröw.scaleWidth(40));
 		cookie.setPickOnBounds(true);
 		cookie.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-			try {
-				Desktop.getDesktop().browse(new URI("https://github.com/Zeale/Cookie/releases"));
-			} catch (IOException | URISyntaxException e) {
-				e.printStackTrace();
-			}
+			Kröw.openLink("https://github.com/Zeale/Cookie/releases");
 		});
 
-		PopupHelper.buildHoverPopup(cookie, GUIHelper.makeBoldLabel("Cookie Page", 18));
+		PopupHelper.buildHoverPopup(cookie, GUIHelper.makeBoldLabel("Cookie", 18));
 
 		ImageView cookiep = new ImageView("/krow/resources/graphics/cookie+256px.png");
 		cookiep.setFitHeight(Kröw.scaleHeight(40));
@@ -513,11 +509,7 @@ public final class GUIHelper {
 
 			@Override
 			public void handle(Event event) {
-				try {
-					Desktop.getDesktop().browse(new URI("https://github.com/Zeale/Cookie-plus/releases"));
-				} catch (IOException | URISyntaxException e) {
-					e.printStackTrace();
-				}
+				Kröw.openLink("https://github.com/Zeale/Cookie-plus/releases");
 			}
 		});
 
@@ -526,11 +518,7 @@ public final class GUIHelper {
 		krow.setFitWidth(Kröw.scaleWidth(40));
 		krow.setPickOnBounds(true);
 		krow.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-			try {
-				Desktop.getDesktop().browse(new URI("https://github.com/Zeale/Krow/releases"));
-			} catch (IOException | URISyntaxException e) {
-				e.printStackTrace();
-			}
+			Kröw.openLink("https://github.com/Zeale/Krow/releases");
 		});
 
 		final HBox iconsBox = new HBox(Kröw.scaleWidth(5), github, krow, cookie, cookiep);
