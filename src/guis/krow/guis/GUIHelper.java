@@ -14,12 +14,10 @@ import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
 import javafx.event.Event;
-import javafx.event.EventDispatchChain;
-import javafx.event.EventDispatcher;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
@@ -28,7 +26,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -355,9 +352,9 @@ public final class GUIHelper {
 				final EventHandler<MouseEvent> exitHandler = event -> {
 					if (event.getPickResult().getIntersectedNode() == menu
 							|| event.getPickResult().getIntersectedNode() == cover
-							|| event.getPickResult().getIntersectedNode().getParent() == menu || closing)
+							|| event.getPickResult().getIntersectedNode().getParent() == menu || closing
+							|| isDeepChildOf(event.getPickResult().getIntersectedNode(), menu))
 						return;
-
 					close();
 
 				};
@@ -492,6 +489,8 @@ public final class GUIHelper {
 			}
 		});
 
+		PopupHelper.buildHoverPopup(github, GUIHelper.makeBoldLabel("GitHub Page", 18));
+
 		ImageView cookie = new ImageView("/krow/resources/graphics/cookie256px.png");
 		cookie.setFitHeight(Kröw.scaleHeight(40));
 		cookie.setFitWidth(Kröw.scaleWidth(40));
@@ -503,6 +502,8 @@ public final class GUIHelper {
 				e.printStackTrace();
 			}
 		});
+
+		PopupHelper.buildHoverPopup(cookie, GUIHelper.makeBoldLabel("Cookie Page", 18));
 
 		ImageView cookiep = new ImageView("/krow/resources/graphics/cookie+256px.png");
 		cookiep.setFitHeight(Kröw.scaleHeight(40));
@@ -583,6 +584,16 @@ public final class GUIHelper {
 		Label lbl = new Label(text);
 		lbl.setFont(Font.font(lbl.getFont().getFamily(), fontSize));
 		return lbl;
+	}
+
+	public static boolean isDeepChildOf(Node child, Parent parent) {
+		for (Node n : parent.getChildrenUnmodifiable())
+			if (n == child)
+				return true;
+			else if (n instanceof Parent)
+				if (isDeepChildOf(child, (Parent) n))
+					return true;
+		return false;
 	}
 
 }
