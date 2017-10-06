@@ -7,9 +7,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import krow.guis.GUIHelper;
 import krow.guis.PopupHelper;
 import krow.scene.ScrollMenu;
@@ -113,11 +112,32 @@ public class Home extends ScrollMenu {
 		addImage(statistics);
 		addImage(mathModule);
 
-		PopupHelper.buildHoverPopup(settings, GUIHelper.makeLabel("Settings Module", 18));
-		PopupHelper.buildHoverPopup(krow, GUIHelper.makeLabel("Tools Module", 18));
-		PopupHelper.buildHoverPopup(chatRoom, GUIHelper.makeLabel("Chat Room Module", 18));
-		PopupHelper.buildHoverPopup(statistics, GUIHelper.makeLabel("Statistics Module", 18));
-		PopupHelper.buildHoverPopup(mathModule, GUIHelper.makeLabel("Math Module", 18));
+		PopupHelper.buildHoverPopup(settings, GUIHelper.makeBoldLabel("Settings Module", 18));
+		PopupHelper.buildHoverPopup(krow, GUIHelper.makeBoldLabel("Tools Module", 18));
+		PopupHelper.buildHoverPopup(chatRoom, GUIHelper.makeBoldLabel("Chat Room Module", 18));
+		PopupHelper.buildHoverPopup(statistics, GUIHelper.makeBoldLabel("Statistics Module", 18));
+		PopupHelper.buildHoverPopup(mathModule, GUIHelper.makeBoldLabel("Math Module", 18));
+
+		Label mathModuleCalculatorLbl = new Label("Calculator"), mathModuleStatisticsLbl = new Label("Statistics");
+		mathModuleStatisticsLbl.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			if (event.getButton().equals(MouseButton.PRIMARY))
+				try {
+					WindowManager.setScene(Calculator.class).getController().enableStatsMode();
+				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+					e.printStackTrace();
+				}
+		});
+
+		mathModuleCalculatorLbl.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			if (event.getButton().equals(MouseButton.PRIMARY))
+				try {
+					WindowManager.setScene(Calculator.class);
+				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+					e.printStackTrace();
+				}
+		});
+
+		PopupHelper.buildRightClickPopup(mathModule, mathModuleCalculatorLbl, mathModuleStatisticsLbl);
 
 	}
 

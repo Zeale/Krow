@@ -573,6 +573,12 @@ public final class GUIHelper {
 
 	}
 
+	public static Label makeBoldLabel(String text, double fontSize) {
+		Label lbl = new Label(text);
+		lbl.setFont(Font.font(lbl.getFont().getFamily(), FontWeight.BOLD, fontSize));
+		return lbl;
+	}
+
 	public static Label makeLabel(String text, double fontSize) {
 		Label lbl = new Label(text);
 		lbl.setFont(Font.font(lbl.getFont().getFamily(), fontSize));

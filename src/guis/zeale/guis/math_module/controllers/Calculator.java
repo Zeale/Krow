@@ -121,10 +121,6 @@ public class Calculator extends Page {
 		statistics.show(buttonTabPane, Mode.Z_SCORES);
 	}
 
-	/*************************************************************************************
-	 *********************************** EVENT METHODS ***********************************
-	 *************************************************************************************/
-
 	@FXML
 	private void _event_evaluate() {
 		try {
@@ -166,10 +162,6 @@ public class Calculator extends Page {
 		}
 	}
 
-	/**************************************************************************************
-	 *********************************** HELPER METHODS ***********************************
-	 **************************************************************************************/
-
 	private void addHoverAnimation(final double size, final Node... nodes) {
 		for (final Node n : nodes) {
 
@@ -191,10 +183,6 @@ public class Calculator extends Page {
 
 		}
 	}
-
-	/***************************************************************************************
-	 *********************************** INSTANCE METHODS **********************************
-	 ***************************************************************************************/
 
 	private void appendText(final String text) {
 		calcIO.appendText(text);
@@ -330,12 +318,12 @@ public class Calculator extends Page {
 		cachedText = calcIO.getText();
 	}
 
-	/*****************************************************************************************
-	 *********************************** INITIALIZATION METHOD *******************************
-	 *****************************************************************************************/
-
 	public void show() {
 		dflt.show(buttonTabPane);
+	}
+	
+	public void enableStatsMode(){
+		_event_enableStatsMode();
 	}
 
 }
