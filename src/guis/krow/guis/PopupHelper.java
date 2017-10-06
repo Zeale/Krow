@@ -1,5 +1,7 @@
 package krow.guis;
 
+import java.util.Stack;
+
 import javafx.animation.FadeTransition;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -28,6 +30,8 @@ import javafx.util.Duration;
 import kröw.core.Kröw;
 
 public final class PopupHelper {
+
+	private Stack<Popup> popups = new Stack<>();
 
 	private PopupHelper() {
 	}
@@ -76,6 +80,13 @@ public final class PopupHelper {
 			}
 
 			private void open(MouseEvent event) {
+
+				if (node.getProperties().containsKey(LAST_POPUP_KEY)
+						&& node.getProperties().get(LAST_POPUP_KEY) != popup
+						&& ((Popup) node.getProperties().get(LAST_POPUP_KEY)).isShowing())
+					return;
+				node.getProperties().put(LAST_POPUP_KEY, popup);
+
 				if (!popup.isShowing()) {
 					popup.show(node, event.getSceneX(), event.getSceneY());
 					popup.setX(event.getSceneX() - popup.getWidth() / 2);
@@ -121,7 +132,8 @@ public final class PopupHelper {
 
 		box.setBorder(new Border(new BorderStroke(BASIC_POPUP_DEFAULT_BORDER_COLOR, BorderStrokeStyle.SOLID,
 				CornerRadii.EMPTY, new BorderWidths(2))));
-		box.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, 0), CornerRadii.EMPTY, Insets.EMPTY)));
+		box.setBackground(
+				new Background(new BackgroundFill(new Color(0, 0, 0, 0.004), CornerRadii.EMPTY, Insets.EMPTY)));
 		box.setEffect(new DropShadow(BlurType.THREE_PASS_BOX, BASIC_POPUP_DEFAULT_SHADOW_COLOR, 4.1, 0.4, 17, 21));
 
 		popup.getScene().setRoot(box);
@@ -205,6 +217,15 @@ public final class PopupHelper {
 			}
 
 			private void open(MouseEvent event) {
+
+				if (node.getProperties().containsKey(LAST_POPUP_KEY)) {
+					Popup popup2 = (Popup) node.getProperties().get(LAST_POPUP_KEY);
+					if (popup2 != popup && popup2.isShowing())
+						popup2.hide();
+				}
+
+				node.getProperties().put(LAST_POPUP_KEY, popup);
+
 				if (!popup.isShowing()) {
 					popup.show(node, event.getSceneX(), event.getSceneY());
 					popup.setX(event.getSceneX() - popup.getWidth() / 2);
@@ -225,5 +246,7 @@ public final class PopupHelper {
 		};
 
 	}
+
+	private static final Object LAST_POPUP_KEY = new Object();
 
 }
