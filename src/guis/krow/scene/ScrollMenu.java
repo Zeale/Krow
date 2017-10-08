@@ -8,11 +8,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager.Page;
@@ -20,12 +22,12 @@ import kröw.core.managers.WindowManager.Page;
 public abstract class ScrollMenu extends Page {
 	protected class Item {
 
-		public final ImageView image;
+		public final Node image;
 		public final TranslateTransition transition;
 		public double goal;
 
-		public Item(final ImageView image, final TranslateTransition transition) {
-			this.image = image;
+		public Item(final Node node, final TranslateTransition transition) {
+			this.image = node;
 			this.transition = transition;
 		}
 
@@ -33,7 +35,7 @@ public abstract class ScrollMenu extends Page {
 
 	protected final static long SLIDE_ANIMATION_DURATION = 1000;
 
-	protected static int IMAGE_WIDTH = (int) ((double) 100 / 1920 * Kröw.getSystemProperties().getScreenWidth()),
+	public static int IMAGE_WIDTH = (int) ((double) 100 / 1920 * Kröw.getSystemProperties().getScreenWidth()),
 			IMAGE_HEIGHT = (int) ((double) 100 / 1080 * Kröw.getSystemProperties().getScreenHeight()),
 			IMAGE_SPACING = IMAGE_WIDTH / 2;
 
@@ -55,6 +57,12 @@ public abstract class ScrollMenu extends Page {
 		image.setFitHeight(IMAGE_HEIGHT);
 		image.setFitWidth(IMAGE_WIDTH);
 		views.add(new Item(image, transition));
+	}
+
+	public void addShape(Shape shape) {
+		final TranslateTransition transition = new TranslateTransition(Duration.millis(SLIDE_ANIMATION_DURATION),
+				shape);
+		views.add(new Item(shape, transition));
 	}
 
 	public void addImage(final int index, final ImageView imageView) {
@@ -86,8 +94,8 @@ public abstract class ScrollMenu extends Page {
 
 	}
 
-	public List<ImageView> clearImages() {
-		final ArrayList<ImageView> items = new ArrayList<>();
+	public List<Node> clearImages() {
+		final ArrayList<Node> items = new ArrayList<>();
 		for (final Item i : views)
 			items.add(i.image);
 		views.clear();
