@@ -6,7 +6,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
-import kröw.core.Kröw;
+import javafx.util.Duration;
 
 public class HorizontalScrollControl extends HBox {
 
@@ -37,8 +37,7 @@ public class HorizontalScrollControl extends HBox {
 		SLIDER;
 	}
 
-	public static int NODE_WIDTH = Kröw.scaleWidth(100), NODE_HEIGHT = Kröw.scaleHeight(100),
-			NODE_SPACING = (int) ((double) NODE_WIDTH / 2);
+	public static int NODE_WIDTH = 100, NODE_HEIGHT = 100, NODE_SPACING = (int) ((double) NODE_WIDTH / 2);
 
 	private final double SINGLE_JUMP_DISTANCE = NODE_WIDTH + NODE_SPACING;
 
@@ -56,6 +55,8 @@ public class HorizontalScrollControl extends HBox {
 						for (Node n : c.getAddedSubList()) {
 							TranslateTransition slider = new TranslateTransition();
 							n.getProperties().put(PropertyKeys.SLIDER, slider);
+							slider.setDuration(Duration.millis(SLIDE_ANIMATION_DURATION));
+							slider.setNode(n);
 						}
 				}
 			}
