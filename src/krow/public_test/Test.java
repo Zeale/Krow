@@ -10,7 +10,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import krow.scene.HorizontalScrollControl;
+import krow.scene.HorizontalScrollBox;
 
 public class Test extends Application {
 	public static void main(final String[] args) {
@@ -20,7 +20,7 @@ public class Test extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// Make our scroll control
-		HorizontalScrollControl hsc = new HorizontalScrollControl();
+		HorizontalScrollBox hsc = new HorizontalScrollBox();
 		// Add a child
 		hsc.getChildren().add(new ImageView(new Image("/krow/resources/ChatRoomIcon_hd.png")));
 		// Set up stage stuff

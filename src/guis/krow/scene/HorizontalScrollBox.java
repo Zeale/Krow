@@ -8,7 +8,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 
-public class HorizontalScrollControl extends HBox {
+public class HorizontalScrollBox extends HBox {
 
 	private static final long SLIDE_ANIMATION_DURATION = 1000;
 
@@ -41,7 +41,7 @@ public class HorizontalScrollControl extends HBox {
 
 	private final double SINGLE_JUMP_DISTANCE = NODE_WIDTH + NODE_SPACING;
 
-	public HorizontalScrollControl() {
+	public HorizontalScrollBox() {
 		// TODO Auto-generated constructor stub
 	}
 
