@@ -887,7 +887,7 @@ public final class BackgroundBuilder {
 		manager.addRandomShapes(SHAPE_COUNT);
 
 		for (final Node n : mouseDetectionNodes)
-			n.setOnMouseMoved(manager.getMouseMovementHandler());
+			n.addEventFilter(MouseEvent.MOUSE_MOVED, manager.getMouseMovementHandler());
 
 		return manager;
 
