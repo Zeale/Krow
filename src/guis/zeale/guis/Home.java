@@ -3,14 +3,19 @@ package zeale.guis;
 
 import java.io.IOException;
 
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
 import krow.guis.GUIHelper;
 import krow.guis.PopupHelper;
+import krow.guis.ShapeFactory;
 import krow.scene.ScrollMenu;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
@@ -106,11 +111,24 @@ public class Home extends ScrollMenu {
 		});
 		mathModule.setPickOnBounds(true);
 
+		Shape backgroundShape = ShapeFactory.buildRegularShape(ScrollMenu.IMAGE_HEIGHT, (int) (Math.random() * 5 + 3));
+		backgroundShape.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				// WindowManager.setScene(...);
+			}
+		});
+		backgroundShape.setPickOnBounds(true);
+		backgroundShape.setFill(Color.TRANSPARENT);
+		backgroundShape.setStroke(Color.WHITE);
+
 		addImage(settings);
 		addImage(krow);
 		addImage(chatRoom);
 		addImage(statistics);
 		addImage(mathModule);
+		addShape(backgroundShape);
 
 		PopupHelper.buildHoverPopup(settings, GUIHelper.makeBoldLabel("Settings Module", 18));
 		PopupHelper.buildHoverPopup(krow, GUIHelper.makeBoldLabel("Tools Module", 18));
