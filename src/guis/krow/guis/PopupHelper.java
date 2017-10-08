@@ -22,6 +22,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -117,16 +118,28 @@ public final class PopupHelper {
 		return wrapper.box;
 	}
 
+	public static VBox buildHoverPopup(Node boundNode, Color color, String... labels) {
+		Label[] lbls = new Label[labels.length];
+		for (int i = 0; i < labels.length; i++) {
+			lbls[i] = new Label(labels[i]);
+			lbls[i].setTextFill(color);
+		}
+		return buildHoverPopup(boundNode, lbls);
+	}
+
 	public static PopupWrapper<VBox> buildPopup(Label... labels) {
 
 		double defaultSize = new Label().getFont().getSize();
+		Paint defaultTextFill = new Label().getTextFill();
+
 		Popup popup = new Popup();
 		VBox box = new VBox(10);
 		for (Label l : labels) {
 			if (l.getFont().getSize() == defaultSize)
 				l.setFont(
 						Font.font(l.getFont().getFamily(), FontWeight.BOLD, FontPosture.REGULAR, Kröw.scaleHeight(18)));
-			l.setTextFill(Color.WHITE);
+			if (l.getTextFill().equals(defaultTextFill))
+				l.setTextFill(Color.WHITE);
 			box.getChildren().add(l);
 		}
 

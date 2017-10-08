@@ -10,7 +10,6 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -475,7 +474,8 @@ public final class GUIHelper {
 		github.setFitWidth(Kröw.scaleWidth(40));
 		github.setPickOnBounds(true);
 		github.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-			Kröw.openLink("https://github.com/Zeale/Krow");
+			if (event.getButton().equals(MouseButton.PRIMARY))
+				Kröw.openLink("https://github.com/Zeale/Krow");
 		});
 
 		PopupHelper.buildHoverPopup(github, GUIHelper.makeBoldLabel("GitHub", 18));
@@ -486,17 +486,18 @@ public final class GUIHelper {
 		});
 		programPage.setOnMouseClicked(event -> {
 			if (event.getButton().equals(MouseButton.PRIMARY))
-
 				Kröw.openLink("https://github.com/Zeale/Krow");
 
 		});
+		PopupHelper.buildRightClickPopup(github, authorAccount, programPage);
 
 		ImageView cookie = new ImageView("/krow/resources/graphics/cookie256px.png");
 		cookie.setFitHeight(Kröw.scaleHeight(40));
 		cookie.setFitWidth(Kröw.scaleWidth(40));
 		cookie.setPickOnBounds(true);
 		cookie.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-			Kröw.openLink("https://github.com/Zeale/Cookie/releases");
+			if (event.getButton().equals(MouseButton.PRIMARY))
+				Kröw.openLink("https://github.com/Zeale/Cookie/releases");
 		});
 
 		PopupHelper.buildHoverPopup(cookie, GUIHelper.makeBoldLabel("Cookie", 18));
@@ -505,21 +506,23 @@ public final class GUIHelper {
 		cookiep.setFitHeight(Kröw.scaleHeight(40));
 		cookiep.setFitWidth(Kröw.scaleWidth(40));
 		cookiep.setPickOnBounds(true);
-		cookiep.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
+		cookiep.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			if (event.getButton().equals(MouseButton.PRIMARY))
 				Kröw.openLink("https://github.com/Zeale/Cookie-plus/releases");
-			}
 		});
+
+		PopupHelper.buildHoverPopup(cookiep, Color.BLUE, "Cookie+");
 
 		ImageView krow = new ImageView("/krow/resources/Kröw_hd.png");
 		krow.setFitHeight(Kröw.scaleHeight(40));
 		krow.setFitWidth(Kröw.scaleWidth(40));
 		krow.setPickOnBounds(true);
 		krow.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-			Kröw.openLink("https://github.com/Zeale/Krow/releases");
+			if (event.getButton().equals(MouseButton.PRIMARY))
+				Kröw.openLink("https://github.com/Zeale/Krow/releases");
 		});
+
+		PopupHelper.buildHoverPopup(krow, Color.RED, "Updates");
 
 		final HBox iconsBox = new HBox(Kröw.scaleWidth(5), github, krow, cookie, cookiep);
 		iconsBox.setAlignment(Pos.CENTER);
