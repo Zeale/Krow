@@ -10,7 +10,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import krow.scene.HorizontalScrollBox;
+import krow.scene.VerticalScrollBox;
 
 public class Test extends Application {
 	public static void main(final String[] args) {
@@ -20,19 +20,19 @@ public class Test extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// Make our scroll control
-		HorizontalScrollBox hsc = new HorizontalScrollBox();
+		VerticalScrollBox vsb = new VerticalScrollBox();
 		// Add a child
-		hsc.getChildren().add(new ImageView(new Image("/krow/resources/ChatRoomIcon_hd.png")));
+		vsb.getChildren().add(new ImageView(new Image("/krow/resources/ChatRoomIcon_hd.png")));
 		// Set up stage stuff
-		primaryStage.setScene(new Scene(hsc));
+		primaryStage.setScene(new Scene(vsb));
 		// Testing if a bug is caused by fullscreen or not. This line can be
 		// removed.
 		primaryStage.setFullScreen(true);
 		// Add a bg because why not?
-		hsc.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, null)));
+		vsb.setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, null)));
 		// Add this to make sure that something shows up if the image (added
 		// above) doesn't work
-		hsc.getChildren().add(new Button("Test"));
+		vsb.getChildren().add(new Button("Test"));
 		// Show the screen.
 		primaryStage.show();
 
