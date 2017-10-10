@@ -42,6 +42,9 @@ public class Test extends Application {
 		// Scrolling on the krow image will move it vertically as well as move
 		// all the other elements horizontally.
 
+		menu.setLayoutX(250);
+		menu.setLayoutY(250);
+
 		// Show the screen.
 		primaryStage.show();
 

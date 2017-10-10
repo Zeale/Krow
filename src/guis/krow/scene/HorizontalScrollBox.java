@@ -13,23 +13,24 @@ public class HorizontalScrollBox extends HBox {
 	private static final long SLIDE_ANIMATION_DURATION = 1000;
 
 	private double displacement = 0;
+	
+	public static int NODE_WIDTH = 100, NODE_HEIGHT = 100, NODE_SPACING = (int) ((double) NODE_WIDTH / 2);
 
-	private final EventHandler<ScrollEvent> onScroll = new EventHandler<ScrollEvent>() {
+	private final double SINGLE_JUMP_DISTANCE = NODE_WIDTH + NODE_SPACING;
 
-		@Override
-		public void handle(ScrollEvent event) {
-			// The amount of images to scroll.
-			int amount = event.getDeltaY() / event.getMultiplierY() > 0 ? 1 : -1;
+	private final EventHandler<ScrollEvent> onScroll = event -> {
+		// The amount of images to scroll.
+		int amount = event.getDeltaY() / event.getMultiplierY() > 0 ? 1 : -1;
 
-			displacement += amount * SINGLE_JUMP_DISTANCE;
+		displacement += amount * SINGLE_JUMP_DISTANCE;
 
-			for (Node n : getChildren()) {
-				TranslateTransition slider = getSlider(n);
-				slider.stop();
-				slider.setFromX(n.getTranslateX());
-				slider.setByX(displacement - n.getTranslateX());
-				slider.play();
-			}
+		for (Node n : getChildren()) {
+			TranslateTransition slider = getSlider(n);
+			slider.stop();
+			slider.setFromX(n.getTranslateX());
+			slider.setByX(displacement - n.getTranslateX());
+			slider.play();
+			event.consume();
 		}
 	};
 
@@ -37,28 +38,19 @@ public class HorizontalScrollBox extends HBox {
 		SLIDER;
 	}
 
-	public static int NODE_WIDTH = 100, NODE_HEIGHT = 100, NODE_SPACING = (int) ((double) NODE_WIDTH / 2);
-
-	private final double SINGLE_JUMP_DISTANCE = NODE_WIDTH + NODE_SPACING;
-
 	public HorizontalScrollBox() {
-		// TODO Auto-generated constructor stub
 	}
 
 	{
-		getChildren().addListener(new ListChangeListener<Node>() {
-
-			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Node> c) {
-				while (c.next()) {
-					if (c.wasAdded())
-						for (Node n : c.getAddedSubList()) {
-							TranslateTransition slider = new TranslateTransition();
-							n.getProperties().put(PropertyKeys.SLIDER, slider);
-							slider.setDuration(Duration.millis(SLIDE_ANIMATION_DURATION));
-							slider.setNode(n);
-						}
-				}
+		getChildren().addListener((ListChangeListener<Node>) c -> {
+			while (c.next()) {
+				if (c.wasAdded())
+					for (Node n : c.getAddedSubList()) {
+						TranslateTransition slider = new TranslateTransition();
+						n.getProperties().put(PropertyKeys.SLIDER, slider);
+						slider.setDuration(Duration.millis(SLIDE_ANIMATION_DURATION));
+						slider.setNode(n);
+					}
 			}
 		});
 
