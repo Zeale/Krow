@@ -4,9 +4,9 @@ import java.util.List;
 
 import javafx.scene.Node;
 
-public class MultiScrollMenu extends HorizontalScrollBox {
+public class MultiScrollBox extends HorizontalScrollBox {
 
-	public MultiScrollMenu() {
+	public MultiScrollBox() {
 	}
 
 	public class Menu {
