@@ -16,7 +16,7 @@ import javafx.scene.shape.Shape;
 import krow.guis.GUIHelper;
 import krow.guis.PopupHelper;
 import krow.guis.ShapeFactory;
-import krow.scene.ScrollMenu;
+import krow.pages.ScrollMenu;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
