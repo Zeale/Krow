@@ -1,4 +1,4 @@
-package krow.scene;
+package krow.pages;
 
 import java.util.ArrayList;
 import java.util.List;

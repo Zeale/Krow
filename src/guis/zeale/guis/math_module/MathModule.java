@@ -7,7 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import krow.guis.GUIHelper;
-import krow.scene.ScrollMenu;
+import krow.pages.ScrollMenu;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import zeale.guis.math_module.controllers.Calculator;
