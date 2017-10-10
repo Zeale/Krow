@@ -13,7 +13,7 @@ public class HorizontalScrollBox extends HBox {
 	private static final long SLIDE_ANIMATION_DURATION = 1000;
 
 	private double displacement = 0;
-	
+
 	public static int NODE_WIDTH = 100, NODE_HEIGHT = 100, NODE_SPACING = (int) ((double) NODE_WIDTH / 2);
 
 	private final double SINGLE_JUMP_DISTANCE = NODE_WIDTH + NODE_SPACING;
@@ -23,6 +23,11 @@ public class HorizontalScrollBox extends HBox {
 		int amount = event.getDeltaY() / event.getMultiplierY() > 0 ? 1 : -1;
 
 		displacement += amount * SINGLE_JUMP_DISTANCE;
+		double max = (getChildren().size() - 1) * SINGLE_JUMP_DISTANCE, min = 0;
+		if (displacement > max)
+			displacement = max;
+		else if (displacement < min)
+			displacement = min;
 
 		for (Node n : getChildren()) {
 			TranslateTransition slider = getSlider(n);
