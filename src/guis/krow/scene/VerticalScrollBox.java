@@ -4,6 +4,7 @@ import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
@@ -53,11 +54,20 @@ public class VerticalScrollBox extends VBox {
 						n.getProperties().put(PropertyKeys.SLIDER, slider);
 						slider.setDuration(Duration.millis(SLIDE_ANIMATION_DURATION));
 						slider.setNode(n);
+
+						n.setTranslateX(displacement);
+
+						if (n instanceof ImageView) {
+							((ImageView) n).setFitHeight(NODE_HEIGHT);
+							((ImageView) n).setFitWidth(NODE_WIDTH);
+						}
+
 					}
 			}
 		});
 
 		addEventHandler(ScrollEvent.SCROLL, onScroll);
+		setSpacing(NODE_SPACING);
 
 	}
 

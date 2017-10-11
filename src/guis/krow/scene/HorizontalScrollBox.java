@@ -59,6 +59,8 @@ public class HorizontalScrollBox extends HBox {
 						slider.setDuration(Duration.millis(SLIDE_ANIMATION_DURATION));
 						slider.setNode(n);
 
+						n.setTranslateX(displacement);
+
 						if (n instanceof ImageView) {
 							((ImageView) n).setFitHeight(NODE_HEIGHT);
 							((ImageView) n).setFitWidth(NODE_WIDTH);
@@ -72,6 +74,16 @@ public class HorizontalScrollBox extends HBox {
 
 		setSpacing(NODE_SPACING);
 
+	}
+
+	protected void setDisplacement(double displacement) {
+		this.displacement = displacement;
+		for (Node n : getChildren())
+			n.setTranslateX(displacement);
+	}
+
+	public void center() {
+		setDisplacement(SINGLE_JUMP_DISTANCE * (getChildren().size() / 2));
 	}
 
 	/**
