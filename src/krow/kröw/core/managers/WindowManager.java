@@ -395,6 +395,7 @@ public class WindowManager {
 	public static void spawnLabel(final String text, final Color color, final double x, final double y) {
 		final Popup pc = new Popup();
 		final Label label = new Label(text);
+		label.setMouseTransparent(true);
 		final TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(2), label);
 		final FadeTransition opacityTransition = new FadeTransition(Duration.seconds(2), label);
 
