@@ -4,9 +4,11 @@ import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
+import kröw.core.Kröw;
 
 public class HorizontalScrollBox extends HBox {
 
@@ -14,7 +16,8 @@ public class HorizontalScrollBox extends HBox {
 
 	private double displacement = 0;
 
-	public static int NODE_WIDTH = 100, NODE_HEIGHT = 100, NODE_SPACING = (int) ((double) NODE_WIDTH / 2);
+	public static int NODE_WIDTH = Kröw.scaleWidth(100), NODE_HEIGHT = Kröw.scaleHeight(100),
+			NODE_SPACING = (int) ((double) NODE_WIDTH / 2);
 
 	private final double SINGLE_JUMP_DISTANCE = NODE_WIDTH + NODE_SPACING;
 
@@ -55,11 +58,19 @@ public class HorizontalScrollBox extends HBox {
 						n.getProperties().put(PropertyKeys.SLIDER, slider);
 						slider.setDuration(Duration.millis(SLIDE_ANIMATION_DURATION));
 						slider.setNode(n);
+
+						if (n instanceof ImageView) {
+							((ImageView) n).setFitHeight(NODE_HEIGHT);
+							((ImageView) n).setFitWidth(NODE_WIDTH);
+						}
+
 					}
 			}
 		});
 
 		addEventHandler(ScrollEvent.SCROLL, onScroll);
+
+		setSpacing(NODE_SPACING);
 
 	}
 

@@ -111,7 +111,7 @@ public class Home extends ScrollMenu {
 		});
 		mathModule.setPickOnBounds(true);
 
-		Shape backgroundShape = ShapeFactory.buildRegularShape(ScrollMenu.IMAGE_HEIGHT, (int) (Math.random() * 5 + 3));
+		Shape backgroundShape = ShapeFactory.buildRegularShape(Kröw.scaleHeight(100), (int) (Math.random() * 5 + 3));
 		backgroundShape.setOnMouseClicked(new EventHandler<Event>() {
 
 			@Override
@@ -123,12 +123,7 @@ public class Home extends ScrollMenu {
 		backgroundShape.setFill(Color.TRANSPARENT);
 		backgroundShape.setStroke(Color.WHITE);
 
-		addImage(settings);
-		addImage(krow);
-		addImage(chatRoom);
-		addImage(statistics);
-		addImage(mathModule);
-		addShape(backgroundShape);
+		horizontalScroll.getChildren().addAll(settings, krow, chatRoom, statistics, mathModule, backgroundShape);
 
 		PopupHelper.buildHoverPopup(settings, GUIHelper.makeBoldLabel("Settings Module", 18));
 		PopupHelper.buildHoverPopup(krow, GUIHelper.makeBoldLabel("Tools Module", 18));

@@ -61,8 +61,8 @@ public class MathModule extends ScrollMenu {
 			// WindowManager.setScene(Statistics.class);
 		});
 
-		addImage(calculator);
-		addImage(statistics);
+		horizontalScroll.getChildren().addAll(calculator, statistics);
+
 	}
 
 }
