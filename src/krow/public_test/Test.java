@@ -9,7 +9,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import krow.scene.MultiScrollBox;
+import krow.scene.HorizontalMultiScrollBox;
 import kröw.core.Kröw;
 
 public class Test extends Application {
@@ -20,7 +20,7 @@ public class Test extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// Make our scroll control
-		MultiScrollBox menu = new MultiScrollBox();
+		HorizontalMultiScrollBox menu = new HorizontalMultiScrollBox();
 		// Set up stage stuff
 		primaryStage.setScene(new Scene(menu));
 
