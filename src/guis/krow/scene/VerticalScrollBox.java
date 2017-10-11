@@ -10,7 +10,6 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 public class VerticalScrollBox extends VBox {
-	private boolean align;
 
 	private static final long SLIDE_ANIMATION_DURATION = 1000;
 
