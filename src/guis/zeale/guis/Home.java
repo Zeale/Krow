@@ -116,12 +116,13 @@ public class Home extends ScrollMenu {
 
 			@Override
 			public void handle(Event event) {
-				// WindowManager.setScene(...);
+				WindowManager.spawnLabelAtMousePos("WIP", Color.FIREBRICK);
 			}
 		});
 		backgroundShape.setPickOnBounds(true);
 		backgroundShape.setFill(Color.TRANSPARENT);
 		backgroundShape.setStroke(Color.WHITE);
+		PopupHelper.buildHoverPopup(backgroundShape, Color.FIREBRICK, "Work In Progress");
 
 		horizontalScroll.getChildren().addAll(settings, krow, chatRoom, statistics, mathModule, backgroundShape);
 		horizontalScroll.center();
