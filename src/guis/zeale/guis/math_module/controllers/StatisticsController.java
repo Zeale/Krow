@@ -201,9 +201,10 @@ public class StatisticsController {
 	private void initialize() {
 		if (loaded)
 			return;
-		loaded = false;
+		loaded = true;
 
-		statsOutputListView.setCellFactory(Statistic.getStatisticListCellFactory());
+		if (statsOutputListView != null)
+			statsOutputListView.setCellFactory(Statistic.getStatisticListCellFactory());
 	}
 
 	private TabGroup loadMode(final Mode mode) {
