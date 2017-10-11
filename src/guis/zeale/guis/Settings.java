@@ -199,7 +199,7 @@ public class Settings extends Page {
 		program.getValue().getChildren().add(useTrayIcon);
 		addItem(program);
 
-		final SettingTab appsTab = new SettingTab("Apps");
+		final SettingTab moduleTab = new SettingTab("Modules");
 		final SettingTab chatRoomTab = new SettingTab("Chat Room");
 		{
 			final Setting hostServerSetting = new Setting("Start server when the Chat Room app opens: "
@@ -214,7 +214,7 @@ public class Settings extends Page {
 			chatRoomTab.getChildren().add(hostServerSetting);
 		}
 
-		final TreeItem<SettingTab> appsItem = new TreeItem<>(appsTab);
+		final TreeItem<SettingTab> appsItem = new TreeItem<>(moduleTab);
 		appsItem.getChildren().add(new TreeItem<>(chatRoomTab));
 
 		addItem(appsItem);
