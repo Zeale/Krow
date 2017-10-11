@@ -39,6 +39,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import krow.guis.GUIHelper;
+import krow.guis.PopupHelper;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
@@ -535,10 +536,17 @@ public class Tools extends Page {
 		return new Tool(button);
 	}
 
-	public CommandTool addCommandTool(final String command, final String name, final Image graphic) {
+	public CommandTool addCommandTool(final String command, final String name, final Image graphic,
+			String description) {
+		return addCommandTool(command, name, graphic, description, Color.WHITE);
+	}
+
+	public CommandTool addCommandTool(final String command, final String name, final Image graphic, String description,
+			Color descColor) {
 		final Button button = buildButton();
 		button.setText(name);
 		button.setGraphic(new ImageView(graphic));
+		PopupHelper.buildHoverPopup(button, descColor, description);
 		return new CommandTool(button, command);
 	}
 
@@ -553,22 +561,29 @@ public class Tools extends Page {
 	private void addWindowsTools() {
 		try {
 			addCommandTool("regedit", "Regedit",
-					Kröw.getImageFromFile(new File("C:/Windows/regedit.exe"), (int) ICON_WIDTH, (int) ICON_HEIGHT));
-			addCommandTool("services.msc", "Services", Kröw.getImageFromFile(
-					new File("C:/Windows/System32/services.msc"), (int) ICON_WIDTH, (int) ICON_HEIGHT));
+					Kröw.getImageFromFile(new File("C:/Windows/regedit.exe"), (int) ICON_WIDTH, (int) ICON_HEIGHT),
+					"Opens your registry editor");
+			addCommandTool("services.msc", "Services",
+					Kröw.getImageFromFile(new File("C:/Windows/System32/services.msc"), (int) ICON_WIDTH,
+							(int) ICON_HEIGHT),
+					"Opens your system services manager");
 			addCommandTool("explorer", "Explorer",
-					Kröw.getImageFromFile(new File("C:/Windows/explorer.exe"), (int) ICON_WIDTH, (int) ICON_HEIGHT));
+					Kröw.getImageFromFile(new File("C:/Windows/explorer.exe"), (int) ICON_WIDTH, (int) ICON_HEIGHT),
+					"Opens File Explorer");
 			addCommandTool("notepad", "Notepad",
-					Kröw.getImageFromFile(new File("C:/Windows/notepad.exe"), (int) ICON_WIDTH, (int) ICON_HEIGHT));
+					Kröw.getImageFromFile(new File("C:/Windows/notepad.exe"), (int) ICON_WIDTH, (int) ICON_HEIGHT),
+					"Opens Windows Notepad");
 			addCommandTool("calc", "Windows Calculator", Kröw.getImageFromFile(new File("C:/Windows/System32/calc.exe"),
-					(int) ICON_WIDTH, (int) ICON_HEIGHT));
-			addCommandTool("START cmd", "Command Prompt", Kröw.getImageFromFile(new File("C:/Windows/System32/cmd.exe"),
-					(int) ICON_WIDTH, (int) ICON_HEIGHT));
+					(int) ICON_WIDTH, (int) ICON_HEIGHT), "Opens Windows Calculator");
+			addCommandTool("START cmd", "Command Prompt",
+					Kröw.getImageFromFile(new File("C:/Windows/System32/cmd.exe"), (int) ICON_WIDTH, (int) ICON_HEIGHT),
+					"Opens a Command Prompt window");
 			addCommandTool("START powershell", "Powershell",
 					Kröw.getImageFromFile(new File("C:/Windows/SysWOW64/WindowsPowerShell/v1.0/powershell.exe"),
-							(int) ICON_WIDTH, (int) ICON_HEIGHT));
+							(int) ICON_WIDTH, (int) ICON_HEIGHT),
+					"Opens a Powershell window");
 			addCommandTool("START dxdiag", "DxDiag", Kröw.getImageFromFile(new File("C:/Windows/System32/dxdiag.exe"),
-					(int) ICON_WIDTH, (int) ICON_HEIGHT));
+					(int) ICON_WIDTH, (int) ICON_HEIGHT), "Opens DX Diagnostics");
 		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
