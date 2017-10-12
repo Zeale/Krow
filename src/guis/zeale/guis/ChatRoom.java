@@ -586,6 +586,10 @@ public class ChatRoom extends WindowManager.Page {
 		chatPane.getChildren().add(t);
 	}
 
+	public void printNode(Node node) {
+		chatPane.getChildren().add(node);
+	}
+
 	private void sendingMessageNotification() {
 		WindowManager.spawnLabelAtMousePos("Sending...", SUCCESS_COLOR);
 	}
