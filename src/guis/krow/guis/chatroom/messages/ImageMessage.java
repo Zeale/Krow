@@ -1,7 +1,7 @@
 package krow.guis.chatroom.messages;
 
 import javafx.scene.image.Image;
-import kröw.connections.Message;
+import kröw.connections.messages.Message;
 
 public class ImageMessage extends Message {
 

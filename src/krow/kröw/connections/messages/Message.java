@@ -1,4 +1,4 @@
-package kröw.connections;
+package kröw.connections.messages;
 
 import java.io.Serializable;
 

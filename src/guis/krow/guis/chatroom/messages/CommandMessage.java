@@ -1,6 +1,6 @@
 package krow.guis.chatroom.messages;
 
-import kröw.connections.TextMessage;
+import kröw.connections.messages.TextMessage;
 
 public class CommandMessage extends TextMessage {
 

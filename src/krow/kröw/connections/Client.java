@@ -10,6 +10,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import kröw.connections.messages.Message;
 import kröw.core.Kröw;
 
 public class Client {

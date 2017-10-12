@@ -1,4 +1,4 @@
-package kröw.connections;
+package kröw.connections.messages;
 
 public class TextMessage extends Message {
 	private final String text;

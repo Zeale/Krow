@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import kröw.connections.TextMessage;
+import kröw.connections.messages.TextMessage;
 
 public class ChatRoomMessage extends TextMessage {
 	/**
