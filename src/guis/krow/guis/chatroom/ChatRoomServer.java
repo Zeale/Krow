@@ -11,8 +11,8 @@ import krow.guis.chatroom.messages.ChatRoomMessage;
 import krow.guis.chatroom.messages.CommandMessage;
 import kröw.connections.Client;
 import kröw.connections.FullClientListener;
-import kröw.connections.Message;
 import kröw.connections.Server;
+import kröw.connections.messages.Message;
 import kröw.core.Kröw;
 
 public class ChatRoomServer extends Server {
@@ -92,7 +92,8 @@ public class ChatRoomServer extends Server {
 								e.printStackTrace();
 							}
 
-					} catch (final IOException e) {
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
 			});

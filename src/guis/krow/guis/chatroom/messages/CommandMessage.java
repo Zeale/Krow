@@ -1,8 +1,8 @@
 package krow.guis.chatroom.messages;
 
-import kröw.connections.Message;
+import kröw.connections.messages.TextMessage;
 
-public class CommandMessage extends Message {
+public class CommandMessage extends TextMessage {
 
 	/**
 	 * SUID

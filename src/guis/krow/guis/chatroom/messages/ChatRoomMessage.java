@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import kröw.connections.Message;
+import kröw.connections.messages.TextMessage;
 
-public class ChatRoomMessage extends Message {
+public class ChatRoomMessage extends TextMessage {
 	/**
 	 * SUID
 	 */
@@ -29,6 +29,7 @@ public class ChatRoomMessage extends Message {
 		super(text);
 		this.author = author;
 		this.timeSent = timeSent;
+		this.recipients = new ArrayList<>();
 		for (final String s : recipients)
 			this.recipients.add(s);
 	}

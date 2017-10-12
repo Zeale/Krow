@@ -31,6 +31,7 @@ import kröw.annotations.LoadTime;
 import kröw.connections.Client;
 import kröw.connections.FullClientListener;
 import kröw.connections.Server;
+import kröw.connections.messages.Message;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
@@ -367,13 +368,7 @@ public class ChatRoom extends WindowManager.Page {
 	}
 
 	private void parseCommand(String cmd, final String[] args) {
-
-		try {
-			if (client != null)
-				client.sendMessage(new CommandMessage(cmd, args));
-		} catch (final IOException e1) {
-			e1.printStackTrace();
-		}
+		CommandMessage msg = new CommandMessage(cmd, args);
 
 		if (cmd.startsWith("/")) {
 			if (args != null)
@@ -384,18 +379,13 @@ public class ChatRoom extends WindowManager.Page {
 			return;
 		}
 
-		if (cmd.equalsIgnoreCase("test")) {
-			for (final String s : history)
-				System.out.println(s);
-			return;
-		}
-
 		if (cmd.equalsIgnoreCase("setname") || cmd.equalsIgnoreCase("set-name"))
 			if (args == null || args.length == 0 || args[0].trim().isEmpty())
 				printLineToConsole("Command usage: /setname (name)", Color.RED);
 			else {
 				user = args[0];
 				printLineToConsole("Your name has been changed to: " + user, Color.AQUA);
+				send(msg);
 			}
 		else if (cmd.equalsIgnoreCase("start-server") || cmd.equalsIgnoreCase("startserver")) {
 			if (!canCreateServer()) {
@@ -430,7 +420,8 @@ public class ChatRoom extends WindowManager.Page {
 			}
 
 		} else if (cmd.equalsIgnoreCase("help")) {
-			println("You need it.");
+			println("You need it...");
+			send(msg);
 			return;
 		} else if (cmd.equalsIgnoreCase("connect")) {
 			if (args == null || args.length == 0 || args.length > 2) {
@@ -496,6 +487,7 @@ public class ChatRoom extends WindowManager.Page {
 				if (server != null)
 					println("\tYou're still hosting a server though...", WARNING_COLOR);
 				try {
+					send(msg);
 					client.closeConnection();
 					client = null;
 				} catch (final Exception e) {
@@ -507,6 +499,15 @@ public class ChatRoom extends WindowManager.Page {
 		} else
 			WindowManager.spawnLabelAtMousePos("Unknown Command", ERROR_COLOR);
 
+	}
+
+	private void send(Message message) {
+		if (client != null)
+			try {
+				client.sendMessage(message);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 	}
 
 	public void parseInput(String input) {
@@ -590,6 +591,10 @@ public class ChatRoom extends WindowManager.Page {
 		final Text t = new Text(text);
 		t.setFill(color);
 		chatPane.getChildren().add(t);
+	}
+
+	public void printNode(Node node) {
+		chatPane.getChildren().add(node);
 	}
 
 	private void sendingMessageNotification() {
