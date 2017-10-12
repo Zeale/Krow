@@ -2,21 +2,14 @@ package kröw.connections;
 
 import java.io.Serializable;
 
-public class Message implements Serializable {
+public abstract class Message implements Serializable {
 
 	/**
 	 * SUID
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public final Object text;
-
-	public Message(final Object text) {
-		this.text = text;
-	}
-
-	public Object getText() {
-		return text;
+	public Message() {
 	}
 
 }

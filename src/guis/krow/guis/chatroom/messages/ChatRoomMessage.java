@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import kröw.connections.Message;
+import kröw.connections.TextMessage;
 
-public class ChatRoomMessage extends Message {
+public class ChatRoomMessage extends TextMessage {
 	/**
 	 * SUID
 	 */

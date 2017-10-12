@@ -22,7 +22,6 @@ public class Client {
 		private static final long serialVersionUID = 1L;
 
 		public EndConnectionMessage() {
-			super("end");
 		}
 
 	}
