@@ -29,6 +29,7 @@ public class ChatRoomMessage extends Message {
 		super(text);
 		this.author = author;
 		this.timeSent = timeSent;
+		this.recipients = new ArrayList<>();
 		for (final String s : recipients)
 			this.recipients.add(s);
 	}
