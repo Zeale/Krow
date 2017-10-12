@@ -384,12 +384,6 @@ public class ChatRoom extends WindowManager.Page {
 			return;
 		}
 
-		if (cmd.equalsIgnoreCase("test")) {
-			for (final String s : history)
-				System.out.println(s);
-			return;
-		}
-
 		if (cmd.equalsIgnoreCase("setname") || cmd.equalsIgnoreCase("set-name"))
 			if (args == null || args.length == 0 || args[0].trim().isEmpty())
 				printLineToConsole("Command usage: /setname (name)", Color.RED);
