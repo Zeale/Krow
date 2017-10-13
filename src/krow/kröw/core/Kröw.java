@@ -1132,7 +1132,7 @@ public final class Kröw extends Application {
 		primaryStage.setFullScreen(true);
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 
-		primaryStage.getScene().setOnKeyPressed(CLOSE_ON_ESCAPE_HANADLER);
+		primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, CLOSE_ON_ESCAPE_HANADLER);
 
 		programInit();
 

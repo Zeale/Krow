@@ -363,6 +363,7 @@ public class WindowManager {
 	 */
 	public static Window<? extends Page> setStage_Impl(final Stage stage, final Class<? extends Page> cls)
 			throws IOException, InstantiationException, IllegalAccessException {
+
 		WindowManager.stage = stage;
 		final Page controller = cls.newInstance();
 		final FXMLLoader loader = new FXMLLoader(cls.getResource(controller.getWindowFile()));
