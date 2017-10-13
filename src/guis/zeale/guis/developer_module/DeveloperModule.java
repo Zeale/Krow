@@ -1,7 +1,11 @@
 package zeale.guis.developer_module;
 
+import java.io.IOException;
+
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.ScrollEvent.HorizontalTextScrollUnits;
@@ -10,7 +14,10 @@ import javafx.scene.layout.Pane;
 import krow.guis.GUIHelper;
 import krow.scene.HorizontalMultiScrollBox;
 import kröw.core.Kröw;
+import kröw.core.managers.WindowManager;
+import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
+import zeale.guis.Home;
 
 public class DeveloperModule extends Page {
 
@@ -64,6 +71,20 @@ public class DeveloperModule extends Page {
 
 		scroll.setStyle(
 				"-fx-background-color:  linear-gradient(to right, #00000020 0%, #000000A8 45%, #000000A8 55%, #00000020 100%);");
+
+		scroll.setFocusTraversable(true);
+
+		EventHandler<KeyEvent> keyHandler = event -> {
+			if (event.getCode() == KeyCode.D && event.isShiftDown() && event.isControlDown())
+				try {
+					WindowManager.setScene(Home.class);
+					event.consume();
+				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+					e.printStackTrace();
+				}
+		};
+
+		scroll.addEventFilter(KeyEvent.KEY_PRESSED, keyHandler);
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(root));
 		GUIHelper.applyShapeBackground(root);

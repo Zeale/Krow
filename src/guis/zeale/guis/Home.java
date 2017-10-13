@@ -54,7 +54,6 @@ public class Home extends ScrollMenu {
 				"-fx-background-color:  linear-gradient(to right, #00000020 0%, #000000A8 45%, #000000A8 55%, #00000020 100%);");
 
 		EventHandler<KeyEvent> keyHandler = event -> {
-			System.out.println("Hi");
 			if (event.getCode() == KeyCode.D && event.isShiftDown() && event.isControlDown())
 				try {
 					WindowManager.setScene(DeveloperModule.class);
