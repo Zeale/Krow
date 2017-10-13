@@ -6,12 +6,20 @@ import javafx.scene.Node;
 
 public class HorizontalMultiScrollBox extends HorizontalScrollBox {
 
+	{
+		setFillHeight(false);
+	}
+
 	public HorizontalMultiScrollBox() {
 	}
 
 	public class Menu {
 
 		private final VerticalScrollBox menuBox = new VerticalScrollBox();
+
+		public VerticalScrollBox getMenuBox() {
+			return menuBox;
+		}
 
 		public Menu() {
 			add();

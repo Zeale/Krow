@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.PickResult;
@@ -13,6 +14,9 @@ import javafx.scene.input.ScrollEvent.VerticalTextScrollUnits;
 import javafx.scene.layout.Pane;
 import krow.guis.GUIHelper;
 import krow.scene.HorizontalMultiScrollBox;
+import krow.scene.HorizontalMultiScrollBox.Menu;
+import krow.scene.HorizontalScrollBox;
+import krow.scene.VerticalScrollBox;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
@@ -48,10 +52,13 @@ public class DeveloperModule extends Page {
 
 		// Apply sizing to our container.
 		scroll.setPrefWidth(Kröw.getSystemProperties().getScreenWidth());
+		scroll.setForceHeight(HorizontalScrollBox.NODE_HEIGHT);
+		scroll.setForceWidth(Kröw.getSystemProperties().getScreenWidth());
 
 		// Position our container.
+
 		scroll.setLayoutX(0);
-		scroll.setLayoutY(Kröw.getSystemProperties().getScreenHeight() / 2 - scroll.getPrefHeight() / 2);
+		scroll.setLayoutY(Kröw.getSystemProperties().getScreenHeight() / 2 - scroll.getForceHeight() / 2);
 
 		scroll.setOnKeyPressed(event -> {
 			if (event.getCode().equals(KeyCode.LEFT))
@@ -93,7 +100,15 @@ public class DeveloperModule extends Page {
 	}
 
 	private void loadDefaultItems() {
-
+		scroll.getChildren().add(new ImageView("krow/resources/Settings.png"));
+		Menu m = scroll.new Menu();
+		m.getMenuBox().setForceHeight(Kröw.getSystemProperties().getScreenHeight());
+		m.getMenuBox();
+		m.getMenuBox().setForceWidth(VerticalScrollBox.NODE_WIDTH);
+		m.getMenuBox().setTranslateY(-scroll.getLayoutY());
+		m.getMenuItemList().add(new ImageView("krow/resources/Settings.png"));
+		m.getMenuItemList().add(new ImageView("krow/resources/Settings.png"));
+		m.getMenuItemList().add(new ImageView("krow/resources/Settings.png"));
 	}
 
 }
