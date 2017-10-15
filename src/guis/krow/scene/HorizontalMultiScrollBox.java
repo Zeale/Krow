@@ -2,6 +2,7 @@ package krow.scene;
 
 import java.util.List;
 
+import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 
 public class HorizontalMultiScrollBox extends HorizontalScrollBox {
@@ -16,6 +17,10 @@ public class HorizontalMultiScrollBox extends HorizontalScrollBox {
 	public class Menu {
 
 		private final VerticalScrollBox menuBox = new VerticalScrollBox();
+		{
+			menuBox.selectCenter();
+			menuBox.getChildren().addListener((ListChangeListener<Object>) c -> menuBox.centerNodes());
+		}
 
 		public VerticalScrollBox getMenuBox() {
 			return menuBox;

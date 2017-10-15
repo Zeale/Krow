@@ -109,6 +109,7 @@ public class DeveloperModule extends Page {
 		m.getMenuItemList().add(new ImageView("krow/resources/Settings.png"));
 		m.getMenuItemList().add(new ImageView("krow/resources/Settings.png"));
 		m.getMenuItemList().add(new ImageView("krow/resources/Settings.png"));
+		scroll.centerNodes();
 	}
 
 }

@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 
 public class VerticalScrollBox extends VBox {
@@ -64,19 +65,24 @@ public class VerticalScrollBox extends VBox {
 
 	private final double SINGLE_JUMP_DISTANCE = NODE_HEIGHT + NODE_SPACING;
 
-	private double displacement = 0;
+	private double displacement = 0, shift = 0;
 
 	private final EventHandler<ScrollEvent> onScroll = event -> {
 		// The amount of images to scroll.
 		int amount = event.getDeltaY() / event.getMultiplierY() > 0 ? 1 : -1;
 
 		displacement += amount * SINGLE_JUMP_DISTANCE;
+		double max = (getChildren().size() - 1) * SINGLE_JUMP_DISTANCE, min = 0;
+		if (displacement > max)
+			displacement = max;
+		else if (displacement < min)
+			displacement = min;
 
 		for (Node n : getChildren()) {
 			TranslateTransition slider = getSlider(n);
 			slider.stop();
 			slider.setFromY(n.getTranslateY());
-			slider.setByY(displacement - n.getTranslateY());
+			slider.setByY(displacement - n.getTranslateY() - shift);
 			slider.play();
 		}
 
@@ -88,7 +94,6 @@ public class VerticalScrollBox extends VBox {
 	}
 
 	public VerticalScrollBox() {
-		// TODO Auto-generated constructor stub
 	}
 
 	{
@@ -118,6 +123,26 @@ public class VerticalScrollBox extends VBox {
 		setStyle(
 				"-fx-background-color:  linear-gradient(to top, #00000020 0%, #000000A8 45%, #000000A8 55%, #00000020 100%);");
 
+	}
+
+	public void selectCenter() {
+		setDisplacement(SINGLE_JUMP_DISTANCE * (getChildren().size() / 2));
+	}
+
+	public void centerNodes() {
+		for (Node n : getChildren()) {
+			n.getTransforms().clear();
+			n.getTransforms().add(new Translate(0,
+					(getForceHeight() - NODE_HEIGHT) / 2 - (getChildren().size() - 1) * (NODE_HEIGHT + NODE_SPACING)));
+			n.setTranslateY(getChildren().size() / 2 * (NODE_HEIGHT + NODE_SPACING));
+		}
+
+	}
+
+	protected void setDisplacement(double displacement) {
+		this.displacement = displacement;
+		for (Node n : getChildren())
+			n.setTranslateY(displacement);
 	}
 
 	/**

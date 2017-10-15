@@ -142,7 +142,7 @@ public class Home extends ScrollMenu {
 		PopupHelper.buildHoverPopup(backgroundShape, Color.FIREBRICK, "Work In Progress");
 
 		horizontalScroll.getChildren().addAll(settings, krow, chatRoom, statistics, mathModule, backgroundShape);
-		horizontalScroll.center();
+		horizontalScroll.selectCenter();
 
 		PopupHelper.buildHoverPopup(settings, GUIHelper.makeBoldLabel("Settings Module", 18));
 		PopupHelper.buildHoverPopup(krow, GUIHelper.makeBoldLabel("Tools Module", 18));

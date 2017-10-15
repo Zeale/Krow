@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.transform.Translate;
 import javafx.util.Duration;
 import kröw.core.Kröw;
 
@@ -62,7 +63,7 @@ public class HorizontalScrollBox extends HBox {
 
 	private static final long SLIDE_ANIMATION_DURATION = 1000;
 
-	private double displacement = 0;
+	private double displacement = 0, shift = 0;
 
 	public static int NODE_WIDTH = Kröw.scaleWidth(100), NODE_HEIGHT = Kröw.scaleHeight(100),
 			NODE_SPACING = (int) ((double) NODE_WIDTH / 2);
@@ -84,7 +85,7 @@ public class HorizontalScrollBox extends HBox {
 			TranslateTransition slider = getSlider(n);
 			slider.stop();
 			slider.setFromX(n.getTranslateX());
-			slider.setByX(displacement - n.getTranslateX());
+			slider.setByX(displacement - n.getTranslateX() - shift);
 			slider.play();
 			event.consume();
 		}
@@ -133,7 +134,7 @@ public class HorizontalScrollBox extends HBox {
 			n.setTranslateX(displacement);
 	}
 
-	public void center() {
+	public void selectCenter() {
 		setDisplacement(SINGLE_JUMP_DISTANCE * (getChildren().size() / 2));
 	}
 
@@ -146,6 +147,16 @@ public class HorizontalScrollBox extends HBox {
 	 */
 	private static TranslateTransition getSlider(Node node) {
 		return (TranslateTransition) node.getProperties().get(PropertyKeys.SLIDER);
+	}
+
+	public void centerNodes() {
+		for (Node n : getChildren()) {
+			n.getTransforms().clear();
+			n.getTransforms().add(new Translate(
+					(getForceWidth() - NODE_WIDTH) / 2 - (getChildren().size() - 1) * (NODE_WIDTH + NODE_SPACING), 0));
+			n.setTranslateX(getChildren().size() / 2 * (NODE_WIDTH + NODE_SPACING));
+		}
+
 	}
 
 }
