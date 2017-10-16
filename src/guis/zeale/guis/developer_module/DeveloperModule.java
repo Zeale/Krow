@@ -100,15 +100,9 @@ public class DeveloperModule extends Page {
 	}
 
 	private void loadDefaultItems() {
-		scroll.getChildren().add(new ImageView("krow/resources/Settings.png"));
-		Menu m = scroll.new Menu();
-		m.getMenuBox().setForceHeight(Kröw.getSystemProperties().getScreenHeight());
-		m.getMenuBox();
-		m.getMenuBox().setForceWidth(VerticalScrollBox.NODE_WIDTH);
-		m.getMenuBox().setTranslateY(-scroll.getLayoutY());
-		m.getMenuItemList().add(new ImageView("krow/resources/Settings.png"));
-		m.getMenuItemList().add(new ImageView("krow/resources/Settings.png"));
-		m.getMenuItemList().add(new ImageView("krow/resources/Settings.png"));
+		ImageView console = new ImageView("/krow/resources/graphics/developer-module/Console.png");
+		scroll.getChildren().add(console);
+
 		scroll.centerNodes();
 	}
 
