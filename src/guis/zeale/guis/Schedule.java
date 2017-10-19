@@ -2,7 +2,8 @@ package zeale.guis;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
-import krï¿½w.core.managers.WindowManager.Page;
+import krow.guis.schedule_module.ScheduleEvent;
+import kröw.core.managers.WindowManager.Page;
 
 public class Schedule extends Page {
 
@@ -15,7 +16,7 @@ public class Schedule extends Page {
 	}
 	
 	@FXML
-	private ListView<?> eventList;
+	private ListView<ScheduleEvent> eventList;
 
 	@Override
 	public void initialize() {
