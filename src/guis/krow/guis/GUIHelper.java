@@ -1,9 +1,6 @@
 package krow.guis;
 
-import java.awt.Desktop;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Random;
@@ -14,13 +11,18 @@ import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -215,14 +217,10 @@ public final class GUIHelper {
 						final Color color = Color.rgb(RANDOM.nextInt(256), RANDOM.nextInt(256), RANDOM.nextInt(256));
 						octicon.setStroke(color);
 
-						if (event.getClickCount() == 2)
-							try {
-								Desktop.getDesktop().browse(new URI("https://github.com/Zeale/Krow"));
-								((DropShadow) octicon.getEffect()).setColor(color);
-							} catch (IOException | URISyntaxException e) {
-								e.printStackTrace();
-							}
-						else
+						if (event.getClickCount() == 2) {
+							Kröw.openLink("https://github.com/Zeale/Krow");
+							((DropShadow) octicon.getEffect()).setColor(color);
+						} else
 							((DropShadow) octicon.getEffect()).setColor(Color.BLACK);
 					}
 				});
@@ -236,7 +234,7 @@ public final class GUIHelper {
 		}
 	}
 
-	public static VBox buildMenu(final Pane pane) {
+	public static MenuBox buildMenu(final Pane pane) {
 
 		final Shape menubarTop = new Rectangle(MENU_BUTTON_RECTANGLE_WIDTH, MENU_BUTTON_RECTANGLE_HEIGHT),
 				menubarBottom = new Rectangle(MENU_BUTTON_RECTANGLE_WIDTH, MENU_BUTTON_RECTANGLE_HEIGHT);
@@ -266,7 +264,7 @@ public final class GUIHelper {
 		final TranslateTransition topTrans = new TranslateTransition(MENU_BUTTON_ANIMATION_DURATION, menubarTop),
 				bottomTrans = new TranslateTransition(MENU_BUTTON_ANIMATION_DURATION, menubarBottom);
 
-		final VBox menu = new VBox(MENU_ITEM_SPACING);
+		final MenuBox menu = new MenuBox(MENU_ITEM_SPACING);
 		menu.setPrefSize(Kröw.getSystemProperties().getScreenWidth() / MENU_WIDTH_FRACTION,
 				Kröw.getSystemProperties().getScreenHeight());
 		menu.setLayoutX(Kröw.getSystemProperties().getScreenWidth());
@@ -346,9 +344,9 @@ public final class GUIHelper {
 				final EventHandler<MouseEvent> exitHandler = event -> {
 					if (event.getPickResult().getIntersectedNode() == menu
 							|| event.getPickResult().getIntersectedNode() == cover
-							|| event.getPickResult().getIntersectedNode().getParent() == menu || closing)
+							|| event.getPickResult().getIntersectedNode().getParent() == menu || closing
+							|| isDeepChildOf(event.getPickResult().getIntersectedNode(), menu))
 						return;
-
 					close();
 
 				};
@@ -455,16 +453,138 @@ public final class GUIHelper {
 
 		// Children will be added at the end.
 
-		pane.getChildren().add(menu);
-		pane.getChildren().add(menubarTop);
-		pane.getChildren().add(menubarBottom);
-		pane.getChildren().add(cover);
+		AnchorPane wrapper = new AnchorPane();
 
-		// Test Text object.
-		// menu.getChildren().add(new Text("ABCDEFGHIJKLMNOP"));
+		wrapper.setPickOnBounds(false);
+		wrapper.setEventDispatcher(null);
+
+		wrapper.setBackground(null);
+
+		wrapper.getChildren().add(menu);
+		wrapper.getChildren().add(menubarTop);
+		wrapper.getChildren().add(menubarBottom);
+		wrapper.getChildren().add(cover);
+
+		menu.setParentWrapper(wrapper);
+
+		pane.getChildren().add(wrapper);
+
+		final ImageView github = new ImageView("/krow/resources/graphics/github120px.png");
+		github.setFitHeight(Kröw.scaleHeight(40));
+		github.setFitWidth(Kröw.scaleWidth(40));
+		github.setPickOnBounds(true);
+		github.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			if (event.getButton().equals(MouseButton.PRIMARY))
+				Kröw.openLink("https://github.com/Zeale/Krow");
+		});
+
+		PopupHelper.buildHoverPopup(github, GUIHelper.makeBoldLabel("GitHub", 18));
+		Label authorAccount = new Label("Author"), programPage = new Label("Program");
+		authorAccount.setOnMouseClicked(event -> {
+			if (event.getButton().equals(MouseButton.PRIMARY))
+				Kröw.openLink("https://github.com/Zeale");
+		});
+		programPage.setOnMouseClicked(event -> {
+			if (event.getButton().equals(MouseButton.PRIMARY))
+				Kröw.openLink("https://github.com/Zeale/Krow");
+
+		});
+		PopupHelper.buildRightClickPopup(github, authorAccount, programPage);
+
+		ImageView cookie = new ImageView("/krow/resources/graphics/cookie256px.png");
+		cookie.setFitHeight(Kröw.scaleHeight(40));
+		cookie.setFitWidth(Kröw.scaleWidth(40));
+		cookie.setPickOnBounds(true);
+		cookie.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			if (event.getButton().equals(MouseButton.PRIMARY))
+				Kröw.openLink("https://github.com/Zeale/Cookie/releases");
+		});
+
+		PopupHelper.buildHoverPopup(cookie, GUIHelper.makeBoldLabel("Cookie", 18));
+
+		ImageView cookiep = new ImageView("/krow/resources/graphics/cookie+256px.png");
+		cookiep.setFitHeight(Kröw.scaleHeight(40));
+		cookiep.setFitWidth(Kröw.scaleWidth(40));
+		cookiep.setPickOnBounds(true);
+		cookiep.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			if (event.getButton().equals(MouseButton.PRIMARY))
+				Kröw.openLink("https://github.com/Zeale/Cookie-plus/releases");
+		});
+
+		PopupHelper.buildHoverPopup(cookiep, Color.BLUE, "Cookie+");
+
+		ImageView krow = new ImageView("/krow/resources/Kröw_hd.png");
+		krow.setFitHeight(Kröw.scaleHeight(40));
+		krow.setFitWidth(Kröw.scaleWidth(40));
+		krow.setPickOnBounds(true);
+		krow.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			if (event.getButton().equals(MouseButton.PRIMARY))
+				Kröw.openLink("https://github.com/Zeale/Krow/releases");
+		});
+
+		PopupHelper.buildHoverPopup(krow, Color.RED, "Updates");
+
+		final HBox iconsBox = new HBox(Kröw.scaleWidth(5), github, krow, cookie, cookiep);
+		iconsBox.setAlignment(Pos.CENTER);
+		iconsBox.setTranslateY(Kröw.scaleHeight(800));
+		menu.getChildren().add(iconsBox);
 
 		return menu;
 
+	}
+
+	public static class MenuBox extends VBox {
+		private AnchorPane parentWrapper;
+
+		public AnchorPane getParentWrapper() {
+			return parentWrapper;
+		}
+
+		public MenuBox() {
+			// TODO Auto-generated constructor stub
+		}
+
+		public MenuBox(double spacing, Node... children) {
+			super(spacing, children);
+			// TODO Auto-generated constructor stub
+		}
+
+		public MenuBox(double spacing) {
+			super(spacing);
+			// TODO Auto-generated constructor stub
+		}
+
+		public MenuBox(Node... children) {
+			super(children);
+			// TODO Auto-generated constructor stub
+		}
+
+		private void setParentWrapper(AnchorPane parentWrapper) {
+			this.parentWrapper = parentWrapper;
+		}
+
+	}
+
+	public static Label makeBoldLabel(String text, double fontSize) {
+		Label lbl = new Label(text);
+		lbl.setFont(Font.font(lbl.getFont().getFamily(), FontWeight.BOLD, fontSize));
+		return lbl;
+	}
+
+	public static Label makeLabel(String text, double fontSize) {
+		Label lbl = new Label(text);
+		lbl.setFont(Font.font(lbl.getFont().getFamily(), fontSize));
+		return lbl;
+	}
+
+	public static boolean isDeepChildOf(Node child, Parent parent) {
+		for (Node n : parent.getChildrenUnmodifiable())
+			if (n == child)
+				return true;
+			else if (n instanceof Parent)
+				if (isDeepChildOf(child, (Parent) n))
+					return true;
+		return false;
 	}
 
 }

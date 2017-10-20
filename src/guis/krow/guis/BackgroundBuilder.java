@@ -290,7 +290,7 @@ public final class BackgroundBuilder {
 							});
 							translator.setInterpolator(Interpolator.EASE_OUT);
 							translator.play();
-							Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP, 0.7f);
+							Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP, 1f);
 						}
 					}
 			});
@@ -887,7 +887,7 @@ public final class BackgroundBuilder {
 		manager.addRandomShapes(SHAPE_COUNT);
 
 		for (final Node n : mouseDetectionNodes)
-			n.setOnMouseMoved(manager.getMouseMovementHandler());
+			n.addEventFilter(MouseEvent.MOUSE_MOVED, manager.getMouseMovementHandler());
 
 		return manager;
 

@@ -63,6 +63,44 @@
     -fx-background-color: transparent;
 }
 
+.text-area .scroll-pane .content, .text-area .scroll-pane .viewport, .text-area .scroll-pane  {
+	-fx-background-color: transparent;
+}
+
+/* General Tab Panes */
+
+.tab-pane .tab-header-area .header-region, .tab-pane .tab-header-area .tab-header-background {
+	-fx-background-color: #00000030;
+	-fx-border-color: #00000050;
+}
+
+.tab-pane .tab-header-area .tab {
+	-fx-background-color: black;
+	-fx-text-fill: gold;
+	-fx-font-weight: bold;
+}
+
+.tab-pane .tab-header-area .tab .tab-label {
+	-fx-text-fill: gold;
+}
+
+/* Pop Buttons */
+.pop-button {
+	-fx-font-family: Consolas;
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+	-fx-border-color: black;
+	-fx-border-width: 0.0 0.0 2.0px 2.0px;
+	-fx-background-color: #00000015;
+}
+
+.pop-button:armed {
+	-fx-border-color: black;
+	-fx-border-width: 2.0px 2.0px 0.0 0.0;
+	-fx-text-fill: #535353;
+	-fx-label-padding: 2.0px 2.0px 0.0 0.0;
+}
+
 #StatisticsListView .list-cell {
 	-fx-alignment: center;
 	-fx-font-weight: bold;
@@ -90,22 +128,12 @@
 	-fx-background-color: black;
 }
 
-.text-area .scroll-pane .content, .text-area .scroll-pane .viewport, .text-area .scroll-pane  {
-	-fx-background-color: transparent;
+#HorizontalScroll {
+	-fx-background-color:  linear-gradient(to right, #00000020 0.0%, #000000A8 45.0%, #000000A8 55.0%, #00000020 100.0%);
 }
 
-.pop-button {
-	-fx-font-family: Consolas;
+#CalculatorIO {
 	-fx-text-fill: white;
 	-fx-font-weight: bold;
-	-fx-border-color: black;
-	-fx-border-width: 0.0 0.0 2.0px 2.0px;
-	-fx-background-color: #00000015;
-}
-
-.pop-button:armed {
-	-fx-border-color: black;
-	-fx-border-width: 2.0px 2.0px 0.0 0.0;
-	-fx-text-fill: #535353;
-	-fx-label-padding: 2.0px 2.0px 0.0 0.0;
+	-fx-font-size: 18.0px;
 }

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?language javascript?>
+<?import java.net.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="pane" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+		<TextField id="CalculatorIO" fx:id="calcIO" alignment="CENTER" layoutX="485.0" layoutY="175.0" prefHeight="42.0" prefWidth="954.0" promptText="Enter something here..." style="-fx-background-color: rgba(0,0,0,0.3); -fx-text-fill: white; -fx-font-weight: bold;" />
+		<TabPane fx:id="buttonTabPane" layoutX="485.0" layoutY="248.0" prefHeight="478.0" prefWidth="954.0" tabClosingPolicy="UNAVAILABLE">
+			<tabs>
+				<Tab fx:id="arithmeticTab" text="Arithmetic">
+					<content>
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+							<children>
+								<Button focusTraversable="false" layoutX="491.0" layoutY="121.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="9">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button fx:id="solve" layoutX="429.0" layoutY="347.0" mnemonicParsing="false" onAction="#_event_evaluate" styleClass="pop-button" text="Solve" />
+								<Button focusTraversable="false" layoutX="443.0" layoutY="121.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="8">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="395.0" layoutY="121.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="7">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="395.0" layoutY="169.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="4">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="443.0" layoutY="169.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="5">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="491.0" layoutY="169.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="6">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="484.0" layoutY="266.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="ANS">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="443.0" layoutY="266.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="27.0" styleClass="pop-button" text=".">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="395.0" layoutY="266.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="0">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="395.0" layoutY="218.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="1">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="443.0" layoutY="218.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="2">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="491.0" layoutY="218.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="3">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="564.0" layoutY="121.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="/">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="564.0" layoutY="169.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="*">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="564.0" layoutY="266.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="+">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="564.0" layoutY="218.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="-">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="612.0" layoutY="121.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="\%">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="612.0" layoutY="266.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="^">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="612.0" layoutY="169.0" mnemonicParsing="false" onAction="#_event_square" prefHeight="40.0" prefWidth="40.0" style="-fx-font-size: 10;" styleClass="pop-button" text="2">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="612.0" layoutY="218.0" mnemonicParsing="false" onAction="#_event_cube" prefHeight="40.0" prefWidth="40.0" style="-fx-font-size: 10;" styleClass="pop-button" text="3">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="329.0" layoutY="218.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="}">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="281.0" layoutY="218.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="{">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="233.0" layoutY="218.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text=";">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="329.0" layoutY="169.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="]">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="281.0" layoutY="169.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="[">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="233.0" layoutY="169.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="|">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="233.0" layoutY="121.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="~">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="281.0" layoutY="121.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="(">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="329.0" layoutY="121.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text=")">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="233.0" layoutY="266.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text=",">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="281.0" layoutY="266.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="&lt;">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="329.0" layoutY="266.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="&gt;">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button focusTraversable="false" layoutX="675.0" layoutY="194.0" mnemonicParsing="false" onAction="#_event_sqrt" prefHeight="40.0" prefWidth="40.0" styleClass="pop-button" text="√">
+									<font>
+										<Font size="14.0" />
+									</font>
+								</Button>
+								<Button layoutX="815.0" layoutY="347.0" mnemonicParsing="false" onAction="#_event_clear" styleClass="pop-button" text="Clear" />
+							</children>
+						</AnchorPane>
+					</content>
+				</Tab>
+				<Tab fx:id="functionsTab" text="Functions">
+					<content>
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+					</content>
+				</Tab>
+			</tabs>
+		</TabPane>
+		<Accordion id="CalculatorAccordion" fx:id="menu" layoutX="1718.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+			<panes>
+				<TitledPane animated="false" style="-fx-text-fill: gold;" text="Statistics">
+					<content>
+						<VBox fx:id="statisticsMenuBox" prefHeight="200.0" prefWidth="100.0">
+							<children>
+								<Button mnemonicParsing="false" onAction="#_event_enableStatsMode" prefHeight="25.0" prefWidth="200.0" text="Data Set" />
+								<Button mnemonicParsing="false" onAction="#_event_enableStatsZScores" prefHeight="25.0" prefWidth="200.0" text="Z Scores" />
+							</children>
+						</VBox>
+					</content>
+				</TitledPane>
+				<TitledPane animated="false" style="-fx-text-fill: gold;" text="Chemistry">
+					<content>
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+					</content>
+				</TitledPane>
+				<TitledPane animated="false" style="-fx-text-fill: gold;" text="Calculus">
+					<content>
+						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+					</content>
+				</TitledPane>
+			</panes>
+		</Accordion>
+      <Button fx:id="showMenuButton" focusTraversable="false" layoutX="1587.0" layoutY="36.0" mnemonicParsing="false" onAction="#_event_showSlideMenu" styleClass="pop-button" text="Show Menu" />
+	</children>
+	<stylesheets>
+		<URL value="@../../css/stylesheet.css" />
+		<URL value="@calculator.css" />
+	</stylesheets>
+</AnchorPane>

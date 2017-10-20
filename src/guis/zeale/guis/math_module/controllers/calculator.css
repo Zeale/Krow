@@ -1,0 +1,95 @@
+.acccordion .titled-pane {
+	-fx-background-color: transparent;
+}
+
+#CalculatorAccordion .titled-pane {
+	-fx-text-fill: gold;
+}
+
+#CalculatorAccordion .titled-pane .content .button{
+	-fx-background-color: #00000020;
+	-fx-font-size: 12.0px;
+}
+
+#CalculatorAccordion .titled-pane .content .button:first {
+	-fx-border-width: 1.0px 1.0px 0.5px 1.0px;
+}
+.accordion .titled-pane .title {
+	-fx-font-weight: bold;
+	-fx-background-color: #00000060;
+}
+
+.accordion .titled-pane .title .arrow-button .arrow {
+	-fx-background-color: gold;
+}
+
+.accordion .titled-pane .content {
+	-fx-background-color: transparent;
+	-fx-border-width: 0.0;
+	-fx-border-color: transparent;
+	-fx-border-style: none;
+}
+
+.accordion {
+	-fx-border-width: 0.5px;
+	-fx-border-color: black;
+	-fx-border-style: solid;
+}
+
+.tab-pane .tab-header-area {
+	-fx-padding: 0.0;
+}
+
+.tab-pane .tab-header-area .headers-region {
+	-fx-padding: 0.0;
+}
+
+.tab-pane .tab-content-area {
+	-fx-border-color: black;
+	-fx-border-width: 0.0 0.5px 0.5px 0.5px;
+	-fx-border-style: solid;
+}
+
+.background.scroll-pane .viewport {
+	-fx-background-color: transparent; 
+}
+
+.background.scroll-pane {
+	-fx-background-color: #00000030;
+}
+
+.background.scroll-pane .scroll-bar .track {
+	-fx-background-color: #333333C4;
+}
+
+.background.scroll-pane .corner {
+	-fx-background-color: transparent;
+}
+
+.background.scroll-pane .scroll-bar .thumb, .scroll-pane .scoll-bar .increment-button .increment-arrow, .scroll-pane .scoll-bar .decrement-button .decrement-arrow {
+	-fx-background-color: #00000050;
+}
+
+.background.scroll-pane .scroll-bar .decrement-button, .background.scroll-pane .scroll-bar .increment-button, .background.scroll-pane .scroll-bar {
+	-fx-background-color: #00000080;
+}
+
+
+.pop-button {
+	-fx-font-size: 16.0px;
+	-fx-font-weight: bold;
+}
+
+.text-field, .text-area, .text-area .scroll-pane, .text-area .scroll-pane .content {
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+	-fx-background-color:  rgba(0.0,0.0,0.0,0.3);
+}
+
+.check-box .box {
+	-fx-background-color: #00000050;
+}
+
+.check-box:selected .box .mark {
+	-fx-background-color: gold;
+}
