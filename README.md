@@ -1,6 +1,6 @@
 <h1 align="center">Kröw</h1>
 <h1 align="center"><img width="150px" height="150px" src="https://avatars0.githubusercontent.com/u/23391923?v=3&s=460"></img></h1>
-<p align="center">Why is a lightbulb, if it's on?</p>
+<p align="center">Why is a lightbulb <s>on</s>, if it's on?</p>
 <br>
 <br>
 <br>
