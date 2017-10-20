@@ -10,9 +10,9 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import kröw.core.managers.WindowManager.Page;
 
-public abstract class Console extends Page {
+public abstract class TextPanel extends Page {
 
-	public Console() {
+	public TextPanel() {
 	}
 
 	private Font defaultFont = Font.font(16);
