@@ -1090,15 +1090,10 @@ public final class Kröw extends Application {
 		return output;
 	}
 
-	private static PrintStream defOut, defErr;
+	public static PrintStream defout = System.out, deferr = System.err;
 
-	public static PrintStream getDefaultOut() {
-		return defOut;
-	}
-
-	public static PrintStream getDefaultErr() {
-		return defErr;
-	}
+	public static final PrintStream out = ConsoleModule.out, err = ConsoleModule.err, wrn = ConsoleModule.wrn,
+			scs = ConsoleModule.scs;
 
 	/*
 	 * (non-Javadoc)
@@ -1108,12 +1103,11 @@ public final class Kröw extends Application {
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
 
-		defOut = System.out;
-		defErr = System.err;
-
+		System.out.println("--SWITCHING OUTPUT STREAMS--");
 		// Set std & err output for System cls.
 		System.setOut(ConsoleModule.out);
 		System.setErr(ConsoleModule.err);
+		defout.println("Streams have successfully been switched.");
 
 		Platform.setImplicitExit(false);
 

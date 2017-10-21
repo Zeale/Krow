@@ -44,6 +44,7 @@ public class ConsoleModule extends TextPanel {
 		ConsoleModule.texts = texts;
 
 	}
+
 	private static ConsoleModule currentModule;
 
 	@Override
@@ -63,7 +64,7 @@ public class ConsoleModule extends TextPanel {
 				try {
 					buffer.appendCodePoint(b);
 				} catch (Exception e) {
-					e.printStackTrace(Kröw.getDefaultErr());
+					e.printStackTrace(Kröw.deferr);
 				}
 			}
 
@@ -75,7 +76,7 @@ public class ConsoleModule extends TextPanel {
 					texts.add(text);
 					buffer = new StringBuffer();
 				} catch (Exception e) {
-					e.printStackTrace(Kröw.getDefaultErr());
+					e.printStackTrace(Kröw.deferr);
 				}
 			};
 
