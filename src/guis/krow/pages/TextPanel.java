@@ -3,11 +3,14 @@ package krow.pages;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import kröw.core.Kröw;
 import kröw.core.managers.WindowManager.Page;
 
 public abstract class TextPanel extends Page {
@@ -49,12 +52,39 @@ public abstract class TextPanel extends Page {
 	}
 
 	@FXML
-	private TextFlow console;
+	protected TextFlow console;
+
+	@FXML
+	protected TextArea input;
+
+	@FXML
+	protected AnchorPane root;
 
 	@Override
 	public void initialize() {
-		if (console == null)
+		if (console == null) {
 			console = new TextFlow();
+			console.setPrefHeight(Kröw.scaleHeight(550));
+			console.setPrefWidth(Kröw.scaleWidth(1920 - 400));
+			console.setLayoutX(Kröw.scaleWidth(200));
+			console.setLayoutY(Kröw.scaleHeight(0));
+		}
+		if (input == null) {
+			input = new TextArea();
+			input.setPrefWidth(Kröw.scaleWidth(1920));
+			input.setPrefHeight(Kröw.scaleHeight(325));
+			input.setLayoutX(Kröw.scaleWidth(0));
+			input.setLayoutY(Kröw.scaleHeight(755));
+		}
+
+		if (root == null)
+			throw new RuntimeException(getClass().getName() + "'s scene root is null");
+
+		if (!root.getChildren().contains(console))
+			root.getChildren().add(console);
+		if (!root.getChildren().contains(input))
+			root.getChildren().add(input);
+
 		console.getChildren().addListener(new ListChangeListener<Node>() {
 
 			@Override
@@ -76,6 +106,7 @@ public abstract class TextPanel extends Page {
 
 			}
 		});
+
 	}
 
 	public final void print(String text) {
