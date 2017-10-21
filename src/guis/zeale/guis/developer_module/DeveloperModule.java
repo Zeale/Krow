@@ -2,6 +2,7 @@ package zeale.guis.developer_module;
 
 import java.io.IOException;
 
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
@@ -14,9 +15,7 @@ import javafx.scene.input.ScrollEvent.VerticalTextScrollUnits;
 import javafx.scene.layout.Pane;
 import krow.guis.GUIHelper;
 import krow.scene.HorizontalMultiScrollBox;
-import krow.scene.HorizontalMultiScrollBox.Menu;
 import krow.scene.HorizontalScrollBox;
-import krow.scene.VerticalScrollBox;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
@@ -101,6 +100,18 @@ public class DeveloperModule extends Page {
 
 	private void loadDefaultItems() {
 		ImageView console = new ImageView("/krow/resources/graphics/developer-module/Console.png");
+		console.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				try {
+					WindowManager.setScene(ConsoleModule.class);
+				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+					e.printStackTrace();
+				}
+			}
+
+		});
 		scroll.getChildren().add(console);
 
 		scroll.centerNodes();

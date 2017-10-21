@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -65,6 +66,7 @@ import kröw.mindset.MindsetObject;
 import kröw.mindset.ObjectAlreadyExistsException;
 import sun.awt.shell.ShellFolder;
 import zeale.guis.Home;
+import zeale.guis.developer_module.ConsoleModule;
 
 /**
  * The main class of Krow. It contains many useful methods.
@@ -879,9 +881,6 @@ public final class Kröw extends Application {
 		Kröw.start(args);
 	}
 
-	public static final void programInit() {
-	}
-
 	/**
 	 * Saves a {@link Serializable} object given a {@link File} path.
 	 *
@@ -1091,6 +1090,16 @@ public final class Kröw extends Application {
 		return output;
 	}
 
+	private static PrintStream defOut, defErr;
+
+	public static PrintStream getDefaultOut() {
+		return defOut;
+	}
+
+	public static PrintStream getDefaultErr() {
+		return defErr;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -1098,6 +1107,13 @@ public final class Kröw extends Application {
 	 */
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
+
+		defOut = System.out;
+		defErr = System.err;
+
+		// Set std & err output for System cls.
+		System.setOut(ConsoleModule.out);
+		System.setErr(ConsoleModule.err);
 
 		Platform.setImplicitExit(false);
 
@@ -1133,8 +1149,6 @@ public final class Kröw extends Application {
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 
 		primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, CLOSE_ON_ESCAPE_HANADLER);
-
-		programInit();
 
 		primaryStage.show();
 
