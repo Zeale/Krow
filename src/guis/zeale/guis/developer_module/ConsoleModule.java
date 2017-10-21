@@ -8,6 +8,7 @@ import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import krow.pages.TextPanel;
 import kröw.core.Kröw;
@@ -27,7 +28,13 @@ public class ConsoleModule extends TextPanel {
 							for (Text t : c.getAddedSubList())
 								if (isErrorText(t))
 									currentModule.printerr(t);
-								else
+								else if (getTextType(t) == TextType.SUCCESS) {
+									t.setFill(Color.GREEN);
+									currentModule.printRawText(t);
+								} else if (getTextType(t) == TextType.WARNING) {
+									t.setFill(Color.GOLD);
+									currentModule.printRawText(t);
+								} else
 									currentModule.print(t);
 
 			}
@@ -44,65 +51,88 @@ public class ConsoleModule extends TextPanel {
 		dispose();
 	}
 
-	public static final PrintStream out = new PrintStream(new OutputStream() {
+	public static class ConsoleStream extends PrintStream {
 
-		private StringBuffer buffer = new StringBuffer();
+		private static class ConsoleOutputStream extends OutputStream {
 
-		@Override
-		public void write(int b) throws IOException {
-			try {
-				buffer.appendCodePoint(b);
-			} catch (Exception e) {
-				e.printStackTrace(Kröw.getDefaultErr());
+			private StringBuffer buffer = new StringBuffer();
+			private ConsoleStream stream;
+
+			@Override
+			public void write(int b) throws IOException {
+				try {
+					buffer.appendCodePoint(b);
+				} catch (Exception e) {
+					e.printStackTrace(Kröw.getDefaultErr());
+				}
 			}
+
+			@Override
+			public void flush() throws IOException {
+				try {
+					Text text = new Text(buffer.toString());
+					stream.formatText(text);
+					texts.add(text);
+					buffer = new StringBuffer();
+				} catch (Exception e) {
+					e.printStackTrace(Kröw.getDefaultErr());
+				}
+			};
+
+			// A little workaround for not being able to access instance methods
+			// while calling constructor.
+			private void setConsoleStream(ConsoleStream cs) {
+				stream = cs;
+			}
+
 		}
 
-		@Override
-		public void flush() throws IOException {
-			try {
-				texts.add(new Text(buffer.toString()));
-				buffer = new StringBuffer();
-			} catch (Exception e) {
-				e.printStackTrace(Kröw.getDefaultErr());
-			}
-		};
-	}, true), err = new PrintStream(new OutputStream() {
-
-		private StringBuffer buffer = new StringBuffer();
-
-		@Override
-		public void write(int b) throws IOException {
-			try {
-				buffer.appendCodePoint(b);
-			} catch (Exception e) {
-				e.printStackTrace(Kröw.getDefaultErr());
-			}
+		private ConsoleStream() {
+			super(new ConsoleOutputStream());
+			((ConsoleOutputStream) out).setConsoleStream(this);
 		}
 
-		@Override
-		public void flush() throws IOException {
-			try {
-				Text text = new Text(buffer.toString());
-				setErrorText(text);
-				texts.add(text);
-				buffer = new StringBuffer();
-			} catch (Exception e) {
-				e.printStackTrace(Kröw.getDefaultErr());
-			}
-		};
-	}, true);
+		protected void formatText(Text text) {
+		}
+	}
 
-	private static void setErrorText(Text text) {
-		text.getProperties().put(DataKeys.ERROR, true);
+	public static final PrintStream out = new ConsoleStream(), err = new ConsoleStream() {
+		@Override
+		protected void formatText(Text text) {
+			setTextType(text, TextType.ERROR);
+		}
+	}, scs = new ConsoleStream() {
+		@Override
+		protected void formatText(Text text) {
+			setTextType(text, TextType.SUCCESS);
+		}
+	}, wrn = new ConsoleStream() {
+		@Override
+		protected void formatText(Text text) {
+			setTextType(text, TextType.WARNING);
+		}
+	};
+
+	private static void setTextType(Text text, TextType type) {
+		text.getProperties().put(DataKeys.TYPE, type);
+	}
+
+	private static TextType getTextType(Text text) {
+		return text.getProperties().containsKey(DataKeys.TYPE) ? (TextType) text.getProperties().get(DataKeys.TYPE)
+				: null;
 	}
 
 	private static boolean isErrorText(Text text) {
-		return text.getProperties().containsKey(DataKeys.ERROR)
-				&& (boolean) text.getProperties().get(DataKeys.ERROR) == true;
+		return text.getProperties().containsKey(DataKeys.TYPE)
+				&& (TextType) text.getProperties().get(DataKeys.TYPE) == TextType.ERROR;
 	}
 
 	private enum DataKeys {
-		ERROR;
+		TYPE;
+	}
+
+	private enum TextType {
+		ERROR, SUCCESS, WARNING, STANDARD;
 	}
 
 	@Override
