@@ -3,6 +3,7 @@ package krow.pages;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -53,12 +54,12 @@ public abstract class TextPanel extends Page {
 
 	@FXML
 	protected TextFlow console;
-
 	@FXML
 	protected TextArea input;
-
 	@FXML
 	protected AnchorPane root;
+	@FXML
+	protected Button send;
 
 	@Override
 	public void initialize() {
@@ -115,7 +116,11 @@ public abstract class TextPanel extends Page {
 
 	public final void print(Text text) {
 		formatText(text);
-		console.getChildren().add(text);
+		printRawText(text);
+	}
+
+	public void clear() {
+		console.getChildren().clear();
 	}
 
 	protected abstract void formatText(Text text);
@@ -145,6 +150,10 @@ public abstract class TextPanel extends Page {
 	public void printerrln(Text text) {
 		text.setText(text.getText() + "\n");
 		printerr(text);
+	}
+
+	public void printRawText(Text text) {
+		console.getChildren().add(text);
 	}
 
 	protected static final void setFont(Text text, Font font) {
