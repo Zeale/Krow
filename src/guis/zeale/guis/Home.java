@@ -9,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -21,6 +23,7 @@ import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
+import zeale.guis.developer_module.DeveloperModule;
 import zeale.guis.math_module.MathModule;
 import zeale.guis.math_module.controllers.Calculator;
 
@@ -50,8 +53,22 @@ public class Home extends ScrollMenu {
 		horizontalScroll.setStyle(
 				"-fx-background-color:  linear-gradient(to right, #00000020 0%, #000000A8 45%, #000000A8 55%, #00000020 100%);");
 
+		EventHandler<KeyEvent> keyHandler = event -> {
+			if (event.getCode() == KeyCode.D && event.isShiftDown() && event.isControlDown())
+				try {
+					WindowManager.setScene(DeveloperModule.class);
+					event.consume();
+				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+					e.printStackTrace();
+				}
+		};
+
+		horizontalScroll.setFocusTraversable(true);
+		horizontalScroll.setOnKeyPressed(keyHandler);
+
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 		GUIHelper.applyShapeBackground(pane);
+
 	}
 
 	@Override
@@ -125,7 +142,7 @@ public class Home extends ScrollMenu {
 		PopupHelper.buildHoverPopup(backgroundShape, Color.FIREBRICK, "Work In Progress");
 
 		horizontalScroll.getChildren().addAll(settings, krow, chatRoom, statistics, mathModule, backgroundShape);
-		horizontalScroll.center();
+		horizontalScroll.selectCenter();
 
 		PopupHelper.buildHoverPopup(settings, GUIHelper.makeBoldLabel("Settings Module", 18));
 		PopupHelper.buildHoverPopup(krow, GUIHelper.makeBoldLabel("Tools Module", 18));
