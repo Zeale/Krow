@@ -6,9 +6,12 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class ScheduleEvent implements Serializable {
 
-	private String description, name;
+	public final StringProperty description = new SimpleStringProperty(), name = new SimpleStringProperty();
 
 	/**
 	 * SUID
@@ -18,45 +21,17 @@ public class ScheduleEvent implements Serializable {
 	public ScheduleEvent() {
 	}
 
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @param description
-	 *            the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * @param name
-	 *            the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public ScheduleEvent(String description, String name) {
-		this.description = description;
-		this.name = name;
+		this.description.set(description);
+		this.name.set(name);
 	}
 
 	private void writeObject(ObjectOutputStream os) throws IOException {
 		HashMap<DataKey, Object> data = new HashMap<>();
-		data.put(DataKey.DESCRIPTION, description);
-		data.put(DataKey.NAME, name);
+
+		data.put(DataKey.DESCRIPTION, description.get());
+		data.put(DataKey.NAME, name.get());
+
 		os.writeObject(data);
 	}
 
@@ -65,8 +40,8 @@ public class ScheduleEvent implements Serializable {
 		HashMap<DataKey, Object> data;
 		try {
 			data = (HashMap<DataKey, Object>) is.readObject();
-			name = (String) data.get(DataKey.NAME);
-			description = (String) data.get(DataKey.DESCRIPTION);
+			name.set((String) data.get(DataKey.NAME));
+			description.set((String) data.get(DataKey.DESCRIPTION));
 		} catch (Exception e) {
 			throw new IOException(e);
 		}
