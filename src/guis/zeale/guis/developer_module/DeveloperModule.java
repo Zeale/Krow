@@ -21,6 +21,7 @@ import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
 import zeale.guis.Home;
+import zeale.guis.Schedule;
 
 public class DeveloperModule extends Page {
 
@@ -112,7 +113,24 @@ public class DeveloperModule extends Page {
 			}
 
 		});
+
+		ImageView scheduler = new ImageView("/krow/resources/graphics/schedule-module/Schedule.png");
+		scheduler.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				try {
+					WindowManager.setScene(Schedule.class);
+				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		scheduler.setPickOnBounds(true);
+
 		scroll.getChildren().add(console);
+		scroll.getChildren().add(scheduler);
 
 		scroll.centerNodes();
 	}
