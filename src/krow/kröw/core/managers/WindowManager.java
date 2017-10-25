@@ -19,10 +19,11 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import kröw.core.Kröw;
+import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.events.Event;
 import kröw.events.EventHandler;
 
-public class WindowManager {
+public final class WindowManager {
 
 	/**
 	 * <p>
@@ -347,6 +348,35 @@ public class WindowManager {
 
 		final Parent root = loader.load();
 		final Window<W> window = new Window<>(controller, root, stage, stage.getScene());
+
+		for (EventHandler<? super PageChangedEvent> handler : pageChangeHandlers)
+			handler.handle(new PageChangedEvent(currentPage, window));
+		WindowManager.currentPage = window;
+		// Set the new root.
+		WindowManager.stage.getScene().setRoot(root);
+
+		return window;
+
+	}
+
+	public static <W extends Page> Window<W> setScene(W controller) throws IOException, NotSwitchableException {
+
+		for (EventHandler<? super PageChangeRequestedEvent> handler : pageChangeRequestedHandlers)
+			handler.handle(new PageChangeRequestedEvent(currentPage, controller.getClass()));
+
+		// Instantiate the loader
+		final FXMLLoader loader = new FXMLLoader(controller.getClass().getResource(controller.getWindowFile()));
+		loader.setController(controller);
+		if (currentPage != null)
+			if (!currentPage.getController().canSwitchPage(controller.getClass()))
+				throw new NotSwitchableException(currentPage, controller, controller.getClass());
+			else {
+				WindowManager.history.push(currentPage);
+				currentPage.getController().onPageSwitched();
+			}
+
+		final Parent root = loader.load();
+		final Window<W> window = new Window<W>(controller, root, stage, stage.getScene());
 
 		for (EventHandler<? super PageChangedEvent> handler : pageChangeHandlers)
 			handler.handle(new PageChangedEvent(currentPage, window));

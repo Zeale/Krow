@@ -1,5 +1,7 @@
 package zeale.guis.schedule_module;
 
+import java.io.IOException;
+
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
@@ -7,6 +9,8 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
 import krow.guis.schedule_module.ScheduleEvent;
+import kröw.core.managers.WindowManager;
+import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
 
 public class ScheduleModule extends Page {
@@ -24,7 +28,11 @@ public class ScheduleModule extends Page {
 
 	@FXML
 	private void addEvent() {
-
+		try {
+			WindowManager.setScene(new NewEvent());
+		} catch (IOException | NotSwitchableException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
