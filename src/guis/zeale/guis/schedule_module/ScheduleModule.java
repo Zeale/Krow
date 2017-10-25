@@ -1,4 +1,4 @@
-package zeale.guis;
+package zeale.guis.schedule_module;
 
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -9,14 +9,14 @@ import javafx.util.Callback;
 import krow.guis.schedule_module.ScheduleEvent;
 import kröw.core.managers.WindowManager.Page;
 
-public class Schedule extends Page {
+public class ScheduleModule extends Page {
 
-	public Schedule() {
+	public ScheduleModule() {
 	}
 
 	@Override
 	public String getWindowFile() {
-		return "Schedule.fxml";
+		return "ScheduleModule.fxml";
 	}
 
 	@FXML

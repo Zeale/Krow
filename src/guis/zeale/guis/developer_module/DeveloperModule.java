@@ -21,7 +21,7 @@ import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
 import zeale.guis.Home;
-import zeale.guis.Schedule;
+import zeale.guis.schedule_module.ScheduleModule;
 
 public class DeveloperModule extends Page {
 
@@ -120,7 +120,7 @@ public class DeveloperModule extends Page {
 			@Override
 			public void handle(Event event) {
 				try {
-					WindowManager.setScene(Schedule.class);
+					WindowManager.setScene(ScheduleModule.class);
 				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 					e.printStackTrace();
 				}
