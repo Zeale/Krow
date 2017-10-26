@@ -2,6 +2,7 @@ package zeale.guis.schedule_module;
 
 import java.io.IOException;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -12,6 +13,15 @@ import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
 
 public class ScheduleModule extends Page {
+
+	private static ScheduleModule instance;
+
+	/**
+	 * @return the instance
+	 */
+	static ScheduleModule getInstance() {
+		return instance;
+	}
 
 	public ScheduleModule() {
 	}
@@ -37,8 +47,16 @@ public class ScheduleModule extends Page {
 	@FXML
 	private ListView<ScheduleEvent> eventList;
 
+	ObservableList<ScheduleEvent> getItems() {
+		return eventList.getItems();
+	}
+
 	@Override
 	public void initialize() {
+		if (instance != null)
+			for (ScheduleEvent se : instance.getItems())
+				getItems().add(se);
+		instance = this;
 		eventList.setCellFactory(new Callback<ListView<ScheduleEvent>, ListCell<ScheduleEvent>>() {
 
 			@Override
@@ -79,10 +97,6 @@ public class ScheduleModule extends Page {
 				return cell;
 			}
 		});
-	}
-
-	private enum ListenerKeys {
-		NAME, DESC;
 	}
 
 }

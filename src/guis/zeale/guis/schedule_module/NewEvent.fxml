@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@../css/stylesheet.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+<AnchorPane prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@../css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TextField fx:id="nameInput" layoutX="616.0" layoutY="82.0" prefHeight="50.0" prefWidth="688.0" styleClass="pop-button" text="Hi" />
+      <TextField fx:id="nameInput" layoutX="616.0" layoutY="82.0" prefHeight="50.0" prefWidth="688.0" promptText="Name" style="-fx-font-size: 18;" styleClass="pop-button">
+         <font>
+            <Font name="Consolas" size="12.0" />
+         </font></TextField>
+      <TextArea fx:id="descInput" layoutX="616.0" layoutY="210.0" prefHeight="545.0" prefWidth="688.0" promptText="Description" style="-fx-font-size: 12.9;" styleClass="pop-button" wrapText="true" />
+      <Button focusTraversable="false" layoutX="894.0" layoutY="835.0" mnemonicParsing="false" onAction="#save" prefHeight="44.0" prefWidth="133.0" style="-fx-font-size: 18;" styleClass="pop-button" text="Save" />
    </children>
 </AnchorPane>

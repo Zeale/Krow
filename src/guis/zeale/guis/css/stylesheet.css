@@ -101,7 +101,8 @@
 	-fx-label-padding: 2.0px 2.0px 0.0 0.0;
 }
 
-.pop-button.text-field {
+.pop-button.text-field, .pop-button.text-area {
+	-fx-font-family: Consolas;
 	-fx-border-width: 2.0px;
 }
 

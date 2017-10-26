@@ -6,9 +6,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
 public class ScheduleEvent implements Serializable {
 
 	public final ObservableString description = new ObservableString(), name = new ObservableString();
