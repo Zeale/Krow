@@ -2,13 +2,20 @@ package zeale.guis.schedule_module;
 
 import java.io.IOException;
 
+import javax.swing.PopupFactory;
+
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
+import krow.guis.PopupHelper;
 import krow.guis.schedule_module.ScheduleEvent;
+import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
@@ -67,9 +74,6 @@ public class ScheduleModule extends Page {
 					@Override
 					protected void updateItem(ScheduleEvent item, boolean empty) {
 
-						if (getItem() != null && getItem() != item) {
-						}
-
 						super.updateItem(item, empty);
 
 						String background;
@@ -86,6 +90,19 @@ public class ScheduleModule extends Page {
 
 							setAlignment(Pos.CENTER);
 
+							Label edit = new Label("edit"), delete = new Label("delete");
+							edit.setOnMouseClicked(new EventHandler<Event>() {
+
+								@Override
+								public void handle(Event event) {
+									try {
+										WindowManager.setScene(new NewEvent(getItem()));
+									} catch (IOException | NotSwitchableException e) {
+										e.printStackTrace(Kröw.deferr);
+									}
+								}
+							});
+							PopupHelper.buildRightClickPopup(this, edit, delete);
 							// Add listeners
 							item.name.setListener(this::setText);
 
