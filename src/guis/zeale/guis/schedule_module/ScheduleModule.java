@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
@@ -82,6 +83,8 @@ public class ScheduleModule extends Page {
 							setText("");
 						} else {
 							// TODO Set background based off of event date.
+
+							setAlignment(Pos.CENTER);
 
 							// Add listeners
 							item.name.setListener(this::setText);
