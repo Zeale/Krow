@@ -11,7 +11,7 @@ import javafx.beans.property.StringProperty;
 
 public class ScheduleEvent implements Serializable {
 
-	public final StringProperty description = new SimpleStringProperty(), name = new SimpleStringProperty();
+	public final ObservableString description = new ObservableString(), name = new ObservableString();
 
 	/**
 	 * SUID

@@ -2,9 +2,7 @@ package zeale.guis.schedule_module;
 
 import java.io.IOException;
 
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.Group;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.util.Callback;
@@ -24,30 +22,12 @@ public class ScheduleModule extends Page {
 	}
 
 	@FXML
-	private Group selected, unselected;
-
-	@FXML
 	private void addEvent() {
 		try {
 			WindowManager.setScene(new NewEvent());
 		} catch (IOException | NotSwitchableException e) {
 			e.printStackTrace();
 		}
-	}
-
-	@FXML
-	private void renameEvent() {
-
-	}
-
-	@FXML
-	private void deleteEvent() {
-
-	}
-
-	@FXML
-	private void editEvent() {
-
 	}
 
 	private ScheduleEvent getSelectedEvent() {
@@ -65,19 +45,10 @@ public class ScheduleModule extends Page {
 			public ListCell<ScheduleEvent> call(ListView<ScheduleEvent> param) {
 				ListCell<ScheduleEvent> cell = new ListCell<ScheduleEvent>() {
 
-					private void setDescription(String description) {
-
-					}
-
-					@SuppressWarnings("unchecked")
 					@Override
 					protected void updateItem(ScheduleEvent item, boolean empty) {
 
 						if (getItem() != null && getItem() != item) {
-							item.name.removeListener(
-									(ChangeListener<? super String>) getProperties().remove(ListenerKeys.NAME));
-							item.description.removeListener(
-									(ChangeListener<? super String>) getProperties().remove(ListenerKeys.DESC));
 						}
 
 						super.updateItem(item, empty);
@@ -95,14 +66,7 @@ public class ScheduleModule extends Page {
 							// TODO Set background based off of event date.
 
 							// Add listeners
-							getProperties().put(ListenerKeys.NAME,
-									(ChangeListener<String>) (observable, oldValue, newValue) -> setText(newValue));
-							getProperties().put(ListenerKeys.DESC, (ChangeListener<String>) (observable, oldValue,
-									newValue) -> setDescription(newValue));
-							item.name.addListener(
-									(ChangeListener<? super String>) getProperties().get(ListenerKeys.NAME));
-							item.description.addListener(
-									(ChangeListener<? super String>) getProperties().get(ListenerKeys.DESC));
+							item.name.setListener(this::setText);
 
 							setText(item.name.get());
 						}
