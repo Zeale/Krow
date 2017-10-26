@@ -101,6 +101,10 @@
 	-fx-label-padding: 2.0px 2.0px 0.0 0.0;
 }
 
+.pop-button.text-field {
+	-fx-border-width: 2.0px;
+}
+
 #StatisticsListView .list-cell {
 	-fx-alignment: center;
 	-fx-font-weight: bold;
