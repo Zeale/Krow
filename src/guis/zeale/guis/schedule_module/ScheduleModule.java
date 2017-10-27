@@ -2,8 +2,6 @@ package zeale.guis.schedule_module;
 
 import java.io.IOException;
 
-import javax.swing.PopupFactory;
-
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -12,17 +10,22 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.Pane;
 import javafx.util.Callback;
+import krow.guis.GUIHelper;
 import krow.guis.PopupHelper;
 import krow.guis.schedule_module.ScheduleEvent;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
+import zeale.guis.developer_module.ConsoleModule;
 
 public class ScheduleModule extends Page {
 
 	private static ScheduleModule instance;
+	@FXML
+	private Pane root;
 
 	/**
 	 * @return the instance
@@ -117,6 +120,8 @@ public class ScheduleModule extends Page {
 				return cell;
 			}
 		});
+
+		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(root));
 	}
 
 }
