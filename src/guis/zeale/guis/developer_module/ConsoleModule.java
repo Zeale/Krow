@@ -95,6 +95,56 @@ public class ConsoleModule extends TextPanel {
 
 		protected void formatText(Text text) {
 		}
+
+		@Override
+		public void println() {
+			print('\n');
+			flush();
+		}
+
+		@Override
+		public void print(Object obj) {
+			print(obj.toString());
+		}
+
+		@Override
+		public void println(String x) {
+			print(x);
+			println();
+		}
+
+		@Override
+		public void print(char x) {
+			try {
+				out.write(x);
+			} catch (IOException e) {
+				e.printStackTrace(Kröw.deferr);
+			}
+		}
+
+		@Override
+		public void println(char[] x) {
+			print(x);
+			println();
+		}
+
+		@Override
+		public void print(char[] s) {
+			for (char c : s)
+				print(c);
+		}
+
+		@Override
+		public void println(char x) {
+			print(x);
+			println();
+		}
+
+		@Override
+		public void print(String s) {
+			print(s.toCharArray());
+		}
+
 	}
 
 	public static final PrintStream out = new ConsoleStream(), err = new ConsoleStream() {
@@ -161,6 +211,7 @@ public class ConsoleModule extends TextPanel {
 			throw new RuntimeException("Undisposed ConsoleModule already in use.");
 		else
 			currentModule = this;
+
 		for (Text t : texts)
 			if (isErrorText(t))
 				printerr(t);
