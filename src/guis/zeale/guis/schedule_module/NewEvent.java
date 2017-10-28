@@ -3,9 +3,11 @@ package zeale.guis.schedule_module;
 import java.io.IOException;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import krow.guis.schedule_module.ScheduleEvent;
 import kröw.core.managers.WindowManager;
@@ -18,6 +20,8 @@ public class NewEvent extends Page {
 	private TextField nameInput;
 	@FXML
 	private TextArea descInput;
+	@FXML
+	private Pane root;
 
 	private ScheduleEvent event;
 
@@ -47,9 +51,8 @@ public class NewEvent extends Page {
 		effect.setHeight(11.5);
 		effect.setColor(new Color(0, 0, 0, 0.65));
 
-		nameInput.setEffect(effect);
-		descInput.setEffect(effect);
-
+		for (Node n : root.getChildren())
+			n.setEffect(effect);
 		nameInput.setText(event.name.get());
 		descInput.setText(event.description.get());
 	}
