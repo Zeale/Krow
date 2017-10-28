@@ -7,10 +7,13 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+
 public class ScheduleEvent implements Serializable {
 
-	public final ObservableString description = new ObservableString(), name = new ObservableString();
-	public final ObservableDate dueDate = new ObservableDate();
+	public final SimpleStringProperty description = new SimpleStringProperty(), name = new SimpleStringProperty();
+	public final SimpleObjectProperty<Date> dueDate = new SimpleObjectProperty<>();
 
 	/**
 	 * SUID
@@ -42,7 +45,7 @@ public class ScheduleEvent implements Serializable {
 			data = (HashMap<DataKey, Object>) is.readObject();
 			name.set((String) data.get(DataKey.NAME));
 			description.set((String) data.get(DataKey.DESCRIPTION));
-			dueDate.setDate((Date) data.get(DataKey.DUE_DATE));
+			dueDate.setValue((Date) data.get(DataKey.DUE_DATE));
 		} catch (Exception e) {
 			throw new IOException(e);
 		}
