@@ -11,10 +11,13 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.TextAlignment;
 import krow.guis.GUIHelper;
 import krow.guis.schedule_module.ScheduleEvent;
+import kröw.callables.ParameterizedTask;
+import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
@@ -30,6 +33,10 @@ public class ScheduleModule extends Page {
 	 */
 	static ScheduleModule getInstance() {
 		return instance;
+	}
+
+	void refresh() {
+		eventTable.refresh();
 	}
 
 	public ScheduleModule() {
@@ -56,9 +63,9 @@ public class ScheduleModule extends Page {
 	@FXML
 	private TableView<ScheduleEvent> eventTable;
 	@FXML
-	private TableColumn<ScheduleEvent, Date> dateColumn;
+	private TableColumn<ScheduleEvent, ScheduleEvent> dateColumn;
 	@FXML
-	private TableColumn<ScheduleEvent, String> nameColumn;
+	private TableColumn<ScheduleEvent, ScheduleEvent> nameColumn;
 
 	ObservableList<ScheduleEvent> getItems() {
 		return eventTable.getItems();
@@ -71,7 +78,18 @@ public class ScheduleModule extends Page {
 				getItems().add(se);
 		instance = this;
 		eventTable.setRowFactory(param -> {
-			TableRow<ScheduleEvent> cell = new TableRow<ScheduleEvent>() {
+			TableRow<ScheduleEvent> t = new TableRow<ScheduleEvent>() {
+				{
+					setOnMouseClicked(event -> {
+						if (!isEmpty() && event.getButton().equals(MouseButton.PRIMARY)) {
+							try {
+								WindowManager.setScene(new NewEvent(getItem()));
+							} catch (IOException | NotSwitchableException e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				}
 
 				@Override
 				protected void updateItem(ScheduleEvent item, boolean empty) {
@@ -88,8 +106,6 @@ public class ScheduleModule extends Page {
 						setText("");
 					} else {
 
-						setAlignment(Pos.CENTER);
-
 					}
 
 					setStyle("-fx-background-color: " + background
@@ -97,6 +113,48 @@ public class ScheduleModule extends Page {
 				}
 			};
 
+			return t;
+
+		});
+
+		dateColumn.setCellFactory(param -> {
+			TableCell<ScheduleEvent, ScheduleEvent> cell = new TableCell<ScheduleEvent, ScheduleEvent>() {
+
+				private void setDate(Date date) {
+					setText(DateFormat.getInstance().format(date));
+				}
+
+				@Override
+				protected void updateItem(ScheduleEvent item, boolean empty) {
+					super.updateItem(item, empty);
+
+					if (empty) {
+						setText(null);
+						setGraphic(null);
+					} else {
+						setDate(item.dueDate.getDate());
+						item.dueDate.setListener(this::setDate);
+					}
+
+				}
+			};
+			return cell;
+		});
+
+		nameColumn.setCellFactory(param -> {
+			TableCell<ScheduleEvent, ScheduleEvent> cell = new TableCell<ScheduleEvent, ScheduleEvent>() {
+				@Override
+				protected void updateItem(ScheduleEvent item, boolean empty) {
+					if (empty) {
+						setText(null);
+						setGraphic(null);
+					} else {
+						setText(item.name.get());
+						item.name.setListener(this::setText);
+					}
+					super.updateItem(item, empty);
+				}
+			};
 			return cell;
 		});
 

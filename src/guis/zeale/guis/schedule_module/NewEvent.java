@@ -10,6 +10,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import krow.guis.schedule_module.ScheduleEvent;
+import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
@@ -61,8 +62,10 @@ public class NewEvent extends Page {
 	private void save() {
 		event.name.set(nameInput.getText());
 		event.description.set(descInput.getText());
-		if (!ScheduleModule.getInstance().getItems().contains(event))
+		if (!ScheduleModule.getInstance().getItems().contains(event)) {
 			ScheduleModule.getInstance().getItems().add(event);
+			ScheduleModule.getInstance().refresh();
+		}
 		try {
 			WindowManager.setScene(ScheduleModule.class);
 		} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
