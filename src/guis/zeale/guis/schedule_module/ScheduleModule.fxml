@@ -8,15 +8,12 @@
 
 <AnchorPane fx:id="root" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@../css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ListView fx:id="eventList" layoutX="14.0" layoutY="344.0" prefHeight="736.0" prefWidth="1920.0" styleClass="rgba-background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="344.0" />
-      <Group fx:id="eventUnselectedGroup" />
-      <Group fx:id="eventSelectedGroup" layoutX="-126.0" visible="false">
-         <children>
-            <Button focusTraversable="false" layoutX="196.0" layoutY="142.0" mnemonicParsing="false" styleClass="pop-button" text="Edit Event" />
-            <Button focusTraversable="false" layoutX="189.0" layoutY="72.0" mnemonicParsing="false" styleClass="pop-button" text="Delete Event" />
-            <Button focusTraversable="false" layoutX="189.0" layoutY="108.0" mnemonicParsing="false" styleClass="pop-button" text="Rename Event" />
-         </children>
-      </Group>
       <Button focusTraversable="false" layoutX="78.0" layoutY="146.0" mnemonicParsing="false" onAction="#addEvent" prefHeight="34.0" prefWidth="97.0" style="-fx-font-size: 18;" styleClass="pop-button" text="New" />
+      <TableView fx:id="eventTable" layoutY="344.0" prefHeight="736.0" prefWidth="1920.0" styleClass="rgba-background">
+        <columns>
+          <TableColumn fx:id="namColumn" prefWidth="1765.0" text="Name" />
+          <TableColumn fx:id="dateColumn" prefWidth="154.0" style="-fx-text-fill: white;" text="Date" />
+        </columns>
+      </TableView>
    </children>
 </AnchorPane>

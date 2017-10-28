@@ -2,8 +2,13 @@
 	-fx-background-color: #000000C4;
 }
 
-.rgba-background {
+.rgba-background, .rgba-background.table-view .column-header, .rgba-background.table-view .column-header-background {
 	-fx-background-color: rgba(0.0, 0.0, 0.0, 0.3);
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
 }
 
 .transparent {
