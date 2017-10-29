@@ -55,4 +55,9 @@ public class ScheduleEvent implements Serializable {
 		DESCRIPTION, NAME, DUE_DATE;
 	}
 
+	public double getTimeUntilDue() {
+		// TODO Implement
+		return 0;
+	}
+
 }
