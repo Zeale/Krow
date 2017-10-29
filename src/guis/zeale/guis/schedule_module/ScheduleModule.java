@@ -10,10 +10,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import krow.guis.GUIHelper;
 import krow.guis.schedule_module.ScheduleEvent;
-import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
@@ -56,12 +54,16 @@ public class ScheduleModule extends Page {
 		dateColumn.setCellFactory(param -> {
 			TableCell<ScheduleEvent, Date> cell = new TableCell<ScheduleEvent, Date>() {
 				protected void updateItem(Date item, boolean empty) {
+					if (getItem() == item)
+						return;
 					super.updateItem(item, empty);
 
-					if (empty) {
+					if (item == null || empty) {
 						setText(null);
+						setGraphic(null);
 					} else {
 						setText(DateFormat.getDateInstance().format(item));
+						setGraphic(null);
 					}
 				};
 			};
@@ -71,18 +73,24 @@ public class ScheduleModule extends Page {
 		nameColumn.setCellFactory(param -> {
 			TableCell<ScheduleEvent, String> cell = new TableCell<ScheduleEvent, String>() {
 				protected void updateItem(String item, boolean empty) {
-					Kröw.defout.println(item);
+					if (getItem() == item)
+						return;
 					super.updateItem(item, empty);
 
-					if (empty) {
+					if (item == null || empty) {
 						setText(null);
+						setGraphic(null);
 					} else {
 						setText(item);
+						setGraphic(null);
 					}
 				};
 			};
 			return cell;
 		});
+		eventTable.setItems(FXCollections.observableArrayList(new ScheduleEvent("Desc", "Name"),
+				new ScheduleEvent("Desc", "Name"), new ScheduleEvent("Desc", "Name"), new ScheduleEvent("Desc", "Name"),
+				new ScheduleEvent("Desc", "Name"), new ScheduleEvent("Desc", "Name")));
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(root));
 	}
