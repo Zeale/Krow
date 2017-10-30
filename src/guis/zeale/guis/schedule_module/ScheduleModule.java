@@ -1,5 +1,6 @@
 package zeale.guis.schedule_module;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -21,11 +22,17 @@ import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import krow.guis.GUIHelper;
 import krow.guis.schedule_module.ScheduleEvent;
+import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
 
 public class ScheduleModule extends Page {
+
+	static {
+		File file = new File(Kröw.DATA_DIRECTORY, "ScheduleModule");
+	}
+	private static final double MILLIS_UNTIL_IMPORTANT = 1728e6;
 
 	public final static Background EMPTY_CELL_BACKGROUND = new Background(
 			new BackgroundFill(Color.TRANSPARENT, null, null));
@@ -81,11 +88,12 @@ public class ScheduleModule extends Page {
 				TableRow<ScheduleEvent> row = new TableRow<ScheduleEvent>() {
 
 					{
-						setOnMouseClicked(new EventHandler<MouseEvent>() {
+						setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
 
+						setOnMouseClicked(new EventHandler<MouseEvent>() {
 							@Override
 							public void handle(MouseEvent event) {
-								if (event.getButton() == (MouseButton.PRIMARY)) {
+								if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()) {
 									try {
 										WindowManager.setScene(new NewEvent(getItem()));
 									} catch (IOException | NotSwitchableException e) {
@@ -103,9 +111,9 @@ public class ScheduleModule extends Page {
 						super.updateItem(item, empty);
 
 						if (item == null || empty) {
-							setBackground(EMPTY_CELL_BACKGROUND);
 							setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
-						}
+						} else
+							setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
 					}
 				};
 				return row;
@@ -122,7 +130,6 @@ public class ScheduleModule extends Page {
 					if (item == null || empty) {
 						setText(null);
 						setGraphic(null);
-						setBackground(EMPTY_CELL_BACKGROUND);
 					} else {
 						setText(DateFormat.getDateInstance().format(item));
 						setGraphic(null);
@@ -142,7 +149,6 @@ public class ScheduleModule extends Page {
 					if (item == null || empty) {
 						setText(null);
 						setGraphic(null);
-						setBackground(EMPTY_CELL_BACKGROUND);
 					} else {
 						setText(item);
 						setGraphic(null);
@@ -151,9 +157,6 @@ public class ScheduleModule extends Page {
 			};
 			return cell;
 		});
-		eventTable.setItems(FXCollections.observableArrayList(new ScheduleEvent("Desc", "Name"),
-				new ScheduleEvent("Desc", "Name"), new ScheduleEvent("Desc", "Name"), new ScheduleEvent("Desc", "Name"),
-				new ScheduleEvent("Desc", "Name"), new ScheduleEvent("Desc", "Name")));
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(root));
 	}

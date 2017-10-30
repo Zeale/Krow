@@ -21,11 +21,22 @@ public class ScheduleEvent implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public ScheduleEvent() {
+		this(null);
 	}
 
 	public ScheduleEvent(String description, String name) {
+		this(description, name, null);
+	}
+
+	public ScheduleEvent(String description, String name, Date dueDate) {
 		this.description.set(description);
-		this.name.set(name);
+		this.name.set(name == null ? "Unnamed" : name);
+		this.dueDate.set(dueDate);
+	}
+
+	public ScheduleEvent(Date dueDate) {
+		this(null, null);
+		this.dueDate.set(dueDate);
 	}
 
 	private void writeObject(ObjectOutputStream os) throws IOException {
@@ -55,9 +66,11 @@ public class ScheduleEvent implements Serializable {
 		DESCRIPTION, NAME, DUE_DATE;
 	}
 
-	public double getTimeUntilDue() {
-		// TODO Implement
-		return 0;
+	public long getTimeUntilDue() throws IllegalArgumentException {
+		if (dueDate.get() == null)
+			throw new IllegalArgumentException(
+					"The date for the schedule event named " + name.get() + " can not be null.");
+		return dueDate.get().getTime() - new Date().getTime();
 	}
 
 }
