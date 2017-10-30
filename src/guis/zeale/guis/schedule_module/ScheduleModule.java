@@ -22,6 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import krow.guis.GUIHelper;
 import krow.guis.schedule_module.ScheduleEvent;
+import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
@@ -31,6 +32,8 @@ public class ScheduleModule extends Page {
 	static {
 		// File file = new File(Kröw.DATA_DIRECTORY, "ScheduleModule");
 	}
+
+	// 20 days in milliseconds.
 	private static final double MILLIS_UNTIL_IMPORTANT = 1728e6;
 
 	public final static Background EMPTY_CELL_BACKGROUND = new Background(
@@ -43,8 +46,20 @@ public class ScheduleModule extends Page {
 	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yy ~ hh:mm");
 
 	private static final Color getColorFromDueDate(long time) {
-		// TODO Implement
-		return null;
+
+		// Get the time until the date is due.
+		long timeUntilDue = time - System.currentTimeMillis();
+
+		// If the due date has passed, make the event red.
+		if (timeUntilDue < 0)
+			return Color.RED;
+
+		// The color that an event will become as its due date approaches.
+		Color dueColor = Color.GOLD.interpolate(Color.ORANGE, 0.6);
+
+		// Interpolate the color between dueColor and our background color; the
+		// color will approach dueColor as the timeUntilDue approaches 0.
+		return dueColor.interpolate(new Color(0, 0, 0, 0.3), timeUntilDue / MILLIS_UNTIL_IMPORTANT);
 	}
 
 	@FXML
@@ -77,6 +92,8 @@ public class ScheduleModule extends Page {
 	@Override
 	public void initialize() {
 
+		System.setErr(Kröw.deferr);
+
 		dateColumn.setCellValueFactory(
 				new Callback<TableColumn.CellDataFeatures<ScheduleEvent, Number>, ObservableValue<Number>>() {
 
@@ -94,6 +111,7 @@ public class ScheduleModule extends Page {
 				TableRow<ScheduleEvent> row = new TableRow<ScheduleEvent>() {
 
 					{
+
 						setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
 
 						setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -119,7 +137,7 @@ public class ScheduleModule extends Page {
 						if (item == null || empty) {
 							setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
 						} else
-							setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
+							setBackground(buildBackground(getColorFromDueDate(getItem().dueDate.get())));
 					}
 				};
 				return row;
@@ -128,6 +146,7 @@ public class ScheduleModule extends Page {
 
 		dateColumn.setCellFactory(param -> {
 			TableCell<ScheduleEvent, Number> cell = new TableCell<ScheduleEvent, Number>() {
+
 				protected void updateItem(Number item, boolean empty) {
 					if (getItem() == item)
 						return;
@@ -147,6 +166,7 @@ public class ScheduleModule extends Page {
 
 		nameColumn.setCellFactory(param -> {
 			TableCell<ScheduleEvent, String> cell = new TableCell<ScheduleEvent, String>() {
+
 				protected void updateItem(String item, boolean empty) {
 					if (getItem() == item)
 						return;
@@ -164,13 +184,15 @@ public class ScheduleModule extends Page {
 			return cell;
 		});
 
+		// Testing dates
 		eventTable.getItems().addAll(
 				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.HOURS.toMillis(8)),
 				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1)),
-				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(2)),
-				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(3)),
-				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(4)),
-				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(5)));
+				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(6)),
+				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(13)),
+				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(18)),
+				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(50)),
+				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.HOURS.toMillis(-8)));
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(root));
 	}
