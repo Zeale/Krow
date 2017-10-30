@@ -1,16 +1,16 @@
 package zeale.guis.schedule_module;
 
-import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.util.Calendar;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
-import javafx.collections.FXCollections;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
@@ -22,7 +22,6 @@ import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import krow.guis.GUIHelper;
 import krow.guis.schedule_module.ScheduleEvent;
-import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
@@ -30,7 +29,7 @@ import kröw.core.managers.WindowManager.Page;
 public class ScheduleModule extends Page {
 
 	static {
-		File file = new File(Kröw.DATA_DIRECTORY, "ScheduleModule");
+		// File file = new File(Kröw.DATA_DIRECTORY, "ScheduleModule");
 	}
 	private static final double MILLIS_UNTIL_IMPORTANT = 1728e6;
 
@@ -41,9 +40,9 @@ public class ScheduleModule extends Page {
 		return new Background(new BackgroundFill(color, null, null));
 	}
 
-	private static final Calendar calendar = Calendar.getInstance();
+	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yy ~ hh:mm");
 
-	private static final Color getColorFromDueDate(double time) {
+	private static final Color getColorFromDueDate(long time) {
 		// TODO Implement
 		return null;
 	}
@@ -71,14 +70,21 @@ public class ScheduleModule extends Page {
 	@FXML
 	private TableView<ScheduleEvent> eventTable;
 	@FXML
-	private TableColumn<ScheduleEvent, Date> dateColumn;
+	private TableColumn<ScheduleEvent, Number> dateColumn;
 	@FXML
 	private TableColumn<ScheduleEvent, String> nameColumn;
 
 	@Override
 	public void initialize() {
 
-		dateColumn.setCellValueFactory(param -> param.getValue().dueDate);
+		dateColumn.setCellValueFactory(
+				new Callback<TableColumn.CellDataFeatures<ScheduleEvent, Number>, ObservableValue<Number>>() {
+
+					@Override
+					public ObservableValue<Number> call(CellDataFeatures<ScheduleEvent, Number> param) {
+						return param.getValue().dueDate;
+					}
+				});
 		nameColumn.setCellValueFactory(param -> param.getValue().name);
 
 		eventTable.setRowFactory(new Callback<TableView<ScheduleEvent>, TableRow<ScheduleEvent>>() {
@@ -121,8 +127,8 @@ public class ScheduleModule extends Page {
 		});
 
 		dateColumn.setCellFactory(param -> {
-			TableCell<ScheduleEvent, Date> cell = new TableCell<ScheduleEvent, Date>() {
-				protected void updateItem(Date item, boolean empty) {
+			TableCell<ScheduleEvent, Number> cell = new TableCell<ScheduleEvent, Number>() {
+				protected void updateItem(Number item, boolean empty) {
 					if (getItem() == item)
 						return;
 					super.updateItem(item, empty);
@@ -131,7 +137,7 @@ public class ScheduleModule extends Page {
 						setText(null);
 						setGraphic(null);
 					} else {
-						setText(DateFormat.getDateInstance().format(item));
+						setText(dateFormatter.format(new Date((long) item)));
 						setGraphic(null);
 					}
 				};
@@ -157,6 +163,14 @@ public class ScheduleModule extends Page {
 			};
 			return cell;
 		});
+
+		eventTable.getItems().addAll(
+				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.HOURS.toMillis(8)),
+				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1)),
+				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(2)),
+				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(3)),
+				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(4)),
+				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(5)));
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(root));
 	}

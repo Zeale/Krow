@@ -6,14 +6,19 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class ScheduleEvent implements Serializable {
 
 	public final SimpleStringProperty description = new SimpleStringProperty(), name = new SimpleStringProperty();
-	public final SimpleObjectProperty<Date> dueDate = new SimpleObjectProperty<>();
+	public final SimpleLongProperty dueDate = new SimpleLongProperty();
 
 	/**
 	 * SUID
@@ -21,20 +26,20 @@ public class ScheduleEvent implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public ScheduleEvent() {
-		this(null);
+		this(new Date().getTime() + TimeUnit.DAYS.toMillis(1));
 	}
 
 	public ScheduleEvent(String description, String name) {
-		this(description, name, null);
+		this(description, name, new Date().getTime() + TimeUnit.DAYS.toMillis(1));
 	}
 
-	public ScheduleEvent(String description, String name, Date dueDate) {
+	public ScheduleEvent(String description, String name, long dueDate) {
 		this.description.set(description);
 		this.name.set(name == null ? "Unnamed" : name);
 		this.dueDate.set(dueDate);
 	}
 
-	public ScheduleEvent(Date dueDate) {
+	public ScheduleEvent(long dueDate) {
 		this(null, null);
 		this.dueDate.set(dueDate);
 	}
@@ -44,7 +49,7 @@ public class ScheduleEvent implements Serializable {
 
 		data.put(DataKey.DESCRIPTION, description.get());
 		data.put(DataKey.NAME, name.get());
-		data.put(DataKey.DUE_DATE, dueDate);
+		data.put(DataKey.DUE_DATE, dueDate.get());
 
 		os.writeObject(data);
 	}
@@ -56,7 +61,7 @@ public class ScheduleEvent implements Serializable {
 			data = (HashMap<DataKey, Object>) is.readObject();
 			name.set((String) data.get(DataKey.NAME));
 			description.set((String) data.get(DataKey.DESCRIPTION));
-			dueDate.setValue((Date) data.get(DataKey.DUE_DATE));
+			dueDate.setValue((long) data.get(DataKey.DUE_DATE));
 		} catch (Exception e) {
 			throw new IOException(e);
 		}
@@ -67,10 +72,7 @@ public class ScheduleEvent implements Serializable {
 	}
 
 	public long getTimeUntilDue() throws IllegalArgumentException {
-		if (dueDate.get() == null)
-			throw new IllegalArgumentException(
-					"The date for the schedule event named " + name.get() + " can not be null.");
-		return dueDate.get().getTime() - new Date().getTime();
+		return dueDate.get() - System.currentTimeMillis();
 	}
 
 }
