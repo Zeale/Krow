@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -39,6 +38,10 @@ public class ScheduleModule extends Page {
 
 	static {
 		importData();
+	}
+
+	public ObservableList<ScheduleEvent> getEventList() {
+		return events;
 	}
 
 	private static final void importData() {
@@ -222,14 +225,7 @@ public class ScheduleModule extends Page {
 		});
 
 		// Testing dates
-		eventTable.getItems().addAll(
-				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.HOURS.toMillis(8)),
-				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1)),
-				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(6)),
-				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(13)),
-				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(18)),
-				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.DAYS.toMillis(50)),
-				new ScheduleEvent("Test", "test", System.currentTimeMillis() + TimeUnit.HOURS.toMillis(-8)));
+		eventTable.setItems(events);
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(root));
 	}
