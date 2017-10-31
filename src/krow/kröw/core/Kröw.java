@@ -193,6 +193,7 @@ public final class Kröw extends Application {
 	 * The directory for data storage of this application.
 	 */
 	public final static File DATA_DIRECTORY = new File(KRÖW_HOME_DIRECTORY, "Data");
+	public final static File MODULE_DIRECTORY = new File(DATA_DIRECTORY, "Modules");
 	public static final File MANAGER_DIRECTORY = new File(KRÖW_HOME_DIRECTORY, "Program Managers");
 
 	/**

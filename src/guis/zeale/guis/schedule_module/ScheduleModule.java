@@ -1,11 +1,16 @@
 package zeale.guis.schedule_module;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableCell;
@@ -28,9 +33,41 @@ import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
 
 public class ScheduleModule extends Page {
+	private static final File DATA_DIR = new File(Kröw.DATA_DIRECTORY, "Schedule");
+
+	private static final ObservableList<ScheduleEvent> events = FXCollections.observableArrayList();
 
 	static {
-		// File file = new File(Kröw.DATA_DIRECTORY, "ScheduleModule");
+		importData();
+	}
+
+	private static final void importData() {
+		try {
+			if (DATA_DIR.isDirectory()) {
+				if (DATA_DIR.listFiles() != null)
+					for (File f : DATA_DIR.listFiles())
+						try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(f))) {
+							events.add((ScheduleEvent) is.readObject());
+						} catch (Exception e) {
+							System.err.println(
+									"Failed to load a single ScheduleEvent from the directory. The file path is: "
+											+ f.getAbsolutePath());
+						}
+			}
+		} catch (Exception e) {
+			System.err.println(
+					"An exception occurred while loading saved Schedule Events. Due to the likely size of the following text, the error will be printed to the System error output.");
+			e.printStackTrace(Kröw.deferr);
+		}
+	}
+
+	private static final void overwriteData() {
+		events.clear();
+		importData();
+	}
+
+	private static final void saveData() {
+		// TODO Implement
 	}
 
 	// 20 days in milliseconds.
