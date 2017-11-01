@@ -7,14 +7,12 @@ import java.io.ObjectInputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
@@ -62,10 +60,12 @@ public class ScheduleModule extends Page {
 					"An exception occurred while loading saved Schedule Events. Due to the likely size of the following text, the error will be printed to the System error output.");
 			e.printStackTrace(Kröw.deferr);
 		}
+		events.sort(null);
 	}
 
 	private static final void overwriteData() {
 		events.clear();
+		events.sort(null);
 		importData();
 	}
 
@@ -134,14 +134,7 @@ public class ScheduleModule extends Page {
 
 		System.setErr(Kröw.deferr);
 
-		dateColumn.setCellValueFactory(
-				new Callback<TableColumn.CellDataFeatures<ScheduleEvent, Number>, ObservableValue<Number>>() {
-
-					@Override
-					public ObservableValue<Number> call(CellDataFeatures<ScheduleEvent, Number> param) {
-						return param.getValue().dueDate;
-					}
-				});
+		dateColumn.setCellValueFactory(param -> param.getValue().dueDate);
 		nameColumn.setCellValueFactory(param -> param.getValue().name);
 
 		eventTable.setRowFactory(new Callback<TableView<ScheduleEvent>, TableRow<ScheduleEvent>>() {

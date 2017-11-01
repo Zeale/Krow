@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class ScheduleEvent implements Serializable {
+public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 
 	public final SimpleStringProperty description = new SimpleStringProperty(), name = new SimpleStringProperty();
 	public final SimpleLongProperty dueDate = new SimpleLongProperty();
@@ -69,6 +69,16 @@ public class ScheduleEvent implements Serializable {
 
 	public long getTimeUntilDue() throws IllegalArgumentException {
 		return dueDate.get() - System.currentTimeMillis();
+	}
+
+	@Override
+	public int compareTo(ScheduleEvent o) {
+		if (o.dueDate.get() > dueDate.get())
+			return -1;
+		else if (o.dueDate.get() < dueDate.get())
+			return 1;
+		else
+			return 0;
 	}
 
 }
