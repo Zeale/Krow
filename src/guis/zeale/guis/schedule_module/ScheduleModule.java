@@ -1,9 +1,9 @@
 package zeale.guis.schedule_module;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -30,7 +30,7 @@ import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
 
 public class ScheduleModule extends Page {
-	private static final File DATA_DIR = new File(Kröw.DATA_DIRECTORY, "Schedule");
+	public static final File DATA_DIR = new File(Kröw.DATA_DIRECTORY, "Schedule");
 
 	private static final ObservableList<ScheduleEvent> events = FXCollections.observableArrayList();
 
@@ -47,8 +47,8 @@ public class ScheduleModule extends Page {
 			if (DATA_DIR.isDirectory()) {
 				if (DATA_DIR.listFiles() != null)
 					for (File f : DATA_DIR.listFiles())
-						try (ObjectInputStream is = new ObjectInputStream(new FileInputStream(f))) {
-							events.add((ScheduleEvent) is.readObject());
+						try {
+							events.add(ScheduleEvent.load(f));
 						} catch (Exception e) {
 							System.err.println(
 									"Failed to load a single ScheduleEvent from the directory. The file path is: "
@@ -70,7 +70,14 @@ public class ScheduleModule extends Page {
 	}
 
 	private static final void saveData() {
-		// TODO Implement
+		for (ScheduleEvent se : events) {
+			se.getFile().delete();
+			try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(se.getFile()))) {
+				os.writeObject(se);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	// 20 days in milliseconds.
@@ -116,7 +123,7 @@ public class ScheduleModule extends Page {
 	@FXML
 	private void addEvent() {
 		try {
-			WindowManager.setScene(new NewEvent());
+			WindowManager.setScene(new NewEvent(this));
 		} catch (IOException | NotSwitchableException e) {
 			e.printStackTrace();
 		}
@@ -152,7 +159,7 @@ public class ScheduleModule extends Page {
 							public void handle(MouseEvent event) {
 								if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()) {
 									try {
-										WindowManager.setScene(new NewEvent(getItem()));
+										WindowManager.setScene(new NewEvent(ScheduleModule.this, getItem()));
 									} catch (IOException | NotSwitchableException e) {
 										e.printStackTrace();
 									}
@@ -221,6 +228,22 @@ public class ScheduleModule extends Page {
 		eventTable.setItems(events);
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(root));
+	}
+
+	public void addEvent(ScheduleEvent event) {
+		events.add(event);
+	}
+
+	public void removeEvent(ScheduleEvent event) {
+		events.remove(event);
+	}
+
+	public void removeEvent(int index) {
+		events.remove(index);
+	}
+
+	public boolean containsEvent(ScheduleEvent event) {
+		return events.contains(event);
 	}
 
 }

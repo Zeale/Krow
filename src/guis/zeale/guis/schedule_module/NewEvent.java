@@ -16,6 +16,8 @@ import kröw.core.managers.WindowManager.Page;
 
 public class NewEvent extends Page {
 
+	private final ScheduleModule module;
+
 	@FXML
 	private TextField nameInput;
 	@FXML
@@ -26,13 +28,15 @@ public class NewEvent extends Page {
 	private ScheduleEvent event;
 
 	// Called when making an event.
-	NewEvent() {
+	NewEvent(ScheduleModule module) {
 		event = new ScheduleEvent();
+		this.module = module;
 	}
 
 	// Called when editing an event.
-	NewEvent(ScheduleEvent event) {
+	NewEvent(ScheduleModule module, ScheduleEvent event) {
 		this.event = event;
+		this.module = module;
 	}
 
 	@Override
@@ -65,9 +69,12 @@ public class NewEvent extends Page {
 		} catch (IOException | NotSwitchableException e) {
 			e.printStackTrace();
 		}
+
 		event.name.set(nameInput.getText());
 		event.description.set(descInput.getText());
-		// TODO Add item
+
+		if (!module.containsEvent(event))
+			module.addEvent(event);
 	}
 
 }
