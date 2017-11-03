@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import zeale.guis.schedule_module.ScheduleModule;
 
 public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
@@ -22,6 +23,23 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 	public final SimpleStringProperty description = new SimpleStringProperty(), name = new SimpleStringProperty();
 	public final SimpleLongProperty dueDate = new SimpleLongProperty();
 	private transient File file = new File(ScheduleModule.DATA_DIR, UUID.randomUUID().toString());
+
+	public boolean autoSave;
+
+	private final ChangeListener<Object> onChanged = (observable, oldValue, newValue) -> {
+		if (autoSave)
+			try {
+				updateFile();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+	};
+
+	{
+		description.addListener(onChanged);
+		name.addListener(onChanged);
+		dueDate.addListener(onChanged);
+	}
 
 	public File getFile() {
 		return file;
