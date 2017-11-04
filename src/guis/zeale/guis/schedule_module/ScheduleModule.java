@@ -1,14 +1,15 @@
 package zeale.guis.schedule_module;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableCell;
@@ -159,6 +160,11 @@ public class ScheduleModule extends Page {
 			public TableRow<ScheduleEvent> call(TableView<ScheduleEvent> param) {
 				TableRow<ScheduleEvent> row = new TableRow<ScheduleEvent>() {
 
+					private void resetBackground() {
+						setBackground(buildBackground(getColorFromDueDate(getItem().dueDate.get())));
+						setTextFill(Color.WHITE);
+					}
+
 					{
 
 						setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
@@ -175,6 +181,27 @@ public class ScheduleModule extends Page {
 								}
 							}
 						});
+
+						setOnMouseEntered(new EventHandler<MouseEvent>() {
+
+							@Override
+							public void handle(MouseEvent event) {
+								if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()) {
+									setBackground(buildBackground(Color.WHITE));
+									setTextFill(Color.BLACK);
+								}
+							}
+						});
+
+						setOnMouseExited(new EventHandler<MouseEvent>() {
+
+							@Override
+							public void handle(MouseEvent event) {
+								if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()) {
+									resetBackground();
+								}
+							}
+						});
 					}
 
 					@Override
@@ -183,10 +210,19 @@ public class ScheduleModule extends Page {
 							return;
 						super.updateItem(item, empty);
 
+						item.dueDate.addListener(new ChangeListener<Number>() {
+
+							@Override
+							public void changed(ObservableValue<? extends Number> observable, Number oldValue,
+									Number newValue) {
+								resetBackground();
+							}
+						});
+
 						if (item == null || empty) {
 							setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
 						} else
-							setBackground(buildBackground(getColorFromDueDate(getItem().dueDate.get())));
+							resetBackground();
 					}
 				};
 				return row;
