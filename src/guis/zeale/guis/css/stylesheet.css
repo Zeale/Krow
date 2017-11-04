@@ -90,25 +90,32 @@
 }
 
 /* Pop Buttons */
-.pop-button {
-	-fx-font-family: Consolas;
-	-fx-text-fill: white;
-	-fx-font-weight: bold;
-	-fx-border-color: black;
-	-fx-border-width: 0.0 0.0 2.0px 2.0px;
-	-fx-background-color: #00000015;
-}
-
-.pop-button:armed {
+.pop-button:armed.button {
 	-fx-border-color: black;
 	-fx-border-width: 2.0px 2.0px 0.0 0.0;
 	-fx-text-fill: #535353;
 	-fx-label-padding: 2.0px 2.0px 0.0 0.0;
 }
 
-.pop-button.text-field, .pop-button.text-area {
+.pop-button {
 	-fx-font-family: Consolas;
 	-fx-border-width: 2.0px;
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+	-fx-border-color: black;
+	-fx-background-color: #00000015;
+}
+
+.pop-button.date-picker .date-picker-display-node {
+	-fx-font-family: Consolas;
+	-fx-border-width: 0.0;
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+	-fx-background-color: #00000015;
+}
+
+.pop-button.button {
+	-fx-border-width: 0.0 0.0 2.0px 2.0px;
 }
 
 #StatisticsListView .list-cell {

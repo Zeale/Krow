@@ -1,9 +1,12 @@
 package zeale.guis.schedule_module;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
@@ -24,6 +27,8 @@ public class NewEvent extends Page {
 	private TextArea descInput;
 	@FXML
 	private Pane root;
+	@FXML
+	private DatePicker dateInput;
 
 	private ScheduleEvent event;
 
@@ -59,6 +64,7 @@ public class NewEvent extends Page {
 			n.setEffect(effect);
 		nameInput.setText(event.name.get());
 		descInput.setText(event.description.get());
+		dateInput.setValue(Instant.ofEpochMilli(event.dueDate.get()).atZone(ZoneId.systemDefault()).toLocalDate(););
 	}
 
 	@FXML
@@ -72,6 +78,7 @@ public class NewEvent extends Page {
 
 		event.name.set(nameInput.getText());
 		event.description.set(descInput.getText());
+		event.dueDate.set(dateInput.getValue().);
 
 		if (!module.containsEvent(event))
 			module.addEvent(event);
