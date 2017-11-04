@@ -35,6 +35,8 @@ public class ScheduleModule extends Page {
 	private static final ObservableList<ScheduleEvent> events = FXCollections.observableArrayList();
 
 	static {
+		// TODO Delete this.
+		System.setErr(Kröw.deferr);
 		importData();
 	}
 
@@ -44,17 +46,24 @@ public class ScheduleModule extends Page {
 
 	private static final void importData() {
 		try {
-			if (DATA_DIR.isDirectory()) {
-				if (DATA_DIR.listFiles() != null)
-					for (File f : DATA_DIR.listFiles())
-						try {
-							events.add(ScheduleEvent.load(f));
-						} catch (Exception e) {
-							System.err.println(
-									"Failed to load a single ScheduleEvent from the directory. The file path is: "
-											+ f.getAbsolutePath());
-						}
+
+			if (DATA_DIR.exists()) {
+				if (!DATA_DIR.isDirectory())
+					DATA_DIR.delete();
 			}
+
+			DATA_DIR.mkdirs();
+
+			if (DATA_DIR.listFiles() != null)
+				for (File f : DATA_DIR.listFiles())
+					try {
+						events.add(ScheduleEvent.load(f));
+					} catch (Exception e) {
+						System.err
+								.println("Failed to load a single ScheduleEvent from the directory. The file path is: "
+										+ f.getAbsolutePath());
+						e.printStackTrace();
+					}
 		} catch (Exception e) {
 			System.err.println(
 					"An exception occurred while loading saved Schedule Events. Due to the likely size of the following text, the error will be printed to the System error output.");
@@ -71,16 +80,13 @@ public class ScheduleModule extends Page {
 
 	private static final void saveData() {
 		for (ScheduleEvent se : events) {
-			se.getFile().delete();
-			try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(se.getFile()))) {
-				os.writeObject(se);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			se.save();
 		}
 	}
 
-	// 20 days in milliseconds.
+	/**
+	 * 20 days in milliseconds.
+	 */
 	private static final double MILLIS_UNTIL_IMPORTANT = 1728e6;
 
 	public final static Background EMPTY_CELL_BACKGROUND = new Background(

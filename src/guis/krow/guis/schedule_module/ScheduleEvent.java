@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
@@ -24,15 +25,11 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 	public final SimpleLongProperty dueDate = new SimpleLongProperty();
 	private transient File file = new File(ScheduleModule.DATA_DIR, UUID.randomUUID().toString());
 
-	public boolean autoSave;
+	public boolean autoSave = true;
 
 	private final ChangeListener<Object> onChanged = (observable, oldValue, newValue) -> {
 		if (autoSave)
-			try {
-				updateFile();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
+			save();
 	};
 
 	{
@@ -67,7 +64,6 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 		name = name == null ? "Unnamed" : name;
 		this.name.set(name);
 		this.dueDate.set(dueDate);
-		file = new File(ScheduleModule.DATA_DIR, name);
 	}
 
 	public ScheduleEvent(long dueDate) {
@@ -76,7 +72,7 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 	}
 
 	private void writeObject(ObjectOutputStream os) throws IOException {
-		HashMap<DataKey, Object> data = new HashMap<>();
+		HashMap<DataKey, Object> data = new HashMap<>(3);
 
 		data.put(DataKey.DESCRIPTION, description.get());
 		data.put(DataKey.NAME, name.get());
@@ -88,14 +84,38 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream is) throws IOException {
 		HashMap<DataKey, Object> data;
+		Field nameField = null, descField = null, dateField = null;
 		try {
+			// Allow modification of final fields
+
+			nameField = getClass().getDeclaredField("name");
+			descField = getClass().getDeclaredField("description");
+			dateField = getClass().getDeclaredField("dueDate");
+
+			nameField.setAccessible(true);
+			descField.setAccessible(true);
+			dateField.setAccessible(true);
+
 			data = (HashMap<DataKey, Object>) is.readObject();
-			name.set((String) data.get(DataKey.NAME));
-			description.set((String) data.get(DataKey.DESCRIPTION));
-			dueDate.setValue((long) data.get(DataKey.DUE_DATE));
+
+			getClass().getField("name").set(this, new SimpleStringProperty((String) data.get(DataKey.NAME)));
+			getClass().getField("description").set(this,
+					new SimpleStringProperty((String) data.get(DataKey.DESCRIPTION)));
+			getClass().getField("dueDate").set(this, new SimpleLongProperty((long) data.get(DataKey.DUE_DATE)));
 		} catch (Exception e) {
+			try {
+				nameField.setAccessible(false);
+				descField.setAccessible(false);
+				dateField.setAccessible(false);
+			} catch (Exception e1) {
+			}
 			throw new IOException(e);
 		}
+
+		nameField.setAccessible(false);
+		descField.setAccessible(false);
+		dateField.setAccessible(false);
+
 	}
 
 	public void save() {
@@ -108,10 +128,7 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		saveData();
-	}
 
-	private void saveData() {
 		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
 			oos.writeObject(this);
 		} catch (FileNotFoundException e) {
@@ -119,12 +136,7 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
 
-	public void updateFile() throws FileNotFoundException {
-		if (!file.exists())
-			throw new FileNotFoundException();
-		saveData();
 	}
 
 	private enum DataKey {
