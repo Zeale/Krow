@@ -7,8 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
@@ -26,6 +26,8 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 	private transient File file = new File(ScheduleModule.DATA_DIR, UUID.randomUUID().toString());
 
 	public boolean autoSave = true;
+
+	private HashMap<DataKey, Object> serializationData;
 
 	private final ChangeListener<Object> onChanged = (observable, oldValue, newValue) -> {
 		if (autoSave)
@@ -81,41 +83,25 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 		os.writeObject(data);
 	}
 
+	private Object readResolve() throws ObjectStreamException {
+		return new ScheduleEvent(this);
+	}
+
+	private ScheduleEvent(ScheduleEvent copy) {
+		autoSave = copy.autoSave;
+		file = copy.file;
+		description.set((String) copy.serializationData.get(DataKey.DESCRIPTION));
+		name.set((String) copy.serializationData.get(DataKey.NAME));
+		dueDate.set((long) copy.serializationData.get(DataKey.DUE_DATE));
+	}
+
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream is) throws IOException {
-		HashMap<DataKey, Object> data;
-		Field nameField = null, descField = null, dateField = null;
 		try {
-			// Allow modification of final fields
-
-			nameField = getClass().getDeclaredField("name");
-			descField = getClass().getDeclaredField("description");
-			dateField = getClass().getDeclaredField("dueDate");
-
-			nameField.setAccessible(true);
-			descField.setAccessible(true);
-			dateField.setAccessible(true);
-
-			data = (HashMap<DataKey, Object>) is.readObject();
-
-			getClass().getField("name").set(this, new SimpleStringProperty((String) data.get(DataKey.NAME)));
-			getClass().getField("description").set(this,
-					new SimpleStringProperty((String) data.get(DataKey.DESCRIPTION)));
-			getClass().getField("dueDate").set(this, new SimpleLongProperty((long) data.get(DataKey.DUE_DATE)));
-		} catch (Exception e) {
-			try {
-				nameField.setAccessible(false);
-				descField.setAccessible(false);
-				dateField.setAccessible(false);
-			} catch (Exception e1) {
-			}
-			throw new IOException(e);
+			serializationData = (HashMap<DataKey, Object>) is.readObject();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
-
-		nameField.setAccessible(false);
-		descField.setAccessible(false);
-		dateField.setAccessible(false);
-
 	}
 
 	public void save() {

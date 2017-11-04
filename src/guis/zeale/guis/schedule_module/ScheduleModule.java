@@ -37,6 +37,7 @@ public class ScheduleModule extends Page {
 	static {
 		// TODO Delete this.
 		System.setErr(Kröw.deferr);
+		System.setOut(Kröw.defout);
 		importData();
 	}
 
@@ -57,7 +58,9 @@ public class ScheduleModule extends Page {
 			if (DATA_DIR.listFiles() != null)
 				for (File f : DATA_DIR.listFiles())
 					try {
-						events.add(ScheduleEvent.load(f));
+						ScheduleEvent sc = ScheduleEvent.load(f);
+						sc.autoSave = true;
+						events.add(sc);
 					} catch (Exception e) {
 						System.err
 								.println("Failed to load a single ScheduleEvent from the directory. The file path is: "
@@ -96,7 +99,7 @@ public class ScheduleModule extends Page {
 		return new Background(new BackgroundFill(color, null, null));
 	}
 
-	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yy ~ hh:mm");
+	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yy ~ hh:mm:ss");
 
 	private static final Color getColorFromDueDate(long time) {
 
