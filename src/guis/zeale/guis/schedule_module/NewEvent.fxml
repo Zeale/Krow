@@ -15,5 +15,6 @@
          </font></TextField>
       <TextArea fx:id="descInput" layoutX="616.0" layoutY="210.0" prefHeight="545.0" prefWidth="688.0" promptText="Description" style="-fx-font-size: 12.9;" styleClass="pop-button" wrapText="true" />
       <Button focusTraversable="false" layoutX="894.0" layoutY="835.0" mnemonicParsing="false" onAction="#save" prefHeight="44.0" prefWidth="133.0" style="-fx-font-size: 18;" styleClass="pop-button" text="Save" />
+      <DatePicker fx:id="dateInput" layoutX="873.0" layoutY="153.0" styleClass="pop-button" />
    </children>
 </AnchorPane>
