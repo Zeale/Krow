@@ -125,6 +125,11 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 
 	}
 
+	public void delete() {
+		if (file != null && file.isFile())
+			file.delete();
+	}
+
 	private enum DataKey {
 		DESCRIPTION, NAME, DUE_DATE;
 	}

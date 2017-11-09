@@ -5,25 +5,24 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import krow.guis.GUIHelper;
+import krow.guis.PopupHelper;
+import krow.guis.PopupHelper.PopupWrapper;
 import krow.guis.schedule_module.ScheduleEvent;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
@@ -165,41 +164,46 @@ public class ScheduleModule extends Page {
 						setTextFill(Color.WHITE);
 					}
 
+					private TableRow<ScheduleEvent> getThis() {
+						return this;
+					}
+
 					{
+
+						Label delete = new Label("Delete");
+						PopupWrapper<VBox> wrapper = PopupHelper.buildPopup(delete);
+						PopupHelper.applyRightClickPopup(getThis(), wrapper.popup);
+						delete.setOnMouseClicked(event -> {
+
+							if (!isEmpty() && getItem() != null && event.getButton() == MouseButton.PRIMARY) {
+								getItem().delete();
+								events.remove(getItem());
+								wrapper.popup.hide();
+							}
+						});
 
 						setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
 
-						setOnMouseClicked(new EventHandler<MouseEvent>() {
-							@Override
-							public void handle(MouseEvent event) {
-								if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()) {
-									try {
-										WindowManager.setScene(new NewEvent(ScheduleModule.this, getItem()));
-									} catch (IOException | NotSwitchableException e) {
-										e.printStackTrace();
-									}
+						setOnMouseClicked(event -> {
+							if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()) {
+								try {
+									WindowManager.setScene(new NewEvent(ScheduleModule.this, getItem()));
+								} catch (IOException | NotSwitchableException e) {
+									e.printStackTrace();
 								}
 							}
 						});
 
-						setOnMouseEntered(new EventHandler<MouseEvent>() {
-
-							@Override
-							public void handle(MouseEvent event) {
-								if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()) {
-									setBackground(buildBackground(Color.WHITE));
-									setTextFill(Color.BLACK);
-								}
+						setOnMouseEntered(event -> {
+							if (!isEmpty()) {
+								setBackground(buildBackground(Color.WHITE));
+								setTextFill(Color.BLACK);
 							}
 						});
 
-						setOnMouseExited(new EventHandler<MouseEvent>() {
-
-							@Override
-							public void handle(MouseEvent event) {
-								if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()) {
-									resetBackground();
-								}
+						setOnMouseExited(event -> {
+							if (!isEmpty()) {
+								resetBackground();
 							}
 						});
 					}
@@ -210,19 +214,12 @@ public class ScheduleModule extends Page {
 							return;
 						super.updateItem(item, empty);
 
-						item.dueDate.addListener(new ChangeListener<Number>() {
-
-							@Override
-							public void changed(ObservableValue<? extends Number> observable, Number oldValue,
-									Number newValue) {
-								resetBackground();
-							}
-						});
-
 						if (item == null || empty) {
 							setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
-						} else
+						} else {
 							resetBackground();
+
+						}
 					}
 				};
 				return row;
@@ -235,6 +232,7 @@ public class ScheduleModule extends Page {
 				protected void updateItem(Number item, boolean empty) {
 					if (getItem() == item)
 						return;
+
 					super.updateItem(item, empty);
 
 					if (item == null || empty) {
@@ -255,6 +253,7 @@ public class ScheduleModule extends Page {
 				protected void updateItem(String item, boolean empty) {
 					if (getItem() == item)
 						return;
+
 					super.updateItem(item, empty);
 
 					if (item == null || empty) {
