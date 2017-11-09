@@ -65,7 +65,6 @@ public class NewEvent extends Page {
 			n.setEffect(effect);
 		nameInput.setText(event.name.get());
 		descInput.setText(event.description.get());
-		System.out.println(dateInput);
 		dateInput.setValue(Instant.ofEpochMilli(event.dueDate.get()).atZone(ZoneId.systemDefault()).toLocalDate());
 	}
 

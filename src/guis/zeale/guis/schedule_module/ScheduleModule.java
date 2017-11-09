@@ -99,7 +99,7 @@ public class ScheduleModule extends Page {
 		return new Background(new BackgroundFill(color, null, null));
 	}
 
-	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yy ~ hh:mm:ss");
+	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yy"/* + " ~ hh:mm:ss" */);
 
 	private static final Color getColorFromDueDate(long time) {
 
@@ -147,8 +147,6 @@ public class ScheduleModule extends Page {
 
 	@Override
 	public void initialize() {
-
-		System.setErr(Kröw.deferr);
 
 		dateColumn.setCellValueFactory(param -> param.getValue().dueDate);
 		nameColumn.setCellValueFactory(param -> param.getValue().name);
