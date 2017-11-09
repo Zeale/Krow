@@ -28,6 +28,7 @@ import krow.guis.chatroom.messages.ChatRoomMessage;
 import krow.guis.chatroom.messages.CommandMessage;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
+import kröw.callables.VarArgsTask;
 import kröw.connections.Client;
 import kröw.connections.FullClientListener;
 import kröw.connections.Server;
@@ -420,7 +421,46 @@ public class ChatRoom extends WindowManager.Page {
 			}
 
 		} else if (cmd.equalsIgnoreCase("help")) {
-			println("You need it...");
+
+			// This removes redundant calls to multiple print commands.
+			// (Especially printing " - " repeatedly.)
+			//
+			// Instead we can call this Task's execute method with the name of
+			// the command to show in the help menu, and the description of the
+			// command.
+			VarArgsTask<String> showHelp = params -> {
+				if (params.length < 2)
+					try {
+						throw new Exception("Invalid args");
+					} catch (Exception e) {
+						e.printStackTrace();
+						return;
+					}
+				print(params[0], Color.CRIMSON);
+				print(" - ");
+				println(params[1], Color.DEEPSKYBLUE);
+			};
+
+			println("Showing pg. 1 for help.", Color.BISQUE);
+			println("{Necessary Information} - Whatever is inside braces must be given by the user when entering the command.",
+					Color.MEDIUMPURPLE);
+			println("[Unnecessary Information] - Whatever is inside brackets does not need to be given by the user when entering the command.",
+					Color.MEDIUMPURPLE);
+			println("(Data Type) - Whatever follows parentheses must be of the type specified inside the parentheses.",
+					Color.MEDIUMPURPLE);
+
+			println();
+			println();
+			println();
+
+			showHelp.execute("set-name {name}", "Set's your name. This method takes effect across chats.");
+			showHelp.execute("start-server [(Integer) port]", "Starts a server if one has not already been started.");
+			showHelp.execute("stop-server", "Stops the running server... If it's running, that is.");
+			showHelp.execute("help [(Integer) page number]", "Shows command help [at the specified page.]");
+			showHelp.execute("connect {(Text) server address} [(Integer) port]",
+					"Connects to the specified server if you're not already connected to one. The port is optional, and defaults to 25000.");
+			showHelp.execute("disconnect", "Disconnects from a server, if you are connected to one.");
+
 			send(msg);
 			return;
 		} else if (cmd.equalsIgnoreCase("connect")) {
@@ -584,7 +624,7 @@ public class ChatRoom extends WindowManager.Page {
 	}
 
 	public void printToConsole(final String text) {
-		printLineToConsole(text, Color.WHITE);
+		printToConsole(text, Color.WHITE);
 	}
 
 	public void printToConsole(final String text, final Color color) {
