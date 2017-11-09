@@ -140,10 +140,10 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 
 	@Override
 	public int compareTo(ScheduleEvent o) {
-		if (o.dueDate.get() > dueDate.get())
-			return -1;
-		else if (o.dueDate.get() < dueDate.get())
-			return 1;
+		if (o.dueDate.get() > dueDate.get())// Other event comes after
+			return 1;// Place this event before other event.
+		else if (o.dueDate.get() < dueDate.get())// Other event comes before
+			return -1;// Place this event after other event.
 		else
 			return 0;
 	}
