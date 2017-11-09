@@ -66,10 +66,7 @@ public class NewEvent extends Page {
 		nameInput.setText(event.name.get());
 		descInput.setText(event.description.get());
 		System.out.println(dateInput);
-		dateInput.setValue(
-				Instant.ofEpochMilli(
-						event
-						.dueDate.get()).atZone(ZoneId.systemDefault()).toLocalDate());
+		dateInput.setValue(Instant.ofEpochMilli(event.dueDate.get()).atZone(ZoneId.systemDefault()).toLocalDate());
 	}
 
 	@FXML
@@ -84,7 +81,7 @@ public class NewEvent extends Page {
 		event.name.set(nameInput.getText());
 		event.description.set(descInput.getText());
 		event.dueDate.set(dateInput.getValue() == null ? System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1)
-				: dateInput.getValue().atStartOfDay(ZoneId.systemDefault()).toEpochSecond());
+				: dateInput.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli());
 
 		if (!module.containsEvent(event))
 			module.addEvent(event);
