@@ -21,7 +21,6 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.util.Callback;
 import krow.guis.GUIHelper;
 import krow.guis.PopupHelper;
 import krow.guis.PopupHelper.PopupWrapper;
@@ -141,88 +140,83 @@ public class ScheduleModule extends Page {
 	private TableColumn<ScheduleEvent, String> nameColumn;
 	@FXML
 	private TableColumn<ScheduleEvent, CheckBox> urgencyColumn, completeColumn;
-	
+
 	@Override
 	public void initialize() {
 
 		dateColumn.setCellValueFactory(param -> param.getValue().dueDate);
 		nameColumn.setCellValueFactory(param -> param.getValue().name);
 
-		eventTable.setRowFactory(new Callback<TableView<ScheduleEvent>, TableRow<ScheduleEvent>>() {
+		eventTable.setRowFactory(param -> {
+			return new TableRow<ScheduleEvent>() {
 
-			@Override
-			public TableRow<ScheduleEvent> call(TableView<ScheduleEvent> param) {
-				TableRow<ScheduleEvent> row = new TableRow<ScheduleEvent>() {
+				private void resetBackground() {
+					setBackground(buildBackground(getColorFromDueDate(getItem().dueDate.get())));
+					setTextFill(Color.WHITE);
+				}
 
-					private void resetBackground() {
-						setBackground(buildBackground(getColorFromDueDate(getItem().dueDate.get())));
-						setTextFill(Color.WHITE);
-					}
+				private TableRow<ScheduleEvent> getThis() {
+					return this;
+				}
 
-					private TableRow<ScheduleEvent> getThis() {
-						return this;
-					}
+				{
 
-					{
+					Label delete = new Label("Delete");
+					PopupWrapper<VBox> wrapper = PopupHelper.buildPopup(delete);
+					PopupHelper.applyRightClickPopup(getThis(), wrapper.popup);
+					delete.setOnMouseClicked(event -> {
 
-						Label delete = new Label("Delete");
-						PopupWrapper<VBox> wrapper = PopupHelper.buildPopup(delete);
-						PopupHelper.applyRightClickPopup(getThis(), wrapper.popup);
-						delete.setOnMouseClicked(event -> {
-
-							if (!isEmpty() && getItem() != null && event.getButton() == MouseButton.PRIMARY) {
-								getItem().delete();
-								events.remove(getItem());
-								wrapper.popup.hide();
-							}
-						});
-
-						setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
-
-						setOnMouseClicked(event -> {
-							if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()) {
-								try {
-									WindowManager.setScene(new NewEvent(ScheduleModule.this, getItem()));
-								} catch (IOException | NotSwitchableException e) {
-									e.printStackTrace();
-								}
-							}
-						});
-
-						setOnMouseEntered(event -> {
-							if (!isEmpty()) {
-								setBackground(buildBackground(Color.WHITE));
-								setTextFill(Color.BLACK);
-							}
-						});
-
-						setOnMouseExited(event -> {
-							if (!isEmpty()) {
-								resetBackground();
-							}
-						});
-					}
-
-					@Override
-					protected void updateItem(ScheduleEvent item, boolean empty) {
-						if (item == getItem())
-							return;
-						super.updateItem(item, empty);
-
-						if (item == null || empty) {
-							setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
-						} else {
-							resetBackground();
-
+						if (!isEmpty() && getItem() != null && event.getButton() == MouseButton.PRIMARY) {
+							getItem().delete();
+							events.remove(getItem());
+							wrapper.popup.hide();
 						}
+					});
+
+					setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
+
+					setOnMouseClicked(event -> {
+						if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()) {
+							try {
+								WindowManager.setScene(new NewEvent(ScheduleModule.this, getItem()));
+							} catch (IOException | NotSwitchableException e) {
+								e.printStackTrace();
+							}
+						}
+					});
+
+					setOnMouseEntered(event -> {
+						if (!isEmpty()) {
+							setBackground(buildBackground(Color.WHITE));
+							setTextFill(Color.BLACK);
+						}
+					});
+
+					setOnMouseExited(event -> {
+						if (!isEmpty()) {
+							resetBackground();
+						}
+					});
+				}
+
+				@Override
+				protected void updateItem(ScheduleEvent item, boolean empty) {
+					if (item == getItem())
+						return;
+					super.updateItem(item, empty);
+
+					if (item == null || empty) {
+						setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
+					} else {
+						resetBackground();
+
 					}
-				};
-				return row;
-			}
+				}
+			};
 		});
 
 		dateColumn.setCellFactory(param -> {
-			TableCell<ScheduleEvent, Number> cell = new TableCell<ScheduleEvent, Number>() {
+			return new TableCell<ScheduleEvent, Number>() {
 
 				protected void updateItem(Number item, boolean empty) {
 					if (getItem() == item)
@@ -239,11 +233,10 @@ public class ScheduleModule extends Page {
 					}
 				};
 			};
-			return cell;
 		});
 
 		nameColumn.setCellFactory(param -> {
-			TableCell<ScheduleEvent, String> cell = new TableCell<ScheduleEvent, String>() {
+			return new TableCell<ScheduleEvent, String>() {
 
 				protected void updateItem(String item, boolean empty) {
 					if (getItem() == item)
@@ -260,7 +253,6 @@ public class ScheduleModule extends Page {
 					}
 				};
 			};
-			return cell;
 		});
 
 		// Testing dates

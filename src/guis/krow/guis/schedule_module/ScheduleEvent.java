@@ -17,9 +17,7 @@ import java.util.concurrent.TimeUnit;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringPropertyBase;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WritableValue;
 import zeale.guis.schedule_module.ScheduleModule;
 
@@ -100,18 +98,28 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 	}
 
 	private ScheduleEvent(ScheduleEvent copy) {
-		autoSave = copy.autoSave;
+
+		// Temporarily set this event's SerializationData variable, for the
+		// purpose of copying
+		serializationData = copy.serializationData;
+
+		// Copy data
+
+		autoSave = serializationData.get(DataKey.AUTOSAVE) instanceof Boolean
+				? (boolean) serializationData.get(DataKey.AUTOSAVE) : false;
 		file = copy.file;
 		setProperty(description, DataKey.DESCRIPTION);
 		setProperty(name, DataKey.NAME);
 		setProperty(dueDate, DataKey.DUE_DATE);
-		
+
 		Object autosave = copy.serializationData.get(DataKey.AUTOSAVE);
-		autoSave = autosave == null ? false
-				: (boolean) autosave;
-		
+		autoSave = autosave == null ? false : (boolean) autosave;
+
 		setProperty(urgent, DataKey.URGENT);
 		setProperty(complete, DataKey.COMPLETE);
+
+		// Unset the value of this event's SerializationData variable.
+		serializationData = null;
 	}
 
 	private <T> void setProperty(WritableValue<T> property, DataKey key) {
@@ -169,9 +177,9 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 	@Override
 	public int compareTo(ScheduleEvent o) {
 		if (o.dueDate.get() > dueDate.get())// Other event comes after
-			return 1;// Place this event before other event.
+			return -1;// Place this event before other event.
 		else if (o.dueDate.get() < dueDate.get())// Other event comes before
-			return -1;// Place this event after other event.
+			return 1;// Place this event after other event.
 		else
 			return 0;
 	}
