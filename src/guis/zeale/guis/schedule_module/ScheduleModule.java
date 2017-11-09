@@ -79,14 +79,7 @@ public class ScheduleModule extends Page {
 
 	private static final void overwriteImport() {
 		events.clear();
-		events.sort(null);
 		importData();
-	}
-
-	private static final void saveData() {
-		for (ScheduleEvent se : events) {
-			se.save();
-		}
 	}
 
 	/**
@@ -147,8 +140,8 @@ public class ScheduleModule extends Page {
 	@FXML
 	private TableColumn<ScheduleEvent, String> nameColumn;
 	@FXML
-	private TableColumn<ScheduleEvent, CheckBox> urgencyColumn;
-
+	private TableColumn<ScheduleEvent, CheckBox> urgencyColumn, completeColumn;
+	
 	@Override
 	public void initialize() {
 

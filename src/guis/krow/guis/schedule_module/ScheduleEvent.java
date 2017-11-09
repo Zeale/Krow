@@ -109,6 +109,7 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 		Object autosave = copy.serializationData.get(DataKey.AUTOSAVE);
 		autoSave = autosave == null ? false
 				: (boolean) autosave;
+		
 		setProperty(urgent, DataKey.URGENT);
 		setProperty(complete, DataKey.COMPLETE);
 	}
