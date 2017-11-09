@@ -27,7 +27,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Popup;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
@@ -35,6 +34,7 @@ import kröw.core.managers.WindowManager.PageChangeRequestedEvent;
 
 public final class PopupHelper {
 
+	public static final double DEFAULT_POPUP_VERTICAL_DISPLACEMENT = 0;
 	private static ArrayList<Popup> popups = new ArrayList<>();
 
 	static {
@@ -66,7 +66,6 @@ public final class PopupHelper {
 
 		closeTransition.setOnFinished(event -> {
 			popup.hide();
-			popups.remove(popup);
 		});
 
 		new Object() {
@@ -100,8 +99,6 @@ public final class PopupHelper {
 					close();
 				});
 
-				popup.setOnShown(event -> popups.add(popup));
-
 			}
 
 			private void open(MouseEvent event) {
@@ -115,7 +112,8 @@ public final class PopupHelper {
 				if (!popup.isShowing()) {
 					popup.show(node, event.getSceneX(), event.getSceneY());
 					popup.setX(event.getSceneX() - popup.getWidth() / 2);
-					popup.setY(event.getSceneY() - popup.getHeight() - Kröw.scaleHeight(20));
+					popup.setY(event.getSceneY() - popup.getHeight()
+							- Kröw.scaleHeight(DEFAULT_POPUP_VERTICAL_DISPLACEMENT));
 				}
 				openTransition.stop();
 				closeTransition.stop();
@@ -206,12 +204,12 @@ public final class PopupHelper {
 
 		closeTransition.setOnFinished(event -> {
 			popup.hide();
-			popups.remove(popup);
 		});
 
 		new Object() {
 
 			private byte prevEvent = -1;
+			private long timeEntered;
 
 			{
 
@@ -235,7 +233,8 @@ public final class PopupHelper {
 
 				node.addEventFilter(MouseEvent.MOUSE_EXITED, event -> {
 					// Make sure we aren't leaving and going to this node.
-					if (event.getPickResult().getIntersectedNode() == node)
+					long time = System.currentTimeMillis();
+					if (time - 300 <= timeEntered || event.getPickResult().getIntersectedNode() == node)
 						return;
 
 					prevEvent = 1;
@@ -244,6 +243,7 @@ public final class PopupHelper {
 
 				popupRoot.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
 					prevEvent = 2;
+					timeEntered = System.currentTimeMillis();
 					open(event);
 				});
 
@@ -252,14 +252,6 @@ public final class PopupHelper {
 						return;
 					prevEvent = 3;
 					close();
-				});
-
-				popup.setOnShown(new EventHandler<WindowEvent>() {
-
-					@Override
-					public void handle(WindowEvent event) {
-						popups.add(popup);
-					}
 				});
 
 			}
@@ -279,7 +271,8 @@ public final class PopupHelper {
 				if (!popup.isShowing()) {
 					popup.show(node, event.getSceneX(), event.getSceneY());
 					popup.setX(event.getSceneX() - popup.getWidth() / 2);
-					popup.setY(event.getSceneY() - popup.getHeight() - Kröw.scaleHeight(20));
+					popup.setY(event.getSceneY() - popup.getHeight()
+							- Kröw.scaleHeight(DEFAULT_POPUP_VERTICAL_DISPLACEMENT));
 				}
 				openTransition.stop();
 				closeTransition.stop();

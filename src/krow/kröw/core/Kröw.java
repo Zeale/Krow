@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -65,6 +66,7 @@ import kröw.mindset.MindsetObject;
 import kröw.mindset.ObjectAlreadyExistsException;
 import sun.awt.shell.ShellFolder;
 import zeale.guis.Home;
+import zeale.guis.developer_module.ConsoleModule;
 
 /**
  * The main class of Krow. It contains many useful methods.
@@ -191,6 +193,7 @@ public final class Kröw extends Application {
 	 * The directory for data storage of this application.
 	 */
 	public final static File DATA_DIRECTORY = new File(KRÖW_HOME_DIRECTORY, "Data");
+	public final static File MODULE_DIRECTORY = new File(DATA_DIRECTORY, "Modules");
 	public static final File MANAGER_DIRECTORY = new File(KRÖW_HOME_DIRECTORY, "Program Managers");
 
 	/**
@@ -879,9 +882,6 @@ public final class Kröw extends Application {
 		Kröw.start(args);
 	}
 
-	public static final void programInit() {
-	}
-
 	/**
 	 * Saves a {@link Serializable} object given a {@link File} path.
 	 *
@@ -1091,6 +1091,11 @@ public final class Kröw extends Application {
 		return output;
 	}
 
+	public static PrintStream defout = System.out, deferr = System.err;
+
+	public static final PrintStream out = ConsoleModule.out, err = ConsoleModule.err, wrn = ConsoleModule.wrn,
+			scs = ConsoleModule.scs;
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -1098,6 +1103,12 @@ public final class Kröw extends Application {
 	 */
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
+
+		System.out.println("--SWITCHING OUTPUT STREAMS--");
+		// Set std & err output for System cls.
+		System.setOut(ConsoleModule.out);
+		System.setErr(ConsoleModule.err);
+		defout.println("Streams have successfully been switched.");
 
 		Platform.setImplicitExit(false);
 
@@ -1132,9 +1143,7 @@ public final class Kröw extends Application {
 		primaryStage.setFullScreen(true);
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 
-		primaryStage.getScene().setOnKeyPressed(CLOSE_ON_ESCAPE_HANADLER);
-
-		programInit();
+		primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, CLOSE_ON_ESCAPE_HANADLER);
 
 		primaryStage.show();
 
