@@ -14,15 +14,21 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringPropertyBase;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WritableValue;
 import zeale.guis.schedule_module.ScheduleModule;
 
 public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 
 	public final SimpleStringProperty description = new SimpleStringProperty(), name = new SimpleStringProperty();
 	public final SimpleLongProperty dueDate = new SimpleLongProperty();
+	public final SimpleBooleanProperty urgent = new SimpleBooleanProperty(false),
+			complete = new SimpleBooleanProperty(false);
 	private transient File file = new File(ScheduleModule.DATA_DIR, UUID.randomUUID().toString());
 
 	public boolean autoSave = true;
@@ -38,6 +44,8 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 		description.addListener(onChanged);
 		name.addListener(onChanged);
 		dueDate.addListener(onChanged);
+		urgent.addListener(onChanged);
+		complete.addListener(onChanged);
 	}
 
 	public File getFile() {
@@ -46,6 +54,7 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 
 	public void setFile(File file) {
 		this.file = file;
+
 	}
 
 	/**
@@ -79,6 +88,9 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 		data.put(DataKey.DESCRIPTION, description.get());
 		data.put(DataKey.NAME, name.get());
 		data.put(DataKey.DUE_DATE, dueDate.get());
+		data.put(DataKey.AUTOSAVE, autoSave);
+		data.put(DataKey.URGENT, urgent.get());
+		data.put(DataKey.COMPLETE, complete.get());
 
 		os.writeObject(data);
 	}
@@ -90,9 +102,24 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 	private ScheduleEvent(ScheduleEvent copy) {
 		autoSave = copy.autoSave;
 		file = copy.file;
-		description.set((String) copy.serializationData.get(DataKey.DESCRIPTION));
-		name.set((String) copy.serializationData.get(DataKey.NAME));
-		dueDate.set((long) copy.serializationData.get(DataKey.DUE_DATE));
+		setProperty(description, DataKey.DESCRIPTION);
+		setProperty(name, DataKey.NAME);
+		setProperty(dueDate, DataKey.DUE_DATE);
+		
+		Object autosave = copy.serializationData.get(DataKey.AUTOSAVE);
+		autoSave = autosave == null ? false
+				: (boolean) autosave;
+		setProperty(urgent, DataKey.URGENT);
+		setProperty(complete, DataKey.COMPLETE);
+	}
+
+	private <T> void setProperty(WritableValue<T> property, DataKey key) {
+		@SuppressWarnings("unchecked")
+		T value = (T) serializationData.get(key);
+		if (value == null)
+			return;
+		property.setValue(value);
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -131,7 +158,7 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 	}
 
 	private enum DataKey {
-		DESCRIPTION, NAME, DUE_DATE;
+		DESCRIPTION, NAME, DUE_DATE, AUTOSAVE, URGENT, COMPLETE;
 	}
 
 	public long getTimeUntilDue() throws IllegalArgumentException {

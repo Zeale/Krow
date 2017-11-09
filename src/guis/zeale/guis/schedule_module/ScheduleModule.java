@@ -1,5 +1,6 @@
 package zeale.guis.schedule_module;
 
+import java.awt.Checkbox;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -8,6 +9,7 @@ import java.util.Date;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -75,7 +77,7 @@ public class ScheduleModule extends Page {
 		events.sort(null);
 	}
 
-	private static final void overwriteData() {
+	private static final void overwriteImport() {
 		events.clear();
 		events.sort(null);
 		importData();
@@ -144,6 +146,8 @@ public class ScheduleModule extends Page {
 	private TableColumn<ScheduleEvent, Number> dateColumn;
 	@FXML
 	private TableColumn<ScheduleEvent, String> nameColumn;
+	@FXML
+	private TableColumn<ScheduleEvent, CheckBox> urgencyColumn;
 
 	@Override
 	public void initialize() {
