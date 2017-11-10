@@ -224,7 +224,6 @@ public class ScheduleModule extends Page {
 							setBackground(buildBackground(EMPTY_CELL_COLOR));
 						} else {
 							resetBackground();
-
 						}
 					}
 				};
@@ -233,6 +232,14 @@ public class ScheduleModule extends Page {
 
 		dateColumn.setCellFactory(param -> {
 			return new TableCell<ScheduleEvent, Number>() {
+
+				public void bindTextFill() {
+					getTableRow().textFillProperty().bindBidirectional(textFillProperty());
+				}
+
+				public void unbindTextFill() {
+					getTableRow().textFillProperty().unbindBidirectional(textFillProperty());
+				}
 
 				protected void updateItem(Number item, boolean empty) {
 					if (getItem() == item)
@@ -244,6 +251,7 @@ public class ScheduleModule extends Page {
 						setText(null);
 						setGraphic(null);
 					} else {
+						bindTextFill();
 						setText(dateFormatter.format(new Date((long) item)));
 						setGraphic(null);
 					}
@@ -253,6 +261,14 @@ public class ScheduleModule extends Page {
 
 		nameColumn.setCellFactory(param -> {
 			return new TableCell<ScheduleEvent, String>() {
+
+				public void bindTextFill() {
+					getTableRow().textFillProperty().bindBidirectional(textFillProperty());
+				}
+
+				public void unbindTextFill() {
+					getTableRow().textFillProperty().unbindBidirectional(textFillProperty());
+				}
 
 				protected void updateItem(String item, boolean empty) {
 					if (getItem() == item)
@@ -264,6 +280,7 @@ public class ScheduleModule extends Page {
 						setText(null);
 						setGraphic(null);
 					} else {
+						bindTextFill();
 						setText(item);
 						setGraphic(null);
 					}
