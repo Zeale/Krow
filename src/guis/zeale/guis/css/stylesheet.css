@@ -11,6 +11,13 @@
     -fx-font-weight: bold;
 }
 
+.table-view .table-column {
+	-fx-border-color: black;
+	-fx-border-width: 0.0px 1.5px 0.0px 1.5px;
+	-fx-font-weight: bold;
+	-fx-alignment: center;
+}
+
 .transparent {
 	-fx-background-color: transparent;
 }
