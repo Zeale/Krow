@@ -8,12 +8,12 @@ import java.util.Date;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -140,13 +140,15 @@ public class ScheduleModule extends Page {
 	@FXML
 	private TableColumn<ScheduleEvent, String> nameColumn;
 	@FXML
-	private TableColumn<ScheduleEvent, CheckBox> urgencyColumn, completeColumn;
+	private TableColumn<ScheduleEvent, Boolean> urgencyColumn, completeColumn;
 
 	@Override
 	public void initialize() {
 
 		dateColumn.setCellValueFactory(param -> param.getValue().dueDate);
 		nameColumn.setCellValueFactory(param -> param.getValue().name);
+		urgencyColumn.setCellValueFactory(param -> param.getValue().urgent);
+		completeColumn.setCellValueFactory(param -> param.getValue().complete);
 
 		eventTable.setRowFactory(new Callback<TableView<ScheduleEvent>, TableRow<ScheduleEvent>>() {
 			@Override
@@ -187,8 +189,11 @@ public class ScheduleModule extends Page {
 							}
 						});
 
+						setTextFill(Color.WHITE);
+
 						setOnMouseClicked(event -> {
-							if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()) {
+							if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()
+									&& !(event.getPickResult().getIntersectedNode() instanceof CheckBoxTableCell)) {
 								try {
 									WindowManager.setScene(new NewEvent(ScheduleModule.this, getItem()));
 								} catch (IOException | NotSwitchableException e) {
@@ -265,6 +270,11 @@ public class ScheduleModule extends Page {
 				};
 			};
 		});
+
+		urgencyColumn.setCellFactory(
+				param2 -> new CheckBoxTableCell<ScheduleEvent, Boolean>(param -> param2.getCellObservableValue(param)));
+		completeColumn.setCellFactory(
+				param2 -> new CheckBoxTableCell<ScheduleEvent, Boolean>(param -> param2.getCellObservableValue(param)));
 
 		// Testing dates
 		eventTable.setItems(events);
