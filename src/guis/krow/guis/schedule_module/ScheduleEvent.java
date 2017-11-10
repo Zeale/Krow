@@ -35,7 +35,11 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 
 	private final ChangeListener<Object> onChanged = (observable, oldValue, newValue) -> {
 		if (autoSave)
-			save();
+			try {
+				save();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 	};
 
 	{
@@ -103,20 +107,29 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 		// purpose of copying
 		serializationData = copy.serializationData;
 
+		// Make sure we don't automatically save during copying.
+		autoSave = false;
+
 		// Copy data
+		{
+			file = copy.file;
+			setProperty(description, DataKey.DESCRIPTION);
+			setProperty(name, DataKey.NAME);
+			setProperty(dueDate, DataKey.DUE_DATE);
 
-		autoSave = serializationData.get(DataKey.AUTOSAVE) instanceof Boolean
-				? (boolean) serializationData.get(DataKey.AUTOSAVE) : false;
-		file = copy.file;
-		setProperty(description, DataKey.DESCRIPTION);
-		setProperty(name, DataKey.NAME);
-		setProperty(dueDate, DataKey.DUE_DATE);
+			Object autosave = copy.serializationData.get(DataKey.AUTOSAVE);
+			autoSave = autosave == null ? false : (boolean) autosave;
 
-		Object autosave = copy.serializationData.get(DataKey.AUTOSAVE);
-		autoSave = autosave == null ? false : (boolean) autosave;
+			setProperty(urgent, DataKey.URGENT);
+			setProperty(complete, DataKey.COMPLETE);
 
-		setProperty(urgent, DataKey.URGENT);
-		setProperty(complete, DataKey.COMPLETE);
+			// Enable autosaving *at the end* of copying, otherwise every
+			// property
+			// we make on this object (the copy) will try to save itself (even
+			// before we've copied the file path.
+			autoSave = serializationData.get(DataKey.AUTOSAVE) instanceof Boolean
+					? (boolean) serializationData.get(DataKey.AUTOSAVE) : false;
+		}
 
 		// Unset the value of this event's SerializationData variable.
 		serializationData = null;
@@ -140,7 +153,7 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 		}
 	}
 
-	public void save() {
+	public void save() throws IOException {
 		if (!file.getParentFile().exists()) {
 			file.getParentFile().mkdirs();
 		} else if (file.exists())

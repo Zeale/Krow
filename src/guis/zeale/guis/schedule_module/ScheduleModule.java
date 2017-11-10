@@ -1,6 +1,5 @@
 package zeale.guis.schedule_module;
 
-import java.awt.Checkbox;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -21,6 +20,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.util.Callback;
 import krow.guis.GUIHelper;
 import krow.guis.PopupHelper;
 import krow.guis.PopupHelper.PopupWrapper;
@@ -41,6 +41,9 @@ public class ScheduleModule extends Page {
 		System.setOut(Kröw.defout);
 		importData();
 	}
+
+	private static final Color EMPTY_CELL_COLOR = Color.TRANSPARENT, DEFAULT_START_COLOR = new Color(0, 0, 0, 0.3),
+			DEFAULT_END_COLOR = Color.GOLD, COMPLETE_COLOR = Color.GREEN, URGENT_END_COLOR = Color.HOTPINK;
 
 	public ObservableList<ScheduleEvent> getEventList() {
 		return events;
@@ -86,9 +89,6 @@ public class ScheduleModule extends Page {
 	 */
 	private static final double MILLIS_UNTIL_IMPORTANT = 1728e6;
 
-	public final static Background EMPTY_CELL_BACKGROUND = new Background(
-			new BackgroundFill(Color.TRANSPARENT, null, null));
-
 	private static final Background buildBackground(Color color) {
 		return new Background(new BackgroundFill(color, null, null));
 	}
@@ -96,6 +96,10 @@ public class ScheduleModule extends Page {
 	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yy"/* + " ~ hh:mm:ss" */);
 
 	private static final Color getColorFromDueDate(long time) {
+		return getColorFromDueDate(time, DEFAULT_START_COLOR, DEFAULT_END_COLOR.interpolate(Color.ORANGE, 0.6));
+	}
+
+	private static final Color getColorFromDueDate(long time, Color upcomingColor, Color dueColor) {
 
 		// Get the time until the date is due.
 		long timeUntilDue = time - System.currentTimeMillis();
@@ -104,12 +108,9 @@ public class ScheduleModule extends Page {
 		if (timeUntilDue < 0)
 			return Color.RED;
 
-		// The color that an event will become as its due date approaches.
-		Color dueColor = Color.GOLD.interpolate(Color.ORANGE, 0.6);
-
 		// Interpolate the color between dueColor and our background color; the
 		// color will approach dueColor as the timeUntilDue approaches 0.
-		return dueColor.interpolate(new Color(0, 0, 0, 0.3), timeUntilDue / MILLIS_UNTIL_IMPORTANT);
+		return dueColor.interpolate(upcomingColor, timeUntilDue / MILLIS_UNTIL_IMPORTANT);
 	}
 
 	@FXML
@@ -147,72 +148,82 @@ public class ScheduleModule extends Page {
 		dateColumn.setCellValueFactory(param -> param.getValue().dueDate);
 		nameColumn.setCellValueFactory(param -> param.getValue().name);
 
-		eventTable.setRowFactory(param -> {
-			return new TableRow<ScheduleEvent>() {
+		eventTable.setRowFactory(new Callback<TableView<ScheduleEvent>, TableRow<ScheduleEvent>>() {
+			@Override
+			public TableRow<ScheduleEvent> call(TableView<ScheduleEvent> param) {
+				return new TableRow<ScheduleEvent>() {
 
-				private void resetBackground() {
-					setBackground(buildBackground(getColorFromDueDate(getItem().dueDate.get())));
-					setTextFill(Color.WHITE);
-				}
-
-				private TableRow<ScheduleEvent> getThis() {
-					return this;
-				}
-
-				{
-
-					Label delete = new Label("Delete");
-					PopupWrapper<VBox> wrapper = PopupHelper.buildPopup(delete);
-					PopupHelper.applyRightClickPopup(getThis(), wrapper.popup);
-					delete.setOnMouseClicked(event -> {
-
-						if (!isEmpty() && getItem() != null && event.getButton() == MouseButton.PRIMARY) {
-							getItem().delete();
-							events.remove(getItem());
-							wrapper.popup.hide();
+					private void resetBackground() {
+						if (isEmpty() || getItem() == null) {
+							setBackground(buildBackground(Color.TRANSPARENT));
+							return;
 						}
-					});
 
-					setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
-
-					setOnMouseClicked(event -> {
-						if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()) {
-							try {
-								WindowManager.setScene(new NewEvent(ScheduleModule.this, getItem()));
-							} catch (IOException | NotSwitchableException e) {
-								e.printStackTrace();
-							}
-						}
-					});
-
-					setOnMouseEntered(event -> {
-						if (!isEmpty()) {
-							setBackground(buildBackground(Color.WHITE));
-							setTextFill(Color.BLACK);
-						}
-					});
-
-					setOnMouseExited(event -> {
-						if (!isEmpty()) {
-							resetBackground();
-						}
-					});
-				}
-
-				@Override
-				protected void updateItem(ScheduleEvent item, boolean empty) {
-					if (item == getItem())
-						return;
-					super.updateItem(item, empty);
-
-					if (item == null || empty) {
-						setBackground(buildBackground(new Color(0, 0, 0, 0.3)));
-					} else {
-						resetBackground();
-
+						setBackground(buildBackground(getItem().complete.get() ? COMPLETE_COLOR
+								: (getItem().urgent.get() ? getColorFromDueDate(getItem().dueDate.get(),
+										DEFAULT_START_COLOR, URGENT_END_COLOR)
+										: getColorFromDueDate(getItem().dueDate.get()))));
+						setTextFill(Color.WHITE);
 					}
-				}
-			};
+
+					private TableRow<ScheduleEvent> getThis() {
+						return this;
+					}
+
+					{
+
+						// Set the default background (so it isn't white)
+						setBackground(buildBackground(EMPTY_CELL_COLOR));
+
+						Label delete = new Label("Delete");
+						PopupWrapper<VBox> wrapper = PopupHelper.buildPopup(delete);
+						PopupHelper.applyRightClickPopup(getThis(), wrapper.popup);
+						delete.setOnMouseClicked(event -> {
+
+							if (!isEmpty() && getItem() != null && event.getButton() == MouseButton.PRIMARY) {
+								getItem().delete();
+								events.remove(getItem());
+								wrapper.popup.hide();
+							}
+						});
+
+						setOnMouseClicked(event -> {
+							if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()) {
+								try {
+									WindowManager.setScene(new NewEvent(ScheduleModule.this, getItem()));
+								} catch (IOException | NotSwitchableException e) {
+									e.printStackTrace();
+								}
+							}
+						});
+
+						setOnMouseEntered(event -> {
+							if (!isEmpty()) {
+								setBackground(buildBackground(Color.WHITE));
+								setTextFill(Color.BLACK);
+							}
+						});
+
+						setOnMouseExited(event -> {
+							resetBackground();
+						});
+					}
+
+					@Override
+					protected void updateItem(ScheduleEvent item, boolean empty) {
+						if (item == getItem())
+							return;
+						super.updateItem(item, empty);
+
+						if (item == null || empty) {
+							setBackground(buildBackground(EMPTY_CELL_COLOR));
+						} else {
+							resetBackground();
+
+						}
+					}
+				};
+			}
 		});
 
 		dateColumn.setCellFactory(param -> {
