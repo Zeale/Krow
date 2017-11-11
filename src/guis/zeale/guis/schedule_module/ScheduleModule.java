@@ -10,7 +10,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -306,7 +305,7 @@ public class ScheduleModule extends Page {
 
 					@Override
 					public TableCell<ScheduleEvent, Boolean> call(TableColumn<ScheduleEvent, Boolean> param) {
-						return new SelectableCell(new Callback<Integer, BooleanProperty>() {
+						return new SelectableCell<ScheduleEvent>(new Callback<Integer, BooleanProperty>() {
 
 							@Override
 							public BooleanProperty call(Integer param) {
@@ -320,7 +319,7 @@ public class ScheduleModule extends Page {
 
 					@Override
 					public TableCell<ScheduleEvent, Boolean> call(TableColumn<ScheduleEvent, Boolean> param) {
-						return new SelectableCell(new Callback<Integer, BooleanProperty>() {
+						return new SelectableCell<ScheduleEvent>(new Callback<Integer, BooleanProperty>() {
 
 							@Override
 							public BooleanProperty call(Integer param) {
@@ -350,37 +349,6 @@ public class ScheduleModule extends Page {
 
 	public boolean containsEvent(ScheduleEvent event) {
 		return events.contains(event);
-	}
-
-	private class SelectableCell extends TableCell<ScheduleEvent, Boolean> {
-
-		public final CheckBox checkbox = new CheckBox();
-		private Callback<Integer, BooleanProperty> propertyRetriever;
-
-		public SelectableCell(Callback<Integer, BooleanProperty> propertyRetriever) {
-			this.propertyRetriever = propertyRetriever;
-		}
-
-		@Override
-		protected void updateItem(Boolean item, boolean empty) {
-			if (item == getItem())
-				return;
-
-			if (getItem() != null) {
-				checkbox.selectedProperty().unbindBidirectional(propertyRetriever.call(getIndex()));
-			}
-
-			super.updateItem(item, empty);
-
-			if (item == null || empty) {
-				setGraphic(null);
-				return;
-			}
-
-			setGraphic(checkbox);
-			checkbox.selectedProperty().bindBidirectional(propertyRetriever.call(getIndex()));
-
-		}
 	}
 
 }
