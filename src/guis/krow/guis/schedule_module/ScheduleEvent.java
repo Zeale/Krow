@@ -56,7 +56,6 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 
 	public void setFile(File file) {
 		this.file = file;
-
 	}
 
 	/**
@@ -116,9 +115,6 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 			setProperty(description, DataKey.DESCRIPTION);
 			setProperty(name, DataKey.NAME);
 			setProperty(dueDate, DataKey.DUE_DATE);
-
-			Object autosave = copy.serializationData.get(DataKey.AUTOSAVE);
-			autoSave = autosave == null ? false : (boolean) autosave;
 
 			setProperty(urgent, DataKey.URGENT);
 			setProperty(complete, DataKey.COMPLETE);
