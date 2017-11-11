@@ -27,6 +27,7 @@ import krow.guis.GUIHelper;
 import krow.guis.PopupHelper;
 import krow.guis.PopupHelper.PopupWrapper;
 import krow.guis.schedule_module.ScheduleEvent;
+import krow.guis.schedule_module.SelectableCell;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
