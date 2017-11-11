@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -193,9 +196,10 @@ public class ScheduleModule extends Page {
 
 						setOnMouseClicked(event -> {
 							if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()
-									&& !(event.getPickResult().getIntersectedNode() instanceof CheckBoxTableCell)) {
+									&& !(event.getPickResult().getIntersectedNode() instanceof SelectableCell)) {
 								try {
 									WindowManager.setScene(new NewEvent(ScheduleModule.this, getItem()));
+									event.consume();
 								} catch (IOException | NotSwitchableException e) {
 									e.printStackTrace();
 								}
@@ -233,6 +237,11 @@ public class ScheduleModule extends Page {
 		dateColumn.setCellFactory(param -> {
 			return new TableCell<ScheduleEvent, Number>() {
 
+				{
+					// Default cell text fill
+					setTextFill(Color.WHITE);
+				}
+
 				public void bindTextFill() {
 					getTableRow().textFillProperty().bindBidirectional(textFillProperty());
 				}
@@ -262,6 +271,10 @@ public class ScheduleModule extends Page {
 		nameColumn.setCellFactory(param -> {
 			return new TableCell<ScheduleEvent, String>() {
 
+				{
+					setTextFill(Color.WHITE);
+				}
+
 				public void bindTextFill() {
 					getTableRow().textFillProperty().bindBidirectional(textFillProperty());
 				}
@@ -288,10 +301,34 @@ public class ScheduleModule extends Page {
 			};
 		});
 
-		urgencyColumn.setCellFactory(
-				param2 -> new CheckBoxTableCell<ScheduleEvent, Boolean>(param -> param2.getCellObservableValue(param)));
-		completeColumn.setCellFactory(
-				param2 -> new CheckBoxTableCell<ScheduleEvent, Boolean>(param -> param2.getCellObservableValue(param)));
+		urgencyColumn
+				.setCellFactory(new Callback<TableColumn<ScheduleEvent, Boolean>, TableCell<ScheduleEvent, Boolean>>() {
+
+					@Override
+					public TableCell<ScheduleEvent, Boolean> call(TableColumn<ScheduleEvent, Boolean> param) {
+						return new SelectableCell(new Callback<Integer, BooleanProperty>() {
+
+							@Override
+							public BooleanProperty call(Integer param) {
+								return events.get(param).urgent;
+							}
+						});
+					}
+				});
+		completeColumn
+				.setCellFactory(new Callback<TableColumn<ScheduleEvent, Boolean>, TableCell<ScheduleEvent, Boolean>>() {
+
+					@Override
+					public TableCell<ScheduleEvent, Boolean> call(TableColumn<ScheduleEvent, Boolean> param) {
+						return new SelectableCell(new Callback<Integer, BooleanProperty>() {
+
+							@Override
+							public BooleanProperty call(Integer param) {
+								return events.get(param).complete;
+							}
+						});
+					}
+				});
 
 		// Testing dates
 		eventTable.setItems(events);
@@ -313,6 +350,37 @@ public class ScheduleModule extends Page {
 
 	public boolean containsEvent(ScheduleEvent event) {
 		return events.contains(event);
+	}
+
+	private class SelectableCell extends TableCell<ScheduleEvent, Boolean> {
+
+		public final CheckBox checkbox = new CheckBox();
+		private Callback<Integer, BooleanProperty> propertyRetriever;
+
+		public SelectableCell(Callback<Integer, BooleanProperty> propertyRetriever) {
+			this.propertyRetriever = propertyRetriever;
+		}
+
+		@Override
+		protected void updateItem(Boolean item, boolean empty) {
+			if (item == getItem())
+				return;
+
+			if (getItem() != null) {
+				checkbox.selectedProperty().unbindBidirectional(propertyRetriever.call(getIndex()));
+			}
+
+			super.updateItem(item, empty);
+
+			if (item == null || empty) {
+				setGraphic(null);
+				return;
+			}
+
+			setGraphic(checkbox);
+			checkbox.selectedProperty().bindBidirectional(propertyRetriever.call(getIndex()));
+
+		}
 	}
 
 }
