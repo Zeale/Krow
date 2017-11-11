@@ -3,8 +3,8 @@ package zeale.guis.schedule_module;
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableCell;
+import javafx.scene.input.MouseButton;
 import javafx.util.Callback;
-import krow.guis.schedule_module.ScheduleEvent;
 
 public class SelectableCell<T> extends TableCell<T, Boolean> {
 
@@ -13,6 +13,15 @@ public class SelectableCell<T> extends TableCell<T, Boolean> {
 
 	public SelectableCell(Callback<Integer, BooleanProperty> propertyRetriever) {
 		this.propertyRetriever = propertyRetriever;
+	}
+
+	{
+		setOnMouseClicked(event -> {
+			if (event.getButton() == MouseButton.PRIMARY)
+				checkbox.setSelected(!checkbox.isSelected());
+			else if (event.getButton() == MouseButton.MIDDLE)
+				checkbox.setSelected(false);
+		});
 	}
 
 	@Override
