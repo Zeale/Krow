@@ -1,5 +1,7 @@
 package zeale.guis;
 
+import static kröw.core.Kröw.getProgramSettings;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -167,7 +169,7 @@ public class Settings extends Page {
 		addItem(new TreeItem<>(
 				new SettingTab("Visual",
 						new Setting("Background mouse response: "
-								+ (Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement() ? "on" : "off"),
+								+ (getProgramSettings().isShapeBackgroundRespondToMouseMovement() ? "on" : "off"),
 								cell -> {
 									Kröw.getProgramSettings().setShapeBackgroundRespondToMouseMovement(
 											!Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement());
@@ -176,8 +178,9 @@ public class Settings extends Page {
 													? "on" : "off"));
 
 								}),
-						new Setting("Current animation mode: "
-								+ (Kröw.getProgramSettings().getCurrentAnimationMode() == 0 ? "Normal" : "Lengthy"),
+						new Setting(
+								"Current animation mode: "
+										+ (getProgramSettings().getCurrentAnimationMode() == 0 ? "Normal" : "Lengthy"),
 								cell -> {
 									Kröw.getProgramSettings().setCurrentAnimationMode(
 											Kröw.getProgramSettings().getCurrentAnimationMode() == 0 ? 1 : 0);
@@ -185,6 +188,27 @@ public class Settings extends Page {
 											.setText("Current animation mode: "
 													+ (Kröw.getProgramSettings().getCurrentAnimationMode() == 0
 															? "Normal" : "Lengthy"));
+								}),
+						new Setting(
+								"Program background: " + (getProgramSettings().getGlobalProgramBackground() == 0
+										? "Solid gray (Default)"
+										: getProgramSettings().getGlobalProgramBackground() == 1
+												? "Moderately transparent" : "Completely transparent"),
+								new Togglable() {
+
+									@Override
+									public void onToggled(TreeCell<Setting> cell) {
+										getProgramSettings().setGlobalProgramBackground(
+												getProgramSettings().getGlobalProgramBackground() == 2 ? 0
+														: getProgramSettings().getGlobalProgramBackground() + 1);
+										cell.getItem()
+												.setText("Program background: "
+														+ (getProgramSettings().getGlobalProgramBackground() == 0
+																? "Solid gray (Default)"
+																: getProgramSettings().getGlobalProgramBackground() == 1
+																		? "Moderately transparent"
+																		: "Completely transparent"));
+									}
 								}))));
 
 		final TreeItem<SettingTab> program = new TreeItem<>(new SettingTab("Program"));

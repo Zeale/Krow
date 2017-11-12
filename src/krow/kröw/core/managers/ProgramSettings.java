@@ -48,12 +48,11 @@ public class ProgramSettings implements Serializable {
 	}
 
 	private boolean chatRoomHostServer;
-
 	private boolean launchOnSystemLogIn, launchOnUserLogIn;
-
 	private boolean shapeBackgroundRespondToMouseMovement = false;
 
 	private int currentAnimationMode = 0;
+	private int globalProgramBackground = 0;
 
 	private boolean useTrayIcon = false;
 	private boolean openProgramOnDoubleClickTrayIcon = true;
@@ -174,6 +173,37 @@ public class ProgramSettings implements Serializable {
 	 */
 	public final void setLaunchOnUserLogIn(final boolean launchOnUserLogIn) {
 		this.launchOnUserLogIn = launchOnUserLogIn;
+	}
+
+	/**
+	 * @return the globalProgramBackground
+	 */
+	public int getGlobalProgramBackground() {
+		return globalProgramBackground;
+	}
+
+	/**
+	 * @param globalProgramBackground
+	 *            An integer from 0 to 2, inclusive, representing the program's
+	 *            background. 0 is dark gray (default), 1 is moderately
+	 *            transparent, and 2 is wholly transparent. When 2 is enabled,
+	 *            the user can click behind the program. Any invalid value for
+	 *            this parameter will be set to the closest valid value.
+	 */
+	public void setGlobalProgramBackground(int globalProgramBackground) {
+		if (globalProgramBackground > 2)
+			globalProgramBackground = 2;
+		if (globalProgramBackground < 0)
+			globalProgramBackground = 0;
+		this.globalProgramBackground = globalProgramBackground;
+		WindowManager.getStage().getScene()
+				.setFill(globalProgramBackground == 0 ? Kröw.SOLID_BACKGROUND
+						: globalProgramBackground == 1 ? Kröw.MODERATELY_TRANSPARENT_BACKGROUND
+								: Kröw.COMPLETELY_TRANSPARENT_BACKGROUND);
+		if (globalProgramBackground == 2)
+			WindowManager.getStage().setAlwaysOnTop(true);
+		else
+			WindowManager.getStage().setAlwaysOnTop(false);
 	}
 
 	/**

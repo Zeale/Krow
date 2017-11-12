@@ -466,7 +466,13 @@ public final class Kröw extends Application {
 		primaryStage.setTitle(Kröw.NAME);
 		if (Kröw.IMAGE_KRÖW != null)
 			primaryStage.getIcons().add(Kröw.IMAGE_KRÖW);
-		WindowManager.getStage().getScene().setFill(SOLID_BACKGROUND);
+		WindowManager.getStage().getScene()
+				.setFill(programSettings.getGlobalProgramBackground() == 0 ? SOLID_BACKGROUND
+						: programSettings.getGlobalProgramBackground() == 1 ? MODERATELY_TRANSPARENT_BACKGROUND
+								: COMPLETELY_TRANSPARENT_BACKGROUND);
+		if (programSettings.getGlobalProgramBackground() == 2) {
+			primaryStage.setAlwaysOnTop(true);
+		}
 		primaryStage.setWidth(Kröw.getSystemProperties().getScreenWidth());
 		primaryStage.setHeight(Kröw.getSystemProperties().getScreenHeight());
 		primaryStage.setFullScreen(true);
