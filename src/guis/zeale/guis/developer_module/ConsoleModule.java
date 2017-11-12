@@ -10,6 +10,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import krow.guis.GUIHelper;
 import krow.pages.TextPanel;
 import kröw.core.Kröw;
 
@@ -145,6 +146,7 @@ public class ConsoleModule extends TextPanel {
 	public void initialize() {
 		super.initialize();
 		setCurrentModule();
+		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(root));
 	}
 
 	@Override
