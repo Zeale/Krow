@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.text.*?>
+<?import java.net.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="478.0" prefWidth="954.0" styleClass="background" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+  <tabs>
+    <Tab text="Z Scores">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <Button focusTraversable="false" layoutX="443.0" layoutY="339.0" mnemonicParsing="false" onAction="#_event_evalZScores" styleClass="pop-button" text="Solve" />
+                  <TextField fx:id="zscore_percentile" alignment="CENTER" layoutX="101.0" layoutY="125.0" promptText="Percentile" />
+                  <Button focusTraversable="false" layoutX="862.0" layoutY="14.0" mnemonicParsing="false" onAction="#_event_importDataToZScores" styleClass="pop-button" text="Import" />
+                  <Label layoutX="294.0" layoutY="214.0" text="Mean" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="zscore_value" alignment="CENTER" layoutX="680.0" layoutY="125.0" promptText="Value" />
+                  <TextField fx:id="zscore_zscores" alignment="CENTER" layoutX="397.0" layoutY="125.0" promptText="ZScores" />
+                  <TextField fx:id="zscore_mean" alignment="CENTER" layoutX="238.0" layoutY="252.0" promptText="Mean" text="0" />
+                  <TextField fx:id="zscore_standardDeviation" alignment="CENTER" layoutX="556.0" layoutY="252.0" promptText="StdDev" text="1" />
+                  <Label layoutX="605.0" layoutY="214.0" text="StdDev" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="443.0" layoutY="30.0" text="WIP" textFill="#ffd700">
+                     <font>
+                        <Font name="System Bold" size="35.0" />
+                     </font>
+                     <effect>
+                        <DropShadow />
+                     </effect>
+                  </Label>
+               </children></AnchorPane>
+      </content>
+    </Tab>
+  </tabs>
+   <stylesheets>
+      <URL value="@../../../css/stylesheet.css" />
+      <URL value="@../calculator.css" />
+   </stylesheets>
+</TabPane>

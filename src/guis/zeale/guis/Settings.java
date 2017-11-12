@@ -132,14 +132,36 @@ public class Settings extends Page {
 	private TreeView<Setting> optionBox;
 
 	private final void addDefaultItems() {
+
 		/*
-		 * addItem(new TreeItem<>(new SettingTab("General", new
-		 * Setting("Open on startup"))));
-		 *
-		 * addItem(new TreeItem<>(new SettingTab("Keys", new Setting("Test1"),
-		 * new Setting(""), new Setting("Test3")))); addItem(new TreeItem<>(new
-		 * SettingTab("Video"))); addItem(new TreeItem<>(new
-		 * SettingTab("Sound")));
+		 * // Setting tabs are nested with the TreeItem's nesting behavior:
+		 * 
+		 * TreeItem<SettingTab> tab = new TreeItem<>(new SettingTab("Tab Name",
+		 * settings...));
+		 * 
+		 * 
+		 * TreeItem<SettingTab> subTab = new TreeItem<>(new
+		 * SettingTab("Sub Tab Name", settings...));
+		 * 
+		 * tab.getChildren().add(subTab);
+		 * 
+		 * // Make sure to add the items at the end:
+		 * 
+		 * addItem(tab);
+		 * 
+		 */
+
+		/*
+		 * // Settings are nested with their own nesting behavior:
+		 * 
+		 * Setting parent = new Setting("Setting Name"); Setting child = new
+		 * 
+		 * Setting("Sub Setting Name"); parent.getChildren().add(new
+		 * 
+		 * TreeItem<Setting>(child));
+		 * 
+		 * tab.getValue().getChildren().add(parent);
+		 * 
 		 */
 
 		addItem(new TreeItem<>(
@@ -199,7 +221,7 @@ public class Settings extends Page {
 		program.getValue().getChildren().add(useTrayIcon);
 		addItem(program);
 
-		final SettingTab appsTab = new SettingTab("Apps");
+		final SettingTab moduleTab = new SettingTab("Modules");
 		final SettingTab chatRoomTab = new SettingTab("Chat Room");
 		{
 			final Setting hostServerSetting = new Setting("Start server when the Chat Room app opens: "
@@ -214,7 +236,7 @@ public class Settings extends Page {
 			chatRoomTab.getChildren().add(hostServerSetting);
 		}
 
-		final TreeItem<SettingTab> appsItem = new TreeItem<>(appsTab);
+		final TreeItem<SettingTab> appsItem = new TreeItem<>(moduleTab);
 		appsItem.getChildren().add(new TreeItem<>(chatRoomTab));
 
 		addItem(appsItem);
@@ -264,6 +286,11 @@ public class Settings extends Page {
 	public void initialize() {
 		settingsLabel.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
 		optionBox.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
+
+		tabList.setPrefSize(Kröw.scaleWidth(313), Kröw.scaleHeight(1040));
+		optionBox.setPrefSize(Kröw.scaleHeight(810), Kröw.scaleWidth(850));
+		optionBox.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
+
 		tabList.setRoot(new TreeItem<>());
 		optionBox.setRoot(new TreeItem<>());
 
@@ -327,7 +354,8 @@ public class Settings extends Page {
 							return;
 						}
 
-						getItem().getTogglable().onToggled(getThis());
+						if (!isEmpty())
+							getItem().getTogglable().onToggled(getThis());
 						updateItem(getItem(), isEmpty());
 					});
 

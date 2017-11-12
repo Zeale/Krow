@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javafx.collections.ObservableList;
-import kröw.libs.mindset.MindsetObject;
-import kröw.libs.mindset.ObjectAlreadyExistsException;
-import kröw.program.api.collections.ObservableListWrapper;
+import kröw.collections.ObservableListWrapper;
+import kröw.mindset.MindsetObject;
+import kröw.mindset.ObjectAlreadyExistsException;
 
 @Deprecated
 public class Backup implements Serializable {

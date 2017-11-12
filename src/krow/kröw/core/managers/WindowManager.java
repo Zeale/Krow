@@ -2,6 +2,8 @@ package kröw.core.managers;
 
 import java.awt.MouseInfo;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import javafx.animation.FadeTransition;
@@ -17,8 +19,11 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import kröw.core.Kröw;
+import kröw.core.managers.WindowManager.NotSwitchableException;
+import kröw.events.Event;
+import kröw.events.EventHandler;
 
-public class WindowManager {
+public final class WindowManager {
 
 	/**
 	 * <p>
@@ -75,10 +80,6 @@ public class WindowManager {
 
 		}
 
-		protected void onPageSwitched() {
-
-		}
-
 		/**
 		 * <p>
 		 * Checked when switching {@link Page}s to verify that the current page
@@ -129,6 +130,10 @@ public class WindowManager {
 		 * method shows this {@link Page}.
 		 */
 		public void onBack() {
+
+		}
+
+		protected void onPageSwitched() {
 
 		}
 
@@ -325,6 +330,9 @@ public class WindowManager {
 	public static <W extends Page> Window<W> setScene(final Class<W> cls)
 			throws InstantiationException, IllegalAccessException, IOException, NotSwitchableException {
 
+		for (EventHandler<? super PageChangeRequestedEvent> handler : pageChangeRequestedHandlers)
+			handler.handle(new PageChangeRequestedEvent(currentPage, cls));
+
 		final W controller = cls.newInstance();
 
 		// Instantiate the loader
@@ -341,12 +349,74 @@ public class WindowManager {
 		final Parent root = loader.load();
 		final Window<W> window = new Window<>(controller, root, stage, stage.getScene());
 
+		for (EventHandler<? super PageChangedEvent> handler : pageChangeHandlers)
+			handler.handle(new PageChangedEvent(currentPage, window));
 		WindowManager.currentPage = window;
 		// Set the new root.
 		WindowManager.stage.getScene().setRoot(root);
 
 		return window;
 
+	}
+
+	public static <W extends Page> Window<W> setScene(W controller) throws IOException, NotSwitchableException {
+
+		for (EventHandler<? super PageChangeRequestedEvent> handler : pageChangeRequestedHandlers)
+			handler.handle(new PageChangeRequestedEvent(currentPage, controller.getClass()));
+
+		// Instantiate the loader
+		final FXMLLoader loader = new FXMLLoader(controller.getClass().getResource(controller.getWindowFile()));
+		loader.setController(controller);
+		if (currentPage != null)
+			if (!currentPage.getController().canSwitchPage(controller.getClass()))
+				throw new NotSwitchableException(currentPage, controller, controller.getClass());
+			else {
+				WindowManager.history.push(currentPage);
+				currentPage.getController().onPageSwitched();
+			}
+
+		final Parent root = loader.load();
+		final Window<W> window = new Window<W>(controller, root, stage, stage.getScene());
+
+		for (EventHandler<? super PageChangedEvent> handler : pageChangeHandlers)
+			handler.handle(new PageChangedEvent(currentPage, window));
+		WindowManager.currentPage = window;
+		// Set the new root.
+		WindowManager.stage.getScene().setRoot(root);
+
+		return window;
+
+	}
+
+	public static class PageChangedEvent extends Event {
+
+		public final Window<? extends Page> oldWindow, newWindow;
+
+		private PageChangedEvent(Window<? extends Page> currentPage, Window<? extends Page> window) {
+			this.oldWindow = currentPage;
+			this.newWindow = window;
+		}
+	}
+
+	public static class PageChangeRequestedEvent extends Event {
+		public final Window<? extends Page> oldWindow;
+		public final Class<? extends Page> newPageClass;
+
+		public PageChangeRequestedEvent(Window<? extends Page> oldWindow, Class<? extends Page> newPageClass) {
+			this.oldWindow = oldWindow;
+			this.newPageClass = newPageClass;
+		}
+	}
+
+	private static List<EventHandler<? super PageChangedEvent>> pageChangeHandlers = new ArrayList<>();
+	private static List<EventHandler<? super PageChangeRequestedEvent>> pageChangeRequestedHandlers = new ArrayList<>();
+
+	public static void addOnPageChanged(EventHandler<? super PageChangedEvent> handler) {
+		pageChangeHandlers.add(handler);
+	}
+
+	public static void addOnPageChangeRequested(EventHandler<? super PageChangeRequestedEvent> handler) {
+		pageChangeRequestedHandlers.add(handler);
 	}
 
 	/**
@@ -363,6 +433,7 @@ public class WindowManager {
 	 */
 	public static Window<? extends Page> setStage_Impl(final Stage stage, final Class<? extends Page> cls)
 			throws IOException, InstantiationException, IllegalAccessException {
+
 		WindowManager.stage = stage;
 		final Page controller = cls.newInstance();
 		final FXMLLoader loader = new FXMLLoader(cls.getResource(controller.getWindowFile()));
@@ -395,6 +466,7 @@ public class WindowManager {
 	public static void spawnLabel(final String text, final Color color, final double x, final double y) {
 		final Popup pc = new Popup();
 		final Label label = new Label(text);
+		label.setMouseTransparent(true);
 		final TranslateTransition translateTransition = new TranslateTransition(Duration.seconds(2), label);
 		final FadeTransition opacityTransition = new FadeTransition(Duration.seconds(2), label);
 

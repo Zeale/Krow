@@ -37,9 +37,19 @@ public class SoundManager {
 		}
 	}
 
-	public void playSound(final Sound s, final float volume) {
+	/**
+	 * Plays the specified sound with a volume between <code>0.0f</code> and
+	 * <code>1.0f</code>. <code>0.0f</code> will play the sound at a volume of
+	 * zero, while <code>1.0f</code> will play the sound at its maximum volume.
+	 *
+	 * @param sound
+	 *            The sound to play.
+	 * @param volume
+	 *            The volume of the sound to play.
+	 */
+	public void playSound(final Sound sound, final float volume) {
 		try {
-			playSound(s.location, volume);
+			playSound(sound.location, volume);
 		} catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
 			e.printStackTrace();
 		}
