@@ -40,7 +40,7 @@ public class NewEvent extends Page {
 	}
 
 	// Called when editing an event.
-	NewEvent(ScheduleModule module, ScheduleEvent event) {
+	public NewEvent(ScheduleModule module, ScheduleEvent event) {
 		this.event = event;
 		this.module = module;
 	}
