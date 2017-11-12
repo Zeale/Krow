@@ -14,15 +14,19 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.WritableValue;
 import zeale.guis.schedule_module.ScheduleModule;
 
 public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 
 	public final SimpleStringProperty description = new SimpleStringProperty(), name = new SimpleStringProperty();
 	public final SimpleLongProperty dueDate = new SimpleLongProperty();
+	public final SimpleBooleanProperty urgent = new SimpleBooleanProperty(false),
+			complete = new SimpleBooleanProperty(false);
 	private transient File file = new File(ScheduleModule.DATA_DIR, UUID.randomUUID().toString());
 
 	public boolean autoSave = true;
@@ -31,13 +35,19 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 
 	private final ChangeListener<Object> onChanged = (observable, oldValue, newValue) -> {
 		if (autoSave)
-			save();
+			try {
+				save();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 	};
 
 	{
 		description.addListener(onChanged);
 		name.addListener(onChanged);
 		dueDate.addListener(onChanged);
+		urgent.addListener(onChanged);
+		complete.addListener(onChanged);
 	}
 
 	public File getFile() {
@@ -79,6 +89,9 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 		data.put(DataKey.DESCRIPTION, description.get());
 		data.put(DataKey.NAME, name.get());
 		data.put(DataKey.DUE_DATE, dueDate.get());
+		data.put(DataKey.AUTOSAVE, autoSave);
+		data.put(DataKey.URGENT, urgent.get());
+		data.put(DataKey.COMPLETE, complete.get());
 
 		os.writeObject(data);
 	}
@@ -88,11 +101,43 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 	}
 
 	private ScheduleEvent(ScheduleEvent copy) {
-		autoSave = copy.autoSave;
-		file = copy.file;
-		description.set((String) copy.serializationData.get(DataKey.DESCRIPTION));
-		name.set((String) copy.serializationData.get(DataKey.NAME));
-		dueDate.set((long) copy.serializationData.get(DataKey.DUE_DATE));
+
+		// Temporarily set this event's SerializationData variable, for the
+		// purpose of copying
+		serializationData = copy.serializationData;
+
+		// Make sure we don't automatically save during copying.
+		autoSave = false;
+
+		// Copy data
+		{
+			file = copy.file;
+			setProperty(description, DataKey.DESCRIPTION);
+			setProperty(name, DataKey.NAME);
+			setProperty(dueDate, DataKey.DUE_DATE);
+
+			setProperty(urgent, DataKey.URGENT);
+			setProperty(complete, DataKey.COMPLETE);
+
+			// Enable autosaving *at the end* of copying, otherwise every
+			// property
+			// we make on this object (the copy) will try to save itself (even
+			// before we've copied the file path.
+			autoSave = serializationData.get(DataKey.AUTOSAVE) instanceof Boolean
+					? (boolean) serializationData.get(DataKey.AUTOSAVE) : false;
+		}
+
+		// Unset the value of this event's SerializationData variable.
+		serializationData = null;
+	}
+
+	private <T> void setProperty(WritableValue<T> property, DataKey key) {
+		@SuppressWarnings("unchecked")
+		T value = (T) serializationData.get(key);
+		if (value == null)
+			return;
+		property.setValue(value);
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -104,7 +149,7 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 		}
 	}
 
-	public void save() {
+	public void save() throws IOException {
 		if (!file.getParentFile().exists()) {
 			file.getParentFile().mkdirs();
 		} else if (file.exists())
@@ -131,7 +176,7 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 	}
 
 	private enum DataKey {
-		DESCRIPTION, NAME, DUE_DATE;
+		DESCRIPTION, NAME, DUE_DATE, AUTOSAVE, URGENT, COMPLETE;
 	}
 
 	public long getTimeUntilDue() throws IllegalArgumentException {
@@ -141,9 +186,9 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 	@Override
 	public int compareTo(ScheduleEvent o) {
 		if (o.dueDate.get() > dueDate.get())// Other event comes after
-			return 1;// Place this event before other event.
+			return -1;// Place this event before other event.
 		else if (o.dueDate.get() < dueDate.get())// Other event comes before
-			return -1;// Place this event after other event.
+			return 1;// Place this event after other event.
 		else
 			return 0;
 	}

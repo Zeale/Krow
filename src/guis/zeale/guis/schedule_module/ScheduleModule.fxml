@@ -11,8 +11,10 @@
       <Button focusTraversable="false" layoutX="78.0" layoutY="146.0" mnemonicParsing="false" onAction="#addEvent" prefHeight="34.0" prefWidth="97.0" style="-fx-font-size: 18;" styleClass="pop-button" text="New" />
       <TableView fx:id="eventTable" fixedCellSize="50.0" layoutY="344.0" prefHeight="736.0" prefWidth="1920.0" styleClass="rgba-background">
         <columns>
-          <TableColumn fx:id="nameColumn" prefWidth="1765.0" style="-fx-text-fill: black; -fx-font-weight: bold; -fx-font-size: 20px; -fx-alignment: center; -fx-border-color: transparent;" text="Name" />
-          <TableColumn fx:id="dateColumn" prefWidth="154.0" style="-fx-text-fill: black; -fx-font-size: 14px; -fx-font-weight: bold; -fx-alignment: center; -fx-border-color: black; -fx-border-width: 0px 0px 0px 3px;" text="Date" />
+          <TableColumn fx:id="nameColumn" prefWidth="1581.0" style="-fx-font-size: 20px; -fx-border-width: 0px 1.5px 0px 0px;" text="Name" />
+          <TableColumn fx:id="dateColumn" prefWidth="159.0" style="-fx-font-size: 14px;" text="Date" />
+            <TableColumn fx:id="urgencyColumn" minWidth="0.0" prefWidth="76.0" sortable="false" text="Urgent" />
+            <TableColumn fx:id="completeColumn" prefWidth="103.0" sortable="false" style="-fx-border-width: 0px 0px 0px 1.5px;" text="Complete" />
         </columns>
       </TableView>
    </children>
