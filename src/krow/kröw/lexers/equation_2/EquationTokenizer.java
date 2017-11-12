@@ -9,8 +9,14 @@ import kröw.lexers.equation_2.tokens.Token.Type;
 
 public class EquationTokenizer {
 
-	private String equation;
+	private final String equation;
 	private int position = -1;
+
+	private ArrayList<Token> tokens = new ArrayList<>();
+
+	public EquationTokenizer(final String equation) {
+		this.equation = equation;
+	}
 
 	/**
 	 * <p>
@@ -18,49 +24,11 @@ public class EquationTokenizer {
 	 * <p>
 	 * <code>nextChar()</code> must be called at least from construction once
 	 * before this function is called.
-	 * 
+	 *
 	 * @return the current <code>char</code>.
 	 */
 	private char getChar() {
 		return equation.charAt(position);
-	}
-
-	private char prevChar() {
-		return equation.charAt(--position);
-	}
-
-	private boolean hasPrevChars(int amount) {
-		return position - amount < equation.length() - 1 && position - amount >= 0;
-	}
-
-	private boolean hasNextChars(int amount) {
-		return position + amount < equation.length() + 1 && position - amount >= 0;
-	}
-
-	/**
-	 * <p>
-	 * Returns the <i>current</i> <code>char</code> and <i>then</i> increments
-	 * {@link #position}.
-	 * 
-	 * @return the value of {@link #getChar()} before this method was called.
-	 */
-	private char incChar() {
-		return equation.charAt(position++);
-	}
-
-	/**
-	 * <p>
-	 * Returns the <i>current</i> <code>char</code> and <i>then</i> decrements
-	 * {@link #position}.
-	 * 
-	 * @return the value of {@link #getChar()} before this method was called.
-	 */
-	private char decChar() {
-		return equation.charAt(position--);
-	}
-
-	private char getPreviousChar() {
-		return equation.charAt(position - 1);
 	}
 
 	/**
@@ -73,7 +41,7 @@ public class EquationTokenizer {
 	 * <p>
 	 * Returns <code>true</code> if there are any more characters after the
 	 * current character to be read.
-	 * 
+	 *
 	 * @return <code>true</code> if there are any more available characters to
 	 *         be read.
 	 */
@@ -92,63 +60,76 @@ public class EquationTokenizer {
 	 * <p>
 	 * {@link #hasNext()} will return <code>true</code> if this method can be
 	 * called without an exception being thrown.
-	 * 
+	 *
 	 * @return the next <code>char</code> in {@link #equation}.
 	 */
 	private char nextChar() {
 		return equation.charAt(++position);
 	}
 
-	private String currentToken;
-	private ArrayList<Token> tokens = new ArrayList<>();
+	private Token parseAlphabeticSequence(final boolean startAtNextChar, final boolean multParentheses)
+			throws ParserException {
+		String token = "";
+		char c = getChar();
+		boolean identifierEnded = false;
 
-	/**
-	 * Runs by process of elimination to progressively eliminate what the next
-	 * token could possibly be after each character is read.
-	 * 
-	 * @throws ParserException
-	 */
-	public ArrayList<Token> tokenize() throws ParserException {
+		if (startAtNextChar)
+			if (!hasNext())
+				return new Token(null, Type.NULL);
+			else
+				nextChar();
+		position--;// So that we can call nextChar below.
 
-		tokens = new ArrayList<>();
-		currentToken = "";
-		position = -1;
-
-		// This iterates through tokens. When a token is started, a sub
-		// iteration occurs.
 		while (hasNext()) {
-			char c = nextChar();// We don't NEED to cache this thanks to
-								// #getChar(), but whatever.
-
-			// Whitespace between tokens is ignorable.
-			if (Character.isWhitespace(c))
+			c = nextChar();
+			if (Character.isWhitespace(c)) {
+				identifierEnded = true;
 				continue;
-
-			if (Operator.isOperator(c)) /* TODO: Fix operator size */ {
-				if (tokens.get(tokens.size() - 1).type == Type.OPERATOR)
-					throw new ParserException("Multiple consecutive operators detected.", position);
-				tokens.add(parseOperator());
+			}
+			if (Character.isAlphabetic(c) || Character.isDigit(c) || c == '_') {
+				if (identifierEnded)
+					throw new ParserException("Multiple identifiers next to each other.", position);
+				token += c;
 				continue;
-			} else {
-				if (tokens.size() > 0 && tokens.get(tokens.size() - 1).type != Type.OPERATOR)
-					tokens.add(new Token(Operator.MULTIPLICATION, Type.OPERATOR));
 			}
-			if (Character.isDigit(c) || c == '.') {
-				tokens.add(parseNumber(false));
-			} else if (Character.isAlphabetic(c) || c == '_') {
-				tokens.add(parseAlphabeticSequence(false, false));
+			if (c == '[' || c == '(' && !multParentheses) {
+				final String functionContents = parseFunctionContents(Wrapper.getWrapper(c, true));
+				return new Token(new Function(token, functionContents), Type.FUNCTION);
+			} else if (c == '(')
+				if (multParentheses) {
+					position--;
+					return new Token(token, Type.VARIABLE);
+				} else
+					;
+			else {
+				position--;
+				return new Token(token, Type.VARIABLE);
 			}
+		}
+		return new Token(token, Type.VARIABLE);
+	}
+
+	private String parseFunctionContents(final Wrapper wrapper) {
+		// open & close wrappers will be used l8r.
+		String token = "";
+
+		char c = getChar();
+		int layer = 1;
+		while (hasNext()) {
+			c = nextChar();
+			if (c == wrapper.open)
+				layer++;
+			else if (c == wrapper.close)
+				layer--;
+
+			if (layer == 0)
+				return token;
+
+			token += c;
 
 		}
 
-		for (Token s : tokens)
-			System.out.println(s);
-
-		return tokens;
-	}
-
-	private Token parseOperator() /* TODO: Fix operator size */ {
-		return new Token(Operator.getOperator(getChar()), Type.OPERATOR);
+		return token;
 	}
 
 	/**
@@ -163,7 +144,7 @@ public class EquationTokenizer {
 	 * <p>
 	 * Specifically, if this tokenizer's {@link #position} is 2 and
 	 * {@link #equation} is equal to the following:
-	 * 
+	 *
 	 * <pre>
 	 * <code>equation = "12345"</code>
 	 * </pre>
@@ -171,7 +152,7 @@ public class EquationTokenizer {
 	 * then calling this method with <code>true</code> would return a token of
 	 * <code>45</code>. Calling it with <code>false</code> would yield
 	 * <code>345</code>.
-	 * 
+	 *
 	 * @param startAtNextChar
 	 *            <code>true</code> would make this method start parsing with
 	 *            the return value of {@link #nextChar()}, while
@@ -180,7 +161,7 @@ public class EquationTokenizer {
 	 * @return A token representing the number parsed.
 	 */
 
-	private Token parseNumber(boolean startAtNextChar) throws ParserException {
+	private Token parseNumber(final boolean startAtNextChar) throws ParserException {
 		String token = "";
 		char c = getChar();
 		boolean expectingComma = false, commaError = false;
@@ -200,16 +181,15 @@ public class EquationTokenizer {
 				else
 					commaError = true;
 
-			if (Character.isDigit(c)) {
+			if (Character.isDigit(c))
 				token += c;
-			} else if (c == '.') {
+			else if (c == '.') {
 
 				if (expectingComma && token.length() > 3 && !(token.charAt(token.length() - 4) == ','))
 					commaError = true;
 
-				if (token.contains(".")) {
+				if (token.contains("."))
 					throw new ParserException("Multiple decimal points detected in a number.", position);
-				}
 				token += c;
 			} else if (c == ',') {
 				if (commaError)
@@ -237,95 +217,55 @@ public class EquationTokenizer {
 
 		}
 
-		if (commaError) {
+		if (commaError)
 			token = token.replaceAll(",", "");
-		}
 
 		return token.isEmpty() ? new Token(0, Type.NUMBER) : new Token(Double.parseDouble(token), Type.NUMBER);
 	}
 
-	private Token parseAlphabeticSequence(boolean startAtNextChar, boolean multParentheses) throws ParserException {
-		String token = "";
-		char c = getChar();
-		boolean function = false// true for function, false for var
-				, identifierEnded = false;
-
-		if (startAtNextChar)
-			if (!hasNext())
-				return new Token(null, Type.NULL);
-			else
-				nextChar();
-		position--;// So that we can call nextChar below.
-
-		while (hasNext()) {
-			c = nextChar();
-			if (Character.isWhitespace(c)) {
-				identifierEnded = true;
-				continue;
-			}
-			if (Character.isAlphabetic(c) || Character.isDigit(c) || c == '_') {
-				if (identifierEnded) {
-					throw new ParserException("Multiple identifiers next to each other.", position);
-				}
-				token += c;
-				continue;
-			}
-			if (c == '[' || (c == '(' && !multParentheses)) {
-				function = true;
-				String functionContents = parseFunctionContents(Wrapper.getWrapper(c, true));
-				return new Token(new Function(token, functionContents), Type.FUNCTION);
-			} else if (c == '(')
-				if (multParentheses) {
-					function = false;
-					position--;
-					return new Token(token, Type.VARIABLE);
-				} else
-					;
-			else {
-				position--;
-				return new Token(token, Type.VARIABLE);
-			}
-		}
-		return new Token(token, Type.VARIABLE);
+	private Token parseOperator() /* TODO: Fix operator size */ {
+		return new Token(Operator.getOperator(getChar()), Type.OPERATOR);
 	}
 
-	private String parseFunctionContents(Wrapper wrapper) {
-		// open & close wrappers will be used l8r.
-		String token = "", openWrapper = "", closeWrapper = "";
+	/**
+	 * Runs by process of elimination to progressively eliminate what the next
+	 * token could possibly be after each character is read.
+	 *
+	 * @throws ParserException
+	 */
+	public ArrayList<Token> tokenize() throws ParserException {
 
-		char c = getChar();
-		int layer = 1;
-		openWrapper += c;
+		tokens = new ArrayList<>();
+		position = -1;
 
+		// This iterates through tokens. When a token is started, a sub
+		// iteration occurs.
 		while (hasNext()) {
-			c = nextChar();
-			if (c == wrapper.open)
-				layer++;
-			else if (c == wrapper.close)
-				layer--;
+			final char c = nextChar();// We don't NEED to cache this thanks to
+			// #getChar(), but whatever.
 
-			if (layer == 0) {
-				closeWrapper += c;
-				return token;
+			// Whitespace between tokens is ignorable.
+			if (Character.isWhitespace(c))
+				continue;
 
-				/*
-				 * return openWrapper// Temp
-				 * 
-				 * + token +
-				 * 
-				 * // Temp closeWrapper;
-				 */
-			}
-
-			token += c;
+			if (Operator.isOperator(c)) /* TODO: Fix operator size */ {
+				if (tokens.get(tokens.size() - 1).type == Type.OPERATOR)
+					throw new ParserException("Multiple consecutive operators detected.", position);
+				tokens.add(parseOperator());
+				continue;
+			} else if (tokens.size() > 0 && tokens.get(tokens.size() - 1).type != Type.OPERATOR)
+				tokens.add(new Token(Operator.MULTIPLICATION, Type.OPERATOR));
+			if (Character.isDigit(c) || c == '.')
+				tokens.add(parseNumber(false));
+			else if (Character.isAlphabetic(c) || c == '_')
+				tokens.add(parseAlphabeticSequence(false, false));
 
 		}
 
-		return token;
-	}
+		for (final Token s : tokens)
+			System.out.println(s);
 
-	public EquationTokenizer(String equation) {
-		this.equation = equation;
+		return tokens;
 	}
 
 }

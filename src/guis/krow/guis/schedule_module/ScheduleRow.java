@@ -26,14 +26,24 @@ public class ScheduleRow extends TableRow<ScheduleEvent> {
 			DEFAULT_END_COLOR = Color.GOLD, COMPLETE_COLOR = Color.GREEN, URGENT_END_COLOR = Color.HOTPINK,
 			PAST_DUE_COLOR = Color.RED, URGENT_PAST_DUE_COLOR = new Color(0.294117647, 0, 0.50980392156, 1);
 
-	private static final Background buildBackground(Color color) {
+	private static final Background buildBackground(final Color color) {
 		return new Background(new BackgroundFill(color, null, null));
 	}
 
-	private static final Color getColorFromDueDate(long time, Color upcomingColor, Color nearDueColor, Color dueColor) {
+	private static final Color getColorFromDueDate(final long time) {
+		return getColorFromDueDate(time, DEFAULT_START_COLOR, DEFAULT_END_COLOR.interpolate(Color.ORANGE, 0.6));
+	}
+
+	private static final Color getColorFromDueDate(final long time, final Color upcomingColor,
+			final Color nearDueColor) {
+		return getColorFromDueDate(time, upcomingColor, nearDueColor, PAST_DUE_COLOR);
+	}
+
+	private static final Color getColorFromDueDate(final long time, final Color upcomingColor, final Color nearDueColor,
+			final Color dueColor) {
 
 		// Get the time until the date is due.
-		long timeUntilDue = time - System.currentTimeMillis();
+		final long timeUntilDue = time - System.currentTimeMillis();
 
 		// If the due date has passed, make the event red.
 		if (timeUntilDue < 0)
@@ -45,14 +55,6 @@ public class ScheduleRow extends TableRow<ScheduleEvent> {
 
 	}
 
-	private static final Color getColorFromDueDate(long time) {
-		return getColorFromDueDate(time, DEFAULT_START_COLOR, DEFAULT_END_COLOR.interpolate(Color.ORANGE, 0.6));
-	}
-
-	private static final Color getColorFromDueDate(long time, Color upcomingColor, Color nearDueColor) {
-		return getColorFromDueDate(time, upcomingColor, nearDueColor, PAST_DUE_COLOR);
-	}
-
 	private ScheduleModule module;
 
 	{
@@ -60,8 +62,8 @@ public class ScheduleRow extends TableRow<ScheduleEvent> {
 		// Set the default background (so it isn't white)
 		setBackground(buildBackground(EMPTY_CELL_COLOR));
 
-		Label delete = new Label("Delete");
-		PopupWrapper<VBox> wrapper = PopupHelper.buildPopup(delete);
+		final Label delete = new Label("Delete");
+		final PopupWrapper<VBox> wrapper = PopupHelper.buildPopup(delete);
 		PopupHelper.applyRightClickPopup(getThis(), wrapper.popup);
 		delete.setOnMouseClicked(event -> {
 
@@ -75,15 +77,14 @@ public class ScheduleRow extends TableRow<ScheduleEvent> {
 		setTextFill(Color.WHITE);
 
 		setOnMouseClicked(event -> {
-			if (event.getButton() == (MouseButton.PRIMARY) && !isEmpty()
-					&& !(event.getPickResult().getIntersectedNode() instanceof SelectableCell)) {
+			if (event.getButton() == MouseButton.PRIMARY && !isEmpty()
+					&& !(event.getPickResult().getIntersectedNode() instanceof SelectableCell))
 				try {
 					WindowManager.setScene(new NewEvent(module, getItem()));
 					event.consume();
 				} catch (IOException | NotSwitchableException e) {
 					e.printStackTrace();
 				}
-			}
 		});
 
 		setOnMouseEntered(event -> {
@@ -98,7 +99,7 @@ public class ScheduleRow extends TableRow<ScheduleEvent> {
 		});
 	}
 
-	public ScheduleRow(ScheduleModule module) {
+	public ScheduleRow(final ScheduleModule module) {
 		this.module = module;
 	}
 
@@ -114,23 +115,22 @@ public class ScheduleRow extends TableRow<ScheduleEvent> {
 
 		setBackground(
 				buildBackground(getItem().complete.get() ? COMPLETE_COLOR
-						: (getItem().urgent.get() ? getColorFromDueDate(getItem().dueDate.get(), DEFAULT_START_COLOR,
+						: getItem().urgent.get() ? getColorFromDueDate(getItem().dueDate.get(), DEFAULT_START_COLOR,
 								URGENT_END_COLOR, URGENT_PAST_DUE_COLOR)
-								: getColorFromDueDate(getItem().dueDate.get()))));
+								: getColorFromDueDate(getItem().dueDate.get())));
 		setTextFill(Color.WHITE);
 	}
 
 	@Override
-	protected void updateItem(ScheduleEvent item, boolean empty) {
+	protected void updateItem(final ScheduleEvent item, final boolean empty) {
 		if (item == getItem())
 			return;
 		super.updateItem(item, empty);
 
-		if (item == null || empty) {
+		if (item == null || empty)
 			setBackground(buildBackground(EMPTY_CELL_COLOR));
-		} else {
+		else
 			resetBackground();
-		}
 	}
 
 }

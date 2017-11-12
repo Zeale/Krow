@@ -25,7 +25,7 @@ public class CommandMessage extends TextMessage {
 	}
 
 	public String getCommand() {
-		return (String) getText();
+		return getText();
 	}
 
 }

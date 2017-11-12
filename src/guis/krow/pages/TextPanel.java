@@ -16,26 +16,41 @@ import kröw.core.managers.WindowManager.Page;
 
 public abstract class TextPanel extends Page {
 
-	public TextPanel() {
+	private enum DataKeys {
+		FONT, COLOR
+	}
+
+	protected static final void setColor(final Text text, final Color color) {
+		text.getProperties().put(DataKeys.COLOR, color);
+	}
+
+	protected static final void setFont(final Text text, final Font font) {
+		text.getProperties().put(DataKeys.FONT, font);
 	}
 
 	private Font defaultFont = Font.font(16);
+
 	private Color defaultColor = Color.WHITE;
 
-	/**
-	 * @return the defaultFont
-	 */
-	protected Font getDefaultFont() {
-		return defaultFont;
+	@FXML
+	protected TextFlow console;
+
+	@FXML
+	protected TextArea input;
+
+	@FXML
+	protected AnchorPane root;
+	@FXML
+	protected Button send;
+
+	public TextPanel() {
 	}
 
-	/**
-	 * @param defaultFont
-	 *            the defaultFont to set
-	 */
-	protected void setDefaultFont(Font defaultFont) {
-		this.defaultFont = defaultFont;
+	public void clear() {
+		console.getChildren().clear();
 	}
+
+	protected abstract void formatText(Text text);
 
 	/**
 	 * @return the defaultColor
@@ -45,21 +60,11 @@ public abstract class TextPanel extends Page {
 	}
 
 	/**
-	 * @param defaultColor
-	 *            the defaultColor to set
+	 * @return the defaultFont
 	 */
-	protected void setDefaultColor(Color defaultColor) {
-		this.defaultColor = defaultColor;
+	protected Font getDefaultFont() {
+		return defaultFont;
 	}
-
-	@FXML
-	protected TextFlow console;
-	@FXML
-	protected TextArea input;
-	@FXML
-	protected AnchorPane root;
-	@FXML
-	protected Button send;
 
 	@Override
 	public void initialize() {
@@ -86,86 +91,80 @@ public abstract class TextPanel extends Page {
 		if (!root.getChildren().contains(input))
 			root.getChildren().add(input);
 
-		console.getChildren().addListener(new ListChangeListener<Node>() {
+		console.getChildren().addListener((ListChangeListener<Node>) c -> {
+			while (c.next())
+				if (c.wasAdded())
+					for (final Node n : c.getAddedSubList())
+						if (n instanceof Text) {
+							final Text t = (Text) n;
+							if (t.getProperties().containsKey(DataKeys.FONT))
+								t.setFont((Font) t.getProperties().get(DataKeys.FONT));
+							else
+								t.setFont(defaultFont);
+							if (t.getProperties().containsKey(DataKeys.COLOR))
+								t.setFill((Paint) t.getProperties().get(DataKeys.COLOR));
+							else
+								t.setFill(defaultColor);
+						}
 
-			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Node> c) {
-				while (c.next())
-					if (c.wasAdded())
-						for (Node n : c.getAddedSubList())
-							if (n instanceof Text) {
-								Text t = (Text) n;
-								if (t.getProperties().containsKey(DataKeys.FONT))
-									t.setFont((Font) t.getProperties().get(DataKeys.FONT));
-								else
-									t.setFont(defaultFont);
-								if (t.getProperties().containsKey(DataKeys.COLOR))
-									t.setFill((Paint) t.getProperties().get(DataKeys.COLOR));
-								else
-									t.setFill(defaultColor);
-							}
-
-			}
 		});
 
 	}
 
-	public final void print(String text) {
+	public final void print(final String text) {
 		print(new Text(text));
 	}
 
-	public final void print(Text text) {
+	public final void print(final Text text) {
 		formatText(text);
 		printRawText(text);
 	}
 
-	public void clear() {
-		console.getChildren().clear();
+	public void printerr(final String error) {
+		printerr(new Text(error));
 	}
 
-	protected abstract void formatText(Text text);
-
-	public final void println(String text) {
-		print(text + "\n");
-	}
-
-	public final void println(Text text) {
-		text.setText(text.getText() + "\n");
-		print(text);
-	}
-
-	public void printerr(Text error) {
+	public void printerr(final Text error) {
 		setColor(error, Color.FIREBRICK);
 		print(error);
 	}
 
-	public void printerr(String error) {
-		printerr(new Text(error));
-	}
-
-	public void printerrln(String error) {
+	public void printerrln(final String error) {
 		printerr(error + "\n");
 	}
 
-	public void printerrln(Text text) {
+	public void printerrln(final Text text) {
 		text.setText(text.getText() + "\n");
 		printerr(text);
 	}
 
-	public void printRawText(Text text) {
+	public final void println(final String text) {
+		print(text + "\n");
+	}
+
+	public final void println(final Text text) {
+		text.setText(text.getText() + "\n");
+		print(text);
+	}
+
+	public void printRawText(final Text text) {
 		console.getChildren().add(text);
 	}
 
-	protected static final void setFont(Text text, Font font) {
-		text.getProperties().put(DataKeys.FONT, font);
+	/**
+	 * @param defaultColor
+	 *            the defaultColor to set
+	 */
+	protected void setDefaultColor(final Color defaultColor) {
+		this.defaultColor = defaultColor;
 	}
 
-	protected static final void setColor(Text text, Color color) {
-		text.getProperties().put(DataKeys.COLOR, color);
-	}
-
-	private enum DataKeys {
-		FONT, COLOR
+	/**
+	 * @param defaultFont
+	 *            the defaultFont to set
+	 */
+	protected void setDefaultFont(final Font defaultFont) {
+		this.defaultFont = defaultFont;
 	}
 
 }

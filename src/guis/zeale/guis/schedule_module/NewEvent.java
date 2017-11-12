@@ -31,16 +31,16 @@ public class NewEvent extends Page {
 	@FXML
 	private DatePicker dateInput;
 
-	private ScheduleEvent event;
+	private final ScheduleEvent event;
 
 	// Called when making an event.
-	NewEvent(ScheduleModule module) {
+	NewEvent(final ScheduleModule module) {
 		event = new ScheduleEvent();
 		this.module = module;
 	}
 
 	// Called when editing an event.
-	public NewEvent(ScheduleModule module, ScheduleEvent event) {
+	public NewEvent(final ScheduleModule module, final ScheduleEvent event) {
 		this.event = event;
 		this.module = module;
 	}
@@ -52,7 +52,7 @@ public class NewEvent extends Page {
 
 	@Override
 	public void initialize() {
-		DropShadow effect = new DropShadow();
+		final DropShadow effect = new DropShadow();
 		effect.setOffsetX(40);
 		effect.setOffsetY(30);
 		effect.setSpread(0.1);
@@ -61,7 +61,7 @@ public class NewEvent extends Page {
 		effect.setHeight(11.5);
 		effect.setColor(new Color(0, 0, 0, 0.65));
 
-		for (Node n : root.getChildren())
+		for (final Node n : root.getChildren())
 			n.setEffect(effect);
 		nameInput.setText(event.name.get());
 		descInput.setText(event.description.get());

@@ -13,11 +13,7 @@ public class SelectableCell<T> extends TableCell<T, Boolean> {
 	 * The {@link Callback} we use to retrieve a cell's observable boolean
 	 * property. The cell will bind its selection state to the property.
 	 */
-	private Callback<Integer, BooleanProperty> propertyRetriever;
-
-	public SelectableCell(Callback<Integer, BooleanProperty> propertyRetriever) {
-		this.propertyRetriever = propertyRetriever;
-	}
+	private final Callback<Integer, BooleanProperty> propertyRetriever;
 
 	// Make the entire cell's hitbox respond to mouse clicks. This listener does
 	// not respond to the actual check box, just the surrounding cell margin.
@@ -30,21 +26,24 @@ public class SelectableCell<T> extends TableCell<T, Boolean> {
 		});
 	}
 
+	public SelectableCell(final Callback<Integer, BooleanProperty> propertyRetriever) {
+		this.propertyRetriever = propertyRetriever;
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javafx.scene.control.Cell#updateItem(java.lang.Object, boolean)
 	 */
 	@Override
-	protected void updateItem(Boolean item, boolean empty) {
+	protected void updateItem(final Boolean item, final boolean empty) {
 		// If the item was not changed, there's no need to do anything...
 		if (item == getItem())
 			return;
 
 		// If the old item actually existed, remove its listener.
-		if (getItem() != null) {
+		if (getItem() != null)
 			checkbox.selectedProperty().unbindBidirectional(propertyRetriever.call(getIndex()));
-		}
 
 		// Update the item in this cell.
 		super.updateItem(item, empty);

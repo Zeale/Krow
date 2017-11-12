@@ -66,11 +66,6 @@ public class EquationParser {
 		return Function.getFunction(name, equation.substring(posSubEquOpen, position - 1));
 	}
 
-	@SuppressWarnings("unused")
-	private String getNextChar() {
-		return equation.substring(position + 1, position + 1);
-	}
-
 	private Number getNumber() throws IrregularCharacterException {
 		// TODO Fix up these methods...
 
@@ -112,11 +107,6 @@ public class EquationParser {
 		final Operation operation = Operation.getOperation(equation.substring(position, position + flen));
 		position += flen;
 		return operation;
-	}
-
-	@SuppressWarnings("unused")
-	private String getPreviousChar() {
-		return equation.substring(position - 1, position);
 	}
 
 	private boolean isFunc(final int pos) {
@@ -182,21 +172,6 @@ public class EquationParser {
 	 */
 	private String nextChar() {
 		return equation.substring(position, ++position);
-	}
-
-	/**
-	 * <p>
-	 * Much like the {@link #nextChar()} method, this method will return the
-	 * current character and move the pinhead (position) down to the previous
-	 * character.
-	 *
-	 *
-	 *
-	 * @return The current character.
-	 */
-	@SuppressWarnings("unused")
-	private String previousChar() {
-		return equation.substring(position, position-- + 1);
 	}
 
 	private void reset() {

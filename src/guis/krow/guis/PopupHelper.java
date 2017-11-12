@@ -3,7 +3,6 @@ package krow.guis;
 import java.util.ArrayList;
 
 import javafx.animation.FadeTransition;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -30,35 +29,37 @@ import javafx.stage.Popup;
 import javafx.util.Duration;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.PageChangeRequestedEvent;
 
 public final class PopupHelper {
 
+	public static class PopupWrapper<BT extends Pane> {
+		public final BT box;
+		public final Popup popup;
+
+		private PopupWrapper(final BT box, final Popup popup) {
+			this.box = box;
+			this.popup = popup;
+		}
+
+	}
+
 	public static final double DEFAULT_POPUP_VERTICAL_DISPLACEMENT = 0;
+
 	private static ArrayList<Popup> popups = new ArrayList<>();
 
 	static {
-		WindowManager.addOnPageChangeRequested(new kröw.events.EventHandler<PageChangeRequestedEvent>() {
-
-			@Override
-			public void handle(PageChangeRequestedEvent event) {
-				hideAllShowingRegisteredPopups();
-			}
-		});
+		WindowManager.addOnPageChangeRequested(event -> hideAllShowingRegisteredPopups());
 	}
 
-	public static void hideAllShowingRegisteredPopups() {
-		for (Popup popup : popups)
-			popup.hide();
-		popups.clear();
-	}
+	private static final Color BASIC_POPUP_DEFAULT_BORDER_COLOR = new Color(0, 0, 0, 0.5);
 
-	private PopupHelper() {
-	}
+	private static final Color BASIC_POPUP_DEFAULT_SHADOW_COLOR = new Color(0, 0, 0, 0.25);
 
-	public static void applyHoverPopup(Node node, Popup popup) {
-		Parent popupRoot = popup.getScene().getRoot();
-		FadeTransition openTransition = new FadeTransition(Duration.millis(350), popupRoot),
+	private static final Object LAST_POPUP_KEY = new Object();
+
+	public static void applyHoverPopup(final Node node, final Popup popup) {
+		final Parent popupRoot = popup.getScene().getRoot();
+		final FadeTransition openTransition = new FadeTransition(Duration.millis(350), popupRoot),
 				closeTransition = new FadeTransition(Duration.millis(350), popupRoot);
 		openTransition.setToValue(1);
 		closeTransition.setToValue(0);
@@ -101,7 +102,14 @@ public final class PopupHelper {
 
 			}
 
-			private void open(MouseEvent event) {
+			private void close() {
+				openTransition.stop();
+				closeTransition.stop();
+				closeTransition.setFromValue(closeTransition.getNode().getOpacity());
+				closeTransition.play();
+			}
+
+			private void open(final MouseEvent event) {
 
 				if (node.getProperties().containsKey(LAST_POPUP_KEY)
 						&& node.getProperties().get(LAST_POPUP_KEY) != popup
@@ -120,83 +128,13 @@ public final class PopupHelper {
 				openTransition.setFromValue(openTransition.getNode().getOpacity());
 				openTransition.play();
 			}
-
-			private void close() {
-				openTransition.stop();
-				closeTransition.stop();
-				closeTransition.setFromValue(closeTransition.getNode().getOpacity());
-				closeTransition.play();
-			}
 		};
 
 	}
 
-	private static final Color BASIC_POPUP_DEFAULT_BORDER_COLOR = new Color(0, 0, 0, 0.5);
-	private static final Color BASIC_POPUP_DEFAULT_SHADOW_COLOR = new Color(0, 0, 0, 0.25);
-
-	public static VBox buildHoverPopup(Node boundNode, Label... labels) {
-		PopupWrapper<VBox> wrapper = buildPopup(labels);
-		applyHoverPopup(boundNode, wrapper.popup);
-		return wrapper.box;
-	}
-
-	public static VBox buildHoverPopup(Node boundNode, Color color, String... labels) {
-		Label[] lbls = new Label[labels.length];
-		for (int i = 0; i < labels.length; i++) {
-			lbls[i] = new Label(labels[i]);
-			lbls[i].setTextFill(color);
-		}
-		return buildHoverPopup(boundNode, lbls);
-	}
-
-	public static PopupWrapper<VBox> buildPopup(Label... labels) {
-
-		double defaultSize = new Label().getFont().getSize();
-		Paint defaultTextFill = new Label().getTextFill();
-
-		Popup popup = new Popup();
-		VBox box = new VBox(10);
-		for (Label l : labels) {
-			if (l.getFont().getSize() == defaultSize)
-				l.setFont(
-						Font.font(l.getFont().getFamily(), FontWeight.BOLD, FontPosture.REGULAR, Kröw.scaleHeight(18)));
-			if (l.getTextFill().equals(defaultTextFill))
-				l.setTextFill(Color.WHITE);
-			box.getChildren().add(l);
-		}
-
-		box.setBorder(new Border(new BorderStroke(BASIC_POPUP_DEFAULT_BORDER_COLOR, BorderStrokeStyle.SOLID,
-				CornerRadii.EMPTY, new BorderWidths(2))));
-		box.setBackground(
-				new Background(new BackgroundFill(new Color(0, 0, 0, 0.004), CornerRadii.EMPTY, Insets.EMPTY)));
-		box.setEffect(new DropShadow(BlurType.THREE_PASS_BOX, BASIC_POPUP_DEFAULT_SHADOW_COLOR, 4.1, 0.4, 17, 21));
-
-		popup.getScene().setRoot(box);
-
-		return new PopupWrapper<VBox>(box, popup);
-
-	}
-
-	public static VBox buildRightClickPopup(Node boundNode, Label... labels) {
-		PopupWrapper<VBox> wrapper = buildPopup(labels);
-		applyRightClickPopup(boundNode, wrapper.popup);
-		return wrapper.box;
-	}
-
-	public static class PopupWrapper<BT extends Pane> {
-		public final BT box;
-		public final Popup popup;
-
-		private PopupWrapper(BT box, Popup popup) {
-			this.box = box;
-			this.popup = popup;
-		}
-
-	}
-
-	public static void applyRightClickPopup(Node node, Popup popup) {
-		Parent popupRoot = popup.getScene().getRoot();
-		FadeTransition openTransition = new FadeTransition(Duration.millis(350), popupRoot),
+	public static void applyRightClickPopup(final Node node, final Popup popup) {
+		final Parent popupRoot = popup.getScene().getRoot();
+		final FadeTransition openTransition = new FadeTransition(Duration.millis(350), popupRoot),
 				closeTransition = new FadeTransition(Duration.millis(350), popupRoot);
 		openTransition.setToValue(1);
 		closeTransition.setToValue(0);
@@ -220,20 +158,16 @@ public final class PopupHelper {
 					open(event);
 				});
 
-				node.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-
-					@Override
-					public void handle(MouseEvent event) {
-						if (event.getButton().equals(MouseButton.SECONDARY)) {
-							event.consume();
-							open(event);
-						}
+				node.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+					if (event.getButton().equals(MouseButton.SECONDARY)) {
+						event.consume();
+						open(event);
 					}
 				});
 
 				node.addEventFilter(MouseEvent.MOUSE_EXITED, event -> {
 					// Make sure we aren't leaving and going to this node.
-					long time = System.currentTimeMillis();
+					final long time = System.currentTimeMillis();
 					if (time - 300 <= timeEntered || event.getPickResult().getIntersectedNode() == node)
 						return;
 
@@ -256,10 +190,18 @@ public final class PopupHelper {
 
 			}
 
-			private void open(MouseEvent event) {
+			private void close() {
+				popups.remove(popup);
+				openTransition.stop();
+				closeTransition.stop();
+				closeTransition.setFromValue(closeTransition.getNode().getOpacity());
+				closeTransition.play();
+			}
+
+			private void open(final MouseEvent event) {
 
 				if (node.getProperties().containsKey(LAST_POPUP_KEY)) {
-					Popup popup2 = (Popup) node.getProperties().get(LAST_POPUP_KEY);
+					final Popup popup2 = (Popup) node.getProperties().get(LAST_POPUP_KEY);
 					if (popup2 != popup && popup2.isShowing())
 						popup2.hide();
 				}
@@ -279,18 +221,66 @@ public final class PopupHelper {
 				openTransition.setFromValue(openTransition.getNode().getOpacity());
 				openTransition.play();
 			}
-
-			private void close() {
-				popups.remove(popup);
-				openTransition.stop();
-				closeTransition.stop();
-				closeTransition.setFromValue(closeTransition.getNode().getOpacity());
-				closeTransition.play();
-			}
 		};
 
 	}
 
-	private static final Object LAST_POPUP_KEY = new Object();
+	public static VBox buildHoverPopup(final Node boundNode, final Color color, final String... labels) {
+		final Label[] lbls = new Label[labels.length];
+		for (int i = 0; i < labels.length; i++) {
+			lbls[i] = new Label(labels[i]);
+			lbls[i].setTextFill(color);
+		}
+		return buildHoverPopup(boundNode, lbls);
+	}
+
+	public static VBox buildHoverPopup(final Node boundNode, final Label... labels) {
+		final PopupWrapper<VBox> wrapper = buildPopup(labels);
+		applyHoverPopup(boundNode, wrapper.popup);
+		return wrapper.box;
+	}
+
+	public static PopupWrapper<VBox> buildPopup(final Label... labels) {
+
+		final double defaultSize = new Label().getFont().getSize();
+		final Paint defaultTextFill = new Label().getTextFill();
+
+		final Popup popup = new Popup();
+		final VBox box = new VBox(10);
+		for (final Label l : labels) {
+			if (l.getFont().getSize() == defaultSize)
+				l.setFont(
+						Font.font(l.getFont().getFamily(), FontWeight.BOLD, FontPosture.REGULAR, Kröw.scaleHeight(18)));
+			if (l.getTextFill().equals(defaultTextFill))
+				l.setTextFill(Color.WHITE);
+			box.getChildren().add(l);
+		}
+
+		box.setBorder(new Border(new BorderStroke(BASIC_POPUP_DEFAULT_BORDER_COLOR, BorderStrokeStyle.SOLID,
+				CornerRadii.EMPTY, new BorderWidths(2))));
+		box.setBackground(
+				new Background(new BackgroundFill(new Color(0, 0, 0, 0.004), CornerRadii.EMPTY, Insets.EMPTY)));
+		box.setEffect(new DropShadow(BlurType.THREE_PASS_BOX, BASIC_POPUP_DEFAULT_SHADOW_COLOR, 4.1, 0.4, 17, 21));
+
+		popup.getScene().setRoot(box);
+
+		return new PopupWrapper<>(box, popup);
+
+	}
+
+	public static VBox buildRightClickPopup(final Node boundNode, final Label... labels) {
+		final PopupWrapper<VBox> wrapper = buildPopup(labels);
+		applyRightClickPopup(boundNode, wrapper.popup);
+		return wrapper.box;
+	}
+
+	public static void hideAllShowingRegisteredPopups() {
+		for (final Popup popup : popups)
+			popup.hide();
+		popups.clear();
+	}
+
+	private PopupHelper() {
+	}
 
 }

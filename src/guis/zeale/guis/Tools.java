@@ -537,12 +537,12 @@ public class Tools extends Page {
 	}
 
 	public CommandTool addCommandTool(final String command, final String name, final Image graphic,
-			String description) {
+			final String description) {
 		return addCommandTool(command, name, graphic, description, Color.WHITE);
 	}
 
-	public CommandTool addCommandTool(final String command, final String name, final Image graphic, String description,
-			Color descColor) {
+	public CommandTool addCommandTool(final String command, final String name, final Image graphic,
+			final String description, final Color descColor) {
 		final Button button = buildButton();
 		button.setText(name);
 		button.setGraphic(new ImageView(graphic));
@@ -583,7 +583,7 @@ public class Tools extends Page {
 							(int) ICON_WIDTH, (int) ICON_HEIGHT),
 					"Opens a Powershell window");
 			addCommandTool("START dxdiag", "DxDiag", Kröw.getImageFromFile(new File("C:/Windows/System32/dxdiag.exe"),
-					(int) ICON_WIDTH, (int) ICON_HEIGHT), "Opens DX Diagnostics");
+					(int) ICON_WIDTH, (int) ICON_HEIGHT), "Opens DirectX Diagnostics");
 		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}

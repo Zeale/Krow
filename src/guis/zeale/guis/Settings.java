@@ -135,33 +135,33 @@ public class Settings extends Page {
 
 		/*
 		 * // Setting tabs are nested with the TreeItem's nesting behavior:
-		 * 
+		 *
 		 * TreeItem<SettingTab> tab = new TreeItem<>(new SettingTab("Tab Name",
 		 * settings...));
-		 * 
-		 * 
+		 *
+		 *
 		 * TreeItem<SettingTab> subTab = new TreeItem<>(new
 		 * SettingTab("Sub Tab Name", settings...));
-		 * 
+		 *
 		 * tab.getChildren().add(subTab);
-		 * 
+		 *
 		 * // Make sure to add the items at the end:
-		 * 
+		 *
 		 * addItem(tab);
-		 * 
+		 *
 		 */
 
 		/*
 		 * // Settings are nested with their own nesting behavior:
-		 * 
+		 *
 		 * Setting parent = new Setting("Setting Name"); Setting child = new
-		 * 
+		 *
 		 * Setting("Sub Setting Name"); parent.getChildren().add(new
-		 * 
+		 *
 		 * TreeItem<Setting>(child));
-		 * 
+		 *
 		 * tab.getValue().getChildren().add(parent);
-		 * 
+		 *
 		 */
 
 		addItem(new TreeItem<>(
