@@ -19,7 +19,6 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.events.Event;
 import kröw.events.EventHandler;
 
@@ -139,6 +138,27 @@ public final class WindowManager {
 
 	}
 
+	public static class PageChangedEvent extends Event {
+
+		public final Window<? extends Page> oldWindow, newWindow;
+
+		private PageChangedEvent(final Window<? extends Page> currentPage, final Window<? extends Page> window) {
+			oldWindow = currentPage;
+			newWindow = window;
+		}
+	}
+
+	public static class PageChangeRequestedEvent extends Event {
+		public final Window<? extends Page> oldWindow;
+		public final Class<? extends Page> newPageClass;
+
+		public PageChangeRequestedEvent(final Window<? extends Page> oldWindow,
+				final Class<? extends Page> newPageClass) {
+			this.oldWindow = oldWindow;
+			this.newPageClass = newPageClass;
+		}
+	}
+
 	public static final class Window<T extends Page> {
 		private final T controller;
 		private final Parent root;
@@ -190,6 +210,18 @@ public final class WindowManager {
 	 * The current {@link Stage}. This is set when the program starts.
 	 */
 	public static Stage stage;
+
+	private static List<EventHandler<? super PageChangedEvent>> pageChangeHandlers = new ArrayList<>();
+
+	private static List<EventHandler<? super PageChangeRequestedEvent>> pageChangeRequestedHandlers = new ArrayList<>();
+
+	public static void addOnPageChanged(final EventHandler<? super PageChangedEvent> handler) {
+		pageChangeHandlers.add(handler);
+	}
+
+	public static void addOnPageChangeRequested(final EventHandler<? super PageChangeRequestedEvent> handler) {
+		pageChangeRequestedHandlers.add(handler);
+	}
 
 	/**
 	 * A getter for the {@link Stage} of the running application.
@@ -330,7 +362,7 @@ public final class WindowManager {
 	public static <W extends Page> Window<W> setScene(final Class<W> cls)
 			throws InstantiationException, IllegalAccessException, IOException, NotSwitchableException {
 
-		for (EventHandler<? super PageChangeRequestedEvent> handler : pageChangeRequestedHandlers)
+		for (final EventHandler<? super PageChangeRequestedEvent> handler : pageChangeRequestedHandlers)
 			handler.handle(new PageChangeRequestedEvent(currentPage, cls));
 
 		final W controller = cls.newInstance();
@@ -349,7 +381,7 @@ public final class WindowManager {
 		final Parent root = loader.load();
 		final Window<W> window = new Window<>(controller, root, stage, stage.getScene());
 
-		for (EventHandler<? super PageChangedEvent> handler : pageChangeHandlers)
+		for (final EventHandler<? super PageChangedEvent> handler : pageChangeHandlers)
 			handler.handle(new PageChangedEvent(currentPage, window));
 		WindowManager.currentPage = window;
 		// Set the new root.
@@ -359,9 +391,9 @@ public final class WindowManager {
 
 	}
 
-	public static <W extends Page> Window<W> setScene(W controller) throws IOException, NotSwitchableException {
+	public static <W extends Page> Window<W> setScene(final W controller) throws IOException, NotSwitchableException {
 
-		for (EventHandler<? super PageChangeRequestedEvent> handler : pageChangeRequestedHandlers)
+		for (final EventHandler<? super PageChangeRequestedEvent> handler : pageChangeRequestedHandlers)
 			handler.handle(new PageChangeRequestedEvent(currentPage, controller.getClass()));
 
 		// Instantiate the loader
@@ -376,9 +408,9 @@ public final class WindowManager {
 			}
 
 		final Parent root = loader.load();
-		final Window<W> window = new Window<W>(controller, root, stage, stage.getScene());
+		final Window<W> window = new Window<>(controller, root, stage, stage.getScene());
 
-		for (EventHandler<? super PageChangedEvent> handler : pageChangeHandlers)
+		for (final EventHandler<? super PageChangedEvent> handler : pageChangeHandlers)
 			handler.handle(new PageChangedEvent(currentPage, window));
 		WindowManager.currentPage = window;
 		// Set the new root.
@@ -386,37 +418,6 @@ public final class WindowManager {
 
 		return window;
 
-	}
-
-	public static class PageChangedEvent extends Event {
-
-		public final Window<? extends Page> oldWindow, newWindow;
-
-		private PageChangedEvent(Window<? extends Page> currentPage, Window<? extends Page> window) {
-			this.oldWindow = currentPage;
-			this.newWindow = window;
-		}
-	}
-
-	public static class PageChangeRequestedEvent extends Event {
-		public final Window<? extends Page> oldWindow;
-		public final Class<? extends Page> newPageClass;
-
-		public PageChangeRequestedEvent(Window<? extends Page> oldWindow, Class<? extends Page> newPageClass) {
-			this.oldWindow = oldWindow;
-			this.newPageClass = newPageClass;
-		}
-	}
-
-	private static List<EventHandler<? super PageChangedEvent>> pageChangeHandlers = new ArrayList<>();
-	private static List<EventHandler<? super PageChangeRequestedEvent>> pageChangeRequestedHandlers = new ArrayList<>();
-
-	public static void addOnPageChanged(EventHandler<? super PageChangedEvent> handler) {
-		pageChangeHandlers.add(handler);
-	}
-
-	public static void addOnPageChangeRequested(EventHandler<? super PageChangeRequestedEvent> handler) {
-		pageChangeRequestedHandlers.add(handler);
 	}
 
 	/**

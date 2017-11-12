@@ -369,7 +369,7 @@ public class ChatRoom extends WindowManager.Page {
 	}
 
 	private void parseCommand(String cmd, final String[] args) {
-		CommandMessage msg = new CommandMessage(cmd, args);
+		final CommandMessage msg = new CommandMessage(cmd, args);
 
 		if (cmd.startsWith("/")) {
 			if (args != null)
@@ -428,11 +428,11 @@ public class ChatRoom extends WindowManager.Page {
 			// Instead we can call this Task's execute method with the name of
 			// the command to show in the help menu, and the description of the
 			// command.
-			VarArgsTask<String> showHelp = params -> {
+			final VarArgsTask<String> showHelp = params -> {
 				if (params.length < 2)
 					try {
 						throw new Exception("Invalid args");
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						e.printStackTrace();
 						return;
 					}
@@ -541,15 +541,6 @@ public class ChatRoom extends WindowManager.Page {
 
 	}
 
-	private void send(Message message) {
-		if (client != null)
-			try {
-				client.sendMessage(message);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-	}
-
 	public void parseInput(String input) {
 		input = input.trim();
 		final boolean del = false;
@@ -623,6 +614,10 @@ public class ChatRoom extends WindowManager.Page {
 		printLineToConsole(text, color);
 	}
 
+	public void printNode(final Node node) {
+		chatPane.getChildren().add(node);
+	}
+
 	public void printToConsole(final String text) {
 		printToConsole(text, Color.WHITE);
 	}
@@ -633,8 +628,13 @@ public class ChatRoom extends WindowManager.Page {
 		chatPane.getChildren().add(t);
 	}
 
-	public void printNode(Node node) {
-		chatPane.getChildren().add(node);
+	private void send(final Message message) {
+		if (client != null)
+			try {
+				client.sendMessage(message);
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
 	}
 
 	private void sendingMessageNotification() {

@@ -2,7 +2,6 @@ package zeale.guis.developer_module;
 
 import java.io.IOException;
 
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
@@ -81,7 +80,7 @@ public class DeveloperModule extends Page {
 
 		scroll.setFocusTraversable(true);
 
-		EventHandler<KeyEvent> keyHandler = event -> {
+		final EventHandler<KeyEvent> keyHandler = event -> {
 			if (event.getCode() == KeyCode.D && event.isShiftDown() && event.isControlDown())
 				try {
 					WindowManager.setScene(Home.class);
@@ -100,30 +99,21 @@ public class DeveloperModule extends Page {
 	}
 
 	private void loadDefaultItems() {
-		ImageView console = new ImageView("/krow/resources/graphics/developer-module/Console.png");
-		console.setOnMouseClicked(new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				try {
-					WindowManager.setScene(ConsoleModule.class);
-				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-					e.printStackTrace();
-				}
+		final ImageView console = new ImageView("/krow/resources/graphics/developer-module/Console.png");
+		console.setOnMouseClicked(event -> {
+			try {
+				WindowManager.setScene(ConsoleModule.class);
+			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+				e.printStackTrace();
 			}
-
 		});
 
-		ImageView scheduler = new ImageView("/krow/resources/graphics/schedule-module/Schedule.png");
-		scheduler.setOnMouseClicked(new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				try {
-					WindowManager.setScene(ScheduleModule.class);
-				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-					e.printStackTrace();
-				}
+		final ImageView scheduler = new ImageView("/krow/resources/graphics/schedule-module/Schedule.png");
+		scheduler.setOnMouseClicked(event -> {
+			try {
+				WindowManager.setScene(ScheduleModule.class);
+			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+				e.printStackTrace();
 			}
 		});
 

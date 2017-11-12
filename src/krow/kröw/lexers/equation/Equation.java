@@ -58,11 +58,6 @@ class Equation extends ArrayList<Object> {
 		super.add(location, element);
 	}
 
-	@SuppressWarnings("unused")
-	private void popin(final Operation operation, final int location) {
-		super.add(location, operation);
-	}
-
 	public void start(final Element element) {
 		if (started)
 			throw new UnsupportedOperationException();

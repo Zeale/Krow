@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,7 +13,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.util.Callback;
 import krow.guis.GUIHelper;
 import krow.guis.schedule_module.ScheduleEvent;
 import krow.guis.schedule_module.ScheduleRow;
@@ -33,33 +31,30 @@ public class ScheduleModule extends Page {
 		importData();
 	}
 
-	public ObservableList<ScheduleEvent> getEventList() {
-		return events;
-	}
+	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yy"/* + " ~ hh:mm:ss" */);
 
 	private static final void importData() {
 		try {
 
-			if (DATA_DIR.exists()) {
+			if (DATA_DIR.exists())
 				if (!DATA_DIR.isDirectory())
 					DATA_DIR.delete();
-			}
 
 			DATA_DIR.mkdirs();
 
 			if (DATA_DIR.listFiles() != null)
-				for (File f : DATA_DIR.listFiles())
+				for (final File f : DATA_DIR.listFiles())
 					try {
-						ScheduleEvent sc = ScheduleEvent.load(f);
+						final ScheduleEvent sc = ScheduleEvent.load(f);
 						sc.autoSave = true;
 						events.add(sc);
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						System.err
 								.println("Failed to load a single ScheduleEvent from the directory. The file path is: "
 										+ f.getAbsolutePath());
 						e.printStackTrace();
 					}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			System.err.println(
 					"An exception occurred while loading saved Schedule Events. Due to the likely size of the following text, the error will be printed to the System error output.");
 			e.printStackTrace(Kröw.deferr);
@@ -67,17 +62,22 @@ public class ScheduleModule extends Page {
 		events.sort(null);
 	}
 
-	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yy"/* + " ~ hh:mm:ss" */);
-
 	@FXML
 	private Pane root;
 
-	public ScheduleModule() {
-	}
+	@FXML
+	private TableView<ScheduleEvent> eventTable;
 
-	@Override
-	public String getWindowFile() {
-		return "ScheduleModule.fxml";
+	@FXML
+	private TableColumn<ScheduleEvent, Number> dateColumn;
+
+	@FXML
+	private TableColumn<ScheduleEvent, String> nameColumn;
+
+	@FXML
+	private TableColumn<ScheduleEvent, Boolean> urgencyColumn, completeColumn;
+
+	public ScheduleModule() {
 	}
 
 	@FXML
@@ -89,14 +89,22 @@ public class ScheduleModule extends Page {
 		}
 	}
 
-	@FXML
-	private TableView<ScheduleEvent> eventTable;
-	@FXML
-	private TableColumn<ScheduleEvent, Number> dateColumn;
-	@FXML
-	private TableColumn<ScheduleEvent, String> nameColumn;
-	@FXML
-	private TableColumn<ScheduleEvent, Boolean> urgencyColumn, completeColumn;
+	public void addEvent(final ScheduleEvent event) {
+		events.add(event);
+	}
+
+	public boolean containsEvent(final ScheduleEvent event) {
+		return events.contains(event);
+	}
+
+	public ObservableList<ScheduleEvent> getEventList() {
+		return events;
+	}
+
+	@Override
+	public String getWindowFile() {
+		return "ScheduleModule.fxml";
+	}
 
 	@Override
 	public void initialize() {
@@ -120,7 +128,8 @@ public class ScheduleModule extends Page {
 					getTableRow().textFillProperty().bindBidirectional(textFillProperty());
 				}
 
-				protected void updateItem(Number item, boolean empty) {
+				@Override
+				protected void updateItem(final Number item, final boolean empty) {
 					if (getItem() == item)
 						return;
 
@@ -149,7 +158,8 @@ public class ScheduleModule extends Page {
 					getTableRow().textFillProperty().bindBidirectional(textFillProperty());
 				}
 
-				protected void updateItem(String item, boolean empty) {
+				@Override
+				protected void updateItem(final String item, final boolean empty) {
 					if (getItem() == item)
 						return;
 
@@ -167,34 +177,8 @@ public class ScheduleModule extends Page {
 			};
 		});
 
-		urgencyColumn
-				.setCellFactory(new Callback<TableColumn<ScheduleEvent, Boolean>, TableCell<ScheduleEvent, Boolean>>() {
-
-					@Override
-					public TableCell<ScheduleEvent, Boolean> call(TableColumn<ScheduleEvent, Boolean> param) {
-						return new SelectableCell<ScheduleEvent>(new Callback<Integer, BooleanProperty>() {
-
-							@Override
-							public BooleanProperty call(Integer param) {
-								return events.get(param).urgent;
-							}
-						});
-					}
-				});
-		completeColumn
-				.setCellFactory(new Callback<TableColumn<ScheduleEvent, Boolean>, TableCell<ScheduleEvent, Boolean>>() {
-
-					@Override
-					public TableCell<ScheduleEvent, Boolean> call(TableColumn<ScheduleEvent, Boolean> param) {
-						return new SelectableCell<ScheduleEvent>(new Callback<Integer, BooleanProperty>() {
-
-							@Override
-							public BooleanProperty call(Integer param) {
-								return events.get(param).complete;
-							}
-						});
-					}
-				});
+		urgencyColumn.setCellFactory(param -> new SelectableCell<>(param1 -> events.get(param1).urgent));
+		completeColumn.setCellFactory(param -> new SelectableCell<>(param1 -> events.get(param1).complete));
 
 		// Testing dates
 		eventTable.setItems(events);
@@ -202,20 +186,12 @@ public class ScheduleModule extends Page {
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(root));
 	}
 
-	public void addEvent(ScheduleEvent event) {
-		events.add(event);
-	}
-
-	public void removeEvent(ScheduleEvent event) {
-		events.remove(event);
-	}
-
-	public void removeEvent(int index) {
+	public void removeEvent(final int index) {
 		events.remove(index);
 	}
 
-	public boolean containsEvent(ScheduleEvent event) {
-		return events.contains(event);
+	public void removeEvent(final ScheduleEvent event) {
+		events.remove(event);
 	}
 
 }

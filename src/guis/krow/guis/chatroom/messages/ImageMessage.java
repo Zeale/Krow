@@ -11,7 +11,7 @@ public class ImageMessage extends Message {
 	private static final long serialVersionUID = 1L;
 	private final Image image;
 
-	public ImageMessage(Image image) {
+	public ImageMessage(final Image image) {
 		// TODO save image as serializable format
 		this.image = image;
 	}

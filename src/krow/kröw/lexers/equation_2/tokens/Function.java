@@ -4,7 +4,7 @@ public class Function {
 
 	public final String name, contents;
 
-	public Function(String name, String contents) {
+	public Function(final String name, final String contents) {
 		this.name = name;
 		this.contents = contents;
 	}

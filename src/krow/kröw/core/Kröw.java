@@ -252,6 +252,11 @@ public final class Kröw extends Application {
 		IMAGE_KRÖW = kröw;
 	}
 
+	public static PrintStream defout = System.out, deferr = System.err;
+
+	public static final PrintStream out = ConsoleModule.out, err = ConsoleModule.err, wrn = ConsoleModule.wrn,
+			scs = ConsoleModule.scs;
+
 	private static void addDefaultLoadupClasses() {
 		addReflectionClass(SystemTrayManager.class);
 	}
@@ -357,6 +362,16 @@ public final class Kröw extends Application {
 		Kröw.start(args);
 	}
 
+	public static boolean openLink(final String link) {
+		try {
+			Desktop.getDesktop().browse(new URI(link));
+			return true;
+		} catch (IOException | URISyntaxException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 	public static double scaleHeight(final double height) {
 		return height / 1080 * Kröw.getSystemProperties().getScreenHeight();
 	}
@@ -405,11 +420,6 @@ public final class Kröw extends Application {
 
 		return output;
 	}
-
-	public static PrintStream defout = System.out, deferr = System.err;
-
-	public static final PrintStream out = ConsoleModule.out, err = ConsoleModule.err, wrn = ConsoleModule.wrn,
-			scs = ConsoleModule.scs;
 
 	/*
 	 * (non-Javadoc)
@@ -474,16 +484,6 @@ public final class Kröw extends Application {
 		programSettings.save(ProgramSettings.DEFAULT_FILE_PATH);
 
 		super.stop();
-	}
-
-	public static boolean openLink(String link) {
-		try {
-			Desktop.getDesktop().browse(new URI(link));
-			return true;
-		} catch (IOException | URISyntaxException e) {
-			e.printStackTrace();
-			return false;
-		}
 	}
 
 }

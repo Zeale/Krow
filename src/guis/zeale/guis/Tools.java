@@ -537,12 +537,12 @@ public class Tools extends Page {
 	}
 
 	public CommandTool addCommandTool(final String command, final String name, final Image graphic,
-			String description) {
+			final String description) {
 		return addCommandTool(command, name, graphic, description, Color.WHITE);
 	}
 
-	public CommandTool addCommandTool(final String command, final String name, final Image graphic, String description,
-			Color descColor) {
+	public CommandTool addCommandTool(final String command, final String name, final Image graphic,
+			final String description, final Color descColor) {
 		final Button button = buildButton();
 		button.setText(name);
 		button.setGraphic(new ImageView(graphic));

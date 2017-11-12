@@ -9,16 +9,9 @@ public class UserInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String username, password;
 
-	public UserInfo(String username, String password) {
+	public UserInfo(final String username, final String password) {
 		this.username = username;
 		this.password = password;
-	}
-
-	/**
-	 * @return the username
-	 */
-	public final String getUsername() {
-		return username;
 	}
 
 	/**
@@ -26,6 +19,13 @@ public class UserInfo implements Serializable {
 	 */
 	public final String getPassword() {
 		return password;
+	}
+
+	/**
+	 * @return the username
+	 */
+	public final String getUsername() {
+		return username;
 	}
 
 }

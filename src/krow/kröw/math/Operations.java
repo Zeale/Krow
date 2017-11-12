@@ -2,28 +2,28 @@ package kröw.math;
 
 public final class Operations {
 
-	private Operations() {
-	}
-
-	public static double add(double x, double y) {
+	public static double add(final double x, final double y) {
 		return x + y;
 	}
 
-	public static double subtract(double x, double y) {
-		return x - y;
-	}
-
-	public static double multiply(double x, double y) {
-		return x * y;
-	}
-
-	public static double divide(double x, double y) {
+	public static double divide(final double x, final double y) {
 		return x / y;
 	}
 
-	public static double factorial(double x, double y) {
+	public static double factorial(final double x, final double y) {
 		// TODO Implement
 		return -1;
+	}
+
+	public static double multiply(final double x, final double y) {
+		return x * y;
+	}
+
+	public static double subtract(final double x, final double y) {
+		return x - y;
+	}
+
+	private Operations() {
 	}
 
 }

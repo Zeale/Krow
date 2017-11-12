@@ -6,9 +6,6 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 
 public class VerticalMultiScrollBox extends VerticalScrollBox {
-	public VerticalMultiScrollBox() {
-	}
-
 	public class Menu {
 
 		private final HorizontalScrollBox menuBox = new HorizontalScrollBox();
@@ -21,6 +18,14 @@ public class VerticalMultiScrollBox extends VerticalScrollBox {
 			add();
 		}
 
+		public void add() {
+			getChildren().add(menuBox);
+		}
+
+		public void add(final int position) {
+			getChildren().add(position, menuBox);
+		}
+
 		public List<Node> getMenuItemList() {
 			return menuBox.getChildren();
 		}
@@ -29,13 +34,8 @@ public class VerticalMultiScrollBox extends VerticalScrollBox {
 			menuBox.getChildren().remove(menuBox);
 		}
 
-		public void add() {
-			getChildren().add(menuBox);
-		}
+	}
 
-		public void add(int position) {
-			getChildren().add(position, menuBox);
-		}
-
+	public VerticalMultiScrollBox() {
 	}
 }

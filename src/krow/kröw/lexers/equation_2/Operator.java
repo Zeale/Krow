@@ -13,29 +13,61 @@ public enum Operator {
 	// GREATER_THAN_OR_EQUAL_TO(">=", "\u2265"), LESS_THAN_OR_EQUAL_TO("<=",
 	// "\u2264")
 	;
-	public final String operator;
-	private final ArrayList<String> aliases = new ArrayList<>();
-	private final Operation operation;
-
-	private Operator(String operator, Operation operation) {
-		this.operator = operator;
-		this.operation = operation;
+	public static Operator getOperator(final char operator) {
+		for (final Operator o : Operator.values()) {
+			if (o.operator.length() == 1 && operator == o.operator.charAt(0))
+				return o;
+			for (final String s : o.aliases)
+				if (s.length() == 1 && s.charAt(0) == operator)
+					return o;
+		}
+		return null;
 	}
 
-	private Operator(char operator, Operation operation) {
+	public static Operator getOperator(final String operator) {
+		for (final Operator o : Operator.values()) {
+			if (operator.equals(o.operator))
+				return o;
+			for (final String s : o.aliases)
+				if (operator.equals(s))
+					return o;
+		}
+		return null;
+	}
+
+	public static boolean isOperator(final char c) {
+		return getOperator(c) != null;
+	}
+
+	public static boolean isOperator(final String s) {
+		return getOperator(s) != null;
+	}
+
+	public final String operator;
+
+	private final ArrayList<String> aliases = new ArrayList<>();
+
+	private final Operation operation;
+
+	private Operator(final char operator, final Operation operation) {
 		this.operator = "" + operator;
 		this.operation = operation;
 	}
 
-	private Operator(char operator, Operation operation, char... aliases) {
+	private Operator(final char operator, final Operation operation, final char... aliases) {
 		this(operator, operation);
-		for (char a : aliases)
+		for (final char a : aliases)
 			this.aliases.add("" + a);
 	}
 
-	private Operator(String operator, Operation operation, String... aliases) {
+	private Operator(final String operator, final Operation operation) {
+		this.operator = operator;
+		this.operation = operation;
+	}
+
+	private Operator(final String operator, final Operation operation, final String... aliases) {
 		this(operator, operation);
-		for (String s : aliases)
+		for (final String s : aliases)
 			this.aliases.add(s);
 	}
 
@@ -43,37 +75,7 @@ public enum Operator {
 		return Collections.unmodifiableList(aliases);
 	}
 
-	public static Operator getOperator(String operator) {
-		for (Operator o : Operator.values()) {
-			if (operator.equals(o.operator))
-				return o;
-			for (String s : o.aliases)
-				if (operator.equals(s))
-					return o;
-		}
-		return null;
-	}
-
-	public static Operator getOperator(char operator) {
-		for (Operator o : Operator.values()) {
-			if (o.operator.length() == 1 && operator == o.operator.charAt(0))
-				return o;
-			for (String s : o.aliases)
-				if (s.length() == 1 && s.charAt(0) == operator)
-					return o;
-		}
-		return null;
-	}
-
-	public static boolean isOperator(char c) {
-		return getOperator(c) != null;
-	}
-
-	public static boolean isOperator(String s) {
-		return getOperator(s) != null;
-	}
-
-	public double operate(double x, double y) {
+	public double operate(final double x, final double y) {
 		return operation.operate(x, y);
 	}
 

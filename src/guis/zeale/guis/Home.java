@@ -3,7 +3,6 @@ package zeale.guis;
 
 import java.io.IOException;
 
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -53,7 +52,7 @@ public class Home extends ScrollMenu {
 		horizontalScroll.setStyle(
 				"-fx-background-color:  linear-gradient(to right, #00000020 0%, #000000A8 45%, #000000A8 55%, #00000020 100%);");
 
-		EventHandler<KeyEvent> keyHandler = event -> {
+		final EventHandler<KeyEvent> keyHandler = event -> {
 			if (event.getCode() == KeyCode.D && event.isShiftDown() && event.isControlDown())
 				try {
 					WindowManager.setScene(DeveloperModule.class);
@@ -128,14 +127,9 @@ public class Home extends ScrollMenu {
 		});
 		mathModule.setPickOnBounds(true);
 
-		Shape backgroundShape = ShapeFactory.buildRegularShape(Kröw.scaleHeight(100), (int) (Math.random() * 5 + 3));
-		backgroundShape.setOnMouseClicked(new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				WindowManager.spawnLabelAtMousePos("WIP", Color.FIREBRICK);
-			}
-		});
+		final Shape backgroundShape = ShapeFactory.buildRegularShape(Kröw.scaleHeight(100),
+				(int) (Math.random() * 5 + 3));
+		backgroundShape.setOnMouseClicked(event -> WindowManager.spawnLabelAtMousePos("WIP", Color.FIREBRICK));
 		backgroundShape.setPickOnBounds(true);
 		backgroundShape.setFill(Color.TRANSPARENT);
 		backgroundShape.setStroke(Color.WHITE);
@@ -150,7 +144,8 @@ public class Home extends ScrollMenu {
 		PopupHelper.buildHoverPopup(statistics, GUIHelper.makeBoldLabel("Statistics Module", 18));
 		PopupHelper.buildHoverPopup(mathModule, GUIHelper.makeBoldLabel("Math Module", 18));
 
-		Label mathModuleCalculatorLbl = new Label("Calculator"), mathModuleStatisticsLbl = new Label("Statistics");
+		final Label mathModuleCalculatorLbl = new Label("Calculator"),
+				mathModuleStatisticsLbl = new Label("Statistics");
 		mathModuleStatisticsLbl.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if (event.getButton().equals(MouseButton.PRIMARY))
 				try {
