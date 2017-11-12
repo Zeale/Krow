@@ -583,7 +583,7 @@ public class Tools extends Page {
 							(int) ICON_WIDTH, (int) ICON_HEIGHT),
 					"Opens a Powershell window");
 			addCommandTool("START dxdiag", "DxDiag", Kröw.getImageFromFile(new File("C:/Windows/System32/dxdiag.exe"),
-					(int) ICON_WIDTH, (int) ICON_HEIGHT), "Opens DX Diagnostics");
+					(int) ICON_WIDTH, (int) ICON_HEIGHT), "Opens DirectX Diagnostics");
 		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
