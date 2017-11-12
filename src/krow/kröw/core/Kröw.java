@@ -55,6 +55,10 @@ import zeale.guis.developer_module.ConsoleModule;
  */
 public final class Kröw extends Application {
 
+	public static final Color SOLID_BACKGROUND = new Color(0.23, 0.23, 0.23, 1),
+			MODERATELY_TRANSPARENT_BACKGROUND = new Color(0, 0, 0, 0.76862745098),
+			COMPLETELY_TRANSPARENT_BACKGROUND = Color.TRANSPARENT;
+
 	private static ArrayList<Class<?>> reflectionClasses = new ArrayList<>();
 
 	public static final EventHandler<KeyEvent> CLOSE_ON_ESCAPE_HANADLER = event -> {
@@ -462,7 +466,7 @@ public final class Kröw extends Application {
 		primaryStage.setTitle(Kröw.NAME);
 		if (Kröw.IMAGE_KRÖW != null)
 			primaryStage.getIcons().add(Kröw.IMAGE_KRÖW);
-		WindowManager.getStage().getScene().setFill(Color.TRANSPARENT);
+		WindowManager.getStage().getScene().setFill(SOLID_BACKGROUND);
 		primaryStage.setWidth(Kröw.getSystemProperties().getScreenWidth());
 		primaryStage.setHeight(Kröw.getSystemProperties().getScreenHeight());
 		primaryStage.setFullScreen(true);

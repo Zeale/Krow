@@ -1,5 +1,5 @@
 .background {
-	-fx-background-color: #000000C4;
+	-fx-background-color: #00000000;/*v1.0.0 #000000C4*/
 }
 
 .rgba-background, .rgba-background.table-view .column-header, .rgba-background.table-view .column-header-background {
