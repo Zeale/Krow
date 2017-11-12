@@ -59,11 +59,6 @@ import kröw.core.managers.SoundManager;
 import kröw.core.managers.SystemProperties;
 import kröw.core.managers.SystemTrayManager;
 import kröw.core.managers.WindowManager;
-import kröw.mindset.Construct;
-import kröw.mindset.ConstructMindset;
-import kröw.mindset.Law;
-import kröw.mindset.MindsetObject;
-import kröw.mindset.ObjectAlreadyExistsException;
 import sun.awt.shell.ShellFolder;
 import zeale.guis.Home;
 import zeale.guis.developer_module.ConsoleModule;
@@ -84,16 +79,6 @@ public final class Kröw extends Application {
 	};
 
 	public static final EventHandler<Event> CLOSE_PROGRAM_EVENT_HANDLER = event -> Kröw.exit();
-
-	/*
-	 * Construct Mindset
-	 */
-	/**
-	 * The {@link ConstructMindset} object of {@link Kröw}. This tracks all of
-	 * {@link Kröw}'s {@link MindsetObject}s.
-	 */
-	@Deprecated
-	public final static ConstructMindset CONSTRUCT_MINDSET = new ConstructMindset();
 
 	/*
 	 * Files and directories.
@@ -394,19 +379,6 @@ public final class Kröw extends Application {
 	}
 
 	/**
-	 * Clears all the objects in this program.
-	 *
-	 * @return A {@link Backup} made prior to the clear.
-	 */
-	@Deprecated
-	public static Backup clearAllObjects() {
-		final Backup b = new Backup();
-		for (final MindsetObject obj : Kröw.CONSTRUCT_MINDSET.getAllObjects())
-			obj.delete();
-		return b;
-	}
-
-	/**
 	 * A static helper method that checks if a {@link List} contains a given
 	 * {@link String}. The {@link List} must have been instantiated with a type
 	 * argument of {@link String}.
@@ -551,62 +523,10 @@ public final class Kröw extends Application {
 		return new File(Kröw.class.getProtectionDomain().getCodeSource().getLocation().getFile());
 	}
 
-	/**
-	 * @return An {@link ArrayList} of all the dead {@link Construct}s managed
-	 *         by this program.
-	 */
-	@Deprecated
-	public static ArrayList<Construct> getDeadConstructs() {
-		final ArrayList<Construct> list = new ArrayList<>();
-		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
-			if (!c.isAlive())
-				list.add(c);
-		return list;
-	}
-
-	/**
-	 * @return An {@link ArrayList} of all the female {@link Construct}s managed
-	 *         by this program.
-	 */
-	@Deprecated
-	public static ArrayList<Construct> getFemaleConstructs() {
-		final ArrayList<Construct> list = new ArrayList<>();
-		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
-			if (c.getGender())
-				list.add(c);
-		return list;
-	}
-
 	public static final Image getImageFromFile(final File dir, final int width, final int height)
 			throws FileNotFoundException {
 		return SwingFXUtils
 				.toFXImage(Kröw.toBufferedImage(ShellFolder.getShellFolder(dir).getIcon(true), width, height), null);
-	}
-
-	/**
-	 * @return An {@link ArrayList} of all the living {@link Construct}s managed
-	 *         by this program.
-	 */
-	@Deprecated
-	public static ArrayList<Construct> getLivingConstructs() {
-		final ArrayList<Construct> list = new ArrayList<>();
-		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
-			if (c.isAlive())
-				list.add(c);
-		return list;
-	}
-
-	/**
-	 * @return An {@link ArrayList} of all the male {@link Construct}s managed
-	 *         by this program.
-	 */
-	@Deprecated
-	public static ArrayList<Construct> getMaleConstructs() {
-		final ArrayList<Construct> list = new ArrayList<>();
-		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
-			if (!c.getGender())
-				list.add(c);
-		return list;
 	}
 
 	public static ProgramSettings getProgramSettings() {
@@ -649,135 +569,6 @@ public final class Kröw extends Application {
 
 			return SwingFXUtils.toFXImage(image, null);
 		}
-	}
-
-	/**
-	 * A static void method that loads data.
-	 *
-	 * @deprecated This is not up to date and will soon be removed.
-	 */
-	@Deprecated
-	public static void loadData() {
-
-		final File[] oldFiles = new File(Kröw.KRÖW_HOME_DIRECTORY, "Data/Constructs").listFiles();
-
-		if (oldFiles != null)
-			TOP: for (final File f : oldFiles) {
-				for (final File f0 : Kröw.CONSTRUCT_SAVE_DIRECTORY.listFiles())
-					if (f0.getName().equals(f.getName())) {
-						final File f1 = new File(FileSystemView.getFileSystemView().getHomeDirectory(),
-								"Kröw/Constructs");
-						f1.mkdir();
-						try {
-							Files.move(f.toPath(), new File(f1, f.getName()).toPath(),
-									StandardCopyOption.REPLACE_EXISTING);
-						} catch (final IOException e) {
-							e.printStackTrace();
-						}
-						continue TOP;
-					}
-				try {
-					Files.move(f.toPath(), new File(Kröw.CONSTRUCT_SAVE_DIRECTORY, f.getName()).toPath(),
-							StandardCopyOption.REPLACE_EXISTING);
-				} catch (final IOException e) {
-					e.printStackTrace();
-				}
-			}
-		final File oldDataDir = new File(Kröw.KRÖW_HOME_DIRECTORY, "Data");
-		if (oldDataDir.exists())
-			Kröw.deleteDirectory(oldDataDir);
-
-		boolean cons = false;
-		boolean lws = false;
-		boolean systs = false;
-
-		// Construct Block
-		{
-			System.out.println("Now attempting to load Constructs from the file system.....");
-			for (final File f : Kröw.CONSTRUCT_SAVE_DIRECTORY.listFiles())
-				try {
-					final Construct c = (Construct) Kröw.loadObjectFromFile(OldVersionLoader.getInputStream(f));
-					c.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
-					System.out.println("   \n---Loaded the Construct " + c.getName() + " successfully.");
-					if (!cons)
-						cons = true;
-				} catch (final IOException e) {
-					System.err.println("An error occurred while loading a Construct.");
-				} catch (final ObjectAlreadyExistsException e) {
-					System.err.println("The Construct, " + e.getThrower().getName()
-							+ " already exists. It could not be loaded again.");
-				}
-
-			if (!cons)
-				System.err.println("No Constructs were loaded!...");
-
-		}
-
-		// Law Block
-		{
-			System.out.println("Now attempting to load Laws from the file system.....");
-			for (final File f : Kröw.LAW_SAVE_DIRECTORY.listFiles())
-				try {
-					final Law l = (Law) Kröw.loadObjectFromFile(OldVersionLoader.getInputStream(f));
-					l.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
-					System.out.println("   \n---Loaded the Law " + l.getName() + " successfully.");
-					if (!lws)
-						lws = true;
-				} catch (final IOException e) {
-					System.err.println("An error occurred while loading a Law.");
-				} catch (final ObjectAlreadyExistsException e) {
-					System.err.println(
-							"The Law, " + e.getThrower().getName() + " already exists. It could not be loaded again.");
-				}
-
-			if (!lws)
-				System.err.println("No Laws were loaded!...");
-
-		}
-
-		// System Block
-		{
-			System.out.println("Now attempting to load Systems from the file system.....");
-			for (final File f : Kröw.SYSTEM_SAVE_DIRECTORY.listFiles())
-				try {
-					final kröw.mindset.System s = (kröw.mindset.System) Kröw
-							.loadObjectFromFile(OldVersionLoader.getInputStream(f));
-					s.getMindsetModel().attatch(Kröw.CONSTRUCT_MINDSET);
-					System.out.println("   \n---Loaded the System " + s.getName() + " successfully.");
-					if (!systs)
-						systs = true;
-				} catch (final IOException e) {
-					System.err.println("An error occurred while loading a System.");
-				} catch (final ObjectAlreadyExistsException e) {
-					System.err.println("The System, " + e.getThrower().getName()
-							+ " already exists. It could not be loaded again.");
-				}
-
-			if (!systs)
-				System.err.println("No Systems were loaded!...");
-
-		}
-
-		Backup.loadBackupsFromSystem();
-	}
-
-	/**
-	 * Loads a {@link MindsetObject} from the given {@code file} and returns it.
-	 *
-	 * @param file
-	 *            The {@link File} to load the object from.
-	 * @return The Object that was loaded.
-	 * @throws ClassNotFoundException
-	 *             As specified by {@link ObjectInputStream#readObject()}.
-	 * @throws FileNotFoundException
-	 *             As specified by {@link ObjectInputStream#readObject()}.
-	 * @throws IOException
-	 *             As specified by {@link ObjectInputStream#readObject()}.
-	 */
-	@Deprecated
-	public static MindsetObject loadMindsetObject(final File file)
-			throws ClassNotFoundException, FileNotFoundException, IOException {
-		return (MindsetObject) ((ObjectInputStream) OldVersionLoader.getInputStream(file)).readObject();
 	}
 
 	/**
@@ -972,28 +763,6 @@ public final class Kröw extends Application {
 		}
 	}
 
-	@Deprecated
-	public static void saveObjects() {
-		for (final Construct c : Kröw.CONSTRUCT_MINDSET.getConstructsUnmodifiable())
-			try {
-				Kröw.saveObject(c, c.getFile(), OldVersionLoader.getOutputStream(c.getFile()));
-			} catch (final IOException e) {
-				System.err.println("Could not save the Construct " + c.getName());
-			}
-		for (final Law l : Kröw.CONSTRUCT_MINDSET.getLawsUnmodifiable())
-			try {
-				Kröw.saveObject(l, l.getFile(), OldVersionLoader.getOutputStream(l.getFile()));
-			} catch (final IOException e) {
-				System.err.println("Could not save the Law " + l.getName());
-			}
-		for (final kröw.mindset.System s : Kröw.CONSTRUCT_MINDSET.getSystemsUnmodifiable())
-			try {
-				Kröw.saveObject(s, s.getFile(), OldVersionLoader.getOutputStream(s.getFile()));
-			} catch (final IOException e) {
-				System.err.println("Could not save the System " + s.getName());
-			}
-	}
-
 	public static double scaleHeight(final double height) {
 		return height / 1080 * Kröw.getSystemProperties().getScreenHeight();
 	}
@@ -1011,49 +780,6 @@ public final class Kröw extends Application {
 	}
 
 	/**
-	 * A helper method used to split a {@link String} into an array of
-	 * {@link String}s.
-	 *
-	 * @param string
-	 *            The {@link String} to split.
-	 * @return An array containing separated, 1 character long {@link String}s
-	 *         that make up the original {@link String} passed in as an
-	 *         argument. Basically the same as {@link String#toCharArray()} but
-	 *         each <code>char</code> is a {@link String} in a {@link String}
-	 *         array.
-	 * @see #splitStringToTextArray(String) for more information. It does the
-	 *      same thing as this method but with {@link Text} nodes as an output
-	 *      rather than a {@link String} array.
-	 */
-	public static String[] splitStringToStringArray(final String string) {
-		final String[] strarr = new String[string.length()];
-		for (int i = 0; i < string.length(); i++)
-			strarr[i] = String.valueOf(string.charAt(i));
-		return strarr;
-	}
-
-	/**
-	 * A helper method used to split a {@link String} into an array of
-	 * {@link Text} nodes.
-	 *
-	 * @param string
-	 *            The {@link String} that will be split into an array of
-	 *            {@link Text} objects.
-	 * @return An array containing {@link Text} objects, each initialized with a
-	 *         character from the original given {@link String}, in the order
-	 *         that the characters of the {@link String} are.
-	 * @see #splitStringToStringArray(String) for more details. It does the
-	 *      exact same thing but the output is an array of {@link String}s,
-	 *      rather than an array of {@link Text} nodes.
-	 */
-	public static Text[] splitStringToTextArray(final String string) {
-		final Text[] textarr = new Text[string.length()];
-		for (int i = 0; i < string.length(); i++)
-			textarr[i] = new Text(String.valueOf(string.charAt(i)));
-		return textarr;
-	}
-
-	/**
 	 * The start method of the program. This will load up and initialize the
 	 * entire program. Nothing else is needed. It can be called from a main
 	 * method or somewhere else.
@@ -1068,7 +794,6 @@ public final class Kröw extends Application {
 	public static void start(final String[] args) {
 		System.out.println("\n\n\n\n");
 		System.out.println("Loading data...\n");
-		// Kröw.loadData();
 
 		if (Kröw.DEBUG_MODE)
 			System.out.println("\n\nDebug mode has been enabled...\n\n");
@@ -1156,7 +881,6 @@ public final class Kröw extends Application {
 	 */
 	@Override
 	public void stop() throws Exception {
-		Kröw.saveObjects();
 		programSettings.save(ProgramSettings.DEFAULT_FILE_PATH);
 
 		super.stop();
