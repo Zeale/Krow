@@ -22,6 +22,7 @@ import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
+import kröw.events.Event;
 import zeale.guis.developer_module.DeveloperModule;
 import zeale.guis.math_module.MathModule;
 import zeale.guis.math_module.controllers.Calculator;
@@ -134,6 +135,16 @@ public class Home extends ScrollMenu {
 		backgroundShape.setFill(Color.TRANSPARENT);
 		backgroundShape.setStroke(Color.WHITE);
 		PopupHelper.buildHoverPopup(backgroundShape, Color.FIREBRICK, "Work In Progress");
+		// TODO: Add a right click popup with a screensaver option.
+		backgroundShape.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			if (event.getButton() == MouseButton.PRIMARY)
+				try {
+					WindowManager.setScene(BackgroundModule.class);
+				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+					e.printStackTrace();
+				}
+
+		});
 
 		horizontalScroll.getChildren().addAll(settings, krow, chatRoom, statistics, mathModule, backgroundShape);
 		horizontalScroll.selectCenter();
