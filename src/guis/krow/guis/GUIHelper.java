@@ -33,7 +33,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-import krow.guis.BackgroundBuilder.ShapeBackgroundManager;
+import krow.backgrounds.BackgroundBuilder;
+import krow.backgrounds.ShapeBackground;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import zeale.guis.Home;
@@ -153,7 +154,7 @@ public final class GUIHelper {
 		MENU_CHILD_NODE_FONT_SIZE = (int) Math.round(size);
 	}
 
-	private static ShapeBackgroundManager backgroundmngr;
+	private static ShapeBackground backgroundmngr;
 
 	public static void addDefaultSettings(final VBox vbox) {
 		final List<Node> children = vbox.getChildren();

@@ -18,11 +18,14 @@ import javafx.scene.paint.Color;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import krow.backgrounds.Background;
 import kröw.core.Kröw;
 import kröw.events.Event;
 import kröw.events.EventHandler;
 
 public final class WindowManager {
+
+	private static Background defaultBackgroundManager;
 
 	/**
 	 * <p>
@@ -77,6 +80,67 @@ public final class WindowManager {
 		 */
 		protected Page() {
 
+		}
+
+		/**
+		 * <p>
+		 * Sets the default {@link Background}.
+		 * <p>
+		 * The default {@link Background} is used at the expense of other
+		 * modules. This means that it is completely up to another module of
+		 * whether or not to render a background from
+		 * {@link #getDefaultBackgroundManager()}.
+		 * <p>
+		 * For the purpose of allowing the user to keep whatever background they
+		 * choose in modules that support it, <b>this method should not be
+		 * called unless the user wishes to modify the default background.</b>
+		 * If a module or page wants to render a custom background, it should
+		 * not change any part of the program's default
+		 * {@link Background}. The said module should make use of a
+		 * <i>custom {@link Background}</i>, so that whatever settings
+		 * the user has applied can be kept in this default one.
+		 * <p>
+		 * One last thing: If the given manager is null, this method will throw
+		 * an {@link IllegalArgumentException}. The default
+		 * {@link Background} is expected to be used by other modules for
+		 * rendering the user's chosen background, so if it's null and other
+		 * modules try to call methods off of it, there'd be
+		 * {@link NullPointerException}s all over the place.
+		 * 
+		 * @param manager
+		 *            The new default {@link Background}. Modules that
+		 *            reference {@link #getDefaultBackgroundManager()} will be
+		 *            given this new manager when they are called.
+		 *            <p>
+		 *            This cannot be null; such will result in an
+		 *            {@link IllegalArgumentException}.
+		 */
+		protected final void setDefaultBackgroundManager(Background manager) {
+			if (manager == null)
+				throw new IllegalArgumentException("The BackgroundManager mustn't be null.");
+			defaultBackgroundManager = manager;
+		}
+
+		/**
+		 * <p>
+		 * Returns {@code Kröw}'s default {@link Background}. This is
+		 * used to store the user's chosen background settings.
+		 * <p>
+		 * The default {@link Background} should only be retrieved for
+		 * <b><i>showing</i></b> the user's chosen background settings, unless
+		 * the {@link Page} that makes use of this method allows the user to
+		 * modify the default background.
+		 * <p>
+		 * If a page edited the default {@link Background}, (rather than
+		 * using its own to show a background), every time it was initialized,
+		 * then any settings that the user saved to the default background
+		 * manager, would be changed by the page every time the page was
+		 * initialized. This is not good. :(
+		 * 
+		 * @return {@code Kröw}'s default {@link Background}.
+		 */
+		protected final Background getDefaultBackgroundManager() {
+			return defaultBackgroundManager;
 		}
 
 		/**
