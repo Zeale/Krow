@@ -2,6 +2,24 @@
 	-fx-background-color: #00000000;/*v1.0.0 #000000C4*/
 }
 
+.accordion.background .titled-pane {
+	-fx-text-fill: white;
+	-fx-font-size: 18.0;
+	-fx-font-weight: bold;
+}
+
+.accordion.background .titled-pane .title {
+	-fx-background-color: linear-gradient(to bottom, #474747, #000000);
+}
+
+.accordion.background .titled-pane .title .arrow-button .arrow {
+	-fx-background-color: white;
+}
+
+.accordion.background .titled-pane .content {
+	-fx-background-color: #000000C4;
+}
+
 .rgba-background, .rgba-background.table-view .column-header, .rgba-background.table-view .column-header-background {
 	-fx-background-color: rgba(0.0, 0.0, 0.0, 0.3);
 }
