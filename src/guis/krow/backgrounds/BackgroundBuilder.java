@@ -7,8 +7,8 @@ public final class BackgroundBuilder {
 
 	private static final int SHAPE_COUNT = 50;
 
-	public static ShapeBackgroundManager shapeBackground(Pane pane, Node... mouseDetectionNodes) {
-		final ShapeBackgroundManager manager = new ShapeBackgroundManager();
+	public static ShapeBackground shapeBackground(Pane pane, Node... mouseDetectionNodes) {
+		final ShapeBackground manager = new ShapeBackground();
 		manager.setCurrentPane(pane);
 		manager.addMouseDetectionNodes(mouseDetectionNodes);
 		manager.addRandomShapes(SHAPE_COUNT);

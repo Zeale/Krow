@@ -24,7 +24,7 @@ import javafx.util.Duration;
 import krow.guis.ShapeFactory;
 import kröw.core.Kröw;
 
-public class ShapeBackgroundManager extends BackgroundManager {
+public class ShapeBackground extends Background {
 
 	private static final Object TRANSLATOR_KEY = new Object();
 	private static final Object ROTATOR_KEY = new Object();
@@ -42,11 +42,11 @@ public class ShapeBackgroundManager extends BackgroundManager {
 
 	public static class ColorAnimation {
 
-		public static ShapeBackgroundManager.ColorAnimation generateRandomColorAnimation() {
+		public static ShapeBackground.ColorAnimation generateRandomColorAnimation() {
 			return generateRandomColorAnimation(random.nextInt(19) + 1);
 		}
 
-		public static ShapeBackgroundManager.ColorAnimation generateRandomColorAnimation(final int colorCount) {
+		public static ShapeBackground.ColorAnimation generateRandomColorAnimation(final int colorCount) {
 			final Color[] colors = new Color[colorCount];
 			for (int i = 0; i < colorCount; i++)
 				colors[i] = generateRandomColor();
@@ -54,18 +54,18 @@ public class ShapeBackgroundManager extends BackgroundManager {
 					random.nextBoolean(), colors);
 		}
 
-		public static ShapeBackgroundManager.ColorAnimation[] generateRandomColorAnimations() {
+		public static ShapeBackground.ColorAnimation[] generateRandomColorAnimations() {
 			return generateRandomColorAnimations(random.nextInt(10) + 1);
 		}
 
-		public static ShapeBackgroundManager.ColorAnimation[] generateRandomColorAnimations(final int count) {
-			final ShapeBackgroundManager.ColorAnimation[] animations = new ShapeBackgroundManager.ColorAnimation[count];
+		public static ShapeBackground.ColorAnimation[] generateRandomColorAnimations(final int count) {
+			final ShapeBackground.ColorAnimation[] animations = new ShapeBackground.ColorAnimation[count];
 			for (int i = 0; i < count; i++)
 				animations[i] = generateRandomColorAnimation();
 			return animations;
 		}
 
-		public static ShapeBackgroundManager.ColorAnimation rainbow(final int runCount, final boolean synchronous,
+		public static ShapeBackground.ColorAnimation rainbow(final int runCount, final boolean synchronous,
 				final boolean even) {
 			return new ColorAnimation(runCount, synchronous, even, Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN,
 					Color.BLUE, Color.INDIGO, Color.VIOLET);
@@ -143,7 +143,7 @@ public class ShapeBackgroundManager extends BackgroundManager {
 		return new Color(random.nextDouble(), random.nextDouble(), random.nextDouble(), 1);
 	}
 
-	private final Stack<ShapeBackgroundManager.ColorAnimation> animation = new Stack<>();
+	private final Stack<ShapeBackground.ColorAnimation> animation = new Stack<>();
 
 	private boolean repeatColorAnimation;
 
@@ -157,16 +157,16 @@ public class ShapeBackgroundManager extends BackgroundManager {
 
 	private boolean disabled;
 
-	protected ShapeBackgroundManager() {
+	protected ShapeBackground() {
 		super();
 	}
 
-	protected ShapeBackgroundManager(final Color startColor) {
+	protected ShapeBackground(final Color startColor) {
 		super(startColor);
 	}
 
-	public void addColorAnimations(final ShapeBackgroundManager.ColorAnimation... animations) {
-		for (final ShapeBackgroundManager.ColorAnimation ca : animations)
+	public void addColorAnimations(final ShapeBackground.ColorAnimation... animations) {
+		for (final ShapeBackground.ColorAnimation ca : animations)
 			animation.add(0, ca);
 	}
 
@@ -261,7 +261,7 @@ public class ShapeBackgroundManager extends BackgroundManager {
 		int i = 0;
 
 		// Get first color animation.
-		ShapeBackgroundManager.ColorAnimation currentAnimation = animation.peek();
+		ShapeBackground.ColorAnimation currentAnimation = animation.peek();
 		if (currentAnimation.getRunCount() <= runCount)
 			currentAnimation = animation.pop();
 
@@ -550,12 +550,12 @@ public class ShapeBackgroundManager extends BackgroundManager {
 			fadeShapesToColor(s, newColor);
 	}
 
-	public void setColorAnimations(final boolean repeat, final ShapeBackgroundManager.ColorAnimation... animations) {
+	public void setColorAnimations(final boolean repeat, final ShapeBackground.ColorAnimation... animations) {
 		stopColorAnimations();
 		repeatColorAnimation = repeat;
 
 		animation.clear();
-		for (final ShapeBackgroundManager.ColorAnimation ca : animations)
+		for (final ShapeBackground.ColorAnimation ca : animations)
 			animation.add(0, ca);
 
 	}

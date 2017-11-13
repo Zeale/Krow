@@ -9,13 +9,13 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 /**
- * <h1 align="center">{@link BackgroundManager}</h1>
+ * <h1 align="center">{@link Background}</h1>
  * <h3 align="center">The superclass for all other
- * {@link BackgroundManager}s...</h3>
+ * {@link Background}s...</h3>
  * 
  * <br>
  * <p>
- * The {@link BackgroundManager} class provides many different methods to allow
+ * The {@link Background} class provides many different methods to allow
  * external manipulation such as mouse interaction, fading in and out, and a few
  * other things. As of now, subclasses may choose wheter or not to implement
  * these methods.
@@ -23,7 +23,7 @@ import javafx.scene.paint.Color;
  * @author Zeale
  *
  */
-public abstract class BackgroundManager {
+public abstract class Background {
 
 	private static final Color DEFAULT_COLOR = Color.BLACK;
 	private static final double DEFAULT_ANIMATION_DURATION = 8;
@@ -40,22 +40,22 @@ public abstract class BackgroundManager {
 
 	private final ArrayList<Node> mouseDetectionNodes = new ArrayList<>();
 
-	protected BackgroundManager() {
+	protected Background() {
 	}
 
-	protected BackgroundManager(final Color startColor) {
+	protected Background(final Color startColor) {
 		this();
 		this.startColor = startColor;
 	}
 
-	protected BackgroundManager(final Color startColor, final Node... detectionNodes) {
+	protected Background(final Color startColor, final Node... detectionNodes) {
 		this();
 		this.startColor = startColor;
 		for (final Node n : detectionNodes)
 			n.setOnMouseMoved(getMouseMovementHandler());
 	}
 
-	protected BackgroundManager(final Node... detectionNodes) {
+	protected Background(final Node... detectionNodes) {
 		this();
 		for (final Node n : detectionNodes)
 			n.setOnMouseMoved(getMouseMovementHandler());
