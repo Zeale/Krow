@@ -5,19 +5,14 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane fx:id="root" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@css/stylesheet.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+<AnchorPane fx:id="root" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <AnchorPane fx:id="visualizerPane" layoutX="109.0" layoutY="95.0" prefHeight="873.0" prefWidth="867.0" style="-fx-border-color: red; -fx-border-width: 5px; -fx-background-color: transparent;" AnchorPane.leftAnchor="109.0" AnchorPane.topAnchor="95.0" />
       <Accordion layoutX="1718.0" styleClass="background" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <panes>
           <TitledPane animated="false" text="Shapes">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <Button layoutX="38.0" layoutY="34.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="124.0" styleClass="pop-button" text="Button" />
-                     </children>
-                  </AnchorPane>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
             </content>
           </TitledPane>
           <TitledPane animated="false" text="Colors">
@@ -32,5 +27,6 @@
           </TitledPane>
         </panes>
       </Accordion>
+      <TextArea layoutX="1075.0" layoutY="40.0" prefHeight="97.0" prefWidth="528.0" />
    </children>
 </AnchorPane>
