@@ -1,5 +1,7 @@
 package zeale.guis;
 
+import static kröw.core.Kröw.getProgramSettings;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -135,39 +137,39 @@ public class Settings extends Page {
 
 		/*
 		 * // Setting tabs are nested with the TreeItem's nesting behavior:
-		 * 
+		 *
 		 * TreeItem<SettingTab> tab = new TreeItem<>(new SettingTab("Tab Name",
 		 * settings...));
-		 * 
-		 * 
+		 *
+		 *
 		 * TreeItem<SettingTab> subTab = new TreeItem<>(new
 		 * SettingTab("Sub Tab Name", settings...));
-		 * 
+		 *
 		 * tab.getChildren().add(subTab);
-		 * 
+		 *
 		 * // Make sure to add the items at the end:
-		 * 
+		 *
 		 * addItem(tab);
-		 * 
+		 *
 		 */
 
 		/*
 		 * // Settings are nested with their own nesting behavior:
-		 * 
+		 *
 		 * Setting parent = new Setting("Setting Name"); Setting child = new
-		 * 
+		 *
 		 * Setting("Sub Setting Name"); parent.getChildren().add(new
-		 * 
+		 *
 		 * TreeItem<Setting>(child));
-		 * 
+		 *
 		 * tab.getValue().getChildren().add(parent);
-		 * 
+		 *
 		 */
 
 		addItem(new TreeItem<>(
 				new SettingTab("Visual",
 						new Setting("Background mouse response: "
-								+ (Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement() ? "on" : "off"),
+								+ (getProgramSettings().isShapeBackgroundRespondToMouseMovement() ? "on" : "off"),
 								cell -> {
 									Kröw.getProgramSettings().setShapeBackgroundRespondToMouseMovement(
 											!Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement());
@@ -176,8 +178,9 @@ public class Settings extends Page {
 													? "on" : "off"));
 
 								}),
-						new Setting("Current animation mode: "
-								+ (Kröw.getProgramSettings().getCurrentAnimationMode() == 0 ? "Normal" : "Lengthy"),
+						new Setting(
+								"Current animation mode: "
+										+ (getProgramSettings().getCurrentAnimationMode() == 0 ? "Normal" : "Lengthy"),
 								cell -> {
 									Kröw.getProgramSettings().setCurrentAnimationMode(
 											Kröw.getProgramSettings().getCurrentAnimationMode() == 0 ? 1 : 0);
@@ -185,6 +188,27 @@ public class Settings extends Page {
 											.setText("Current animation mode: "
 													+ (Kröw.getProgramSettings().getCurrentAnimationMode() == 0
 															? "Normal" : "Lengthy"));
+								}),
+						new Setting(
+								"Program background: " + (getProgramSettings().getGlobalProgramBackground() == 0
+										? "Solid gray (Default)"
+										: getProgramSettings().getGlobalProgramBackground() == 1
+												? "Moderately transparent" : "Completely transparent"),
+								new Togglable() {
+
+									@Override
+									public void onToggled(TreeCell<Setting> cell) {
+										getProgramSettings().setGlobalProgramBackground(
+												getProgramSettings().getGlobalProgramBackground() == 2 ? 0
+														: getProgramSettings().getGlobalProgramBackground() + 1);
+										cell.getItem()
+												.setText("Program background: "
+														+ (getProgramSettings().getGlobalProgramBackground() == 0
+																? "Solid gray (Default)"
+																: getProgramSettings().getGlobalProgramBackground() == 1
+																		? "Moderately transparent"
+																		: "Completely transparent"));
+									}
 								}))));
 
 		final TreeItem<SettingTab> program = new TreeItem<>(new SettingTab("Program"));

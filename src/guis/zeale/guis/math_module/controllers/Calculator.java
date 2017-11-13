@@ -5,8 +5,6 @@ import java.util.List;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
@@ -66,7 +64,7 @@ public class Calculator extends Page {
 	private Accordion menu;
 	@FXML
 	private VBox statisticsMenuBox;
-	private TabGroup calculus, chemistry, dflt;
+	private TabGroup dflt;
 
 	@FXML
 	private Button showMenuButton;
@@ -101,13 +99,6 @@ public class Calculator extends Page {
 	}
 
 	@FXML
-	private void _event_showSlideMenu() {
-		showMenuButton.setVisible(false);
-		menu.setVisible(false);
-		slideMenu.getParentWrapper().setVisible(true);
-	}
-
-	@FXML
 	private void _event_enableStatsMode() {
 		if (statistics.getCurrentMode() == Mode.DATA_SET)
 			return;
@@ -128,6 +119,13 @@ public class Calculator extends Page {
 		} catch (EmptyEquationException | UnmatchedParenthesisException | IrregularCharacterException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@FXML
+	private void _event_showSlideMenu() {
+		showMenuButton.setVisible(false);
+		menu.setVisible(false);
+		slideMenu.getParentWrapper().setVisible(true);
 	}
 
 	@FXML
@@ -162,31 +160,13 @@ public class Calculator extends Page {
 		}
 	}
 
-	private void addHoverAnimation(final double size, final Node... nodes) {
-		for (final Node n : nodes) {
-
-			final ScaleTransition buttonTabPaneScaleTransition = new ScaleTransition(Duration.seconds(0.1));
-			buttonTabPaneScaleTransition.setNode(n);
-
-			n.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> {
-				buttonTabPaneScaleTransition.stop();
-				buttonTabPaneScaleTransition.setToX(size);
-				buttonTabPaneScaleTransition.setToY(size);
-				buttonTabPaneScaleTransition.play();
-			});
-			n.addEventHandler(MouseEvent.MOUSE_EXITED, event -> {
-				buttonTabPaneScaleTransition.stop();
-				buttonTabPaneScaleTransition.setToX(1);
-				buttonTabPaneScaleTransition.setToY(1);
-				buttonTabPaneScaleTransition.play();
-			});
-
-		}
-	}
-
 	private void appendText(final String text) {
 		calcIO.appendText(text);
 		calcIO.positionCaret(calcIO.getLength());
+	}
+
+	public void enableStatsMode() {
+		_event_enableStatsMode();
 	}
 
 	@Override
@@ -286,15 +266,11 @@ public class Calculator extends Page {
 		GUIHelper.addDefaultSettings(slideMenu);
 		slideMenu.getParentWrapper().setVisible(false);
 
-		Node showMathMenuItem = new GUIHelper.MenuOption(Color.ORANGE, "Show Math Menu");
-		showMathMenuItem.setOnMouseClicked(new EventHandler<Event>() {
-
-			@Override
-			public void handle(Event event) {
-				slideMenu.getParentWrapper().setVisible(false);
-				menu.setVisible(true);
-				showMenuButton.setVisible(true);
-			}
+		final Node showMathMenuItem = new GUIHelper.MenuOption(Color.ORANGE, "Show Math Menu");
+		showMathMenuItem.setOnMouseClicked(event -> {
+			slideMenu.getParentWrapper().setVisible(false);
+			menu.setVisible(true);
+			showMenuButton.setVisible(true);
 		});
 		slideMenu.getChildren().add(showMathMenuItem);
 
@@ -305,14 +281,6 @@ public class Calculator extends Page {
 				&& tab.getProperties().get(PropertyKeys.DISCRETE_TAB).equals(true);
 	}
 
-	private void makeTabDiscrete(final Tab tab) {
-		tab.getProperties().put(PropertyKeys.DISCRETE_TAB, true);
-	}
-
-	private void makeTabNormal(final Tab tab) {
-		tab.getProperties().remove(PropertyKeys.DISCRETE_TAB);
-	}
-
 	@Override
 	protected void onPageSwitched() {
 		cachedText = calcIO.getText();
@@ -320,10 +288,6 @@ public class Calculator extends Page {
 
 	public void show() {
 		dflt.show(buttonTabPane);
-	}
-	
-	public void enableStatsMode(){
-		_event_enableStatsMode();
 	}
 
 }

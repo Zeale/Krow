@@ -1,9 +1,21 @@
 .background {
-	-fx-background-color: #000000C4;
+	-fx-background-color: #00000000;/*v1.0.0 #000000C4*/
 }
 
-.rgba-background {
+.rgba-background, .rgba-background.table-view .column-header, .rgba-background.table-view .column-header-background {
 	-fx-background-color: rgba(0.0, 0.0, 0.0, 0.3);
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-view .table-column {
+	-fx-border-color: black;
+	-fx-border-width: 0.0px 1.5px 0.0px 1.5px;
+	-fx-font-weight: bold;
+	-fx-alignment: center;
 }
 
 .transparent {
@@ -85,20 +97,32 @@
 }
 
 /* Pop Buttons */
-.pop-button {
-	-fx-font-family: Consolas;
-	-fx-text-fill: white;
-	-fx-font-weight: bold;
-	-fx-border-color: black;
-	-fx-border-width: 0.0 0.0 2.0px 2.0px;
-	-fx-background-color: #00000015;
-}
-
-.pop-button:armed {
+.pop-button:armed.button {
 	-fx-border-color: black;
 	-fx-border-width: 2.0px 2.0px 0.0 0.0;
 	-fx-text-fill: #535353;
 	-fx-label-padding: 2.0px 2.0px 0.0 0.0;
+}
+
+.pop-button {
+	-fx-font-family: Consolas;
+	-fx-border-width: 2.0px;
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+	-fx-border-color: black;
+	-fx-background-color: #00000015;
+}
+
+.pop-button.date-picker .date-picker-display-node {
+	-fx-font-family: Consolas;
+	-fx-border-width: 0.0;
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+	-fx-background-color: #00000015;
+}
+
+.pop-button.button {
+	-fx-border-width: 0.0 0.0 2.0px 2.0px;
 }
 
 #StatisticsListView .list-cell {

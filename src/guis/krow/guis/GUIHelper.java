@@ -40,6 +40,38 @@ import zeale.guis.Home;
 
 public final class GUIHelper {
 
+	public static class MenuBox extends VBox {
+		private AnchorPane parentWrapper;
+
+		public MenuBox() {
+			// TODO Auto-generated constructor stub
+		}
+
+		public MenuBox(final double spacing) {
+			super(spacing);
+			// TODO Auto-generated constructor stub
+		}
+
+		public MenuBox(final double spacing, final Node... children) {
+			super(spacing, children);
+			// TODO Auto-generated constructor stub
+		}
+
+		public MenuBox(final Node... children) {
+			super(children);
+			// TODO Auto-generated constructor stub
+		}
+
+		public AnchorPane getParentWrapper() {
+			return parentWrapper;
+		}
+
+		private void setParentWrapper(final AnchorPane parentWrapper) {
+			this.parentWrapper = parentWrapper;
+		}
+
+	}
+
 	public static final class MenuOption extends Text {
 		private Color fadeColor, startColor;
 
@@ -90,7 +122,6 @@ public final class GUIHelper {
 	}
 
 	private static final Random RANDOM = new Random();
-
 	private static final Color MENU_BAR_SHADOW_COLOR = Color.BLACK;
 	private static final int MENU_BAR_SHADOW_RADIUS = 7;
 	private static final Color MENU_BACKGROUND_COLOR = new Color(0, 0, 0, 0.3);
@@ -113,6 +144,7 @@ public final class GUIHelper {
 	private static final Duration MENU_CHILD_NODE_HOVER_ANIMATION_EXIT_DURATION = Duration.seconds(1);
 	private static final Color MENU_CHILD_NODE_START_COLOR = Color.BLACK,
 			MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR = Color.WHITE;
+
 	private static final int MENU_CHILD_NODE_FONT_SIZE;
 
 	static {
@@ -453,7 +485,7 @@ public final class GUIHelper {
 
 		// Children will be added at the end.
 
-		AnchorPane wrapper = new AnchorPane();
+		final AnchorPane wrapper = new AnchorPane();
 
 		wrapper.setPickOnBounds(false);
 		wrapper.setEventDispatcher(null);
@@ -479,7 +511,7 @@ public final class GUIHelper {
 		});
 
 		PopupHelper.buildHoverPopup(github, GUIHelper.makeBoldLabel("GitHub", 18));
-		Label authorAccount = new Label("Author"), programPage = new Label("Program");
+		final Label authorAccount = new Label("Author"), programPage = new Label("Program");
 		authorAccount.setOnMouseClicked(event -> {
 			if (event.getButton().equals(MouseButton.PRIMARY))
 				Kröw.openLink("https://github.com/Zeale");
@@ -491,7 +523,7 @@ public final class GUIHelper {
 		});
 		PopupHelper.buildRightClickPopup(github, authorAccount, programPage);
 
-		ImageView cookie = new ImageView("/krow/resources/graphics/cookie256px.png");
+		final ImageView cookie = new ImageView("/krow/resources/graphics/cookie256px.png");
 		cookie.setFitHeight(Kröw.scaleHeight(40));
 		cookie.setFitWidth(Kröw.scaleWidth(40));
 		cookie.setPickOnBounds(true);
@@ -502,7 +534,7 @@ public final class GUIHelper {
 
 		PopupHelper.buildHoverPopup(cookie, GUIHelper.makeBoldLabel("Cookie", 18));
 
-		ImageView cookiep = new ImageView("/krow/resources/graphics/cookie+256px.png");
+		final ImageView cookiep = new ImageView("/krow/resources/graphics/cookie+256px.png");
 		cookiep.setFitHeight(Kröw.scaleHeight(40));
 		cookiep.setFitWidth(Kröw.scaleWidth(40));
 		cookiep.setPickOnBounds(true);
@@ -513,7 +545,7 @@ public final class GUIHelper {
 
 		PopupHelper.buildHoverPopup(cookiep, Color.BLUE, "Cookie+");
 
-		ImageView krow = new ImageView("/krow/resources/Kröw_hd.png");
+		final ImageView krow = new ImageView("/krow/resources/Kröw_hd.png");
 		krow.setFitHeight(Kröw.scaleHeight(40));
 		krow.setFitWidth(Kröw.scaleWidth(40));
 		krow.setPickOnBounds(true);
@@ -533,58 +565,26 @@ public final class GUIHelper {
 
 	}
 
-	public static class MenuBox extends VBox {
-		private AnchorPane parentWrapper;
-
-		public AnchorPane getParentWrapper() {
-			return parentWrapper;
-		}
-
-		public MenuBox() {
-			// TODO Auto-generated constructor stub
-		}
-
-		public MenuBox(double spacing, Node... children) {
-			super(spacing, children);
-			// TODO Auto-generated constructor stub
-		}
-
-		public MenuBox(double spacing) {
-			super(spacing);
-			// TODO Auto-generated constructor stub
-		}
-
-		public MenuBox(Node... children) {
-			super(children);
-			// TODO Auto-generated constructor stub
-		}
-
-		private void setParentWrapper(AnchorPane parentWrapper) {
-			this.parentWrapper = parentWrapper;
-		}
-
-	}
-
-	public static Label makeBoldLabel(String text, double fontSize) {
-		Label lbl = new Label(text);
-		lbl.setFont(Font.font(lbl.getFont().getFamily(), FontWeight.BOLD, fontSize));
-		return lbl;
-	}
-
-	public static Label makeLabel(String text, double fontSize) {
-		Label lbl = new Label(text);
-		lbl.setFont(Font.font(lbl.getFont().getFamily(), fontSize));
-		return lbl;
-	}
-
-	public static boolean isDeepChildOf(Node child, Parent parent) {
-		for (Node n : parent.getChildrenUnmodifiable())
+	public static boolean isDeepChildOf(final Node child, final Parent parent) {
+		for (final Node n : parent.getChildrenUnmodifiable())
 			if (n == child)
 				return true;
 			else if (n instanceof Parent)
 				if (isDeepChildOf(child, (Parent) n))
 					return true;
 		return false;
+	}
+
+	public static Label makeBoldLabel(final String text, final double fontSize) {
+		final Label lbl = new Label(text);
+		lbl.setFont(Font.font(lbl.getFont().getFamily(), FontWeight.BOLD, fontSize));
+		return lbl;
+	}
+
+	public static Label makeLabel(final String text, final double fontSize) {
+		final Label lbl = new Label(text);
+		lbl.setFont(Font.font(lbl.getFont().getFamily(), fontSize));
+		return lbl;
 	}
 
 }

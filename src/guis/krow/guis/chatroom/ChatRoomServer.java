@@ -92,7 +92,7 @@ public class ChatRoomServer extends Server {
 								e.printStackTrace();
 							}
 
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						e.printStackTrace();
 					}
 				}

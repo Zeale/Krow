@@ -1,9 +1,8 @@
 package krow.guis;
 
-import java.util.Stack;
+import java.util.ArrayList;
 
 import javafx.animation.FadeTransition;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -29,23 +28,46 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 import kröw.core.Kröw;
+import kröw.core.managers.WindowManager;
 
 public final class PopupHelper {
 
-	private Stack<Popup> popups = new Stack<>();
+	public static class PopupWrapper<BT extends Pane> {
+		public final BT box;
+		public final Popup popup;
 
-	private PopupHelper() {
+		private PopupWrapper(final BT box, final Popup popup) {
+			this.box = box;
+			this.popup = popup;
+		}
+
 	}
 
-	public static void applyHoverPopup(Node node, Popup popup) {
-		Parent popupRoot = popup.getScene().getRoot();
-		FadeTransition openTransition = new FadeTransition(Duration.millis(350), popupRoot),
+	public static final double DEFAULT_POPUP_VERTICAL_DISPLACEMENT = 0;
+
+	private static ArrayList<Popup> popups = new ArrayList<>();
+
+	static {
+		WindowManager.addOnPageChangeRequested(event -> hideAllShowingRegisteredPopups());
+	}
+
+	private static final Color BASIC_POPUP_DEFAULT_BORDER_COLOR = new Color(0, 0, 0, 0.5);
+
+	private static final Color BASIC_POPUP_DEFAULT_SHADOW_COLOR = new Color(0, 0, 0, 0.25);
+
+	private static final Object LAST_POPUP_KEY = new Object();
+
+	public static void applyHoverPopup(final Node node, final Popup popup) {
+		final Parent popupRoot = popup.getScene().getRoot();
+		final FadeTransition openTransition = new FadeTransition(Duration.millis(350), popupRoot),
 				closeTransition = new FadeTransition(Duration.millis(350), popupRoot);
 		openTransition.setToValue(1);
 		closeTransition.setToValue(0);
 		popupRoot.setOpacity(0);
 
-		closeTransition.setOnFinished(event -> popup.hide());
+		closeTransition.setOnFinished(event -> {
+			popup.hide();
+		});
 
 		new Object() {
 
@@ -80,7 +102,14 @@ public final class PopupHelper {
 
 			}
 
-			private void open(MouseEvent event) {
+			private void close() {
+				openTransition.stop();
+				closeTransition.stop();
+				closeTransition.setFromValue(closeTransition.getNode().getOpacity());
+				closeTransition.play();
+			}
+
+			private void open(final MouseEvent event) {
 
 				if (node.getProperties().containsKey(LAST_POPUP_KEY)
 						&& node.getProperties().get(LAST_POPUP_KEY) != popup
@@ -91,35 +120,113 @@ public final class PopupHelper {
 				if (!popup.isShowing()) {
 					popup.show(node, event.getSceneX(), event.getSceneY());
 					popup.setX(event.getSceneX() - popup.getWidth() / 2);
-					popup.setY(event.getSceneY() - popup.getHeight() - Kröw.scaleHeight(20));
+					popup.setY(event.getSceneY() - popup.getHeight()
+							- Kröw.scaleHeight(DEFAULT_POPUP_VERTICAL_DISPLACEMENT));
 				}
 				openTransition.stop();
 				closeTransition.stop();
 				openTransition.setFromValue(openTransition.getNode().getOpacity());
 				openTransition.play();
 			}
+		};
+
+	}
+
+	public static void applyRightClickPopup(final Node node, final Popup popup) {
+		final Parent popupRoot = popup.getScene().getRoot();
+		final FadeTransition openTransition = new FadeTransition(Duration.millis(350), popupRoot),
+				closeTransition = new FadeTransition(Duration.millis(350), popupRoot);
+		openTransition.setToValue(1);
+		closeTransition.setToValue(0);
+		popupRoot.setOpacity(0);
+
+		closeTransition.setOnFinished(event -> {
+			popup.hide();
+		});
+
+		new Object() {
+
+			private byte prevEvent = -1;
+			private long timeEntered;
+
+			{
+
+				node.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
+					if (!popup.isShowing())
+						return;
+					prevEvent = 0;
+					open(event);
+				});
+
+				node.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+					if (event.getButton().equals(MouseButton.SECONDARY)) {
+						event.consume();
+						open(event);
+					}
+				});
+
+				node.addEventFilter(MouseEvent.MOUSE_EXITED, event -> {
+					// Make sure we aren't leaving and going to this node.
+					final long time = System.currentTimeMillis();
+					if (time - 300 <= timeEntered || event.getPickResult().getIntersectedNode() == node)
+						return;
+
+					prevEvent = 1;
+					close();
+				});
+
+				popupRoot.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
+					prevEvent = 2;
+					timeEntered = System.currentTimeMillis();
+					open(event);
+				});
+
+				popupRoot.addEventFilter(MouseEvent.MOUSE_EXITED, event -> {
+					if (prevEvent == 0)
+						return;
+					prevEvent = 3;
+					close();
+				});
+
+			}
 
 			private void close() {
+				popups.remove(popup);
 				openTransition.stop();
 				closeTransition.stop();
 				closeTransition.setFromValue(closeTransition.getNode().getOpacity());
 				closeTransition.play();
 			}
+
+			private void open(final MouseEvent event) {
+
+				if (node.getProperties().containsKey(LAST_POPUP_KEY)) {
+					final Popup popup2 = (Popup) node.getProperties().get(LAST_POPUP_KEY);
+					if (popup2 != popup && popup2.isShowing())
+						popup2.hide();
+				}
+
+				node.getProperties().put(LAST_POPUP_KEY, popup);
+
+				popups.add(popup);
+
+				if (!popup.isShowing()) {
+					popup.show(node, event.getSceneX(), event.getSceneY());
+					popup.setX(event.getSceneX() - popup.getWidth() / 2);
+					popup.setY(event.getSceneY() - popup.getHeight()
+							- Kröw.scaleHeight(DEFAULT_POPUP_VERTICAL_DISPLACEMENT));
+				}
+				openTransition.stop();
+				closeTransition.stop();
+				openTransition.setFromValue(openTransition.getNode().getOpacity());
+				openTransition.play();
+			}
 		};
 
 	}
 
-	private static final Color BASIC_POPUP_DEFAULT_BORDER_COLOR = new Color(0, 0, 0, 0.5);
-	private static final Color BASIC_POPUP_DEFAULT_SHADOW_COLOR = new Color(0, 0, 0, 0.25);
-
-	public static VBox buildHoverPopup(Node boundNode, Label... labels) {
-		PopupWrapper<VBox> wrapper = buildPopup(labels);
-		applyHoverPopup(boundNode, wrapper.popup);
-		return wrapper.box;
-	}
-
-	public static VBox buildHoverPopup(Node boundNode, Color color, String... labels) {
-		Label[] lbls = new Label[labels.length];
+	public static VBox buildHoverPopup(final Node boundNode, final Color color, final String... labels) {
+		final Label[] lbls = new Label[labels.length];
 		for (int i = 0; i < labels.length; i++) {
 			lbls[i] = new Label(labels[i]);
 			lbls[i].setTextFill(color);
@@ -127,14 +234,20 @@ public final class PopupHelper {
 		return buildHoverPopup(boundNode, lbls);
 	}
 
-	public static PopupWrapper<VBox> buildPopup(Label... labels) {
+	public static VBox buildHoverPopup(final Node boundNode, final Label... labels) {
+		final PopupWrapper<VBox> wrapper = buildPopup(labels);
+		applyHoverPopup(boundNode, wrapper.popup);
+		return wrapper.box;
+	}
 
-		double defaultSize = new Label().getFont().getSize();
-		Paint defaultTextFill = new Label().getTextFill();
+	public static PopupWrapper<VBox> buildPopup(final Label... labels) {
 
-		Popup popup = new Popup();
-		VBox box = new VBox(10);
-		for (Label l : labels) {
+		final double defaultSize = new Label().getFont().getSize();
+		final Paint defaultTextFill = new Label().getTextFill();
+
+		final Popup popup = new Popup();
+		final VBox box = new VBox(10);
+		for (final Label l : labels) {
 			if (l.getFont().getSize() == defaultSize)
 				l.setFont(
 						Font.font(l.getFont().getFamily(), FontWeight.BOLD, FontPosture.REGULAR, Kröw.scaleHeight(18)));
@@ -151,115 +264,23 @@ public final class PopupHelper {
 
 		popup.getScene().setRoot(box);
 
-		return new PopupWrapper<VBox>(box, popup);
+		return new PopupWrapper<>(box, popup);
 
 	}
 
-	public static VBox buildRightClickPopup(Node boundNode, Label... labels) {
-		PopupWrapper<VBox> wrapper = buildPopup(labels);
+	public static VBox buildRightClickPopup(final Node boundNode, final Label... labels) {
+		final PopupWrapper<VBox> wrapper = buildPopup(labels);
 		applyRightClickPopup(boundNode, wrapper.popup);
 		return wrapper.box;
 	}
 
-	public static class PopupWrapper<BT extends Pane> {
-		public final BT box;
-		public final Popup popup;
-
-		private PopupWrapper(BT box, Popup popup) {
-			this.box = box;
-			this.popup = popup;
-		}
-
+	public static void hideAllShowingRegisteredPopups() {
+		for (final Popup popup : popups)
+			popup.hide();
+		popups.clear();
 	}
 
-	public static void applyRightClickPopup(Node node, Popup popup) {
-		Parent popupRoot = popup.getScene().getRoot();
-		FadeTransition openTransition = new FadeTransition(Duration.millis(350), popupRoot),
-				closeTransition = new FadeTransition(Duration.millis(350), popupRoot);
-		openTransition.setToValue(1);
-		closeTransition.setToValue(0);
-		popupRoot.setOpacity(0);
-
-		closeTransition.setOnFinished(event -> popup.hide());
-
-		new Object() {
-
-			private byte prevEvent = -1;
-
-			{
-
-				node.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
-					if (!popup.isShowing())
-						return;
-					prevEvent = 0;
-					open(event);
-				});
-
-				node.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-
-					@Override
-					public void handle(MouseEvent event) {
-						if (event.getButton().equals(MouseButton.SECONDARY)) {
-							event.consume();
-							open(event);
-						}
-					}
-				});
-
-				node.addEventFilter(MouseEvent.MOUSE_EXITED, event -> {
-					// Make sure we aren't leaving and going to this node.
-					if (event.getPickResult().getIntersectedNode() == node)
-						return;
-
-					prevEvent = 1;
-					close();
-				});
-
-				popupRoot.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
-					prevEvent = 2;
-					open(event);
-				});
-
-				popupRoot.addEventFilter(MouseEvent.MOUSE_EXITED, event -> {
-					if (prevEvent == 0)
-						return;
-					prevEvent = 3;
-					close();
-				});
-
-			}
-
-			private void open(MouseEvent event) {
-
-				if (node.getProperties().containsKey(LAST_POPUP_KEY)) {
-					Popup popup2 = (Popup) node.getProperties().get(LAST_POPUP_KEY);
-					if (popup2 != popup && popup2.isShowing())
-						popup2.hide();
-				}
-
-				node.getProperties().put(LAST_POPUP_KEY, popup);
-
-				if (!popup.isShowing()) {
-					popup.show(node, event.getSceneX(), event.getSceneY());
-					popup.setX(event.getSceneX() - popup.getWidth() / 2);
-					popup.setY(event.getSceneY() - popup.getHeight() - Kröw.scaleHeight(20));
-				}
-				openTransition.stop();
-				closeTransition.stop();
-				openTransition.setFromValue(openTransition.getNode().getOpacity());
-				openTransition.play();
-			}
-
-			private void close() {
-				openTransition.stop();
-				closeTransition.stop();
-				closeTransition.setFromValue(closeTransition.getNode().getOpacity());
-				closeTransition.play();
-			}
-		};
-
+	private PopupHelper() {
 	}
-
-	private static final Object LAST_POPUP_KEY = new Object();
 
 }

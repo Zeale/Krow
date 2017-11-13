@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="root" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@../css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TextFlow fx:id="console" layoutX="161.0" layoutY="28.0" styleClass="rgba-background" AnchorPane.bottomAnchor="350.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="30.0" />
+      <TextArea fx:id="input" layoutX="141.0" layoutY="785.0" prefHeight="325.0" promptText="Type something here..." style="-fx-text-fill: white;" styleClass="rgba-background" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <font>
+            <Font name="Consolas" size="12.0" />
+         </font>
+      </TextArea>
+      <Button fx:id="send" focusTraversable="false" layoutX="1733.0" layoutY="898.0" mnemonicParsing="false" style="-fx-font-size: 20; -fx-font-family: Consolas;" styleClass="pop-button" text="Send">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>
