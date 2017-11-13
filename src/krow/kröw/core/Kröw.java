@@ -435,8 +435,9 @@ public final class Kröw extends Application {
 
 		System.out.println("--SWITCHING OUTPUT STREAMS--");
 		// Set std & err output for System cls.
-		System.setOut(ConsoleModule.out);
-		System.setErr(ConsoleModule.err);
+		// TODO Uncomment
+		// System.setOut(ConsoleModule.out);
+		// System.setErr(ConsoleModule.err);
 		defout.println("Streams have successfully been switched.");
 
 		Platform.setImplicitExit(false);
