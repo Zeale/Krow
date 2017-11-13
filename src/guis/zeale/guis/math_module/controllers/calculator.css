@@ -1,4 +1,4 @@
-.acccordion .titled-pane {
+.accordion .titled-pane {
 	-fx-background-color: transparent;
 }
 
@@ -6,7 +6,7 @@
 	-fx-text-fill: gold;
 }
 
-#CalculatorAccordion .titled-pane .content .button{
+#CalculatorAccordion .titled-pane .content .button {
 	-fx-background-color: #00000020;
 	-fx-font-size: 12.0px;
 }
