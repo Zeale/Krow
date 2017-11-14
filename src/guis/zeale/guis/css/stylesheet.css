@@ -4,7 +4,7 @@
 
 .accordion.background .titled-pane {
 	-fx-text-fill: white;
-	-fx-font-size: 18.0;
+	-fx-font-size: 16.0;
 	-fx-font-weight: bold;
 }
 
@@ -16,8 +16,12 @@
 	-fx-background-color: white;
 }
 
-.accordion.background .titled-pane .content {
+.accordion.background {
 	-fx-background-color: #000000C4;
+}
+
+.accordion.background .titled-pane .content{
+	-fx-background-color: transparent;
 }
 
 .rgba-background, .rgba-background.table-view .column-header, .rgba-background.table-view .column-header-background {
