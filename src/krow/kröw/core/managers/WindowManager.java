@@ -28,9 +28,9 @@ import kröw.events.EventHandler;
 
 public final class WindowManager {
 
-	private static Background defaultBackgroundManager = loadDefaultBackgroundManager();
+	private static Background defaultBackground = loadDefaultBackground();
 
-	private static final Background loadDefaultBackgroundManager() {
+	private static final Background loadDefaultBackground() {
 		ShapeBackground sb = new ShapeBackground();
 		Platform.runLater(() -> sb.addRandomShapes(15));
 		return sb;
@@ -98,7 +98,7 @@ public final class WindowManager {
 		 * The default {@link Background} is used at the expense of other
 		 * modules. This means that it is completely up to another module of
 		 * whether or not to render a background from
-		 * {@link #getDefaultBackgroundManager()}.
+		 * {@link #getDefaultBackground()}.
 		 * <p>
 		 * For the purpose of allowing the user to keep whatever background they
 		 * choose in modules that support it, <b>this method should not be
@@ -118,16 +118,16 @@ public final class WindowManager {
 		 * 
 		 * @param manager
 		 *            The new default {@link Background}. Modules that reference
-		 *            {@link #getDefaultBackgroundManager()} will be given this
+		 *            {@link #getDefaultBackground()} will be given this
 		 *            new manager when they are called.
 		 *            <p>
 		 *            This cannot be null; such will result in an
 		 *            {@link IllegalArgumentException}.
 		 */
-		protected final void setDefaultBackgroundManager(Background manager) {
+		protected final void setDefaultBackground(Background manager) {
 			if (manager == null)
 				throw new IllegalArgumentException("The BackgroundManager mustn't be null.");
-			defaultBackgroundManager = manager;
+			defaultBackground = manager;
 		}
 
 		/**
@@ -148,12 +148,12 @@ public final class WindowManager {
 		 * 
 		 * @return {@code Kröw}'s default {@link Background}.
 		 */
-		protected final Background getDefaultBackgroundManager() {
-			return defaultBackgroundManager;
+		protected final Background getDefaultBackground() {
+			return defaultBackground;
 		}
 
 		protected final void applyDefaultBackground(Pane pane) {
-			getDefaultBackgroundManager().show(pane);
+			getDefaultBackground().show(pane);
 		}
 
 		/**
