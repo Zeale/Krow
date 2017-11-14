@@ -10,8 +10,7 @@ import javafx.scene.paint.Color;
 
 /**
  * <h1 align="center">{@link Background}</h1>
- * <h3 align="center">The superclass for all other
- * {@link Background}s...</h3>
+ * <h3 align="center">The superclass for all other {@link Background}s...</h3>
  * 
  * <br>
  * <p>
@@ -136,7 +135,12 @@ public abstract class Background {
 
 	protected void setMouseMovementHandler(final EventHandler<MouseEvent> mouseMovementHandler) {
 		this.mouseMovementHandler = mouseMovementHandler;
-		currentPane.setOnMouseMoved(mouseMovementHandler);
+		if (hasUnderlyingPane())
+			currentPane.setOnMouseMoved(mouseMovementHandler);
+	}
+
+	protected boolean hasUnderlyingPane() {
+		return currentPane != null;
 	}
 
 }

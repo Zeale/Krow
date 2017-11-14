@@ -22,7 +22,6 @@ import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.Page;
-import kröw.events.Event;
 import zeale.guis.developer_module.DeveloperModule;
 import zeale.guis.math_module.MathModule;
 import zeale.guis.math_module.controllers.Calculator;

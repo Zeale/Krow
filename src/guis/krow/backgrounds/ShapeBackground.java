@@ -26,6 +26,7 @@ import javafx.util.Duration;
 import krow.guis.ShapeFactory;
 import kröw.core.Kröw;
 
+// TODO Change addition of mouse detection event handlers to use the addEventHandler method of Nodes/Panes, rather than the setOnMouseMoved method.
 public class ShapeBackground extends Background {
 
 	private static final Object TRANSLATOR_KEY = new Object();
@@ -162,11 +163,11 @@ public class ShapeBackground extends Background {
 
 	private boolean disabled;
 
-	protected ShapeBackground() {
+	public ShapeBackground() {
 		super();
 	}
 
-	protected ShapeBackground(final Color startColor) {
+	public ShapeBackground(final Color startColor) {
 		super(startColor);
 	}
 
@@ -621,10 +622,11 @@ public class ShapeBackground extends Background {
 
 	@Override
 	public void setCurrentPane(final Pane currentPane) {
-		if (this.currentPane == currentPane)
+		if (this.currentPane == currentPane || currentPane == null)
 			return;
-		for (final Shape s : getShapes())
-			getCurrentPane().getChildren().remove(s);
+		if (hasUnderlyingPane())
+			for (final Shape s : getShapes())
+				getCurrentPane().getChildren().remove(s);
 		super.setCurrentPane(currentPane);
 		updatePane();
 
@@ -810,6 +812,11 @@ public class ShapeBackground extends Background {
 
 	@Override
 	public void show(Pane pane) {
+		if (pane == null) {
+			disable();
+			fadeOut(Duration.millis(10));
+			return;
+		}
 		setCurrentPane(pane);
 		animateShapes();
 	}
