@@ -3,6 +3,7 @@ package krow.backgrounds;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
+import java.util.UUID;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
@@ -13,6 +14,7 @@ import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.CacheHint;
+import javafx.scene.Node;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
@@ -35,10 +37,13 @@ public class ShapeBackground extends Background {
 	private static final Object IS_BEING_SHOVED_KEY = new Object();
 	private static final Object BUILT_KEY = new Object();
 	private static final Object EFFECT_KEY = new Object();
+	private static final Object BACKGROUND_ID_KEY = new Object();
 
 	private static final Random random = new Random();
 	private static final double SHAPE_RADIUS = 100;
 	private static final Color SHAPE_COLOR = Color.BLACK;
+
+	private UUID backgroundID = UUID.randomUUID();
 
 	public static class ColorAnimation {
 
@@ -171,8 +176,12 @@ public class ShapeBackground extends Background {
 	}
 
 	public void addRandomShape() {
+		addRandomShape(true);
+	}
 
-		buildShape(ShapeFactory.buildRegularShape(100, random.nextInt(14) + 3));
+	private void addRandomShape(boolean updatePane) {
+
+		prepareShape(ShapeFactory.buildRegularShape(100, random.nextInt(14) + 3));
 
 		/*
 		 * switch (random.nextInt(3)) {
@@ -182,6 +191,9 @@ public class ShapeBackground extends Background {
 		 *
 		 * default: case 0: buildShape(ShapeFactory.buildTriangle()); break; }
 		 */
+
+		if (updatePane)
+			updatePane();
 
 	}
 
@@ -228,20 +240,23 @@ public class ShapeBackground extends Background {
 
 	public void addRandomShapes(int count) {
 		for (; count > 0; count--)
-			addRandomShape();
+			addRandomShape(false);
+		updatePane();
 	}
 
 	public void addShape(final Shape shape) {
-		buildShape(shape);
+		prepareShape(shape);
 	}
 
 	public void addShapes(final Shape... shapes) {
 		for (final Shape s : shapes)
-			buildShape(s);
+			prepareShape(s);
 	}
 
-	private void addShapeToPane(final Shape s) {
-		currentPane.getChildren().add(0, s);
+	private void addShape_impl(final Shape s, boolean updatePane) {
+		shapes.add(s);
+		if (updatePane)
+			updatePane();
 	}
 
 	private void animate(final Shape c) {
@@ -313,7 +328,7 @@ public class ShapeBackground extends Background {
 		});
 	}
 
-	private void buildShape(final Shape s) {
+	private void prepareShape(final Shape s) {
 		if (s.getProperties().containsKey(BUILT_KEY) && s.getProperties().get(BUILT_KEY).equals(true))
 			return;
 
@@ -357,10 +372,37 @@ public class ShapeBackground extends Background {
 		s.setCache(true);
 		s.setCacheHint(CacheHint.SPEED);
 
+		s.getProperties().put(BACKGROUND_ID_KEY, backgroundID);
 		shapes.add(s);
-		addShapeToPane(s);
 
 		s.getProperties().put(BUILT_KEY, true);
+	}
+
+	private void buildShape(Shape s, boolean updatePane) {
+		prepareShape(s);
+		if (updatePane)
+			updatePane();
+	}
+
+	private void updatePane() {
+		if (currentPane != null) {
+			for (Node n : currentPane.getChildren())
+				// An == comparison is made here because of that astronomically
+				// slim chance that 2 UUIDs can actually be equal. We, honestly,
+				// could've used a regular object instead, but UUIDs can be
+				// easily converted to and from Strings. This may come into play
+				// later...
+				//
+				// Also, the chance of conflicting UUIDs is obscenely small.
+				// Check out Wikipedia.
+				if (n.getProperties().get(BACKGROUND_ID_KEY) == backgroundID && !shapes.contains(n)) {
+					currentPane.getChildren().remove(n);
+				}
+			for (Node n : shapes)
+				if (!currentPane.getChildren().contains(n))
+					currentPane.getChildren().add(n);
+		}
+
 	}
 
 	private double calculateByX(final double layoutX, final double translateX) {
@@ -539,6 +581,7 @@ public class ShapeBackground extends Background {
 
 	public void removeAllShapes() {
 		shapes.clear();
+		updatePane();
 	}
 
 	public void resetColor() {
@@ -583,8 +626,7 @@ public class ShapeBackground extends Background {
 		for (final Shape s : getShapes())
 			getCurrentPane().getChildren().remove(s);
 		super.setCurrentPane(currentPane);
-		for (final Shape s : getShapes())
-			addShapeToPane(s);
+		updatePane();
 
 		applyDefaultMouseMovementHandler();
 	}
@@ -769,6 +811,7 @@ public class ShapeBackground extends Background {
 	@Override
 	public void show(Pane pane) {
 		setCurrentPane(pane);
+		animateShapes();
 	}
 
 }
