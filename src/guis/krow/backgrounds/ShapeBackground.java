@@ -13,6 +13,7 @@ import javafx.animation.StrokeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.effect.BlurType;
@@ -200,10 +201,11 @@ public class ShapeBackground extends Background {
 
 	public void applyDefaultMouseMovementHandler() {
 		setMouseMovementHandler(event -> {
-			final double mouseX = event.getSceneX(), mouseY = event.getSceneY();
+			final double mouseX = event.getX(), mouseY = event.getY();
 			for (final Shape s : getShapes())
 				if (!s.getProperties().containsKey(IS_BEING_SHOVED_KEY)
 						&& Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement() && !isDisabled()) {
+
 					final double shapeX = s.getLayoutX() + s.getTranslateX(),
 							shapeY = s.getLayoutY() + s.getTranslateY();
 

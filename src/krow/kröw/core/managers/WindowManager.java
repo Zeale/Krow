@@ -32,7 +32,7 @@ public final class WindowManager {
 
 	private static final Background loadDefaultBackground() {
 		ShapeBackground sb = new ShapeBackground();
-		Platform.runLater(() -> sb.addRandomShapes(15));
+		Platform.runLater(() -> sb.addRandomShapes(50));
 		return sb;
 	}
 
@@ -118,8 +118,8 @@ public final class WindowManager {
 		 * 
 		 * @param manager
 		 *            The new default {@link Background}. Modules that reference
-		 *            {@link #getDefaultBackground()} will be given this
-		 *            new manager when they are called.
+		 *            {@link #getDefaultBackground()} will be given this new
+		 *            manager when they are called.
 		 *            <p>
 		 *            This cannot be null; such will result in an
 		 *            {@link IllegalArgumentException}.

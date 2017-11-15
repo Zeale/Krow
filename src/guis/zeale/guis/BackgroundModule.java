@@ -3,6 +3,7 @@ package zeale.guis;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Rectangle;
 import krow.guis.GUIHelper;
 import krow.guis.GUIHelper.MenuBox;
 import kröw.core.managers.WindowManager.Page;
@@ -24,6 +25,18 @@ public class BackgroundModule extends Page {
 		sideMenu.getParentWrapper().setVisible(false);
 
 		applyDefaultBackground(visualizerPane);
+
+		Rectangle clipping = new Rectangle();
+
+		visualizerPane.layoutBoundsProperty().addListener((observable, oldValue, newValue) -> {
+			clipping.setWidth(newValue.getWidth());
+			clipping.setHeight(newValue.getHeight());
+		});
+
+		clipping.setMouseTransparent(true);
+
+		visualizerPane.setClip(clipping);
+
 	}
 
 	@FXML
