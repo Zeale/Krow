@@ -29,6 +29,16 @@ public abstract class Background {
 
 	public abstract void show(Pane pane);
 
+	public void dispose() {
+		disable();
+		for (Node n : mouseDetectionNodes)
+			n.setOnMouseMoved(null);
+		mouseDetectionNodes.clear();
+		if (hasUnderlyingPane())
+			currentPane.setOnMouseMoved(null);
+		currentPane = null;
+	}
+
 	private double animationDuration = DEFAULT_ANIMATION_DURATION;
 
 	protected Pane currentPane;

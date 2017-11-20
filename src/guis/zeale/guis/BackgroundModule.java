@@ -55,4 +55,9 @@ public class BackgroundModule extends Page {
 		return "BackgroundModule.fxml";
 	}
 
+	@FXML
+	private void rainbowPreset() {
+		getDefaultBackground().disable();
+	}
+
 }

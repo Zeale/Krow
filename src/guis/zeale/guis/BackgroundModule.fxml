@@ -20,14 +20,14 @@
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
             </content>
           </TitledPane>
-          <TitledPane animated="false" text="Other">
+          <TitledPane animated="false" text="Presets">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
             </content>
           </TitledPane>
         </panes>
       </Accordion>
-      <TextArea layoutX="1075.0" layoutY="139.0" minWidth="300.0" prefHeight="97.0" prefWidth="528.0" promptText="Background code" wrapText="true" AnchorPane.leftAnchor="1075.0" AnchorPane.topAnchor="139.0" />
+      <TextArea disable="true" layoutX="1075.0" layoutY="139.0" minWidth="300.0" prefHeight="97.0" prefWidth="528.0" promptText="Background code" wrapText="true" AnchorPane.leftAnchor="1075.0" AnchorPane.topAnchor="139.0" />
       <Button layoutX="1603.0" layoutY="48.0" mnemonicParsing="false" onAction="#showMenu" styleClass="pop-button" text="Show Menu" AnchorPane.rightAnchor="239.0" />
    </children>
 </AnchorPane>

@@ -446,6 +446,14 @@ public class ShapeBackground extends Background {
 		}
 	}
 
+	@Override
+	public void dispose() {
+		if (hasUnderlyingPane())
+			getCurrentPane().getChildren().removeAll(getShapes());
+		getShapes().clear();
+		super.dispose();
+	}
+
 	public void enableGlow() {
 		for (final Shape s : getShapes())
 			enableGlow(s);
