@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Rectangle;
+import krow.backgrounds.ShapeBackground;
 import krow.guis.GUIHelper;
 import krow.guis.GUIHelper.MenuBox;
 import kröw.core.managers.WindowManager.Page;
@@ -57,7 +58,13 @@ public class BackgroundModule extends Page {
 
 	@FXML
 	private void rainbowPreset() {
-		getDefaultBackground().disable();
+		getDefaultBackground().dispose();
+		ShapeBackground sb = new ShapeBackground();
+		sb.addRandomShapes(50);
+		sb.setColorAnimations(true, ShapeBackground.ColorAnimation.rainbow(5, false, true));
+		sb.playColorAnimations();
+		sb.show(visualizerPane);
+		setDefaultBackground(sb);
 	}
 
 }

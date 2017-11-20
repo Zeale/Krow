@@ -287,7 +287,13 @@ public class ShapeBackground extends Background {
 
 			// Handle color distribution.
 			if (currentAnimation.isEven()) {
-				st.setToValue(currentAnimation.getColors()[i % currentAnimation.getColors().length]);
+				// Simply referring to i will cause shapes to be colored the
+				// same time since they are in the exact same index in
+				// `getShapes()` every time this is called. To solve this, we'll
+				// append `+ runCount` to the `i` to make sure that colors
+				// change each animation run. See #79 on GitHub for more
+				// information.
+				st.setToValue(currentAnimation.getColors()[(i + runCount) % currentAnimation.getColors().length]);
 				i++;
 			} else
 				st.setToValue(
@@ -308,7 +314,7 @@ public class ShapeBackground extends Background {
 	}
 
 	public void animateShapes() {
-		for (final Shape s : shapes)
+		for (final Shape s : getShapes())
 			((TranslateTransition) s.getProperties().get(TRANSLATOR_KEY)).play();
 	}
 

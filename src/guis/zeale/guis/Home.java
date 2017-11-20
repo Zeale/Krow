@@ -66,7 +66,7 @@ public class Home extends ScrollMenu {
 		horizontalScroll.setOnKeyPressed(keyHandler);
 
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
-		GUIHelper.applyShapeBackground(pane);
+		applyDefaultBackground(pane);
 
 	}
 

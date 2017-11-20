@@ -28,11 +28,11 @@ import kröw.events.EventHandler;
 
 public final class WindowManager {
 
-	private static Background defaultBackground = loadDefaultBackground();
+	private static Background defaultBackground = null;
 
 	private static final Background loadDefaultBackground() {
 		ShapeBackground sb = new ShapeBackground();
-		Platform.runLater(() -> sb.addRandomShapes(50));
+		sb.addRandomShapes(50);
 		return sb;
 	}
 
@@ -149,6 +149,8 @@ public final class WindowManager {
 		 * @return {@code Kröw}'s default {@link Background}.
 		 */
 		protected final Background getDefaultBackground() {
+			if (defaultBackground == null)
+				defaultBackground = loadDefaultBackground();
 			return defaultBackground;
 		}
 
