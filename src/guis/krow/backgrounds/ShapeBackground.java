@@ -13,7 +13,6 @@ import javafx.animation.StrokeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
 import javafx.scene.effect.BlurType;
@@ -256,12 +255,6 @@ public class ShapeBackground extends Background {
 			prepareShape(s);
 	}
 
-	private void addShape_impl(final Shape s, boolean updatePane) {
-		shapes.add(s);
-		if (updatePane)
-			updatePane();
-	}
-
 	private void animate(final Shape c) {
 
 		final TranslateTransition translator = (TranslateTransition) c.getProperties().get(TRANSLATOR_KEY);
@@ -379,12 +372,6 @@ public class ShapeBackground extends Background {
 		shapes.add(s);
 
 		s.getProperties().put(BUILT_KEY, true);
-	}
-
-	private void buildShape(Shape s, boolean updatePane) {
-		prepareShape(s);
-		if (updatePane)
-			updatePane();
 	}
 
 	private void updatePane() {
@@ -821,6 +808,11 @@ public class ShapeBackground extends Background {
 		}
 		setCurrentPane(pane);
 		animateShapes();
+	}
+
+	@Override
+	public String toString() {
+		return super.toString();
 	}
 
 }
