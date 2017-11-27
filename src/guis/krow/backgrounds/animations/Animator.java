@@ -18,6 +18,17 @@ public class Animator<NT extends Node> {
 	private FadeTransition fader;
 	private ScaleTransition scaler;
 
+	public void stopAll() {
+		if (translator != null)
+			getTranslator().stop();
+		if (rotator != null)
+			getRotator().stop();
+		if (fader != null)
+			getFader().stop();
+		if (scaler != null)
+			getScaler().stop();
+	}
+
 	public final TranslateTransition getTranslator() {
 		buildTranslator();
 		return translator;
