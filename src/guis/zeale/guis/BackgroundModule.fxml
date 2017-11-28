@@ -24,8 +24,21 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <Button focusTraversable="false" layoutX="57.0" layoutY="34.0" mnemonicParsing="false" onAction="#rainbowPreset" styleClass="pop-button" text="Rainbow" />
-                        <Button focusTraversable="false" layoutX="62.0" layoutY="80.0" mnemonicParsing="false" onAction="#cookieBackground" styleClass="pop-button" text="Cookie" />
+                        <VBox alignment="TOP_CENTER" layoutX="57.0" layoutY="34.0" spacing="20.0">
+                           <children>
+                              <Button focusTraversable="false" layoutX="57.0" layoutY="34.0" mnemonicParsing="false" onAction="#rainbowPreset" style="-fx-text-fill: white;" styleClass="pop-button" text="Rainbow" />
+                              <Button focusTraversable="false" layoutX="62.0" layoutY="80.0" mnemonicParsing="false" onAction="#cookieBackground" style="-fx-text-fill: black;" text="Cookie">
+                                 <styleClass>
+                                    <String fx:value="pop-button" />
+                                    <String fx:value="white-pop-button" />
+                                 </styleClass></Button>
+                              <Button focusTraversable="false" layoutX="62.0" layoutY="124.0" mnemonicParsing="false" onAction="#cookiePlusBackground" style="-fx-text-fill: black;" text="Cookie+">
+                                 <styleClass>
+                                    <String fx:value="pop-button" />
+                                    <String fx:value="white-pop-button" />
+                                 </styleClass></Button>
+                           </children>
+                        </VBox>
                      </children></AnchorPane>
             </content>
           </TitledPane>

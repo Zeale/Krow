@@ -1,12 +1,14 @@
 package krow.backgrounds;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import javafx.animation.FadeTransition;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ChangeListener;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -19,26 +21,21 @@ public class ImageBackground extends Background {
 	private static final Random RANDOM_INSTANCE = new Random();
 
 	private final ImageViewFactory imageFactory;
-	private final SimpleIntegerProperty imageCount = new SimpleIntegerProperty();
-	{
-		imageCount.addListener(
-				(ChangeListener<Number>) (observable, oldValue, count) -> updateImageCount(count.intValue()));
-	}
+	private final UUID uniqueIdentifier = UUID.randomUUID();
 
-	protected final void updateImageCount(int count) {
-		if (count < 0)
+	public void setImageCount(int amount) {
+		if (amount < 0)
 			throw new IllegalArgumentException(
 					"An image count parameter with a negative value was given. You can't have a negative number of images.");
-		if (count > nodes.size())
-			for (int i = 0; i < count - nodes.size(); i++)
+		if (amount > nodes.size())
+			for (int i = 0, nodesToAdd = amount - nodes.size(); i < nodesToAdd; i++)
 				addImage(imageFactory.make());
-		else if (count < nodes.size())
-			for (int i = 0; i < nodes.size() - count; i++)
+		else if (amount < nodes.size())
+			for (int i = 0; i < nodes.size() - amount; i++)
 				removeImage();
-	}
-
-	public void setImageCount(int count) {
-		imageCount.set(count);
+		else if (amount == nodes.size())
+			return;
+		updatePane();
 	}
 
 	public final void removeImages(int count) {
@@ -48,17 +45,21 @@ public class ImageBackground extends Background {
 		if (count == 0)
 			return;
 		if (count < 0)
-			addImages(count * -1);
-		imageCount.set(getImageCount() - count);
+			addImages(count);
+		for (int i = 0; i < count; i++)
+			nodes.remove(0);
+		updatePane();
 
 	}
 
 	public final int getImageCount() {
-		return imageCount.get();
+		return nodes.size();
 	}
 
 	public final void addImages(int count) {
-		imageCount.set(count + getImageCount());
+		for (int i = 0; i < count; i++)
+			addImage(imageFactory.make());
+		updatePane();
 	}
 
 	public ImageBackground(ImageViewFactory factory) {
@@ -76,11 +77,6 @@ public class ImageBackground extends Background {
 	}
 
 	protected final void addImage(ImageView img) {
-		if (!hasUnderlyingPane())
-			return;
-
-		getCurrentPane().getChildren().add(img);
-
 		Animator<ImageView> animator = new Animator<ImageView>(img);
 		img.setTranslateX(Math.random() * (getCurrentPane().getWidth() == 0
 				? Kröw.getSystemProperties().getScreenWidth() : getCurrentPane().getWidth()));
@@ -108,6 +104,20 @@ public class ImageBackground extends Background {
 		nodes.add(animator);
 	}
 
+	private void updatePane() {
+		if (!hasUnderlyingPane())
+			return;
+		Collection<Node> nodesToRemove = new ArrayList<>();
+		for (Node n : getCurrentPane().getChildren())
+			if (n.getProperties().get(this) == uniqueIdentifier && !nodes.contains(n))
+				nodesToRemove.add(n);
+		getCurrentPane().getChildren().removeAll(nodesToRemove);
+
+		for (Animator<ImageView> a : nodes)
+			if (!getCurrentPane().getChildren().contains(a.getNode()))
+				getCurrentPane().getChildren().add(a.getNode());
+	}
+
 	@Override
 	public void dispose() {
 		super.dispose();
@@ -122,12 +132,8 @@ public class ImageBackground extends Background {
 		}
 		if (newPane == getCurrentPane())
 			return;
-		for (Animator<ImageView> a : nodes) {
-			if (hasUnderlyingPane())
-				getCurrentPane().getChildren().remove(a.getNode());
-			newPane.getChildren().add(a.getNode());
-		}
 		super.setCurrentPane(newPane);
+		updatePane();
 	}
 
 	private double calculateByX(double pos) {
@@ -178,8 +184,7 @@ public class ImageBackground extends Background {
 	@Override
 	public void show(Pane pane) {
 		setCurrentPane(pane);
-		if (pane == null)
-			return;
+		enable();
 	}
 
 	private boolean disabled;
@@ -200,8 +205,8 @@ public class ImageBackground extends Background {
 		}
 
 		Animator.runWhenFinished(() -> {
-			for (Animator<ImageView> a : nodes)
-				currentPane.getChildren().remove(a.getNode());
+			nodes.clear();
+			updatePane();
 		}, fts);
 		disabled = true;
 	}

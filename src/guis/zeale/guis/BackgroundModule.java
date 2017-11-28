@@ -72,7 +72,7 @@ public class BackgroundModule extends Page {
 	}
 
 	@FXML
-	private void cookieBackground() {
+	private void cookiePlusBackground() {
 		getDefaultBackground().dispose();
 		ImageBackground background = new ImageBackground(() -> {
 			ImageView view = new ImageView(new Image("/krow/resources/graphics/cookie+256px.png"));
@@ -83,7 +83,22 @@ public class BackgroundModule extends Page {
 		});
 		setDefaultBackground(background);
 		getDefaultBackground().show(visualizerPane);
-		((ImageBackground) getDefaultBackground()).setImageCount(40);
+		background.setImageCount(40);
+	}
+
+	@FXML
+	private void cookieBackground() {
+		getDefaultBackground().dispose();
+		ImageBackground background = new ImageBackground(() -> {
+			ImageView view = new ImageView(new Image("/krow/resources/graphics/cookie256px.png"));
+			view.setFitHeight(75);
+			view.setFitWidth(75);
+			view.setEffect(new DropShadow());
+			return view;
+		});
+		setDefaultBackground(background);
+		getDefaultBackground().show(visualizerPane);
+		background.setImageCount(40);
 	}
 
 }
