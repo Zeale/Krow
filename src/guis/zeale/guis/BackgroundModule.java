@@ -2,8 +2,12 @@ package zeale.guis;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Rectangle;
+import krow.backgrounds.ImageBackground;
 import krow.backgrounds.ShapeBackground;
 import krow.guis.GUIHelper;
 import krow.guis.GUIHelper.MenuBox;
@@ -65,6 +69,21 @@ public class BackgroundModule extends Page {
 		sb.playColorAnimations();
 		sb.show(visualizerPane);
 		setDefaultBackground(sb);
+	}
+
+	@FXML
+	private void cookieBackground() {
+		getDefaultBackground().dispose();
+		ImageBackground background = new ImageBackground(() -> {
+			ImageView view = new ImageView(new Image("/krow/resources/graphics/cookie+256px.png"));
+			view.setFitHeight(75);
+			view.setFitWidth(75);
+			view.setEffect(new DropShadow());
+			return view;
+		});
+		setDefaultBackground(background);
+		getDefaultBackground().show(visualizerPane);
+		((ImageBackground) getDefaultBackground()).setImageCount(40);
 	}
 
 }

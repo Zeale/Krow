@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Random;
 
 import javafx.animation.FadeTransition;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -14,44 +16,71 @@ import kröw.core.Kröw;
 
 public class ImageBackground extends Background {
 
-	private static final Random random = new Random();
+	private static final Random RANDOM_INSTANCE = new Random();
 
 	private final ImageViewFactory imageFactory;
+	private final SimpleIntegerProperty imageCount = new SimpleIntegerProperty();
+	{
+		imageCount.addListener(
+				(ChangeListener<Number>) (observable, oldValue, count) -> updateImageCount(count.intValue()));
+	}
+
+	protected final void updateImageCount(int count) {
+		if (count < 0)
+			throw new IllegalArgumentException(
+					"An image count parameter with a negative value was given. You can't have a negative number of images.");
+		if (count > nodes.size())
+			for (int i = 0; i < count - nodes.size(); i++)
+				addImage(imageFactory.make());
+		else if (count < nodes.size())
+			for (int i = 0; i < nodes.size() - count; i++)
+				removeImage();
+	}
+
+	public void setImageCount(int count) {
+		imageCount.set(count);
+	}
+
+	public final void removeImages(int count) {
+		if (count > getImageCount())
+			throw new IllegalArgumentException("There are only " + getImageCount()
+					+ " images in this ImageBackground. How do I remove " + count + " of them?");
+		if (count == 0)
+			return;
+		if (count < 0)
+			addImages(count * -1);
+		imageCount.set(getImageCount() - count);
+
+	}
+
+	public final int getImageCount() {
+		return imageCount.get();
+	}
+
+	public final void addImages(int count) {
+		imageCount.set(count + getImageCount());
+	}
 
 	public ImageBackground(ImageViewFactory factory) {
 		imageFactory = factory;
 	}
 
-	public void setImageCount(int count) {
-		if (!hasUnderlyingPane())
-			return;
-		if (count < nodes.size())
-			removeImages(nodes.size() - count);
-		else if (count > nodes.size())
-			addImages(count - nodes.size());
-	}
-
-	public void removeImages(int count) {
-		if (!hasUnderlyingPane())
-			return;
-		if (count >= nodes.size())
-			count = nodes.size() - 1;
-		while (count > 0) {
-			disposeImage(nodes.get(0));
-			count--;
+	protected final void removeImage() {
+		if (!nodes.isEmpty()) {
+			Animator<ImageView> img = nodes.get(0);
+			if (hasUnderlyingPane())
+				getCurrentPane().getChildren().remove(img);
+			img.dispose();
+			nodes.remove(img);
 		}
 	}
 
-	private void disposeImage(Animator<ImageView> imgAnimator) {
+	protected final void addImage(ImageView img) {
 		if (!hasUnderlyingPane())
 			return;
-		imgAnimator.stopAll();
-		getCurrentPane().getChildren().remove(imgAnimator.getNode());
-	}
 
-	private void addImage(ImageView img) {
-		if (!hasUnderlyingPane())
-			return;
+		getCurrentPane().getChildren().add(img);
+
 		Animator<ImageView> animator = new Animator<ImageView>(img);
 		img.setTranslateX(Math.random() * (getCurrentPane().getWidth() == 0
 				? Kröw.getSystemProperties().getScreenWidth() : getCurrentPane().getWidth()));
@@ -76,6 +105,29 @@ public class ImageBackground extends Background {
 
 		animator.getTranslator().play();
 
+		nodes.add(animator);
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		nodes.clear();
+	}
+
+	@Override
+	public void setCurrentPane(Pane newPane) {
+		if (newPane == null) {
+			disable();
+			return;
+		}
+		if (newPane == getCurrentPane())
+			return;
+		for (Animator<ImageView> a : nodes) {
+			if (hasUnderlyingPane())
+				getCurrentPane().getChildren().remove(a.getNode());
+			newPane.getChildren().add(a.getNode());
+		}
+		super.setCurrentPane(newPane);
 	}
 
 	private double calculateByX(double pos) {
@@ -101,26 +153,24 @@ public class ImageBackground extends Background {
 	}
 
 	private double generateRand() {
-		return generateRand(random.nextBoolean());
+		return generateRand(RANDOM_INSTANCE.nextBoolean());
 	}
 
 	private double generateRand(final boolean positive) {
-		return (random.nextInt(50) + 50) * (positive ? 1 : -1);
+		return (RANDOM_INSTANCE.nextInt(50) + 50) * (positive ? 1 : -1);
 	}
 
 	private double generateRandomMultiplier() {
-		return 1 - random.nextDouble() / 8;
-	}
-
-	public void addImages(int count) {
-		if (!hasUnderlyingPane())
-			return;
-		for (; count > 0; count--)
-			addImage(imageFactory.make());
+		return 1 - RANDOM_INSTANCE.nextDouble() / 8;
 	}
 
 	public ImageBackground(final Image image) {
-		imageFactory = () -> new ImageView(image);
+		imageFactory = () -> {
+			ImageView imageView = new ImageView(image);
+			imageView.setFitHeight(100);
+			imageView.setFitWidth(100);
+			return imageView;
+		};
 	}
 
 	private List<Animator<ImageView>> nodes = new LinkedList<>();
@@ -128,11 +178,8 @@ public class ImageBackground extends Background {
 	@Override
 	public void show(Pane pane) {
 		setCurrentPane(pane);
-		for (Animator<ImageView> iv : nodes) {
-			if (!pane.getChildren().contains(iv.getNode()))
-				pane.getChildren().add(iv.getNode());
-			iv.getNode().setVisible(true);
-		}
+		if (pane == null)
+			return;
 	}
 
 	private boolean disabled;

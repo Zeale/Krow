@@ -137,7 +137,7 @@ public abstract class Background {
 			return;
 		for (final Node n : mouseDetectionNodes)
 			removeMouseDetectionNodes(n);
-		if (this.currentPane != null)
+		if (hasUnderlyingPane())
 			this.currentPane.setOnMouseMoved(null);
 		this.currentPane = currentPane;
 		currentPane.setOnMouseMoved(getMouseMovementHandler());

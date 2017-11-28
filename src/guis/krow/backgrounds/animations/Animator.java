@@ -145,4 +145,21 @@ public class Animator<NT extends Node> {
 		};
 	}
 
+	public void dispose() {
+		stopAll();
+		if (translator != null)
+			translator.setNode(null);
+		if (rotator != null)
+			rotator.setNode(null);
+		if (fader != null)
+			fader.setNode(null);
+		if (scaler != null)
+			scaler.setNode(null);
+
+		translator = null;
+		rotator = null;
+		fader = null;
+		scaler = null;
+	}
+
 }
