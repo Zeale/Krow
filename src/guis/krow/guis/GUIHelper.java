@@ -154,8 +154,6 @@ public final class GUIHelper {
 		MENU_CHILD_NODE_FONT_SIZE = (int) Math.round(size);
 	}
 
-	private static ShapeBackground backgroundmngr;
-
 	public static void addDefaultSettings(final VBox vbox) {
 		final List<Node> children = vbox.getChildren();
 
@@ -239,6 +237,8 @@ public final class GUIHelper {
 		children.add(sendProgramToBack);
 		children.add(background);
 	}
+
+	private static ShapeBackground backgroundmngr;
 
 	public static void applyShapeBackground(final Pane pane, final Node... mouseDetectionNodes) {
 		if (backgroundmngr == null) {
