@@ -7,21 +7,73 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import javafx.animation.Animation.Status;
 import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.TranslateTransition;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Shape;
 import javafx.util.Duration;
 import krow.backgrounds.animations.Animator;
 import kröw.core.Kröw;
 
 public class ImageBackground extends Background {
 
-	private static final Random RANDOM_INSTANCE = new Random();
+	private static final Random RANDOM = new Random();
 
 	private final ImageViewFactory imageFactory;
 	private final UUID uniqueIdentifier = UUID.randomUUID();
+
+	public void applyDefaultMouseEventHandler() {
+		EventHandler<MouseEvent> handler = new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+
+				final double mouseX = event.getX(), mouseY = event.getY();
+				for (final Animator<ImageView> a : nodes)
+					if (a.getTranslator().getStatus() == Status.RUNNING) {
+
+						final double shapeX = a.getNode().getLayoutX() + a.getNode().getTranslateX(),
+								shapeY = a.getNode().getLayoutY() + a.getNode().getTranslateY();
+
+						final double distX = mouseX - shapeX, distY = mouseY - shapeY;
+						final double distance = Math.sqrt(distX * distX + distY * distY);
+
+						if (distance <= 100) {
+
+							final TranslateTransition translator = a.getTranslator();
+
+							translator.stop();
+
+							translator.setByX(-distX * 3);
+							translator.setByY(-distY * 3);
+							translator.setDuration(
+									Duration.seconds((1 - RANDOM.nextDouble() / 8) * getAnimationDuration() / 3));
+
+							final EventHandler<ActionEvent> onFinished = translator.getOnFinished();
+							final Interpolator interpolator = translator.getInterpolator();
+							translator.setOnFinished(event1 -> {
+								translator.setOnFinished(onFinished);
+								translator.setInterpolator(interpolator);
+								onFinished.handle(event1);
+							});
+							translator.setInterpolator(Interpolator.EASE_OUT);
+							translator.play();
+							Kröw.getSoundManager().playSound(Kröw.getSoundManager().POP, 1f);
+						}
+					}
+
+			}
+		};
+		setMouseMovementHandler(handler);
+	}
 
 	public void setImageCount(int amount) {
 		if (amount < 0)
@@ -40,8 +92,7 @@ public class ImageBackground extends Background {
 
 	public final void removeImages(int count) {
 		if (count > getImageCount())
-			throw new IllegalArgumentException("There are only " + getImageCount()
-					+ " images in this ImageBackground. How do I remove " + count + " of them?");
+			throw new IllegalArgumentException("Can't remove " + count + " images");
 		if (count == 0)
 			return;
 		if (count < 0)
@@ -159,15 +210,15 @@ public class ImageBackground extends Background {
 	}
 
 	private double generateRand() {
-		return generateRand(RANDOM_INSTANCE.nextBoolean());
+		return generateRand(RANDOM.nextBoolean());
 	}
 
 	private double generateRand(final boolean positive) {
-		return (RANDOM_INSTANCE.nextInt(50) + 50) * (positive ? 1 : -1);
+		return (RANDOM.nextInt(50) + 50) * (positive ? 1 : -1);
 	}
 
 	private double generateRandomMultiplier() {
-		return 1 - RANDOM_INSTANCE.nextDouble() / 8;
+		return 1 - RANDOM.nextDouble() / 8;
 	}
 
 	public ImageBackground(final Image image) {
