@@ -460,6 +460,7 @@ public class ChatRoom extends WindowManager.Page {
 			showHelp.execute("connect {(Text) server address} [(Integer) port]",
 					"Connects to the specified server if you're not already connected to one. The port is optional, and defaults to 25000.");
 			showHelp.execute("disconnect", "Disconnects from a server, if you are connected to one.");
+			showHelp.execute("clear-screen", "Clears the screen; removes all the messages being displayed.");
 
 			send(msg);
 			return;
@@ -536,6 +537,8 @@ public class ChatRoom extends WindowManager.Page {
 				}
 				println("The connection was closed successfully...", SUCCESS_COLOR);
 			}
+		} else if (cmd.equalsIgnoreCase("cls") || cmd.equalsIgnoreCase("clear-screen")) {
+			chatPane.getChildren().clear();
 		} else
 			WindowManager.spawnLabelAtMousePos("Unknown Command", ERROR_COLOR);
 
