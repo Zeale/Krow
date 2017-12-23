@@ -85,6 +85,17 @@ public class EquationParser {
 
 	private boolean isEvaluating;
 
+	private char getCurrentChar() {
+		return equation.charAt(position);
+	}
+
+	private char getNextChar() {
+		return equation.charAt(position + 1);
+	}
+
+	private char incrementPosition() {
+		return equation.charAt(++position);
+	}
 
 	public double evaluate(String equation) {
 		if (isEvaluating)// TODO Throw new LexerInUseException
