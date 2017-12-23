@@ -1,4 +1,4 @@
-package krï¿½w.math.lexer;
+package kröw.math.lexer;
 
 import java.util.regex.Pattern;
 
@@ -95,6 +95,46 @@ public class EquationParser {
 
 	private char incrementPosition() {
 		return equation.charAt(++position);
+	}
+
+	/**
+	 * <p>
+	 * This is a <strong>parse method</strong>.
+	 * <p>
+	 * <strong>This method expects to be called at the position it should start
+	 * at.</strong> i.e., {@link #getCurrentChar()} should return the character
+	 * that this method will begin to work with. If the first character that
+	 * this method encounters is whitespace, a warning will be thrown and the
+	 * whitespace will be skipped with {@link #getNextChar()}.
+	 * <p>
+	 * This method will return with {@link #position} being the start of the
+	 * next element.
+	 * 
+	 * @return The next term in the sequence.
+	 */
+	private Term parseTerm() {
+		// TODO Parse and return a term
+		return null;
+	}
+
+	/**
+	 * <p>
+	 * This is a <strong>parse method</strong>.
+	 * <p>
+	 * <strong>This method expects to be called at the position it should start
+	 * at.</strong> i.e., {@link #getCurrentChar()} should return the character
+	 * that this method will begin to work with. If the first character that
+	 * this method encounters is whitespace, a warning will be thrown and the
+	 * whitespace will be skipped with {@link #getNextChar()}.
+	 * <p>
+	 * This method will return with {@link #position} being the start of the
+	 * next element.
+	 * 
+	 * @return The next operator in the sequence.
+	 */
+	private Operator parseOperator() {
+		// TODO Parse and return an Operator
+		return null;
 	}
 
 	public double evaluate(String equation) {
