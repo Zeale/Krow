@@ -159,7 +159,7 @@ public final class GUIHelper {
 
 		final Node close = new MenuOption(Color.RED, "Close"), goHome = new Text("Go Home"),
 				goBack = new Text("Go Back"), hideProgram = new Text("Hide Program"),
-				sendProgramToBack = new Text("Send to back"), background = new Text("Background...");
+				sendProgramToBack = new Text("Send to back");
 
 		final Text systemTray = new Text(
 				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
@@ -210,24 +210,6 @@ public final class GUIHelper {
 		});
 
 		sendProgramToBack.setOnMouseClicked(event -> WindowManager.getStage().toBack());
-		background.setOnMouseClicked(event -> {
-
-			if (backgroundmngr.isDisabled())
-				backgroundmngr.fadeIn();
-			else
-				backgroundmngr.fadeOut();
-
-			/*
-			 * backgroundmngr.setColorAnimations(false,
-			 * BackgroundBuilder.ShapeBackgroundManager.ColorAnimation.
-			 * generateRandomColorAnimation(50));
-			 *
-			 * backgroundmngr.setRepeatColorAnimations(true);
-			 * backgroundmngr.setRotatable(true);
-			 *
-			 * backgroundmngr.playColorAnimations();
-			 */
-		});
 
 		children.add(close);
 		children.add(goHome);
@@ -235,7 +217,6 @@ public final class GUIHelper {
 		children.add(systemTray);
 		children.add(hideProgram);
 		children.add(sendProgramToBack);
-		children.add(background);
 	}
 
 	private static ShapeBackground backgroundmngr;
