@@ -132,7 +132,7 @@ public final class PopupHelper {
 
 	}
 
-	public static void applyRightClickPopup(final Node node, final Popup popup) {
+	public static void applyClickPopup(final Node node, final Popup popup, MouseButton button) {
 		final Parent popupRoot = popup.getScene().getRoot();
 		final FadeTransition openTransition = new FadeTransition(Duration.millis(350), popupRoot),
 				closeTransition = new FadeTransition(Duration.millis(350), popupRoot);
@@ -159,7 +159,7 @@ public final class PopupHelper {
 				});
 
 				node.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-					if (event.getButton().equals(MouseButton.SECONDARY)) {
+					if (event.getButton().equals(button)) {
 						event.consume();
 						open(event);
 					}
@@ -225,16 +225,16 @@ public final class PopupHelper {
 
 	}
 
-	public static VBox buildHoverPopup(final Node boundNode, final Color color, final String... labels) {
+	public static VBox addHoverPopup(final Node boundNode, final Color color, final String... labels) {
 		final Label[] lbls = new Label[labels.length];
 		for (int i = 0; i < labels.length; i++) {
 			lbls[i] = new Label(labels[i]);
 			lbls[i].setTextFill(color);
 		}
-		return buildHoverPopup(boundNode, lbls);
+		return addHoverPopup(boundNode, lbls);
 	}
 
-	public static VBox buildHoverPopup(final Node boundNode, final Label... labels) {
+	public static VBox addHoverPopup(final Node boundNode, final Label... labels) {
 		final PopupWrapper<VBox> wrapper = buildPopup(labels);
 		applyHoverPopup(boundNode, wrapper.popup);
 		return wrapper.box;
@@ -268,9 +268,15 @@ public final class PopupHelper {
 
 	}
 
-	public static VBox buildRightClickPopup(final Node boundNode, final Label... labels) {
+	public static VBox addRightClickPopup(final Node boundNode, final Label... labels) {
 		final PopupWrapper<VBox> wrapper = buildPopup(labels);
-		applyRightClickPopup(boundNode, wrapper.popup);
+		applyClickPopup(boundNode, wrapper.popup, MouseButton.SECONDARY);
+		return wrapper.box;
+	}
+
+	public static VBox addLeftClickPopup(final Node boundNode, final Label... labels) {
+		final PopupWrapper<VBox> wrapper = buildPopup(labels);
+		applyClickPopup(boundNode, wrapper.popup, MouseButton.PRIMARY);
 		return wrapper.box;
 	}
 

@@ -492,7 +492,7 @@ public final class GUIHelper {
 				Kröw.openLink("https://github.com/Zeale/Krow");
 		});
 
-		PopupHelper.buildHoverPopup(github, GUIHelper.makeBoldLabel("GitHub", 18));
+		PopupHelper.addHoverPopup(github, GUIHelper.makeBoldLabel("GitHub", 18));
 		final Label authorAccount = new Label("Author"), programPage = new Label("Program");
 		authorAccount.setOnMouseClicked(event -> {
 			if (event.getButton().equals(MouseButton.PRIMARY))
@@ -503,7 +503,7 @@ public final class GUIHelper {
 				Kröw.openLink("https://github.com/Zeale/Krow");
 
 		});
-		PopupHelper.buildRightClickPopup(github, authorAccount, programPage);
+		PopupHelper.addRightClickPopup(github, authorAccount, programPage);
 
 		final ImageView cookie = new ImageView("/krow/resources/graphics/cookie256px.png");
 		cookie.setFitHeight(Kröw.scaleHeight(40));
@@ -514,7 +514,7 @@ public final class GUIHelper {
 				Kröw.openLink("https://github.com/Zeale/Cookie/releases");
 		});
 
-		PopupHelper.buildHoverPopup(cookie, GUIHelper.makeBoldLabel("Cookie", 18));
+		PopupHelper.addHoverPopup(cookie, GUIHelper.makeBoldLabel("Cookie", 18));
 
 		final ImageView cookiep = new ImageView("/krow/resources/graphics/cookie+256px.png");
 		cookiep.setFitHeight(Kröw.scaleHeight(40));
@@ -525,7 +525,7 @@ public final class GUIHelper {
 				Kröw.openLink("https://github.com/Zeale/Cookie-plus/releases");
 		});
 
-		PopupHelper.buildHoverPopup(cookiep, Color.BLUE, "Cookie+");
+		PopupHelper.addHoverPopup(cookiep, Color.BLUE, "Cookie+");
 
 		final ImageView krow = new ImageView("/krow/resources/Kröw_hd.png");
 		krow.setFitHeight(Kröw.scaleHeight(40));
@@ -536,7 +536,7 @@ public final class GUIHelper {
 				Kröw.openLink("https://github.com/Zeale/Krow/releases");
 		});
 
-		PopupHelper.buildHoverPopup(krow, Color.RED, "Updates");
+		PopupHelper.addHoverPopup(krow, Color.RED, "Updates");
 
 		final HBox iconsBox = new HBox(Kröw.scaleWidth(5), github, krow, cookie, cookiep);
 		iconsBox.setAlignment(Pos.CENTER);

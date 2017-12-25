@@ -546,7 +546,7 @@ public class Tools extends Page {
 		final Button button = buildButton();
 		button.setText(name);
 		button.setGraphic(new ImageView(graphic));
-		PopupHelper.buildHoverPopup(button, descColor, description);
+		PopupHelper.addHoverPopup(button, descColor, description);
 		return new CommandTool(button, command);
 	}
 

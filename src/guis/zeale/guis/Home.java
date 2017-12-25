@@ -133,7 +133,7 @@ public class Home extends ScrollMenu {
 		backgroundShape.setPickOnBounds(true);
 		backgroundShape.setFill(Color.TRANSPARENT);
 		backgroundShape.setStroke(Color.WHITE);
-		PopupHelper.buildHoverPopup(backgroundShape, Color.FIREBRICK, "Work In Progress");
+		PopupHelper.addHoverPopup(backgroundShape, Color.FIREBRICK, "Work In Progress");
 		// TODO: Add a right click popup with a screensaver option.
 		backgroundShape.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if (event.getButton() == MouseButton.PRIMARY)
@@ -148,11 +148,11 @@ public class Home extends ScrollMenu {
 		horizontalScroll.getChildren().addAll(settings, krow, chatRoom, statistics, mathModule, backgroundShape);
 		horizontalScroll.selectCenter();
 
-		PopupHelper.buildHoverPopup(settings, GUIHelper.makeBoldLabel("Settings Module", 18));
-		PopupHelper.buildHoverPopup(krow, GUIHelper.makeBoldLabel("Tools Module", 18));
-		PopupHelper.buildHoverPopup(chatRoom, GUIHelper.makeBoldLabel("Chat Room Module", 18));
-		PopupHelper.buildHoverPopup(statistics, GUIHelper.makeBoldLabel("Statistics Module", 18));
-		PopupHelper.buildHoverPopup(mathModule, GUIHelper.makeBoldLabel("Math Module", 18));
+		PopupHelper.addHoverPopup(settings, GUIHelper.makeBoldLabel("Settings Module", 18));
+		PopupHelper.addHoverPopup(krow, GUIHelper.makeBoldLabel("Tools Module", 18));
+		PopupHelper.addHoverPopup(chatRoom, GUIHelper.makeBoldLabel("Chat Room Module", 18));
+		PopupHelper.addHoverPopup(statistics, GUIHelper.makeBoldLabel("Statistics Module", 18));
+		PopupHelper.addHoverPopup(mathModule, GUIHelper.makeBoldLabel("Math Module", 18));
 
 		final Label mathModuleCalculatorLbl = new Label("Calculator"),
 				mathModuleStatisticsLbl = new Label("Statistics");
@@ -174,7 +174,7 @@ public class Home extends ScrollMenu {
 				}
 		});
 
-		PopupHelper.buildRightClickPopup(mathModule, mathModuleCalculatorLbl, mathModuleStatisticsLbl);
+		PopupHelper.addRightClickPopup(mathModule, mathModuleCalculatorLbl, mathModuleStatisticsLbl);
 
 	}
 

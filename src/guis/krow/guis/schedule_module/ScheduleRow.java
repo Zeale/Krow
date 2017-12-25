@@ -64,7 +64,7 @@ public class ScheduleRow extends TableRow<ScheduleEvent> {
 
 		final Label delete = new Label("Delete");
 		final PopupWrapper<VBox> wrapper = PopupHelper.buildPopup(delete);
-		PopupHelper.applyRightClickPopup(getThis(), wrapper.popup);
+		PopupHelper.applyClickPopup(getThis(), wrapper.popup, MouseButton.SECONDARY);
 		delete.setOnMouseClicked(event -> {
 
 			if (!isEmpty() && getItem() != null && event.getButton() == MouseButton.PRIMARY) {
