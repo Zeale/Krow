@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -79,7 +81,7 @@ public class ScheduleModule extends Page {
 	private TableColumn<ScheduleEvent, String> nameColumn;
 
 	@FXML
-	private TableColumn<ScheduleEvent, Boolean> urgencyColumn, completeColumn;
+	private TableColumn<ScheduleEvent, ScheduleEvent> urgencyColumn, completeColumn;
 
 	public ScheduleModule() {
 	}
@@ -116,8 +118,8 @@ public class ScheduleModule extends Page {
 
 		dateColumn.setCellValueFactory(param -> param.getValue().dueDate);
 		nameColumn.setCellValueFactory(param -> param.getValue().name);
-		urgencyColumn.setCellValueFactory(param -> param.getValue().urgent);
-		completeColumn.setCellValueFactory(param -> param.getValue().complete);
+		urgencyColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue()));
+		completeColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue()));
 
 		eventTable.setRowFactory(param -> new ScheduleRow(ScheduleModule.this));
 
@@ -198,6 +200,11 @@ public class ScheduleModule extends Page {
 
 	public void removeEvent(final ScheduleEvent event) {
 		events.remove(event);
+		events.sort(null);
+	}
+
+	@FXML
+	private void refreshTable() {
 		events.sort(null);
 	}
 

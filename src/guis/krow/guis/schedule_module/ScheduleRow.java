@@ -2,6 +2,7 @@ package krow.guis.schedule_module;
 
 import java.io.IOException;
 
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableRow;
 import javafx.scene.input.MouseButton;

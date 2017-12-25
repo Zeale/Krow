@@ -6,15 +6,15 @@ import javafx.scene.control.TableCell;
 import javafx.scene.input.MouseButton;
 import javafx.util.Callback;
 
-public class SelectableCell<T> extends TableCell<T, Boolean> {
+public class SelectableCell<T> extends TableCell<T, T> {
 
+	private final Callback<T, BooleanProperty> propertyRetriever;
 	public final CheckBox checkbox = new CheckBox();
 	private BooleanProperty boundProperty;
 	/**
 	 * The {@link Callback} we use to retrieve a cell's observable boolean
 	 * property. The cell will bind its selection state to the property.
 	 */
-	private final Callback<T, BooleanProperty> propertyRetriever;
 
 	// Make the entire cell's hitbox respond to mouse clicks. This listener does
 	// not respond to the actual check box, just the surrounding cell margin.
@@ -27,7 +27,7 @@ public class SelectableCell<T> extends TableCell<T, Boolean> {
 		});
 	}
 
-	public SelectableCell(final Callback<T, BooleanProperty> propertyRetriever) {
+	public SelectableCell(Callback<T, BooleanProperty> propertyRetriever) {
 		this.propertyRetriever = propertyRetriever;
 	}
 
@@ -36,17 +36,14 @@ public class SelectableCell<T> extends TableCell<T, Boolean> {
 	 *
 	 * @see javafx.scene.control.Cell#updateItem(java.lang.Object, boolean)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	protected void updateItem(final Boolean item, final boolean empty) {
+	protected void updateItem(final T item, final boolean empty) {
 		// If the item was not changed, there's no need to do anything...
 		if (item == getItem())
 			return;
 
-		// If the old item actually existed, remove its listener.
-		if (getItem() != null) {
+		if (getItem() != null)
 			checkbox.selectedProperty().unbindBidirectional(boundProperty);
-		}
 
 		// Update the item in this cell.
 		super.updateItem(item, empty);
@@ -54,6 +51,7 @@ public class SelectableCell<T> extends TableCell<T, Boolean> {
 		// If the new item is null or this cell is empty, remove the graphic; we
 		// don't want empty cells to be checkable.
 		if (item == null || empty) {
+			boundProperty = null;
 			setGraphic(null);
 			return;
 		}
@@ -62,21 +60,10 @@ public class SelectableCell<T> extends TableCell<T, Boolean> {
 		// this method return), we make sure that this cell's graphic is showing
 		// and we bind the checkbox's "selected" property to the value returned
 		// by the propertyRetriever.
-		setGraphic(checkbox);
-		// Some weird error occurs when deleting an item. Apparently, this
-		// method is called with getTableRow().getItem() being null, then having
-		// a value... Anywyas, this suppresses the error and I don't think it
-		// causes issues.
-		T rowItem = (T) getTableRow().getItem();
-		if (rowItem == null)
-			return;
-		boundProperty = propertyRetriever.call(rowItem);
+		boundProperty = propertyRetriever.call(item);
 		checkbox.selectedProperty().bindBidirectional(boundProperty);
+		setGraphic(checkbox);
 
 	}
 
-	@Override
-	public void updateIndex(int i) {
-		super.updateIndex(i);
-	}
 }
