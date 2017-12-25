@@ -396,7 +396,12 @@ public class ShapeBackground extends Background {
 				}
 			for (Node n : shapes)
 				if (!currentPane.getChildren().contains(n))
-					currentPane.getChildren().add(n);
+					currentPane.getChildren().add(0, n);// #86 - Nodes must be
+														// added to front of
+														// list so they are
+														// rendered first, and,
+														// thus, appear behind
+														// everything else.
 		}
 
 	}

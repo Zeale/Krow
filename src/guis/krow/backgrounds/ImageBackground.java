@@ -166,7 +166,9 @@ public class ImageBackground extends Background {
 
 		for (Animator<ImageView> a : nodes)
 			if (!getCurrentPane().getChildren().contains(a.getNode()))
-				getCurrentPane().getChildren().add(a.getNode());
+				// #86 - Nodes must be added to front of list so they are
+				// rendered first, and, thus, appear behind everything else.
+				getCurrentPane().getChildren().add(0, a.getNode());
 	}
 
 	@Override
