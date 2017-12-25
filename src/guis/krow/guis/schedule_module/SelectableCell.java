@@ -63,7 +63,14 @@ public class SelectableCell<T> extends TableCell<T, Boolean> {
 		// and we bind the checkbox's "selected" property to the value returned
 		// by the propertyRetriever.
 		setGraphic(checkbox);
-		boundProperty = propertyRetriever.call((T) getTableRow().getItem());
+		// Some weird error occurs when deleting an item. Apparently, this
+		// method is called with getTableRow().getItem() being null, then having
+		// a value... Anywyas, this suppresses the error and I don't think it
+		// causes issues.
+		T rowItem = (T) getTableRow().getItem();
+		if (rowItem == null)
+			return;
+		boundProperty = propertyRetriever.call(rowItem);
 		checkbox.selectedProperty().bindBidirectional(boundProperty);
 
 	}
