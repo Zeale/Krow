@@ -177,8 +177,8 @@ public class ScheduleModule extends Page {
 			};
 		});
 
-		urgencyColumn.setCellFactory(param -> new SelectableCell<>(param1 -> events.get(param1).urgent));
-		completeColumn.setCellFactory(param -> new SelectableCell<>(param1 -> events.get(param1).complete));
+		urgencyColumn.setCellFactory(param -> new SelectableCell<>(param1 -> param1.urgent));
+		completeColumn.setCellFactory(param -> new SelectableCell<>(param1 -> param1.complete));
 
 		// Testing dates
 		eventTable.setItems(events);

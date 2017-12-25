@@ -9,11 +9,12 @@ import javafx.util.Callback;
 public class SelectableCell<T> extends TableCell<T, Boolean> {
 
 	public final CheckBox checkbox = new CheckBox();
+	private BooleanProperty boundProperty;
 	/**
 	 * The {@link Callback} we use to retrieve a cell's observable boolean
 	 * property. The cell will bind its selection state to the property.
 	 */
-	private final Callback<Integer, BooleanProperty> propertyRetriever;
+	private final Callback<T, BooleanProperty> propertyRetriever;
 
 	// Make the entire cell's hitbox respond to mouse clicks. This listener does
 	// not respond to the actual check box, just the surrounding cell margin.
@@ -26,7 +27,7 @@ public class SelectableCell<T> extends TableCell<T, Boolean> {
 		});
 	}
 
-	public SelectableCell(final Callback<Integer, BooleanProperty> propertyRetriever) {
+	public SelectableCell(final Callback<T, BooleanProperty> propertyRetriever) {
 		this.propertyRetriever = propertyRetriever;
 	}
 
@@ -35,6 +36,7 @@ public class SelectableCell<T> extends TableCell<T, Boolean> {
 	 *
 	 * @see javafx.scene.control.Cell#updateItem(java.lang.Object, boolean)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void updateItem(final Boolean item, final boolean empty) {
 		// If the item was not changed, there's no need to do anything...
@@ -42,8 +44,9 @@ public class SelectableCell<T> extends TableCell<T, Boolean> {
 			return;
 
 		// If the old item actually existed, remove its listener.
-		if (getItem() != null)
-			checkbox.selectedProperty().unbindBidirectional(propertyRetriever.call(getIndex()));
+		if (getItem() != null) {
+			checkbox.selectedProperty().unbindBidirectional(boundProperty);
+		}
 
 		// Update the item in this cell.
 		super.updateItem(item, empty);
@@ -60,7 +63,13 @@ public class SelectableCell<T> extends TableCell<T, Boolean> {
 		// and we bind the checkbox's "selected" property to the value returned
 		// by the propertyRetriever.
 		setGraphic(checkbox);
-		checkbox.selectedProperty().bindBidirectional(propertyRetriever.call(getIndex()));
+		boundProperty = propertyRetriever.call((T) getTableRow().getItem());
+		checkbox.selectedProperty().bindBidirectional(boundProperty);
 
+	}
+
+	@Override
+	public void updateIndex(int i) {
+		super.updateIndex(i);
 	}
 }
