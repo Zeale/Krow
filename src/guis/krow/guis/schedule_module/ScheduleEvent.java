@@ -45,6 +45,10 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 
 	public final SimpleStringProperty description = new SimpleStringProperty(), name = new SimpleStringProperty();
 
+	/**
+	 * The number of milliseconds from January the first, 1970, 00:00:00 GMT,
+	 * that this {@link ScheduleEvent}'s due date is.
+	 */
 	public final SimpleLongProperty dueDate = new SimpleLongProperty();
 
 	public final SimpleBooleanProperty urgent = new SimpleBooleanProperty(false),
@@ -126,9 +130,36 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 
 	@Override
 	public int compareTo(final ScheduleEvent o) {
-		if (o.dueDate.get() > dueDate.get())// Other event comes after
+		// Return - if this < o
+		// ...
+		if (complete.get()) {
+			if (!o.complete.get())
+				return 1;
+			else /* Both complete */ {
+				// If both complete, urgency is ignored. Default to simple due
+				// date comparisons.
+				return compareDueDates(o);
+			}
+		} else {
+			if (o.complete.get())
+				return -1;
+			if (urgent.get()) {
+				if (!o.urgent.get())
+					return -1;
+				else
+					return compareDueDates(o);
+			} else if (o.urgent.get())
+				return 1;
+			else
+				return compareDueDates(o);
+		}
+
+	}
+
+	private int compareDueDates(ScheduleEvent o) {
+		if (dueDate.get() < o.dueDate.get())// Other event comes after
 			return -1;// Place this event before other event.
-		else if (o.dueDate.get() < dueDate.get())// Other event comes before
+		else if (dueDate.get() > o.dueDate.get())// Other event comes before
 			return 1;// Place this event after other event.
 		else
 			return 0;
