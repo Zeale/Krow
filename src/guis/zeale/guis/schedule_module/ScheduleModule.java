@@ -31,6 +31,10 @@ public class ScheduleModule extends Page {
 		importData();
 	}
 
+	{
+		events.sort(null);
+	}
+
 	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yy"/* + " ~ hh:mm:ss" */);
 
 	private static final void importData() {
@@ -91,6 +95,7 @@ public class ScheduleModule extends Page {
 
 	public void addEvent(final ScheduleEvent event) {
 		events.add(event);
+		events.sort(null);
 	}
 
 	public boolean containsEvent(final ScheduleEvent event) {
@@ -188,10 +193,12 @@ public class ScheduleModule extends Page {
 
 	public void removeEvent(final int index) {
 		events.remove(index);
+		events.sort(null);
 	}
 
 	public void removeEvent(final ScheduleEvent event) {
 		events.remove(event);
+		events.sort(null);
 	}
 
 }
