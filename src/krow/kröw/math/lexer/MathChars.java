@@ -23,7 +23,6 @@ public final class MathChars {
 	}
 
 	public static final boolean possibleOperator(String chars) {
-		System.out.println(chars);
 		for (Operator o : Operator.operators)
 			// We must explicitly detect if chars is empty because the
 			// EquationParser was coded expecting this method to stick up to

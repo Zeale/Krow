@@ -2,6 +2,10 @@ package kröw.math.lexer;
 
 import java.util.regex.Pattern;
 
+import kröw.math.lexer.exceptions.DuplicateDecimalException;
+import kröw.math.lexer.exceptions.LexerInUseException;
+import kröw.math.lexer.exceptions.MisplacedOperatorException;
+
 /**
  * <p>
  * Quick note that all "parse..." methods will increment {@link #position} to
@@ -76,8 +80,8 @@ public class EquationParser {
 
 	public static void main(String[] args) {
 		EquationParser parser = new EquationParser();
-		System.out.println("Test");
-		System.out.println(parser.evaluate("1 - 9 + 3"));
+
+		System.out.println(parser.evaluate("1+2"));
 	}
 
 	private String equation;
@@ -104,19 +108,17 @@ public class EquationParser {
 	 * This is a <strong>parse method</strong>.
 	 * <p>
 	 * <strong>This method expects to be called at the position it should start
-	 * at.</strong> i.e., {@link #getCurrentChar()} should return the character
-	 * that this method will begin to work with. If the first character that
-	 * this method encounters is whitespace, a warning will be thrown and the
-	 * whitespace will be skipped with {@link #getNextChar()}.
+	 * at.</strong> i.e., {@link #getCurrentChar()} should return the character that
+	 * this method will begin to work with. If the first character that this method
+	 * encounters is whitespace, a warning will be thrown and the whitespace will be
+	 * skipped with {@link #getNextChar()}.
 	 * <p>
-	 * This method will return with {@link #position} being the start of the
-	 * next element.
+	 * This method will return with {@link #position} being the start of the next
+	 * element.
 	 * 
 	 * @return The next term in the sequence.
 	 */
 	private Term parseTerm() {
-		while (MathChars.isWhitespace(getCurrentChar()))
-			incrementPosition();
 		boolean neg = false;
 		double val;
 		// Handle negatives in front of the value. We'll cache getCurrChar's
@@ -137,8 +139,8 @@ public class EquationParser {
 
 			do {
 
-				// TODO if(getCurrentChar()=='.'&&numb.contains(".")) throw new
-				// DuplicateDecimalException();
+				if (getCurrentChar() == '.' && numb.contains("."))
+					throw new DuplicateDecimalException();
 				numb += getCurrentChar();
 				if (!incrementPosition()) {
 					break;
@@ -163,13 +165,13 @@ public class EquationParser {
 	 * This is a <strong>parse method</strong>.
 	 * <p>
 	 * <strong>This method expects to be called at the position it should start
-	 * at.</strong> i.e., {@link #getCurrentChar()} should return the character
-	 * that this method will begin to work with. If the first character that
-	 * this method encounters is whitespace, a warning will be thrown and the
-	 * whitespace will be skipped with {@link #getNextChar()}.
+	 * at.</strong> i.e., {@link #getCurrentChar()} should return the character that
+	 * this method will begin to work with. If the first character that this method
+	 * encounters is whitespace, a warning will be thrown and the whitespace will be
+	 * skipped with {@link #getNextChar()}.
 	 * <p>
-	 * This method will return with {@link #position} being the start of the
-	 * next element.
+	 * This method will return with {@link #position} being the start of the next
+	 * element.
 	 * 
 	 * @return The next operator in the sequence.
 	 */
@@ -197,8 +199,7 @@ public class EquationParser {
 				//
 				// Just to reinforce, end lines should only be called after a
 				// Term.
-				// TODO throw new MisplacedOperatorException();
-				throw new RuntimeException("Misplaced operator.");
+				throw new MisplacedOperatorException();
 			}
 			operator += getCurrentChar();
 		}
@@ -210,8 +211,8 @@ public class EquationParser {
 	}
 
 	public double evaluate(String equation) {
-		if (isEvaluating)// TODO Throw new LexerInUseException
-			;
+		if (isEvaluating)
+			throw new LexerInUseException();
 		isEvaluating = true;
 		this.equation = equation;
 
@@ -225,7 +226,7 @@ public class EquationParser {
 				break;
 		}
 
-		// TODO Add a testing parser that sysouts stuff like this.
+		// TODO Add a testing parser that sysouts stuff like this:
 		// for (Term t : equ)
 		// System.out.println(t.value + " " + t.getOperator().operator);
 
