@@ -13,9 +13,14 @@ public class Equation extends ArrayList<Term> {
 		// TODO if(isEmpty())throw new EmptyEquationException();
 		if (size() == 1)
 			return get(0).value;
-		double val = get(0).getOperator().operate(get(0).value, get(1).value);
-		for (int i = 1; i < size(); i++) {
-			val = get(i).getOperator().operate(val, get(++i).value);
+
+		Term t = get(0);
+		double val = t.value;
+		int pos = 0;
+		while (t.getOperator() != Operator.END_LINE) {
+			//
+			val = t.getOperator().operate(val, get(++pos).value);
+			t = get(pos);
 		}
 
 		return val;

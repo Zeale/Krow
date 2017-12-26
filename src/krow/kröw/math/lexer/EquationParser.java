@@ -1,7 +1,5 @@
 package kröw.math.lexer;
 
-import java.util.regex.Pattern;
-
 import kröw.math.lexer.exceptions.DuplicateDecimalException;
 import kröw.math.lexer.exceptions.LexerInUseException;
 import kröw.math.lexer.exceptions.MisplacedOperatorException;
@@ -76,19 +74,27 @@ import kröw.math.lexer.exceptions.MisplacedOperatorException;
  */
 public class EquationParser {
 
-	Pattern p;
-
-	public static void main(String[] args) {
+	public static final EquationParser getDebuggingParser() {
 		EquationParser parser = new EquationParser();
+		parser.debug = true;
+		return parser;
+	}
 
-		System.out.println(parser.evaluate("1+2"));
+	/**
+	 * Method for debugging purposes.
+	 * 
+	 * @param args
+	 *            args.
+	 */
+	public static void main(String[] args) {
+		// Lack of operator precedence
+		System.out.println(getDebuggingParser().evaluate("6+6/6"));
 	}
 
 	private String equation;
-
 	private int position;
 
-	private boolean isEvaluating;
+	private boolean isEvaluating, debug;
 
 	private char getCurrentChar() {
 		return equation.charAt(position);
@@ -99,6 +105,10 @@ public class EquationParser {
 	}
 
 	private boolean incrementPosition() {
+		stddeb("\tPosition is now " + (position + 1) + ". " + (!(position + 1 < equation.length()) ? "O" : "Not o")
+				+ "ut of bounds.");
+		if (position + 1 < equation.length())
+			stddeb("\t\tAt char " + getNextChar());
 		return ++position < equation.length();// Return true if getCurrentChar
 												// is safe.
 	}
@@ -119,6 +129,7 @@ public class EquationParser {
 	 * @return The next term in the sequence.
 	 */
 	private Term parseTerm() {
+		stddeb("Starting at pos=" + position + (outOfBounds() ? "" : ",char=" + getCurrentChar()));
 		boolean neg = false;
 		double val;
 		// Handle negatives in front of the value. We'll cache getCurrChar's
@@ -142,13 +153,15 @@ public class EquationParser {
 				if (getCurrentChar() == '.' && numb.contains("."))
 					throw new DuplicateDecimalException();
 				numb += getCurrentChar();
+				stddeb("\tCOLLECTED CHAR \"" + getCurrentChar() + "\". So far, number is \"" + numb + "\"");
 				if (!incrementPosition()) {
 					break;
 				}
 			} while (MathChars.isNumber(getCurrentChar()));
 			if (numb.startsWith("."))
 				numb = "0" + numb;
-			return new Term(neg ? -Double.parseDouble(numb) : Double.parseDouble(numb), parseOperator());
+			return new Term(neg ? -Double.parseDouble(numb) : Double.parseDouble(numb),
+					outOfBounds() ? Operator.END_LINE : parseOperator());
 		} else {
 			// Parse the following string of characters for a function. We know
 			// our term has ended when a character that can not be used in a
@@ -176,6 +189,8 @@ public class EquationParser {
 	 * @return The next operator in the sequence.
 	 */
 	private Operator parseOperator() {
+		stddeb("Parsing the next operator. Starting at pos=" + position
+				+ (outOfBounds() ? "" : ",char=" + getCurrentChar()));
 
 		if (!(position < equation.length()))
 			return Operator.END_LINE;
@@ -211,6 +226,10 @@ public class EquationParser {
 	}
 
 	public double evaluate(String equation) {
+		stddeb("STARTING EVALUATION");
+		stddeb();
+		stddeb();
+
 		if (isEvaluating)
 			throw new LexerInUseException();
 		isEvaluating = true;
@@ -219,8 +238,14 @@ public class EquationParser {
 		// We start out expecting some kind of numerical value/term, not an
 		// operator.
 		Equation equ = new Equation();
+
+		int round = 0;
+
 		while (true) {
+			round++;
+			stddeb("Parsing Term " + round);
 			Term term = parseTerm();
+			stddeb("Term parsed as " + term.value + ". Operator parsed as " + term.getOperator().operator + "\n\n");
 			equ.add(term);
 			if (term.getOperator() == Operator.END_LINE)
 				break;
@@ -235,5 +260,29 @@ public class EquationParser {
 		// TODO Return value
 		return equ.evaluate();
 
+	}
+
+	private boolean outOfBounds() {
+		return !(position < equation.length());
+	}
+
+	private void stddeb(String text) {
+		if (debug)
+			System.out.println(text);
+	}
+
+	private void stddeb() {
+		if (debug)
+			System.out.println();
+	}
+
+	private void errdeb(String text) {
+		if (debug)
+			System.err.println(text);
+	}
+
+	private void errdeb() {
+		if (debug)
+			System.err.println();
 	}
 }
