@@ -16,4 +16,33 @@ public final class MathChars {
 		// TODO FunctionLookup.lookup(name) != null;
 		return false;
 	}
+
+	public static final boolean possibleFunction(String chars) {
+		// TODO Check name list.
+		return false;
+	}
+
+	public static final boolean possibleOperator(String chars) {
+		System.out.println(chars);
+		for (Operator o : Operator.operators)
+			// We must explicitly detect if chars is empty because the
+			// EquationParser was coded expecting this method to stick up to
+			// it's name; see method documentation.
+			if (o.operator.startsWith(chars))
+				return true;
+		return false;
+	}
+
+	public static Operator getOperator(String operator) {
+		if (operator.isEmpty())
+			return Operator.MULTIPLY;
+		for (Operator o : Operator.operators)
+			if (operator.equalsIgnoreCase(o.operator))
+				return o;
+		return null;
+	}
+
+	public static boolean isWhitespace(char c) {
+		return Character.isWhitespace(c);
+	}
 }

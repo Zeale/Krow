@@ -76,7 +76,8 @@ public class EquationParser {
 
 	public static void main(String[] args) {
 		EquationParser parser = new EquationParser();
-		parser.evaluate("7 + 3- 2");
+		System.out.println("Test");
+		System.out.println(parser.evaluate("1 - 9 + 3"));
 	}
 
 	private String equation;
@@ -93,8 +94,9 @@ public class EquationParser {
 		return equation.charAt(position + 1);
 	}
 
-	private char incrementPosition() {
-		return equation.charAt(++position);
+	private boolean incrementPosition() {
+		return ++position < equation.length();// Return true if getCurrentChar
+												// is safe.
 	}
 
 	/**
@@ -113,7 +115,46 @@ public class EquationParser {
 	 * @return The next term in the sequence.
 	 */
 	private Term parseTerm() {
-		// TODO Parse and return a term
+		while (MathChars.isWhitespace(getCurrentChar()))
+			incrementPosition();
+		boolean neg = false;
+		double val;
+		// Handle negatives in front of the value. We'll cache getCurrChar's
+		// value to a variable later for speed, since this method may be called
+		// many times during evaluation.
+		//
+		// TODO Make this loop not double check everything... Wish we had
+		// batch/C++ GOTO statements...
+		while (getCurrentChar() == '-' || getCurrentChar() == '+' || MathChars.isWhitespace(getCurrentChar())) {
+			if (getCurrentChar() == '-')
+				neg = !neg;
+			else if (getCurrentChar() == '+')
+				neg = false;
+			incrementPosition();
+		}
+		if (MathChars.isNumber(getCurrentChar())) {
+			String numb = "";
+
+			do {
+
+				// TODO if(getCurrentChar()=='.'&&numb.contains(".")) throw new
+				// DuplicateDecimalException();
+				numb += getCurrentChar();
+				if (!incrementPosition()) {
+					break;
+				}
+			} while (MathChars.isNumber(getCurrentChar()));
+			if (numb.startsWith("."))
+				numb = "0" + numb;
+			return new Term(neg ? -Double.parseDouble(numb) : Double.parseDouble(numb), parseOperator());
+		} else {
+			// Parse the following string of characters for a function. We know
+			// our term has ended when a character that can not be used in a
+			// function/constant name has been reached.
+			String func = "" + getCurrentChar();
+
+		}
+
 		return null;
 	}
 
@@ -133,8 +174,39 @@ public class EquationParser {
 	 * @return The next operator in the sequence.
 	 */
 	private Operator parseOperator() {
-		// TODO Parse and return an Operator
-		return null;
+
+		if (!(position < equation.length()))
+			return Operator.END_LINE;
+
+		while (MathChars.isWhitespace(getCurrentChar()))
+			if (!incrementPosition())
+				return Operator.END_LINE;
+
+		String operator = "" + getCurrentChar();
+
+		// If "what we've read so far" + "the next character" is a possible
+		// operator...
+		while (MathChars.possibleOperator(operator + getNextChar())) {
+			// ...then add it to our operator's name.
+			if (!incrementPosition()) {
+				// This is called when an operator is found but there is no
+				// second argument. E.g. "4 + 3 + "
+				// There is no argument after the second "+". In the above
+				// example, we don't know what to add 7 (4+3) to, so we throw an
+				// error.
+				//
+				// Just to reinforce, end lines should only be called after a
+				// Term.
+				// TODO throw new MisplacedOperatorException();
+				throw new RuntimeException("Misplaced operator.");
+			}
+			operator += getCurrentChar();
+		}
+
+		incrementPosition();
+		// TODO if(MathChars.isOperator(getCurrentChar()))throw new
+		// InvalidOperatorException();
+		return MathChars.getOperator(operator);
 	}
 
 	public double evaluate(String equation) {
@@ -145,11 +217,22 @@ public class EquationParser {
 
 		// We start out expecting some kind of numerical value/term, not an
 		// operator.
+		Equation equ = new Equation();
+		while (true) {
+			Term term = parseTerm();
+			equ.add(term);
+			if (term.getOperator() == Operator.END_LINE)
+				break;
+		}
+
+		// TODO Add a testing parser that sysouts stuff like this.
+		// for (Term t : equ)
+		// System.out.println(t.value + " " + t.getOperator().operator);
 
 		isEvaluating = false;
 
 		// TODO Return value
-		return 0;
+		return equ.evaluate();
 
 	}
 }

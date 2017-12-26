@@ -24,10 +24,7 @@ import krow.guis.GUIHelper;
 import krow.guis.math_module.TabGroup;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager.Page;
-import kröw.lexers.equation.EquationParser;
-import kröw.lexers.equation.exceptions.EmptyEquationException;
-import kröw.lexers.equation.exceptions.IrregularCharacterException;
-import kröw.lexers.equation.exceptions.UnmatchedParenthesisException;
+import kröw.math.lexer.EquationParser;
 import zeale.guis.math_module.controllers.StatisticsController.Mode;
 
 public class Calculator extends Page {
@@ -114,11 +111,7 @@ public class Calculator extends Page {
 
 	@FXML
 	private void _event_evaluate() {
-		try {
-			calcIO.setText("" + new EquationParser().evaluate(calcIO.getText()));
-		} catch (EmptyEquationException | UnmatchedParenthesisException | IrregularCharacterException e) {
-			e.printStackTrace();
-		}
+		calcIO.setText("" + new EquationParser().evaluate(calcIO.getText()));
 	}
 
 	@FXML

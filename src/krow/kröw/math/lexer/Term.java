@@ -8,10 +8,16 @@ package kröw.math.lexer;
  */
 public class Term {
 
-	private String text;
+	public final double value;
+	private final Operator operator;
 
-	public Term(String text) {
-		this.text = text;
+	public Term(double value, Operator operator) {
+		this.value = value;
+		this.operator = operator;
+	}
+
+	public Operator getOperator() {
+		return operator;
 	}
 
 }
