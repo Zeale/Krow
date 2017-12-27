@@ -278,6 +278,11 @@ public class EquationParser {
 		if (isEvaluating)
 			throw new LexerInUseException();
 		isEvaluating = true;
+
+		stddeb("Trimming equation before parsing..");
+		stddeb();
+		equation = equation.trim();
+
 		this.equation = equation;
 
 		// We start out expecting some kind of numerical value/term, not an
