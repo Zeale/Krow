@@ -21,6 +21,9 @@ public final class Operator {
 	public static final Operator MULTIPLY = new Operator("*", (x, y) -> x * y);
 	public static final Operator SUBTRACT = new Operator("-", (x, y) -> x - y);
 	public static final Operator DIVIDE = new Operator("/", (x, y) -> x / y);
+	public static final Operator POWER = new Operator("^", (x, y) -> Math.pow(x, y));
+	public static final Operator MODULUS = new Operator("%", (x, y) -> x % y);
+
 	public static final Operator END_LINE = new Operator(";", null);
 
 	public final String operator;

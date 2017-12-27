@@ -1,8 +1,11 @@
 package kröw.math.lexer;
 
 import kröw.math.lexer.exceptions.DuplicateDecimalException;
+import kröw.math.lexer.exceptions.IllegalCloseWrapperPlacementException;
 import kröw.math.lexer.exceptions.LexerInUseException;
 import kröw.math.lexer.exceptions.MisplacedOperatorException;
+import kröw.math.lexer.exceptions.MisplacedWrapperException;
+import kröw.math.lexer.exceptions.UnmatchedWrapperException;
 
 /**
  * <p>
@@ -88,7 +91,7 @@ public class EquationParser {
 	 */
 	public static void main(String[] args) {
 		// Lack of operator precedence
-		System.out.println(getDebuggingParser().evaluate("6+6/6"));
+		System.out.println(getDebuggingParser().evaluate("6+(6/6)"));
 	}
 
 	private String equation;
@@ -160,8 +163,50 @@ public class EquationParser {
 			} while (MathChars.isNumber(getCurrentChar()));
 			if (numb.startsWith("."))
 				numb = "0" + numb;
+			// TODO Move endline checkup to operator method. END_LINE is an operator, so it
+			// should be parsed by the method that parses operators.
 			return new Term(neg ? -Double.parseDouble(numb) : Double.parseDouble(numb),
 					outOfBounds() ? Operator.END_LINE : parseOperator());
+		} else if (MathChars.isOpenWrapper(getCurrentChar())) {
+			char nestingChar = getCurrentChar();
+			stddeb("\tFound a wrapper; " + nestingChar + ". Starting term collection...");
+			String term = "";// Don't concat these outer parentheses.
+			int nesting = 1;
+
+			boolean endLine = false;
+
+			if (!incrementPosition())
+				throw new MisplacedWrapperException();
+
+			while (nesting > 0) {
+				if (getCurrentChar() == nestingChar) {
+					nesting++;
+					stddeb("\t\tFound equal open wrapper. Incrementing nesting to " + nesting);
+				} else if (getCurrentChar() == MathChars.getWrapperPair(nestingChar)) {
+					nesting--;
+					stddeb("\t\tFound equal close wrapper. Decrementing nesting to " + nesting);
+					if (nesting == 0) {
+						stddeb("\t\tNesting has reached 0. Finishing parsing of wrapped section...");
+						if (!incrementPosition()) {
+							endLine = true;
+						}
+						break;// We break so that the parenthesis character
+					}
+				}
+
+				term += getCurrentChar();
+
+				if (!incrementPosition())
+					throw new UnmatchedWrapperException();
+			}
+
+			stddeb("Finished parsing wrapped section. Attempting to evaluate what we're left with...");
+
+			return new Term(debug ? getDebuggingParser().evaluate(term) : new EquationParser().evaluate(term),
+					endLine ? Operator.END_LINE : parseOperator());
+
+		} else if (MathChars.isCloseWrapper(getCurrentChar())) {
+			throw new IllegalCloseWrapperPlacementException();
 		} else {
 			// Parse the following string of characters for a function. We know
 			// our term has ended when a character that can not be used in a

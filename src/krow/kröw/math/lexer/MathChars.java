@@ -1,6 +1,25 @@
 package kröw.math.lexer;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import kröw.math.lexer.exceptions.NotAWrapperException;
+
 public final class MathChars {
+
+	private static final Map<Character, Character> wrapperMap = new HashMap<>();
+	static {
+		addPairToWrapperMap('(', ')');
+		addPairToWrapperMap('[', ']');
+		addPairToWrapperMap('<', '>');
+		addPairToWrapperMap('{', '}');
+	}
+
+	private static void addPairToWrapperMap(char a, char b) {
+		wrapperMap.put(a, b);
+		wrapperMap.put(b, a);
+	}
+
 	private MathChars() {
 	}
 
@@ -41,7 +60,25 @@ public final class MathChars {
 		return null;
 	}
 
+	public static boolean isWrapper(char c) {
+		return isOpenWrapper(c) || isCloseWrapper(c);
+	}
+
+	public static boolean isOpenWrapper(char c) {
+		return c == '(' || c == '[' || c == '<' || c == '{';
+	}
+
+	public static boolean isCloseWrapper(char c) {
+		return c == ')' || c == ']' || c == '>' || c == '}';
+	}
+
 	public static boolean isWhitespace(char c) {
 		return Character.isWhitespace(c);
+	}
+
+	public static char getWrapperPair(char wrapperChar) {
+		if (!isWrapper(wrapperChar))
+			throw new NotAWrapperException();
+		return wrapperMap.get(wrapperChar);
 	}
 }
