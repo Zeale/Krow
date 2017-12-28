@@ -100,39 +100,7 @@ public class EquationParser {
 	public static void main(String[] args) {
 		// Lack of operator precedence
 		EquationParser parser = getDebuggingParser();
-		System.out.println("-=-=-Basic Parsing-=-=-");
-		parser.evaluate("5*3");
-		parser.evaluate("5/3");
-		parser.evaluate("5+3");
-		parser.evaluate("5-3");
-		parser.evaluate("5%3");
-		parser.evaluate("5^3");
-		System.out.println("-=-=-Parsing with parentheses-=-=-");
-		parser.evaluate("(5+7)");
-		parser.evaluate("(72/2)+(9-8)");
-		parser.evaluate("5(3)");
-		parser.evaluate("(5)3");
-		parser.evaluate("(5)(3)");
-		parser.evaluate("5*(3)");
-		parser.evaluate("(5)*3");
-		parser.evaluate("5*3");
-		parser.evaluate("(5)*(3)");
-		System.out.println("-=-=-Parsing with whitespace-=-=-");
-		parser.evaluate("5 * 3");
-		parser.evaluate("5 / 3");
-		parser.evaluate("5 + 3");
-		parser.evaluate("5 - 3");
-		parser.evaluate("5 % 3");
-		parser.evaluate("5 ^ 3");
-		System.out.println();
-		parser.evaluate(" 5*3");
-		parser.evaluate("5*3 ");
-		parser.evaluate(" 5 * 3 ");
-		parser.evaluate("\t\t\t5\t*\t3");
-		System.out.println("-=-=-Advanced Parsing-=-=-");
-		parser.evaluate("5*3/2");
-		parser.evaluate("(5+7)/6");
-		parser.evaluate("(19*3)^0.7/(6^1.3*5-71)--8.9762381321");
+		System.out.println(parser.evaluate("1+15/3+2+2+2"));// Prints 12
 
 	}
 
