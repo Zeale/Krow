@@ -47,7 +47,7 @@ public final class Operator implements Comparable<Operator> {
 
 	@Override
 	public int compareTo(Operator o) {
-		// If o's precedence is greater, this is returns negative, meaning that this
+		// If o's precedence is greater, this method returns negative, meaning that this
 		// operator is less than o.
 		return precedence - o.precedence;
 	}
