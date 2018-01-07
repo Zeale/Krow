@@ -31,14 +31,23 @@ public final class MathChars {
 		return Character.isLetter(c);
 	}
 
-	public static final boolean isFunction(String name) {
-		// TODO FunctionLookup.lookup(name) != null;
+	public static final boolean possibleFunction(String chars) {
+		for (Function f : Function.functions) {
+			if (f.getName().startsWith(chars))
+				return true;
+		}
 		return false;
 	}
 
-	public static final boolean possibleFunction(String chars) {
-		// TODO Check name list.
-		return false;
+	public static final boolean validFunctionChar(char c) {
+		return Character.isLetter(c) || c == '_';
+	}
+
+	public static final Function getFunction(String name) {
+		for (Function f : Function.functions)
+			if (name.equalsIgnoreCase(f.getName()))
+				return f;
+		return null;
 	}
 
 	public static final boolean possibleOperator(String chars) {

@@ -1,7 +1,9 @@
 package kröw.math.lexer;
 
+import kröw.math.lexer.exceptions.BrokenTermException;
 import kröw.math.lexer.exceptions.DuplicateDecimalException;
-import kröw.math.lexer.exceptions.IllegalCloseWrapperPlacementException;
+import kröw.math.lexer.exceptions.IllegalCharException;
+import kröw.math.lexer.exceptions.InvalidFunctionNameException;
 import kröw.math.lexer.exceptions.LexerInUseException;
 import kröw.math.lexer.exceptions.MisplacedOperatorException;
 import kröw.math.lexer.exceptions.MisplacedWrapperException;
@@ -100,7 +102,11 @@ public class EquationParser {
 	public static void main(String[] args) {
 		// Lack of operator precedence
 		EquationParser parser = getDebuggingParser();
-		System.out.println(parser.evaluate("1+15/3+2+2+2"));// Prints 12
+		System.out.println(parser.evaluate("cos(3.14159265358789)"));// Prints -1
+		System.out.println(parser.evaluate("sin(3.14159265358789)"));// Prints 0 (or really close).
+
+		System.out.println(parser.evaluate("sin(3.14159265358789*cos(0))"));// Prints the same as above. (Since
+																			// cos(0)=1 )
 
 	}
 
@@ -121,7 +127,7 @@ public class EquationParser {
 		stddeb("\tPosition is now " + (position + 1) + ". " + (!(position + 1 < equation.length()) ? "O" : "Not o")
 				+ "ut of bounds.");
 		if (position + 1 < equation.length())
-			stddeb("\t\tAt char " + getNextChar());
+			stddeb("\t\tNow at char " + getNextChar());
 		return ++position < equation.length();// Return true if getCurrentChar
 												// is safe.
 	}
@@ -144,7 +150,6 @@ public class EquationParser {
 	private Term parseTerm() {
 		stddeb("Starting at pos=" + position + (outOfBounds() ? "" : ",char=" + getCurrentChar()));
 		boolean neg = false;
-		double val;
 		// Handle negatives in front of the value. We'll cache getCurrChar's
 		// value to a variable later for speed, since this method may be called
 		// many times during evaluation.
@@ -202,7 +207,7 @@ public class EquationParser {
 						if (!incrementPosition()) {
 							endLine = true;
 						}
-						break;// We break so that the parenthesis character
+						break;
 					}
 				}
 
@@ -217,15 +222,69 @@ public class EquationParser {
 			return new Term(new EquationParser(this).evaluate(term), endLine ? Operator.END_LINE : parseOperator());
 
 		} else if (MathChars.isCloseWrapper(getCurrentChar())) {
-			throw new IllegalCloseWrapperPlacementException();
-		} else {
+			throw new IllegalCharException();
+		} else if (MathChars.validFunctionChar(getCurrentChar())) {
+			String func = "" + getCurrentChar();
+			// Get the function's name.
+			while (canIncPos() && MathChars.validFunctionChar(getNextChar())) {
+
+				// TODO Also check constants.
+				if (!MathChars.possibleFunction(func + getNextChar()))
+					throw new InvalidFunctionNameException();
+				incrementPosition();
+				func += getCurrentChar();
+			}
+
+			if (!incrementPosition())
+				throw new BrokenTermException();
+
+			// if (MathChars.isOpenWrapper(getCurrentChar()))
+			// For now, functions will only use parentheses to wrap their contents.
+			if (getCurrentChar() == '(') {
+
+				stddeb("Starting function parameter collection...");
+
+				int nesting = 1;// Because we started on '('
+				String param = "";
+				boolean endLine = false;
+
+				if (!incrementPosition())
+					throw new BrokenTermException();
+				while (nesting > 0) {
+					if (getCurrentChar() == '(') {
+						nesting++;
+						stddeb("\t\tFound equal open wrapper. Incrementing nesting to " + nesting);
+					} else if (getCurrentChar() == ')') {
+						nesting--;
+						stddeb("\t\tFound equal close wrapper. Decrementing nesting to " + nesting);
+						if (nesting == 0) {
+							stddeb("\t\tNesting has reached 0. Finishing parsing of wrapped section...");
+							if (!incrementPosition()) {
+								endLine = true;
+							}
+							break;
+						}
+					}
+
+					param += getCurrentChar();
+
+					if (!incrementPosition())
+						throw new UnmatchedWrapperException();
+				}
+
+				return new Term(MathChars.getFunction(func).calculate(new EquationParser(this).evaluate(param)),
+						endLine ? Operator.END_LINE : parseOperator());
+
+			} else {// We may have a constant. For now, let's just throw an error.
+				throw new IllegalCharException("The function name was not followed by parentheses.");
+			}
+
 			// Parse the following string of characters for a function. We know
 			// our term has ended when a character that can not be used in a
 			// function/constant name has been reached.
-			String func = "" + getCurrentChar();
 
 		}
-
+		errdeb("What was expected to be a term did not pass any of the tests that qualified it to go into the next step of being parsed as a term; no term found.");
 		return null;
 	}
 
