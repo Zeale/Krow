@@ -93,23 +93,6 @@ public class EquationParser {
 
 	private final int debugTabbing;
 
-	/**
-	 * Method for debugging purposes.
-	 * 
-	 * @param args
-	 *            args.
-	 */
-	public static void main(String[] args) {
-		// Lack of operator precedence
-		EquationParser parser = getDebuggingParser();
-		System.out.println(parser.evaluate("cos(3.14159265358789)"));// Prints -1
-		System.out.println(parser.evaluate("sin(3.14159265358789)"));// Prints 0 (or really close).
-
-		System.out.println(parser.evaluate("sin(3.14159265358789*cos(0))"));// Prints the same as above. (Since
-																			// cos(0)=1 )
-
-	}
-
 	private String equation;
 	private int position;
 
