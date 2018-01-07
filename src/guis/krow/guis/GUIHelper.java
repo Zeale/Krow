@@ -299,11 +299,11 @@ public final class GUIHelper {
 
 							t.setTextAlignment(TextAlignment.CENTER);
 
-							final Color startColor = t instanceof MenuOption ? ((MenuOption) t).getStartColor()
-									: MENU_CHILD_NODE_START_COLOR,
-									endColor = t instanceof MenuOption ? ((MenuOption) t).getFadeColor()
-											: MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR;
-							t.setFill(startColor);
+							// NOTE: We can't cache the "from" and "to" colors of a text node here, as they
+							// may change later.
+
+							t.setFill(t instanceof MenuOption ? ((MenuOption) t).getStartColor()
+									: MENU_CHILD_NODE_START_COLOR);
 							t.setFont(
 									Font.font(Font.getDefault().getName(), FontWeight.BOLD, MENU_CHILD_NODE_FONT_SIZE));
 
@@ -317,7 +317,8 @@ public final class GUIHelper {
 										? MENU_BUTTON_ANIMATION_DURATION
 										: MENU_CHILD_NODE_HOVER_ANIMATION_ENTER_DURATION);
 								ft.setFromValue((Color) t.getFill());
-								ft.setToValue(endColor);
+								ft.setToValue(t instanceof MenuOption ? ((MenuOption) t).getFadeColor()
+										: MENU_CHILD_NODE_HOVER_ANIMATION_END_COLOR);
 								ft.play();
 							});
 							t.setOnMouseExited(event -> {
@@ -326,7 +327,8 @@ public final class GUIHelper {
 										? MENU_BUTTON_ANIMATION_DURATION
 										: MENU_CHILD_NODE_HOVER_ANIMATION_EXIT_DURATION);
 								ft.setFromValue((Color) t.getFill());
-								ft.setToValue(startColor);
+								ft.setToValue(t instanceof MenuOption ? ((MenuOption) t).getStartColor()
+										: MENU_CHILD_NODE_START_COLOR);
 								ft.play();
 							});
 						} catch (final ClassCastException e) {
