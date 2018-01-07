@@ -21,13 +21,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import krow.guis.GUIHelper;
+import krow.guis.GUIHelper.MenuOption;
 import krow.guis.math_module.TabGroup;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager.Page;
-import kröw.lexers.equation.EquationParser;
-import kröw.lexers.equation.exceptions.EmptyEquationException;
-import kröw.lexers.equation.exceptions.IrregularCharacterException;
-import kröw.lexers.equation.exceptions.UnmatchedParenthesisException;
+import kröw.math.lexer.EquationParser;
 import zeale.guis.math_module.controllers.StatisticsController.Mode;
 
 public class Calculator extends Page {
@@ -37,10 +35,10 @@ public class Calculator extends Page {
 	}
 
 	/**
-	 * This text controls what is inside this {@link Page}'s {@link #calcIO}
-	 * field.
+	 * This text controls what is inside this {@link Page}'s {@link #calcIO} field.
 	 */
 	private static String cachedText;
+	private static boolean parsingDebugEnabled = false;
 
 	private boolean hasLoaded;
 
@@ -114,11 +112,8 @@ public class Calculator extends Page {
 
 	@FXML
 	private void _event_evaluate() {
-		try {
-			calcIO.setText("" + new EquationParser().evaluate(calcIO.getText()));
-		} catch (EmptyEquationException | UnmatchedParenthesisException | IrregularCharacterException e) {
-			e.printStackTrace();
-		}
+		calcIO.setText("" + (parsingDebugEnabled ? EquationParser.getDebuggingParser() : new EquationParser())
+				.evaluate(calcIO.getText()));
 	}
 
 	@FXML
@@ -266,13 +261,24 @@ public class Calculator extends Page {
 		GUIHelper.addDefaultSettings(slideMenu);
 		slideMenu.getParentWrapper().setVisible(false);
 
-		final Node showMathMenuItem = new GUIHelper.MenuOption(Color.ORANGE, "Show Math Menu");
+		final Node showMathMenuItem = new MenuOption(Color.ORANGE, "Show Math Menu");
 		showMathMenuItem.setOnMouseClicked(event -> {
 			slideMenu.getParentWrapper().setVisible(false);
 			menu.setVisible(true);
 			showMenuButton.setVisible(true);
 		});
 		slideMenu.getChildren().add(showMathMenuItem);
+
+		MenuOption parsingDebugEnabledMenuItem = new MenuOption(
+				parsingDebugEnabled ? "Disable Parser Debugging (" + (char) 10003 + ")" : ("Enable Parser Debugging"));
+		parsingDebugEnabledMenuItem.setOnMouseClicked(event -> {
+			parsingDebugEnabled ^= true;
+			parsingDebugEnabledMenuItem.setStartColor(parsingDebugEnabled ? Color.GREEN : Color.BLACK);
+			parsingDebugEnabledMenuItem.setText(parsingDebugEnabled ? "Disable Parser Debugging (" + (char) 10003 + ")"
+					: "Enable Parser Debugging");
+		});
+		parsingDebugEnabledMenuItem.setStartColor(parsingDebugEnabled ? Color.GREEN : Color.BLACK);
+		slideMenu.getChildren().add(parsingDebugEnabledMenuItem);
 
 	}
 
