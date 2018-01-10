@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.Writer;
 
-import kröw.data.common.KeyValuePairData;
+import kröw.data.common.kvp.KeyValuePairData;
 
 // TODO Add more convenience setters for os.
 public class KVPDataWriter {

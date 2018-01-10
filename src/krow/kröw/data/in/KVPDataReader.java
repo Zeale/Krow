@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import kröw.data.common.KeyValuePairData;
+import kröw.data.common.kvp.KeyValuePairData;
 
 public class KVPDataReader {
 
