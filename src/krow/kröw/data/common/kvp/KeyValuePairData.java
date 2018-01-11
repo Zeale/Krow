@@ -2,22 +2,14 @@ package kröw.data.common.kvp;
 
 import java.util.HashMap;
 
-import kröw.data.common.Convertible;
+public class KeyValuePairData extends HashMap<String, KVPDataObject> {
 
-public class KeyValuePairData extends HashMap<String, Object> implements Convertible<String> {
-
-	@Override
-	public String convertTo() {
-		String text = "";
-		for (Entry<String, Object> e : entrySet()) {
-			text += e.getKey() + "=" + e.getValue() + "\n";
-
-		}
-		return text;
-	}
+	/**
+	 * SUID
+	 */
+	private static final long serialVersionUID = 1L;
 
 	// This may soon need some private helper methods.
-	@Override
 	public void convertFrom(String convertedObject) {
 		int position = 0;
 		while (position < convertedObject.length()) {
