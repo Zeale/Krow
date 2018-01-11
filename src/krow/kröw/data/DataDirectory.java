@@ -2,7 +2,6 @@ package kröw.data;
 
 import java.io.File;
 import java.net.URI;
-import java.nio.file.FileAlreadyExistsException;
 
 public class DataDirectory extends File {
 
@@ -11,27 +10,28 @@ public class DataDirectory extends File {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public DataDirectory(String pathname) throws FileAlreadyExistsException {
+	public DataDirectory(String pathname) {
 		super(pathname);
 		initcheck();
 	}
 
-	private void initcheck() throws FileAlreadyExistsException {
+	private void initcheck() {
 		if (exists() && !isDirectory())
-			throw new FileAlreadyExistsException(getPath());
+			delete();
+		mkdirs();
 	}
 
-	public DataDirectory(URI uri) throws FileAlreadyExistsException {
+	public DataDirectory(URI uri) {
 		super(uri);
 		initcheck();
 	}
 
-	public DataDirectory(String parent, String child) throws FileAlreadyExistsException {
+	public DataDirectory(String parent, String child) {
 		super(parent, child);
 		initcheck();
 	}
 
-	public DataDirectory(File parent, String child) throws FileAlreadyExistsException {
+	public DataDirectory(File parent, String child) {
 		super(parent, child);
 		initcheck();
 	}

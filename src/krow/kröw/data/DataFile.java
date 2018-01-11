@@ -3,7 +3,6 @@ package kröw.data;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.FileAlreadyExistsException;
 
 public class DataFile extends File {
 
@@ -19,7 +18,8 @@ public class DataFile extends File {
 
 	private void initcheck() throws IOException {
 		if (exists() && !isFile())
-			throw new FileAlreadyExistsException(getPath());
+			DataUtils.deleteDirectory(this);
+		createNewFile();
 	}
 
 	public DataFile(URI uri) throws IOException {
