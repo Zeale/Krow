@@ -2,8 +2,10 @@ package kröw.data.in;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
+import kröw.data.DataFile;
 import kröw.data.common.kvp.KeyValuePairData;
 
 public class KVPDataReader {
@@ -19,8 +21,8 @@ public class KVPDataReader {
 		scanner = new Scanner(file);
 	}
 
-	public KVPDataReader(String filepath) throws FileNotFoundException {
-		scanner = new Scanner(filepath);
+	public KVPDataReader(String filepath) throws IOException {
+		scanner = new Scanner(new DataFile(filepath));
 	}
 
 	public KeyValuePairData read() {
