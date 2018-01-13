@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -23,6 +24,8 @@ import zeale.guis.Home;
 import zeale.guis.schedule_module.ScheduleModule;
 
 public class DeveloperModule extends Page {
+
+	private final static Image TESTING_ICON = new Image("krow/resources/Testing.png");
 
 	@FXML
 	private Pane root;
@@ -117,10 +120,14 @@ public class DeveloperModule extends Page {
 			}
 		});
 
+		ImageView testing = new ImageView(TESTING_ICON);
+		testing.setOnMouseClicked(event -> {
+			// WindowManager.setScene(TestingModule.class);
+		});
+
 		scheduler.setPickOnBounds(true);
 
-		scroll.getChildren().add(console);
-		scroll.getChildren().add(scheduler);
+		scroll.getChildren().addAll(console, scheduler, testing);
 
 		scroll.centerNodes();
 	}
