@@ -8,39 +8,6 @@ public final class Protection {
 
 	private static DataDirectory DOMAINS_DIRECTORY;
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	private static Domain hackIntoTestsDomain;
-
-	public static void main(String[] args) {
-		// Exploit: Gives the domain of Test, even though
-		new Test() {
-			{
-				hackIntoTestsDomain = getDomain();
-			}
-		};
-
-		System.out.println(hackIntoTestsDomain.getPath());
-
-	}
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 	/**
 	 * @return the private domain belonging to the calling class.
 	 */
@@ -50,6 +17,7 @@ public final class Protection {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 
 		String name = null;
+		StackTraceElement element;
 		boolean found = false;
 
 		for (StackTraceElement ste : stackTrace) {
@@ -59,6 +27,7 @@ public final class Protection {
 			if (found) {
 
 				name = ste.getClassName();
+				element = ste;
 				break;
 
 			} else if (ste.getClassName().equals(Protection.class.getName()) && ste.getMethodName().equals("getDomain"))
@@ -72,7 +41,8 @@ public final class Protection {
 
 		}
 		if (name == null)
-			throw new RuntimeException("Couldn't find the calling class and generate a domain for it.");
+			throw new RuntimeException(
+					"Couldn't find the calling class and generate a domain for it. (For some reason, its not in the stack trace.)");
 		Class<?> callingClass;
 		try {
 			callingClass = Class.forName(name, false, Thread.currentThread().getContextClassLoader());
@@ -85,49 +55,27 @@ public final class Protection {
 		// RuntimeException was thrown. We can assume that callingClass is safe to use.
 
 		// Loop until we get a usable class.
-		while (callingClass.isAnonymousClass() || callingClass.isSynthetic()) {
-			// THIS LOOP IS WRONG. Doing this allows me to instantiate a class (say "Test")
-			// from my class and access its domain. When I make an anonymous class off of
-			// Test, this method (because of this loop) will return the domain of my
-			// anonymous class's superclass. That would give me Test's domain. What should
-			// happen, is that I am given the domain of the class in which I
-			// called upon/instantiated my anonymous class. See the above main method.
-
-			// This loop should never cause callingClass to be null, since Object is the
-			// only class (for the purposes of this method) whose return value for
-			// "getSuperclass()" will be null, and it, itself, is a concrete class.
-			callingClass = callingClass.getSuperclass();
+		while (callingClass.isAnonymousClass()) {
+			callingClass = callingClass.getEnclosingClass();
 		}
+		// TODO LEARN HOW SYNTHETIC CLASSES WORK AND DEAL WITH THEM!!!
 
 		// Return a Domain whose path is checked to be that of an inner class. Call
 		// some or other character replacement methods on the path based off of this
 		// condition.
 		return Domain.getDomain(callingClass.getName().contains("$")
-				? callingClass.getName().replaceAll("\\.", "/").replaceAll("$", "#")
+				? callingClass.getName().replaceAll("\\.", "/").replaceAll("\\$", "#")// Apparently, $s also have to be
+																						// escaped... Otherwise they
+																						// mean endline or something.
 				: callingClass.getCanonicalName().replaceAll("\\.", "/"));// We gotta use a \ escape char to replace
 																			// literal periods.
 	}
 
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	static {
-		tryEnable();
+		// This needs to be commented to run the Demonstration class. We don't want to
+		// be calling anything in the Kröw class, as that would call its static
+		// initializers, leading to its futile initialization and some exceptions.
+		// tryEnable();
 	}
 
 	public static final boolean tryEnable() {
