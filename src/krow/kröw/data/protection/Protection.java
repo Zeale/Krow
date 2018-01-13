@@ -5,10 +5,21 @@ import kröw.data.DataDirectory;
 import sun.reflect.CallerSensitive;
 
 public final class Protection {
-
 	private static DataDirectory DOMAINS_DIRECTORY;
 
 	/**
+	 * <p>
+	 * This method returns a Protection {@link Domain} that belongs to the calling
+	 * class. More info about Domains can be found in the {@link Domain}s class.
+	 * <p>
+	 * If the calling class is an anonymous class, then the class in which it is
+	 * defined is used to get a Domain. The returned domain is, resultingly, the
+	 * domain if the enclosing class.
+	 * <p>
+	 * If the calling class is anonymous and its enclosing class is anonymous as
+	 * well, (and that class’s enclosing class is anonymous, etc. etc.,) then this
+	 * method iterates until it finds an enclosing class that it can use.
+	 * 
 	 * @return the private domain belonging to the calling class.
 	 */
 	public static @CallerSensitive Domain getDomain() {
@@ -17,7 +28,6 @@ public final class Protection {
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 
 		String name = null;
-		StackTraceElement element;
 		boolean found = false;
 
 		for (StackTraceElement ste : stackTrace) {
@@ -27,7 +37,6 @@ public final class Protection {
 			if (found) {
 
 				name = ste.getClassName();
-				element = ste;
 				break;
 
 			} else if (ste.getClassName().equals(Protection.class.getName()) && ste.getMethodName().equals("getDomain"))
@@ -72,10 +81,7 @@ public final class Protection {
 	}
 
 	static {
-		// This needs to be commented to run the Demonstration class. We don't want to
-		// be calling anything in the Kröw class, as that would call its static
-		// initializers, leading to its futile initialization and some exceptions.
-		// tryEnable();
+		tryEnable();
 	}
 
 	public static final boolean tryEnable() {
