@@ -24,6 +24,8 @@ public final class Protection {
 	 */
 	public static @CallerSensitive Domain getDomain() {
 
+		doAvailabilityCheck();
+
 		// "Get caller method" code adapted from javafx.application.Application
 		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 
@@ -67,21 +69,139 @@ public final class Protection {
 		while (callingClass.isAnonymousClass()) {
 			callingClass = callingClass.getEnclosingClass();
 		}
-		// TODO LEARN HOW SYNTHETIC CLASSES WORK AND DEAL WITH THEM!!!
+		// TODO LEARN HOW SYNTHETIC CLASSES WORK AND DEAL WITH THEM (if needed)!!!
 
-		// Return a Domain whose path is checked to be that of an inner class. Call
-		// some or other character replacement methods on the path based off of this
-		// condition.
-		return Domain.getDomain(callingClass.getName().contains("$")
-				? callingClass.getName().replaceAll("\\.", "/").replaceAll("\\$", "#")// Apparently, $s also have to be
-																						// escaped... Otherwise they
-																						// mean endline or something.
-				: callingClass.getCanonicalName().replaceAll("\\.", "/"));// We gotta use a \ escape char to replace
-																			// literal periods.
+		// Return a Domain whose path is converted from a package name to a Domain name.
+		// See the Domain class (literally referenced below) for more details.
+		return Domain.getDomain(Domain.pkgToDom(callingClass.getName(), callingClass.getCanonicalName()));
 	}
 
-	static {
-		tryEnable();
+	public static Domain getDomain(String fullPath) throws ClassNotFoundException {
+
+		doAvailabilityCheck();
+
+		// Check access to this Domain and see if the calling class is allowed to obtain
+		// an instance of it.
+
+		// "Get caller method" code adapted from javafx.application.Application
+		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+
+		String name = null;
+		boolean found = false;
+
+		for (StackTraceElement ste : stackTrace) {
+
+			// The "getDomain" string literal may be replaced later with code that will
+			// dynamically get this method's name.
+			if (found) {
+
+				name = ste.getClassName();
+				break;
+
+			} else if (ste.getClassName().equals(Protection.class.getName()) && ste.getMethodName().equals("getDomain"))
+
+				// We are iterating over stackTrace with an enhanced for loop (Item i:itemList)
+				// so we don't have an index that we can use to get the next element from here,
+				// (which is (hopefully) the class/method name we want). To solve this, we
+				// continue the loop, setting "found" to true. The above if will be called in
+				// the for loop with the item we want.
+				found = true;
+
+		}
+		if (name == null)
+			throw new RuntimeException(
+					"Couldn't find the calling class and generate a domain for it. (For some reason, its not in the stack trace.)");
+		Class<?> callingClass;
+		try {
+			callingClass = Class.forName(name, false, Thread.currentThread().getContextClassLoader());
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("A class name was found, (" + name
+					+ "), but attempting to get its corresponding object threw a ClassNotfoundException.", e);
+		}
+
+		// We have to get a class object (or try to get one) off of the given "fullPath"
+		// variable, then compare it with the calling class and see if the calling
+		// class has any access to its domain.
+		//
+		// Converting "fullPath" to something we can pass to Class.forName(...):
+		Class<?> victim = Class.forName(Domain.domToPkg(fullPath));
+		if (!checkAccess(callingClass, victim))
+			throw new RuntimeException("Illegal class accessing.");// This should be a checked exception.
+		return Domain.getDomain(victim);
+	}
+
+	public static Domain getDomain(Class<?> owner) {
+
+		doAvailabilityCheck();
+
+		// Check access to this Domain and see if the calling class is allowed to obtain
+		// an instance of it.
+
+		// "Get caller method" code adapted from javafx.application.Application
+		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+
+		String name = null;
+		boolean found = false;
+
+		for (StackTraceElement ste : stackTrace) {
+
+			// The "getDomain" string literal may be replaced later with code that will
+			// dynamically get this method's name.
+			if (found) {
+
+				name = ste.getClassName();
+				break;
+
+			} else if (ste.getClassName().equals(Protection.class.getName()) && ste.getMethodName().equals("getDomain"))
+
+				// We are iterating over stackTrace with an enhanced for loop (Item i:itemList)
+				// so we don't have an index that we can use to get the next element from here,
+				// (which is (hopefully) the class/method name we want). To solve this, we
+				// continue the loop, setting "found" to true. The above if will be called in
+				// the for loop with the item we want.
+				found = true;
+
+		}
+		if (name == null)
+			throw new RuntimeException(
+					"Couldn't find the calling class and generate a domain for it. (For some reason, its not in the stack trace.)");
+		Class<?> callingClass;
+		try {
+			callingClass = Class.forName(name, false, Thread.currentThread().getContextClassLoader());
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("A class name was found, (" + name
+					+ "), but attempting to get its corresponding object threw a ClassNotfoundException.", e);
+		}
+
+		if (!checkAccess(callingClass, owner))
+			throw new RuntimeException("Illegal class accessing.");// This should also be a checked exception.
+		return Domain.getDomain(owner);
+	}
+
+	private static boolean checkAccess(Class<?> accessor, Class<?> victim) {
+		while (accessor.isAnonymousClass())
+			accessor = accessor.getEnclosingClass();
+		while (victim.isAnonymousClass())
+			victim = victim.getEnclosingClass();
+		if (accessor == victim)
+			return true;
+		// I feel like this is kinda edgy, but I can't think of a better solution.
+		// Probably cuz it's almost 1 AM.
+		if (accessor.getName().equals(victim.getName()))
+			return true;
+		// In a little bit, we'll add a little checkup for annotations. There will be an
+		// annotation (that can be applied to "Types") that will allow a class to let
+		// another, explicitly defined class, access its domain.
+		//
+		// Also, public domains still need to be added.
+		return false;
+	}
+
+	private static void doAvailabilityCheck() {
+		if (!isAvailable())
+			tryEnable();
+		if (!isAvailable())
+			throw new RuntimeException("Protection API Unavailable.");
 	}
 
 	public static final boolean tryEnable() {
