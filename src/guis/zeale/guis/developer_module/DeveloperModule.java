@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -119,13 +120,17 @@ public class DeveloperModule extends Page {
 				e.printStackTrace();
 			}
 		});
+		scheduler.setPickOnBounds(true);
 
 		ImageView testing = new ImageView(TESTING_ICON);
 		testing.setOnMouseClicked(event -> {
-			// WindowManager.setScene(TestingModule.class);
+			try {
+				WindowManager.setScene(TestingModule.class);
+			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
+				e.printStackTrace();
+			}
 		});
-
-		scheduler.setPickOnBounds(true);
+		testing.setEffect(new DropShadow());
 
 		scroll.getChildren().addAll(console, scheduler, testing);
 
