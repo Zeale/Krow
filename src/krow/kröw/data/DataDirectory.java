@@ -36,4 +36,9 @@ public class DataDirectory extends File {
 		initcheck();
 	}
 
+	@Override
+	public DataDirectory getParentFile() {
+		return new DataDirectory(super.getParent());
+	}
+
 }
