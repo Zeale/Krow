@@ -253,7 +253,7 @@ public final class Protection {
 		if (options.contains(AccessOption.UP_INHERITED)) {
 			Class<?> c = victim;
 			while (c != null)
-				if (c.getSuperclass() == victim)
+				if (c.getSuperclass() == accessor)
 					return true;
 				else
 					c = c.getSuperclass();
