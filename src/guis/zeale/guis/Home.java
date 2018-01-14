@@ -83,7 +83,7 @@ public class Home extends ScrollMenu {
 		});
 		chatRoom.setPickOnBounds(true);
 
-		final ImageView krow = new ImageView(Kröw.IMAGE_KRÖW);
+		final ImageView krow = new ImageView(new Image(Kröw.IMAGE_KRÖW_LOCATION));
 		// This code assures that clicking in a transparent portion of the image
 		// will still cause a click to be registered by the event handler.
 		// Event handler
