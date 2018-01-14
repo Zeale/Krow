@@ -178,15 +178,16 @@ public final class Kröw extends Application {
 	/**
 	 * <p>
 	 * {@link #IMAGE_LIGHT_CROW} - The light colored crow image that is used for
-	 * this {@link Application}'s icon. This image can be set as the program's
-	 * icon via the home window.
+	 * this {@link Application}'s icon. This image can be set as the program's icon
+	 * via the home window.
 	 * <p>
-	 * {@link #IMAGE_DARK_CROW} - The dark colored crow image that is used for
-	 * this {@link Application}'s icon. This image is the program's default
-	 * icon.
+	 * {@link #IMAGE_DARK_CROW} - The dark colored crow image that is used for this
+	 * {@link Application}'s icon. This image is the program's default icon.
 	 *
 	 */
-	public static final Image IMAGE_LIGHT_CROW, IMAGE_DARK_CROW, IMAGE_KRÖW;
+	public static final String IMAGE_LIGHT_CROW_LOCATION = "krow/resources/LightKröw.png",
+			IMAGE_DARK_CROW_LOCATION = "krow/resources/DarkKröw.png",
+			IMAGE_KRÖW_LOCATION = "krow/resources/Kröw_hd.png";
 
 	/**
 	 * The name {@code Kröw}.
@@ -228,32 +229,6 @@ public final class Kröw extends Application {
 			System.exit(-1);
 		}
 
-	}
-
-	static {
-
-		Image dark = null, light = null, kröw = null;
-		try {
-			dark = new Image("krow/resources/DarkKröw.png");
-		} catch (final IllegalArgumentException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			light = new Image("krow/resources/LightKröw.png");
-		} catch (final IllegalArgumentException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			kröw = new Image("krow/resources/Kröw_hd.png");
-		} catch (final IllegalArgumentException e) {
-			e.printStackTrace();
-		}
-
-		IMAGE_DARK_CROW = dark;
-		IMAGE_LIGHT_CROW = light;
-		IMAGE_KRÖW = kröw;
 	}
 
 	public static PrintStream defout = System.out, deferr = System.err;
@@ -393,16 +368,16 @@ public final class Kröw extends Application {
 	}
 
 	/**
-	 * The start method of the program. This will load up and initialize the
-	 * entire program. Nothing else is needed. It can be called from a main
-	 * method or somewhere else.
+	 * The start method of the program. This will load up and initialize the entire
+	 * program. Nothing else is needed. It can be called from a main method or
+	 * somewhere else.
 	 *
 	 * @param args
-	 *            The program arguments passed in from the main method. This can
-	 *            be null or can say whatever, but if it does not contain the
-	 *            actual arguments given by the user, <code>Kröw</code> will not
-	 *            be able to determine things like debug mode (which depends on
-	 *            program arguments).
+	 *            The program arguments passed in from the main method. This can be
+	 *            null or can say whatever, but if it does not contain the actual
+	 *            arguments given by the user, <code>Kröw</code> will not be able to
+	 *            determine things like debug mode (which depends on program
+	 *            arguments).
 	 */
 	public static void start(final String[] args) {
 		System.out.println("\n\n\n\n");
@@ -465,8 +440,7 @@ public final class Kröw extends Application {
 
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.setTitle(Kröw.NAME);
-		if (Kröw.IMAGE_KRÖW != null)
-			primaryStage.getIcons().add(Kröw.IMAGE_KRÖW);
+		primaryStage.getIcons().add(new Image(Kröw.IMAGE_KRÖW_LOCATION));
 		WindowManager.getStage().getScene()
 				.setFill(programSettings.getGlobalProgramBackground() == 0 ? SOLID_BACKGROUND
 						: programSettings.getGlobalProgramBackground() == 1 ? MODERATELY_TRANSPARENT_BACKGROUND
