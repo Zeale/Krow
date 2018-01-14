@@ -1,10 +1,16 @@
 package kröw.data.protection;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import kröw.core.Kröw;
 import kröw.data.DataDirectory;
+import kröw.data.protection.DomainAccess.AccessOption;
+import kröw.data.protection.DomainAccess.SingleAccessOption;
 import sun.reflect.CallerSensitive;
 
 public final class Protection {
+
 	private static DataDirectory DOMAINS_DIRECTORY;
 
 	/**
@@ -76,7 +82,7 @@ public final class Protection {
 		return Domain.getDomain(Domain.pkgToDom(callingClass.getName(), callingClass.getCanonicalName()));
 	}
 
-	public static Domain getDomain(String fullPath) throws ClassNotFoundException {
+	public static @CallerSensitive Domain getDomain(String fullPath) throws ClassNotFoundException {
 
 		doAvailabilityCheck();
 
@@ -130,7 +136,7 @@ public final class Protection {
 		return Domain.getDomain(victim);
 	}
 
-	public static Domain getDomain(Class<?> owner) {
+	public static @CallerSensitive Domain getDomain(Class<?> owner) {
 
 		doAvailabilityCheck();
 
@@ -179,6 +185,8 @@ public final class Protection {
 	}
 
 	private static boolean checkAccess(Class<?> accessor, Class<?> victim) {
+		if (accessor == victim)
+			return true;
 		while (accessor.isAnonymousClass())
 			accessor = accessor.getEnclosingClass();
 		while (victim.isAnonymousClass())
@@ -189,11 +197,73 @@ public final class Protection {
 		// Probably cuz it's almost 1 AM.
 		if (accessor.getName().equals(victim.getName()))
 			return true;
-		// In a little bit, we'll add a little checkup for annotations. There will be an
-		// annotation (that can be applied to "Types") that will allow a class to let
-		// another, explicitly defined class, access its domain.
-		//
-		// Also, public domains still need to be added.
+
+		// The above <i>should</i> cover all accessing if the domain is private (as in
+		// it is only accessible by the class that it represents).
+
+		DomainAccess[] dms = victim.getDeclaredAnnotationsByType(DomainAccess.class);
+		List<AccessOption> options = new ArrayList<>();
+		SingleAccessOption overallOption = null;
+		List<Class<?>> explicitlyAllowedClasses = new ArrayList<>();
+		for (DomainAccess dm : dms) {
+			for (AccessOption ao : dm.options())
+				if (options.contains(ao))
+					throw new RuntimeException("Class declared with duplicate AccessOptions: " + victim.getName());
+				else
+					options.add(ao);
+			if (dm.overallOption() != null)
+				if (overallOption != null)
+					throw new RuntimeException("Class declared with multiple SingleAccessOptions: " + victim.getName());
+				else
+					overallOption = dm.overallOption();
+			for (Class<?> c : dm.allowedAccessors())
+				if (!explicitlyAllowedClasses.contains(c))
+					explicitlyAllowedClasses.add(c);
+		}
+
+		// First off, if our "victim" is public, then our "accessor" can jump right in
+		// and access its domain.
+		if (overallOption == SingleAccessOption.PUBLIC)
+			return true;
+		// For now, if the above isn't true, then the option is PRIVATE, since that's
+		// the only other SingleAccessOption defined.
+
+		// Now lets see if this class qualifies for one of the other customization
+		// options. (Regular AccessOptions)
+		if (options.contains(AccessOption.INHERITED)) {
+			// INHERITED is placed on a class to signify that its subclasses can access its
+			// domain.
+
+			// If we're in this if block, then "victim" has added INHERITED to its array of
+			// AccessOptions.
+
+			// This means that we can go ahead and return true IF the "accessor" is a
+			// subclass of "victim".
+
+			Class<?> c = accessor;
+			while (c != null)
+				if (c.getSuperclass() == victim)
+					return true;
+				else
+					c = c.getSuperclass();
+		}
+
+		// We do the same thing as above but by iterating through "victim"'s
+		// superclasses for UP_INHERITED
+		if (options.contains(AccessOption.UP_INHERITED)) {
+			Class<?> c = victim;
+			while (c != null)
+				if (c.getSuperclass() == victim)
+					return true;
+				else
+					c = c.getSuperclass();
+		}
+
+		// Lastly, if they've explictly allowed this accessor access, then by golly gosh
+		// m8. Let's give them access.
+		if (explicitlyAllowedClasses.contains(accessor))
+			return true;
+
 		return false;
 	}
 
