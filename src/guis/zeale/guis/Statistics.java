@@ -204,9 +204,9 @@ public class Statistics extends WindowManager.Page {
 		}
 
 		/**
-		 * @return <code>null</code> incase this {@link AutoUpdatingStatistic}
-		 *         was not started. Such should only occur when the
-		 *         {@link #privateTimeout} is below 1.
+		 * @return <code>null</code> incase this {@link AutoUpdatingStatistic} was not
+		 *         started. Such should only occur when the {@link #privateTimeout} is
+		 *         below 1.
 		 */
 		public AutoUpdatingStatistic start() {
 			assert privateTimeout > 1;
@@ -398,8 +398,9 @@ public class Statistics extends WindowManager.Page {
 		final Statistic countryCode = new Statistic("Country Code", System.getProperty("user.country", "???"));
 		final Statistic osName = new Statistic("Operating System", System.getProperty("os.name", "???"));
 		final Statistic homeDir = new Statistic("Home Directory", System.getProperty("user.home", "???"));
-		final Statistic timezone = new Statistic("Timezone", System.getProperty("user.timezone", "???").isEmpty()
-				? "???" : System.getProperty("user.timezone", "???"));
+		final Statistic timezone = new Statistic("Timezone",
+				System.getProperty("user.timezone", "???").isEmpty() ? "???"
+						: System.getProperty("user.timezone", "???"));
 		final Statistic osVer = new Statistic("Operating System Version", System.getProperty("os.version", "???"));
 
 		final Statistic processorsAvailable = new Statistic("Available Processors",

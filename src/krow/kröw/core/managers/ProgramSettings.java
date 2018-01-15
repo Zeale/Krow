@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 
 import kröw.core.Kröw;
 import zeale.guis.ChatRoom;
+import zeale.guis.Statistics;
 
 public class ProgramSettings implements Serializable {
 
@@ -53,6 +54,9 @@ public class ProgramSettings implements Serializable {
 
 	private int currentAnimationMode = 0;
 	private int globalProgramBackground = 0;
+	// I'm ignoring the versioning of this file for now. Once the Protection API
+	// works, I can discard this class as a whole.
+	private int statsModuleUpdateSpeed = 0;
 
 	private boolean useTrayIcon = false;
 	private boolean openProgramOnDoubleClickTrayIcon = true;
@@ -61,6 +65,50 @@ public class ProgramSettings implements Serializable {
 
 	private void bootup() {
 
+	}
+
+	public int getStatsModuleUpdateSpeed() {
+		return statsModuleUpdateSpeed;
+	}
+
+	public void setStatsModuleUpdateSpeed(int statsModuleUpdateSpeed) {
+		this.statsModuleUpdateSpeed = statsModuleUpdateSpeed;
+		switch (statsModuleUpdateSpeed) {
+
+		case 0:
+		default:
+			Statistics.AutoUpdatingStatistic.setTimeout(300000);
+			break;
+		case 1:
+			Statistics.AutoUpdatingStatistic.setTimeout(60000);
+			break;
+		case 2:
+			Statistics.AutoUpdatingStatistic.setTimeout(30000);
+			break;
+		case 3:
+			Statistics.AutoUpdatingStatistic.setTimeout(10000);
+			break;
+		case 4:
+			Statistics.AutoUpdatingStatistic.setTimeout(500);
+			break;
+		case 5:
+			Statistics.AutoUpdatingStatistic.setTimeout(1000);
+			break;
+		case 6:
+			// From one millisec to a year or so.
+			Statistics.AutoUpdatingStatistic.setTimeout((long) (Math.random() * (1000 * 60 * 6024 * 365 + 1)) + 1);
+			break;
+		case 7:
+			Statistics.AutoUpdatingStatistic.setTimeout(40);
+			break;
+		case 8:
+			Statistics.AutoUpdatingStatistic.setTimeout(10);
+			break;
+		case 9:
+			Statistics.AutoUpdatingStatistic.setTimeout(1);
+			break;
+
+		}
 	}
 
 	/**
@@ -185,10 +233,10 @@ public class ProgramSettings implements Serializable {
 	/**
 	 * @param globalProgramBackground
 	 *            An integer from 0 to 2, inclusive, representing the program's
-	 *            background. 0 is dark gray (default), 1 is moderately
-	 *            transparent, and 2 is wholly transparent. When 2 is enabled,
-	 *            the user can click behind the program. Any invalid value for
-	 *            this parameter will be set to the closest valid value.
+	 *            background. 0 is dark gray (default), 1 is moderately transparent,
+	 *            and 2 is wholly transparent. When 2 is enabled, the user can click
+	 *            behind the program. Any invalid value for this parameter will be
+	 *            set to the closest valid value.
 	 */
 	public void setGlobalProgramBackground(int globalProgramBackground) {
 		if (globalProgramBackground > 2)
