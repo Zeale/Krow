@@ -23,6 +23,29 @@ import javafx.scene.paint.Color;
  *
  */
 public abstract class Background {
+	public static final Background createEmptyBackground() {
+		return new Background() {
+			@Override
+			public void show(Pane pane) {
+			}
+
+			@Override
+			public void fadeOut() {
+			}
+
+			@Override
+			public void fadeIn() {
+			}
+
+			@Override
+			public void enable() {
+			}
+
+			@Override
+			public void disable() {
+			}
+		};
+	}
 
 	private static final Color DEFAULT_COLOR = Color.BLACK;
 	private static final double DEFAULT_ANIMATION_DURATION = 8;
