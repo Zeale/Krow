@@ -45,22 +45,18 @@ public final class GUIHelper {
 		private AnchorPane parentWrapper;
 
 		public MenuBox() {
-			// TODO Auto-generated constructor stub
 		}
 
 		public MenuBox(final double spacing) {
 			super(spacing);
-			// TODO Auto-generated constructor stub
 		}
 
 		public MenuBox(final double spacing, final Node... children) {
 			super(spacing, children);
-			// TODO Auto-generated constructor stub
 		}
 
 		public MenuBox(final Node... children) {
 			super(children);
-			// TODO Auto-generated constructor stub
 		}
 
 		public AnchorPane getParentWrapper() {
@@ -159,7 +155,7 @@ public final class GUIHelper {
 
 		final Node close = new MenuOption(Color.RED, "Close"), goHome = new Text("Go Home"),
 				goBack = new Text("Go Back"), hideProgram = new Text("Hide Program"),
-				sendProgramToBack = new Text("Send to back");
+				sendProgramToBack = new Text("Send to back"), collectGarbage = new Text("Free RAM/Collect Garbage");
 
 		final Text systemTray = new Text(
 				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
@@ -211,12 +207,22 @@ public final class GUIHelper {
 
 		sendProgramToBack.setOnMouseClicked(event -> WindowManager.getStage().toBack());
 
+		collectGarbage.setOnMouseClicked(event -> System.gc());
+		VBox wrapper = PopupHelper.addHoverPopup(collectGarbage,
+				new Label("• This attempts to free up memory used by Kröw."),
+				new Label("• When this succeeds, you can actually see this work in the Statistics module."));
+		wrapper.setMaxWidth(Kröw.scaleWidth(450));
+		for (Node n : wrapper.getChildrenUnmodifiable())
+			if (n instanceof Label)
+				((Label) n).setWrapText(true);
+
 		children.add(close);
 		children.add(goHome);
 		children.add(goBack);
 		children.add(systemTray);
 		children.add(hideProgram);
 		children.add(sendProgramToBack);
+		children.add(collectGarbage);
 	}
 
 	private static ShapeBackground backgroundmngr;
