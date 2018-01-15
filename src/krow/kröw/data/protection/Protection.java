@@ -11,7 +11,7 @@ import sun.reflect.CallerSensitive;
 
 public final class Protection {
 
-	private static DataDirectory DOMAINS_DIRECTORY;
+	static DataDirectory DOMAINS_DIRECTORY;
 
 	/**
 	 * <p>
@@ -27,8 +27,9 @@ public final class Protection {
 	 * method iterates until it finds an enclosing class that it can use.
 	 * 
 	 * @return the private domain belonging to the calling class.
+	 * @throws DomainInitializeException 
 	 */
-	public static @CallerSensitive Domain getDomain() {
+	public static @CallerSensitive Domain getDomain() throws DomainInitializeException {
 
 		doAvailabilityCheck();
 
@@ -82,7 +83,7 @@ public final class Protection {
 		return Domain.getDomain(Domain.pkgToDom(callingClass.getName(), callingClass.getCanonicalName()));
 	}
 
-	public static @CallerSensitive Domain getDomain(String fullPath) throws ClassNotFoundException {
+	public static @CallerSensitive Domain getDomain(String fullPath) throws ClassNotFoundException, DomainInitializeException {
 
 		doAvailabilityCheck();
 
@@ -136,7 +137,7 @@ public final class Protection {
 		return Domain.getDomain(victim);
 	}
 
-	public static @CallerSensitive Domain getDomain(Class<?> owner) {
+	public static @CallerSensitive Domain getDomain(Class<?> owner) throws DomainInitializeException {
 
 		doAvailabilityCheck();
 
