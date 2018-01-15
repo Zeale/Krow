@@ -56,7 +56,7 @@ public class ProgramSettings implements Serializable {
 	private int globalProgramBackground = 0;
 	// I'm ignoring the versioning of this file for now. Once the Protection API
 	// works, I can discard this class as a whole.
-	private int statsModuleUpdateSpeed = 0;
+	private int statsModuleUpdateSpeed = 1000;
 
 	private boolean useTrayIcon = false;
 	private boolean openProgramOnDoubleClickTrayIcon = true;

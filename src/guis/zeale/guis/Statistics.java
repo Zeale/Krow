@@ -62,18 +62,25 @@ public class Statistics extends WindowManager.Page {
 						e.printStackTrace();
 					}
 				}
-				Thread.currentThread().interrupt();
 				globalUpdater = new Thread(this);
+				globalUpdater.setDaemon(true);
+				// Thread.MAX_PRIORITY is 10 and Thread.NORM_PRIORITY is 5, so I'm gonna set
+				// this to 9.
+				//
+				// This seems to kinda work at first (when the update speed is set to a very
+				// fast amount from the Settings module.)
+				globalUpdater.setPriority(9);
 			}
 		});
 
 		static {
 			globalUpdater.setDaemon(true);
+			globalUpdater.setPriority(9);
 		}
 
 		private static Collection<AutoUpdatingStatistic> statistics = new ConcurrentLinkedQueue<>();
 
-		private static long globalTimeout = 1000;
+		private static long globalTimeout = Kröw.getProgramSettings().getStatsModuleUpdateSpeed();
 
 		/**
 		 * @return the timeout

@@ -16,7 +16,6 @@ import krow.guis.GUIHelper;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.Page;
-import zeale.guis.Settings.Setting;
 
 public class Settings extends Page {
 
