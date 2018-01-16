@@ -31,7 +31,6 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Callback;
-import krow.guis.GUIHelper;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.callables.ParameterizedTask;
@@ -64,18 +63,11 @@ public class Statistics extends WindowManager.Page {
 				}
 				globalUpdater = new Thread(this);
 				globalUpdater.setDaemon(true);
-				// Thread.MAX_PRIORITY is 10 and Thread.NORM_PRIORITY is 5, so I'm gonna set
-				// this to 9.
-				//
-				// This seems to kinda work at first (when the update speed is set to a very
-				// fast amount from the Settings module.)
-				globalUpdater.setPriority(9);
 			}
 		});
 
 		static {
 			globalUpdater.setDaemon(true);
-			globalUpdater.setPriority(9);
 		}
 
 		private static Collection<AutoUpdatingStatistic> statistics = new ConcurrentLinkedQueue<>();
@@ -465,8 +457,6 @@ public class Statistics extends WindowManager.Page {
 	@Override
 	public void initialize() {
 
-		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
-
 		searchBar.setPrefWidth(Kröw.scaleWidth(SEARCH_BAR_WIDTH));
 		searchBar.setPrefHeight(Kröw.scaleHeight(SEARCH_BAR_HEIGHT));
 		searchBar.setLayoutX(Kröw.scaleWidth(SEARCH_BAR_LAYOUT_X));
@@ -600,7 +590,7 @@ public class Statistics extends WindowManager.Page {
 
 		AutoUpdatingStatistic.startChecker();
 
-		GUIHelper.applyShapeBackground(pane, searchBar, searchList);
+		applyDefaultBackground(pane);
 
 	}
 
