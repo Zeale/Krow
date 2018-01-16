@@ -15,6 +15,39 @@ public final class Protection {
 
 	/**
 	 * <p>
+	 * This class was added as a protective mechanism against clients making
+	 * classes, in the protection package, that would abuse the
+	 * {@link Domain#getDomain(ProtectionKey)} method(s).
+	 * <p>
+	 * This class was not made to cause overhead or lag in any way; it is simply a
+	 * secure wrapper for information passed to some of the {@link Domain} class's
+	 * methods.
+	 * <p>
+	 * This security mechanism for communication between these classes does take
+	 * away the ability for a client to customize or try and build off of the
+	 * Protection API, since not every client is going to pull hacky stuff whenever
+	 * they try to get into package private classes. That's why the dilemma as to
+	 * whether or not I should keep this file is tearing me apart inside. (In other
+	 * words, this may be changed later.)
+	 * 
+	 * @author Zeale
+	 *
+	 */
+	static class ProtectionKey {
+
+		String path;
+
+		private ProtectionKey(String path) {
+			this.path = path;
+		}
+
+		private ProtectionKey(Class<?> owner) {
+			this(Domain.pkgToDom(owner.getName(), owner.getCanonicalName()));
+		}
+	}
+
+	/**
+	 * <p>
 	 * This method returns a Protection {@link Domain} that belongs to the calling
 	 * class. More info about Domains can be found in the {@link Domain}s class.
 	 * <p>
@@ -87,7 +120,8 @@ public final class Protection {
 
 		// Return a Domain whose path is converted from a package name to a Domain name.
 		// See the Domain class (literally referenced below) for more details.
-		return Domain.getDomain(Domain.pkgToDom(callingClass.getName(), callingClass.getCanonicalName()));
+		return Domain
+				.getDomain(new ProtectionKey(Domain.pkgToDom(callingClass.getName(), callingClass.getCanonicalName())));
 	}
 
 	public static @CallerSensitive Domain getDomain(String fullPath)
@@ -142,7 +176,7 @@ public final class Protection {
 		Class<?> victim = Class.forName(Domain.domToPkg(fullPath));
 		if (!checkAccess(callingClass, victim))
 			throw new RuntimeException("Illegal class accessing.");// This should be a checked exception.
-		return Domain.getDomain(victim);
+		return Domain.getDomain(new ProtectionKey(victim));
 	}
 
 	public static @CallerSensitive Domain getDomain(Class<?> owner)
@@ -191,7 +225,7 @@ public final class Protection {
 
 		if (!checkAccess(callingClass, owner))
 			throw new RuntimeException("Illegal class accessing.");// This should also be a checked exception.
-		return Domain.getDomain(owner);
+		return Domain.getDomain(new ProtectionKey(owner));
 	}
 
 	private static boolean checkAccess(Class<?> accessor, Class<?> victim) {

@@ -9,6 +9,8 @@ import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.WeakHashMap;
 
+import kröw.data.protection.Protection.ProtectionKey;
+
 //Until the workings of this class are sorted out, I'm gonna keep it final.
 public final class Domain {
 
@@ -20,7 +22,7 @@ public final class Domain {
 
 	private static final WeakHashMap<String, Domain> loadedDomains = new WeakHashMap<>();
 
-	static Domain getDomain(String path) throws DomainInitializeException, UnavailableException {
+	static Domain getDomain(ProtectionKey key) throws DomainInitializeException, UnavailableException {
 
 		// Availability checkup
 		if (!Protection.isAvailable()) {
@@ -28,22 +30,10 @@ public final class Domain {
 				throw new UnavailableException();
 		}
 
-		if (loadedDomains.containsKey(path))
-			return loadedDomains.get(path);
+		if (loadedDomains.containsKey(key.path))
+			return loadedDomains.get(key.path);
 		else
-			return new Domain(path);
-	}
-
-	static Domain getDomain(Class<?> owner) throws DomainInitializeException, UnavailableException {
-
-		// Availability checkup
-		if (!Protection.isAvailable()) {
-			if (!Protection.tryEnable())
-				throw new UnavailableException();
-		}
-
-		String name = pkgToDom(owner.getName(), owner.getCanonicalName());
-		return getDomain(name);
+			return new Domain(key.path);
 	}
 
 	private Domain(String fullName) throws DomainInitializeException {
