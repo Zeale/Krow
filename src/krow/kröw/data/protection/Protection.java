@@ -1,17 +1,17 @@
 package kröw.data.protection;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import kröw.core.Kröw;
-import kröw.data.DataDirectory;
 import kröw.data.protection.DomainAccess.AccessOption;
 import kröw.data.protection.DomainAccess.SingleAccessOption;
 import sun.reflect.CallerSensitive;
 
 public final class Protection {
 
-	static DataDirectory DOMAINS_DIRECTORY;
+	static File DOMAINS_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Domains");
 
 	/**
 	 * <p>
@@ -27,9 +27,16 @@ public final class Protection {
 	 * method iterates until it finds an enclosing class that it can use.
 	 * 
 	 * @return the private domain belonging to the calling class.
-	 * @throws DomainInitializeException 
+	 * @throws DomainInitializeException
+	 *             If there was an error while initializing the requested
+	 *             {@link Domain}.
+	 * @throws UnavailableException
+	 *             Incase the Protection API is unavailable. (This happens when the
+	 *             Domain's File Directory did not get made on the system, so
+	 *             there's no parent folder to store Domain's and their data in. :(
+	 *             See {@link #tryEnable()} and {@link #isAvailable()}.
 	 */
-	public static @CallerSensitive Domain getDomain() throws DomainInitializeException {
+	public static @CallerSensitive Domain getDomain() throws DomainInitializeException, UnavailableException {
 
 		doAvailabilityCheck();
 
@@ -83,7 +90,8 @@ public final class Protection {
 		return Domain.getDomain(Domain.pkgToDom(callingClass.getName(), callingClass.getCanonicalName()));
 	}
 
-	public static @CallerSensitive Domain getDomain(String fullPath) throws ClassNotFoundException, DomainInitializeException {
+	public static @CallerSensitive Domain getDomain(String fullPath)
+			throws ClassNotFoundException, DomainInitializeException, UnavailableException {
 
 		doAvailabilityCheck();
 
@@ -137,7 +145,8 @@ public final class Protection {
 		return Domain.getDomain(victim);
 	}
 
-	public static @CallerSensitive Domain getDomain(Class<?> owner) throws DomainInitializeException {
+	public static @CallerSensitive Domain getDomain(Class<?> owner)
+			throws DomainInitializeException, UnavailableException {
 
 		doAvailabilityCheck();
 
@@ -268,11 +277,11 @@ public final class Protection {
 		return false;
 	}
 
-	private static void doAvailabilityCheck() {
+	private static void doAvailabilityCheck() throws UnavailableException {
 		if (!isAvailable())
 			tryEnable();
 		if (!isAvailable())
-			throw new RuntimeException("Protection API Unavailable.");
+			throw new UnavailableException("Protection API Unavailable.");
 	}
 
 	public static final boolean tryEnable() {
@@ -295,7 +304,7 @@ public final class Protection {
 			}
 		} else {
 			try {
-				DOMAINS_DIRECTORY = new DataDirectory(Kröw.DATA_DIRECTORY, "Domains");
+				DOMAINS_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Domains");
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;

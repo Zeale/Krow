@@ -6,12 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import com.sun.istack.internal.Nullable;
-
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.TranslateTransition;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -22,9 +19,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import jdk.nashorn.internal.ir.debug.JSONWriter;
-import jdk.nashorn.internal.parser.JSONParser;
-import jdk.nashorn.internal.runtime.JSONFunctions;
 import krow.backgrounds.Background;
 import krow.backgrounds.ShapeBackground;
 import kröw.core.Kröw;
@@ -95,7 +89,7 @@ public final class WindowManager {
 
 		private KeyValuePairData data = new KeyValuePairData();
 		private KVPDataReader reader;// = get reader for this page somehow.
-		private KVPDataWriter writer;
+		private KVPDataWriter writer;// This stuff will be replaced with the Protection API stuff. :)
 
 		protected final KVPDataObject storeData(String key, KVPDataObject data) {
 			return this.data.put(key, data);
