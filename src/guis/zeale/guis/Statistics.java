@@ -31,7 +31,6 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Callback;
-import krow.guis.GUIHelper;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.callables.ParameterizedTask;
@@ -62,8 +61,8 @@ public class Statistics extends WindowManager.Page {
 						e.printStackTrace();
 					}
 				}
-				Thread.currentThread().interrupt();
 				globalUpdater = new Thread(this);
+				globalUpdater.setDaemon(true);
 			}
 		});
 
@@ -73,7 +72,7 @@ public class Statistics extends WindowManager.Page {
 
 		private static Collection<AutoUpdatingStatistic> statistics = new ConcurrentLinkedQueue<>();
 
-		private static long globalTimeout = 1000;
+		private static long globalTimeout = Kröw.getProgramSettings().getStatsModuleUpdateSpeed();
 
 		/**
 		 * @return the timeout
@@ -204,9 +203,9 @@ public class Statistics extends WindowManager.Page {
 		}
 
 		/**
-		 * @return <code>null</code> incase this {@link AutoUpdatingStatistic}
-		 *         was not started. Such should only occur when the
-		 *         {@link #privateTimeout} is below 1.
+		 * @return <code>null</code> incase this {@link AutoUpdatingStatistic} was not
+		 *         started. Such should only occur when the {@link #privateTimeout} is
+		 *         below 1.
 		 */
 		public AutoUpdatingStatistic start() {
 			assert privateTimeout > 1;
@@ -398,8 +397,9 @@ public class Statistics extends WindowManager.Page {
 		final Statistic countryCode = new Statistic("Country Code", System.getProperty("user.country", "???"));
 		final Statistic osName = new Statistic("Operating System", System.getProperty("os.name", "???"));
 		final Statistic homeDir = new Statistic("Home Directory", System.getProperty("user.home", "???"));
-		final Statistic timezone = new Statistic("Timezone", System.getProperty("user.timezone", "???").isEmpty()
-				? "???" : System.getProperty("user.timezone", "???"));
+		final Statistic timezone = new Statistic("Timezone",
+				System.getProperty("user.timezone", "???").isEmpty() ? "???"
+						: System.getProperty("user.timezone", "???"));
 		final Statistic osVer = new Statistic("Operating System Version", System.getProperty("os.version", "???"));
 
 		final Statistic processorsAvailable = new Statistic("Available Processors",
@@ -456,8 +456,6 @@ public class Statistics extends WindowManager.Page {
 
 	@Override
 	public void initialize() {
-
-		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 
 		searchBar.setPrefWidth(Kröw.scaleWidth(SEARCH_BAR_WIDTH));
 		searchBar.setPrefHeight(Kröw.scaleHeight(SEARCH_BAR_HEIGHT));
@@ -592,7 +590,7 @@ public class Statistics extends WindowManager.Page {
 
 		AutoUpdatingStatistic.startChecker();
 
-		GUIHelper.applyShapeBackground(pane, searchBar, searchList);
+		applyDefaultBackground(pane);
 
 	}
 

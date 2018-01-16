@@ -142,8 +142,8 @@ public class Settings extends Page {
 		 * settings...));
 		 *
 		 *
-		 * TreeItem<SettingTab> subTab = new TreeItem<>(new
-		 * SettingTab("Sub Tab Name", settings...));
+		 * TreeItem<SettingTab> subTab = new TreeItem<>(new SettingTab("Sub Tab Name",
+		 * settings...));
 		 *
 		 * tab.getChildren().add(subTab);
 		 *
@@ -166,6 +166,8 @@ public class Settings extends Page {
 		 *
 		 */
 
+		// This needs to be remodeled or something wtf.
+
 		addItem(new TreeItem<>(
 				new SettingTab("Visual",
 						new Setting("Background mouse response: "
@@ -175,7 +177,8 @@ public class Settings extends Page {
 											!Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement());
 									cell.getTreeItem().getValue().setText("Background mouse response: "
 											+ (Kröw.getProgramSettings().isShapeBackgroundRespondToMouseMovement()
-													? "on" : "off"));
+													? "on"
+													: "off"));
 
 								}),
 						new Setting(
@@ -184,16 +187,15 @@ public class Settings extends Page {
 								cell -> {
 									Kröw.getProgramSettings().setCurrentAnimationMode(
 											Kröw.getProgramSettings().getCurrentAnimationMode() == 0 ? 1 : 0);
-									cell.getItem()
-											.setText("Current animation mode: "
-													+ (Kröw.getProgramSettings().getCurrentAnimationMode() == 0
-															? "Normal" : "Lengthy"));
+									cell.getItem().setText("Current animation mode: "
+											+ (Kröw.getProgramSettings().getCurrentAnimationMode() == 0 ? "Normal"
+													: "Lengthy"));
 								}),
-						new Setting(
-								"Program background: " + (getProgramSettings().getGlobalProgramBackground() == 0
-										? "Solid gray (Default)"
+						new Setting("Program background: "
+								+ (getProgramSettings().getGlobalProgramBackground() == 0 ? "Solid gray (Default)"
 										: getProgramSettings().getGlobalProgramBackground() == 1
-												? "Moderately transparent" : "Completely transparent"),
+												? "Moderately transparent"
+												: "Completely transparent"),
 								new Togglable() {
 
 									@Override
@@ -209,7 +211,7 @@ public class Settings extends Page {
 																		? "Moderately transparent"
 																		: "Completely transparent"));
 									}
-								}))));
+								}))));// This is all in one method call. Cancer.
 
 		final TreeItem<SettingTab> program = new TreeItem<>(new SettingTab("Program"));
 
@@ -246,7 +248,9 @@ public class Settings extends Page {
 		addItem(program);
 
 		final SettingTab moduleTab = new SettingTab("Modules");
-		final SettingTab chatRoomTab = new SettingTab("Chat Room");
+		final SettingTab chatRoomTab = new SettingTab("Chat Room"), statisticsTab = new SettingTab("Statistics"),
+				toolsTab = new SettingTab("Tools"), mathTab = new SettingTab("Math Module"),
+				backgroundTab = new SettingTab("Background Module");
 		{
 			final Setting hostServerSetting = new Setting("Start server when the Chat Room app opens: "
 					+ (Kröw.getProgramSettings().isChatRoomHostServer() ? "Yes" : "No"));
@@ -260,32 +264,90 @@ public class Settings extends Page {
 			chatRoomTab.getChildren().add(hostServerSetting);
 		}
 
+		// I'm wrapping this part in an object so that I can define and use methods, and
+		// so that said methods won't clog up the Settings class. Just this method in
+		// the Settings class. :)
+		//
+		// This Settings API seriously needs to be remodeled. Even though it allows for
+		// so much.
+		new Object() {
+
+			private String parseSpeedInt() {
+				int speedInt = Kröw.getProgramSettings().getStatsModuleUpdateSpeed();
+				switch (speedInt) {
+
+				case 0:
+				default:
+					return "Extremely Slow (Every 5 Minutes)";
+				case 1:
+					return "Very Slow (Every Minute)";
+				case 2:
+					return "Slow (Every 30 Seconds)";
+				case 3:
+					return "Normal (Every 10 Seconds)";
+				case 4:
+					return "Abnormal (I'm not really sure)";
+				case 5:
+					return "Fast (Every second)";
+				case 6:
+					return "Also Abnromal (Somewhere between every year and every millisecond)";
+				case 7:
+					return "Autistically Fast (Every 1/25th of a second)";
+				case 8:
+					return "Very Fast (Every 1/100th of a second; May be laggy/cause issues)";
+				case 9:
+					return "Extremely Fast (Every millisecond; May be laggy/cause issues)";
+
+				}
+			}
+
+			{
+
+				Setting updateSpeedSetting = new Setting("Update Speed: " + parseSpeedInt());
+				Togglable updateSpeedTogglable = new Togglable() {
+
+					@Override
+					public void onToggled(TreeCell<Setting> cell) {
+						if (Kröw.getProgramSettings().getStatsModuleUpdateSpeed() == 9)
+							Kröw.getProgramSettings().setStatsModuleUpdateSpeed(0);
+						else
+							Kröw.getProgramSettings().setStatsModuleUpdateSpeed(
+									Kröw.getProgramSettings().getStatsModuleUpdateSpeed() + 1);
+						updateSpeedSetting.setText("Update Speed: " + parseSpeedInt());
+					}
+				};
+				updateSpeedSetting.setTogglable(updateSpeedTogglable);
+				statisticsTab.getChildren().add(updateSpeedSetting);
+			}
+		};
+
 		final TreeItem<SettingTab> appsItem = new TreeItem<>(moduleTab);
 		appsItem.getChildren().add(new TreeItem<>(chatRoomTab));
+		appsItem.getChildren().add(new TreeItem<>(statisticsTab));
+		appsItem.getChildren().add(new TreeItem<>(toolsTab));
+		appsItem.getChildren().add(new TreeItem<>(mathTab));
+		appsItem.getChildren().add(new TreeItem<>(backgroundTab));
 
 		addItem(appsItem);
 
 		/*
-		 * TreeItem<SettingTab> settingTab = new TreeItem<>(new
-		 * SettingTab("Menu1", new Setting("Okay")));
-		 * settingTab.getChildren().add(new TreeItem<>(new
+		 * TreeItem<SettingTab> settingTab = new TreeItem<>(new SettingTab("Menu1", new
+		 * Setting("Okay"))); settingTab.getChildren().add(new TreeItem<>(new
 		 * SettingTab("SubMenu1", new Setting("Potato"))));
-		 * settingTab.getChildren().add(new TreeItem<>(new
-		 * SettingTab("SubMenu2"))); settingTab.getChildren().add(new
-		 * TreeItem<>(new SettingTab("SubMenu3", new Setting("Potato"))));
-		 * settingTab.getChildren().add(new TreeItem<>(new
-		 * SettingTab("SubMenu4"))); settingTab.getChildren().add(new
-		 * TreeItem<>(new SettingTab("SubMenu5", new Setting("Potato"))));
-		 * settingTab.getChildren().add(new TreeItem<>(new
-		 * SettingTab("SubMenu6"))); addItem(settingTab);
+		 * settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu2")));
+		 * settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu3", new
+		 * Setting("Potato")))); settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu4"))); settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu5", new Setting("Potato"))));
+		 * settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu6")));
+		 * addItem(settingTab);
 		 *
 		 * settingTab = new TreeItem<>(new SettingTab("Menu2", new
-		 * Setting("AlsoTest"))); settingTab.getChildren().add(new
-		 * TreeItem<>(new SettingTab("SubMenu1", new Setting("Potato"))));
-		 * settingTab.getChildren().add(new TreeItem<>(new
-		 * SettingTab("SubMenu2"))); settingTab.getChildren().add(new
-		 * TreeItem<>(new SettingTab("SubMenu3", new Setting("Potato"))));
-		 * settingTab.getChildren().add(new TreeItem<>(new
+		 * Setting("AlsoTest"))); settingTab.getChildren().add(new TreeItem<>(new
+		 * SettingTab("SubMenu1", new Setting("Potato"))));
+		 * settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu2")));
+		 * settingTab.getChildren().add(new TreeItem<>(new SettingTab("SubMenu3", new
+		 * Setting("Potato")))); settingTab.getChildren().add(new TreeItem<>(new
 		 * SettingTab("SubMenu4"))); addItem(settingTab);
 		 */
 	}
