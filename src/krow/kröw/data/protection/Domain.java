@@ -34,18 +34,68 @@ import kröw.data.protection.Protection.ProtectionKey;
  */
 public final class Domain {
 
+	/**
+	 * The name of the configuration file that will go in each {@link Domain}.
+	 */
 	private static final String DOMAIN_CONFIGURATION_FILE_NAME = "DomainConfiguration.kdc";
 
+	/**
+	 * The path of this domain. This is a String representation of this domain's
+	 * owner's path relative to the root of the classpath. In other words,
+	 * converting this string using the {@link #domToPkg(String)} method will return
+	 * a valid path to a class that can be used in {@link Class#forName(String)} to
+	 * retrieve this {@link Domain}'s owner.
+	 */
 	private final String path;
-	private final File directory, configurationFile;
+	/**
+	 * A {@link File} of the folder in the hard drive that this {@link Domain}
+	 * represents. This is kept private from client classes and code so that they
+	 * don't tamper with the file in a way that isn't allowed/intended by this
+	 * class.
+	 */
+	private final File directory;
+	/**
+	 * A {@link File} of the file on the hard drive that this {@link Domain}'s
+	 * configuration represents. This is also kept private, for reasons described in
+	 * {@link #directory}'s documentation.
+	 */
+	private final File configurationFile;
+	/**
+	 * A {@link DomainConfigData} object used to edit and manipulate this
+	 * {@link Domain}'s config in a higher-level manner.
+	 */
 	private final DomainConfigData configuration;
 
+	/**
+	 * This is a static list of all loaded {@link Domain}s. When a {@link Domain} is
+	 * loaded successfully, it is placed into this map. If it is called upon again
+	 * and it still exists in this map, we return it from this map.
+	 */
 	private static final WeakHashMap<String, Domain> loadedDomains = new WeakHashMap<>();
 
+	/**
+	 * An object used to manipulate and get information of a folder in a
+	 * {@link Domain}. <b>Note</b> that making multiple {@link SecureFolder}s that
+	 * represent the same folder in a {@link Domain} may result in problems.
+	 * 
+	 * @author Zeale
+	 *
+	 */
 	public class SecureFolder {
 
+		/**
+		 * The {@link File} object that backs this {@link SecureFolder}.
+		 */
 		private final File backing;
 
+		/**
+		 * Used by this class to create a {@link SecureFolder} given a specific
+		 * {@link File}. This {@link SecureFolder} will not automatically be a direct
+		 * child of this {@link Domain}.
+		 * 
+		 * @param backing
+		 *            The {@link File} object that backs this {@link SecureFolder}.
+		 */
 		private SecureFolder(File backing) {
 			if (!backing.exists())
 				if (!backing.mkdir())
@@ -55,10 +105,25 @@ public final class Domain {
 			this.backing = backing;
 		}
 
+		/**
+		 * Makes a {@link SecureFolder} given its parent and its name.
+		 * 
+		 * @param parent
+		 *            The parent folder of this new {@link SecureFolder}.
+		 * @param name
+		 *            The name of this {@link SecureFolder}.
+		 */
 		public SecureFolder(SecureFolder parent, String name) {
 			this(new File(parent.backing, name));
 		}
 
+		/**
+		 * Makes a {@link SecureFolder} that is a child of this {@link Domain} with a
+		 * specified name.
+		 * 
+		 * @param file
+		 *            The name of this {@link SecureFolder}.
+		 */
 		public SecureFolder(String file) {
 			this(new File(directory, file));
 		}
