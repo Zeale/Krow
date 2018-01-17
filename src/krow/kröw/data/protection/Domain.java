@@ -7,12 +7,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
 import java.io.Serializable;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import kröw.data.protection.Protection.ProtectionKey;
@@ -112,11 +117,6 @@ public final class Domain {
 			return backing.delete();
 		}
 
-		public boolean delete(String name) {
-			checkDeleted();
-			return new File(backing, name).delete();
-		}
-
 		public SecureFolder makeFolder(String name) throws FileAlreadyExistsException {
 			checkDeleted();
 			File folder = new File(backing, name);
@@ -212,10 +212,12 @@ public final class Domain {
 
 	public class SecureFile {
 
-		private boolean deleted;
+		private final FileLock lock;
+		private final FileChannel channel;
+		private final RandomAccessFile rafile;
 
 		private void checkDeleted() {
-			if (deleted)
+			if (!lock.isValid())
 				throw new RuntimeException("File has been deleted.");
 		}
 
@@ -227,10 +229,17 @@ public final class Domain {
 
 		private SecureFile(File backing) {
 			this.backing = backing;
-			if (!backing.exists())
-				throw new RuntimeException("The file does not exist.");
 			if (backing.isDirectory())
 				throw new RuntimeException("There already exists a folder where this file was going to be.");
+			try {
+				rafile = new RandomAccessFile(backing, "rw");
+				channel = rafile.getChannel();
+				lock = channel.lock();
+
+			} catch (IOException e) {
+				throw new RuntimeException("File not found.");
+			}
+
 		}
 
 		public SecureFile(String file) {
@@ -263,8 +272,16 @@ public final class Domain {
 			return backing.length();
 		}
 
-		public boolean delete() {
+		@Override
+		protected void finalize() throws Throwable {
+			delete();
+		}
+
+		public boolean delete() throws IOException {
 			checkDeleted();
+			lock.release();
+			channel.close();
+			rafile.close();
 			return backing.delete();
 		}
 
@@ -385,6 +402,10 @@ public final class Domain {
 		}
 
 		private HashMap<String, Object> data = new HashMap<>();
+
+		public Map<String, Object> getData() {
+			return Collections.unmodifiableMap(data);
+		}
 
 		private DomainConfigData() throws DomainInitializeException {
 
