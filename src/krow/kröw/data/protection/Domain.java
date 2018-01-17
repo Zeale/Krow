@@ -5,7 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.WeakHashMap;
 
@@ -19,8 +24,91 @@ public final class Domain {
 	private final String path;
 	private final File directory, configurationFile;
 	private final DomainConfigData configuration;
-
 	private static final WeakHashMap<String, Domain> loadedDomains = new WeakHashMap<>();
+
+	public class SecureFile {
+
+		private final File backing;
+
+		private SecureFile(File backing) {
+			this.backing = backing;
+		}
+
+		public SecureFile(String file) {
+			this(new File(directory, file));
+		}
+
+		public <A extends BasicFileAttributes> A readAttributes(Class<A> type, LinkOption... options)
+				throws IOException {
+			return Files.readAttributes(backing.toPath(), type, options);
+		}
+
+		public boolean exists() {
+			return backing.exists();
+		}
+
+		public boolean isHidden() {
+			return backing.isHidden();
+		}
+
+		public long lastModified() {
+			return backing.lastModified();
+		}
+
+		public long length() {
+			return backing.length();
+		}
+
+		public boolean delete() {
+			return backing.delete();
+		}
+
+		public void deleteOnExit() {
+			backing.deleteOnExit();
+		}
+
+		public boolean setLastModified(long time) {
+			return backing.setLastModified(time);
+		}
+
+		public long getTotalSpace() {
+			return backing.getTotalSpace();
+		}
+
+		public long getUsableSpace() {
+			return backing.getUsableSpace();
+		}
+
+		public SecureFile getFile(String name) throws InvalidFileNameException {
+
+			if (!validFileName(name))
+				throw new InvalidFileNameException(name, "Invalid file name.");
+			return new SecureFile(new File(backing, name));
+
+		}
+
+		public void serialize(String fileName, Serializable serializableObject)
+				throws IOException, InvalidFileNameException {
+			if (!validFileName(fileName))
+				throw new InvalidFileNameException(fileName);
+			File f = new File(backing, fileName);
+
+			try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f))) {
+				oos.writeObject(serializableObject);
+			} catch (Exception e) {
+				f.delete();
+				throw e;
+			}
+		}
+
+	}
+
+	public SecureFile getFile(String name) throws InvalidFileNameException {
+		if (!validFileName(name))
+			throw new InvalidFileNameException(name, "Invalid file name.");
+		return new SecureFile(new File(directory, name));
+
+	}
 
 	static Domain getDomain(ProtectionKey key) throws DomainInitializeException, UnavailableException {
 
@@ -65,13 +153,7 @@ public final class Domain {
 		// Then set the configuration field, so it can be verified in initialize and
 		// such.
 		configuration = new DomainConfigData();
-
-		initialize();
 		loadedDomains.put(path, this);
-	}
-
-	private void initialize() throws DomainInitializeException {
-		// Initial file check.
 	}
 
 	@Override
@@ -154,6 +236,34 @@ public final class Domain {
 
 		}
 
+	}
+
+	public void serialize(String fileName, Serializable serializableObject)
+			throws IOException, InvalidFileNameException {
+		new SecureFile(directory).serialize(fileName, serializableObject);
+	}
+
+	/**
+	 * <p>
+	 * Checks whether or not the given name is a valid filesystem name for the
+	 * Protection API.
+	 * <p>
+	 * The name can only be made up of letters, numbers, and <code>.</code>
+	 * characters.
+	 * 
+	 * @param name
+	 *            The name of the {@link DataStorage} object that will be checked
+	 *            for validity.
+	 * @return <code>true</code> if this name is a legal Protection API file name,
+	 *         <code>false</code> otherwise.
+	 */
+	public static boolean validFileName(String name) {
+		if (name.isEmpty() || name.endsWith(".kdc"))
+			return false;
+		for (char c : name.toCharArray())
+			if (!(Character.isAlphabetic(c) || Character.isDigit(c) || c == '.'))
+				return false;
+		return true;
 	}
 
 }
