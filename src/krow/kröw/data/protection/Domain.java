@@ -24,14 +24,87 @@ public final class Domain {
 	private final String path;
 	private final File directory, configurationFile;
 	private final DomainConfigData configuration;
+	
 	private static final WeakHashMap<String, Domain> loadedDomains = new WeakHashMap<>();
 
+	public class SecureFolder {
+
+		private final File backing;
+
+		private SecureFolder(File backing) {
+			if (!backing.exists())
+				if (!backing.mkdir())
+					throw new RuntimeException("Failed to make a folder.");
+			if (backing.isFile())
+				throw new RuntimeException("There already exists a file where this folder was going to be.");
+			this.backing = backing;
+		}
+
+		public SecureFolder(SecureFolder parent, String name) {
+			this(new File(parent.backing, name));
+		}
+
+		public SecureFolder(String file) {
+			this(new File(directory, file));
+		}
+
+		/**
+		 * Constructor for wrapping {@link Domain}; this constructor sets its backing
+		 * file to its {@link Domain}'s {@link Domain#directory} variable without going
+		 * through any of the checkups or attempts to make the directory.
+		 */
+		private SecureFolder() {
+			backing = directory;
+		}
+
+		public SecureFile getFile(String name) throws InvalidFileNameException {
+
+			if (!validFileName(name))
+				throw new InvalidFileNameException(name, "Invalid file name.");
+			return new SecureFile(new File(backing, name));
+
+		}
+
+		public void serialize(String fileName, Serializable serializableObject)
+				throws IOException, InvalidFileNameException {
+			if (!validFileName(fileName))
+				throw new InvalidFileNameException(fileName);
+			File f = new File(backing, fileName);
+
+			try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f))) {
+				oos.writeObject(serializableObject);
+			} catch (Exception e) {
+				f.delete();
+				throw e;
+			}
+		}
+
+		public SecureFolder getFolder(String name) throws InvalidFolderNameException {
+			if (!validFileName(name))
+				throw new InvalidFolderNameException("Invalid folder name");
+			return new SecureFolder(this, name);
+
+		}
+	}
+
 	public class SecureFile {
+
+		public SecureFile(SecureFolder parent, String name) {
+			this(new File(parent.backing, name));
+		}
 
 		private final File backing;
 
 		private SecureFile(File backing) {
 			this.backing = backing;
+			if (!backing.exists())
+				try {
+					backing.createNewFile();
+				} catch (IOException e) {
+					throw new RuntimeException("Failed to create a file.", e);
+				}
+			if (backing.isDirectory())
+				throw new RuntimeException("There already exists a folder where this file was going to be.");
 		}
 
 		public SecureFile(String file) {
@@ -79,34 +152,10 @@ public final class Domain {
 			return backing.getUsableSpace();
 		}
 
-		public SecureFile getFile(String name) throws InvalidFileNameException {
-
-			if (!validFileName(name))
-				throw new InvalidFileNameException(name, "Invalid file name.");
-			return new SecureFile(new File(backing, name));
-
-		}
-
-		public void serialize(String fileName, Serializable serializableObject)
-				throws IOException, InvalidFileNameException {
-			if (!validFileName(fileName))
-				throw new InvalidFileNameException(fileName);
-			File f = new File(backing, fileName);
-
-			try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f))) {
-				oos.writeObject(serializableObject);
-			} catch (Exception e) {
-				f.delete();
-				throw e;
-			}
-		}
-
 	}
 
 	public SecureFile getFile(String name) throws InvalidFileNameException {
-		if (!validFileName(name))
-			throw new InvalidFileNameException(name, "Invalid file name.");
-		return new SecureFile(new File(directory, name));
+		return new SecureFolder().getFile(name);
 
 	}
 
@@ -240,7 +289,7 @@ public final class Domain {
 
 	public void serialize(String fileName, Serializable serializableObject)
 			throws IOException, InvalidFileNameException {
-		new SecureFile(directory).serialize(fileName, serializableObject);
+		new SecureFolder(directory).serialize(fileName, serializableObject);
 	}
 
 	/**
@@ -261,7 +310,7 @@ public final class Domain {
 		if (name.isEmpty() || name.endsWith(".kdc"))
 			return false;
 		for (char c : name.toCharArray())
-			if (!(Character.isAlphabetic(c) || Character.isDigit(c) || c == '.'))
+			if (!(Character.isAlphabetic(c) || Character.isDigit(c) || c == '-' || c == '_' || c == '.'))
 				return false;
 		return true;
 	}
