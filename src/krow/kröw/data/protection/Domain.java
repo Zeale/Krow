@@ -17,6 +17,21 @@ import java.util.WeakHashMap;
 import kröw.data.protection.Protection.ProtectionKey;
 
 //Until the workings of this class are sorted out, I'm gonna keep it final.
+/**
+ * A {@link Domain} is an object that represents an area where data can be
+ * stored on the filesystem. Each class has its own domain where it can store
+ * data.
+ * <p>
+ * As per naming, a class, <code>com.loser.MyClass</code>, would have a Domain
+ * named <code>com/loser/MyClass</code>. This domain would be <b>"owned"</b> by
+ * <code>MyClass</code>, since <code>MyClass</code> will never be denied access
+ * to it, and because it is, quite literally, <code>MyClass</code>'s domain;
+ * <code>MyClass</code> can put its data there, its configuration files, etc.
+ * etc.
+ * 
+ * @author Zeale
+ *
+ */
 public final class Domain {
 
 	private static final String DOMAIN_CONFIGURATION_FILE_NAME = "DomainConfiguration.kdc";
@@ -24,7 +39,7 @@ public final class Domain {
 	private final String path;
 	private final File directory, configurationFile;
 	private final DomainConfigData configuration;
-	
+
 	private static final WeakHashMap<String, Domain> loadedDomains = new WeakHashMap<>();
 
 	public class SecureFolder {

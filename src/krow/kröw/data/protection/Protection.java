@@ -3,6 +3,7 @@ package kröw.data.protection;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 import kröw.core.Kröw;
 import kröw.data.protection.DomainAccess.AccessOption;
@@ -11,7 +12,10 @@ import sun.reflect.CallerSensitive;
 
 public final class Protection {
 
-	static File DOMAINS_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Domains");
+	/**
+	 * The directory where {@link Domain}s are stored on the physical hard drive.
+	 */
+	static File DOMAINS_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Protection/domains/default-set");
 
 	/**
 	 * <p>
@@ -53,7 +57,7 @@ public final class Protection {
 	 * <p>
 	 * If the calling class is an anonymous class, then the class in which it is
 	 * defined is used to get a Domain. The returned domain is, resultingly, the
-	 * domain if the enclosing class.
+	 * domain of the enclosing class.
 	 * <p>
 	 * If the calling class is anonymous and its enclosing class is anonymous as
 	 * well, (and that class’s enclosing class is anonymous, etc. etc.,) then this
@@ -124,8 +128,66 @@ public final class Protection {
 				.getDomain(new ProtectionKey(Domain.pkgToDom(callingClass.getName(), callingClass.getCanonicalName())));
 	}
 
+	/**
+	 * <p>
+	 * This method returns the {@link Domain} given the {@link Domain}'s full path.
+	 * <p>
+	 * This method is {@link CallerSensitive} and will throw a
+	 * {@link RuntimeException} if the calling class is not allowed to access the
+	 * specified {@link Domain}. (Access can be given to different classes via the
+	 * {@link DomainAccess} annotation.)
+	 * <p>
+	 * If the calling class is an anonymous class, then the class in which it is
+	 * defined is used to access the Domain. That means that the enclosing class is
+	 * what is checked for accessibility. Inner and nested classes have their own
+	 * domains, like normal classes.
+	 * <p>
+	 * If the calling class is anonymous and its enclosing class is anonymous as
+	 * well, (and that class’s enclosing class is anonymous, etc. etc.,) then this
+	 * method iterates until it finds an enclosing class that it can use. That class
+	 * is then checked to see if it has permission to access the domain.
+	 * 
+	 * @param fullPath
+	 *            The full path of the {@link Domain}. This is basically the same as
+	 *            the {@link Domain}'s owning class's full name, but all
+	 *            <code>.</code> characters become <code>/</code> characters, and
+	 *            all <code>$</code> are <code>#</code>s. See
+	 *            {@link Domain#domToPkg(String)} for the exact method that converts
+	 *            this.
+	 * @return The {@link Domain} represented by the <code>fullPath</code>
+	 *         parameter, so long as no exceptions are thrown.
+	 * @throws ClassNotFoundException
+	 *             The fullPath is converted to the path of a class, (the owner of
+	 *             the specified {@link Domain}), in the classpath. If this path
+	 *             doesn't lead to an actual class, then a
+	 *             {@link ClassNotFoundException} is thrown.<br>
+	 *             <br>
+	 * @throws DomainInitializeException
+	 *             In case there is an exception while trying to create the
+	 *             {@link Domain} requested. Do note that once a {@link Domain} is
+	 *             created, a reference to it is stored in a {@link WeakHashMap}. If
+	 *             the {@link Domain} is requested again, instead of creating a new
+	 *             object, the Domain will be returned from the hashmap. If the
+	 *             domain is not found in the hashmap, the domain is created again.
+	 *             Anyways, so long as the Domain is in use somewhere apart from the
+	 *             hashmap, re-requesting it should never throw an initialization
+	 *             error.<br>
+	 *             <br>
+	 * @throws UnavailableException
+	 *             This is thrown if the Protection API is unavailable. This can be
+	 *             caused by a few different things, like
+	 *             {@value #DOMAINS_DIRECTORY} not being made, and such. You can use
+	 *             {@link #isAvailable()} to check availability and
+	 *             {@link #tryEnable()} to try and enable the API.<br>
+	 *             <br>
+	 * @throws RuntimeException
+	 *             If anything random goes wrong, that shouldn't, OR if the calling
+	 *             class does not have access to the requested {@link Domain}, a
+	 *             {@link RuntimeException} will be thrown.<br>
+	 *             <br>
+	 */
 	public static @CallerSensitive Domain getDomain(String fullPath)
-			throws ClassNotFoundException, DomainInitializeException, UnavailableException {
+			throws ClassNotFoundException, DomainInitializeException, UnavailableException, RuntimeException {
 
 		doAvailabilityCheck();
 
@@ -179,6 +241,36 @@ public final class Protection {
 		return Domain.getDomain(new ProtectionKey(victim));
 	}
 
+	/**
+	 * <p>
+	 * This method attempts to return a {@link Domain} given the class that
+	 * {@link Domain owns} it.
+	 * <p>
+	 * This method is {@link CallerSensitive} and will throw a
+	 * {@link RuntimeException} if the calling class is not allowed to access the
+	 * specified {@link Class}'s {@link Domain}. (Access can be given to different
+	 * classes via the {@link DomainAccess} annotation.)
+	 * <p>
+	 * If the calling class is an anonymous class, then the class in which it is
+	 * defined is used to access the Domain. That means that the enclosing class is
+	 * what is checked for accessibility. Inner and nested classes have their own
+	 * domains, like normal classes.
+	 * <p>
+	 * If the calling class is anonymous and its enclosing class is anonymous as
+	 * well, (and that class’s enclosing class is anonymous, etc. etc.,) then this
+	 * method iterates until it finds an enclosing class that it can use. That class
+	 * is then checked to see if it has permission to access the domain.
+	 * 
+	 * @param owner
+	 *            The {@link Class} that owns the domain.
+	 * @return The domain belonging to the specified class.
+	 * @throws DomainInitializeException
+	 *             In case there was an exception while initializing the domain.
+	 * @throws UnavailableException
+	 *             In case the Protection API is unavailable. See
+	 *             {@link #isAvailable()} and {@link #tryEnable()} for details and
+	 *             fixes.
+	 */
 	public static @CallerSensitive Domain getDomain(Class<?> owner)
 			throws DomainInitializeException, UnavailableException {
 
@@ -228,6 +320,17 @@ public final class Protection {
 		return Domain.getDomain(new ProtectionKey(owner));
 	}
 
+	/**
+	 * Checks to see if <code>accessor</code> can access <code>victim</code>'s
+	 * {@link Domain}.
+	 * 
+	 * @param accessor
+	 *            The accessing class.
+	 * @param victim
+	 *            The class whose {@link Domain} is being accessed.
+	 * @return <code>true</code> if <code>accessor</code> can access
+	 *         <code>victim</code>'s {@link Domain}, <code>false</code> otherwise.
+	 */
 	private static boolean checkAccess(Class<?> accessor, Class<?> victim) {
 		if (accessor == victim)
 			return true;
@@ -311,6 +414,13 @@ public final class Protection {
 		return false;
 	}
 
+	/**
+	 * Convenience method for checking availability by <code>getDomain(...)</code>
+	 * methods.
+	 * 
+	 * @throws UnavailableException
+	 *             If the Protection API is unavailable.
+	 */
 	private static void doAvailabilityCheck() throws UnavailableException {
 		if (!isAvailable())
 			tryEnable();
@@ -318,6 +428,16 @@ public final class Protection {
 			throw new UnavailableException("Protection API Unavailable.");
 	}
 
+	/**
+	 * Attempts to enable the Protection API. A {@link RuntimeException} is thrown
+	 * if this fails. The protection API would be unavailable if
+	 * {@link #DOMAINS_DIRECTORY} is null or it's directory doesn't exist.
+	 * 
+	 * @return <code>false</code> if enabling the API failed and <code>true</code>
+	 *         if it succeeded.
+	 * @throws RuntimeException
+	 *             If the API is already enabled.
+	 */
 	public static final boolean tryEnable() {
 
 		// Why is this method being called?
@@ -348,10 +468,17 @@ public final class Protection {
 
 	}
 
+	/**
+	 * @return <code>true</code> if the Protection API is available,
+	 *         <code>false</code> otherwise. See {@link #tryEnable()}.
+	 */
 	public static boolean isAvailable() {
 		return DOMAINS_DIRECTORY != null && DOMAINS_DIRECTORY.isDirectory();
 	}
 
+	/**
+	 * Prevent instantiation by other classes.
+	 */
 	private Protection() {
 	}
 
