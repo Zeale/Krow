@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -83,6 +84,47 @@ public final class Domain {
 	 */
 	public class SecureFolder {
 
+		private boolean deleted;
+
+		private void checkDeleted() {
+			if (deleted)
+				throw new RuntimeException("Folder has been deleted.");
+		}
+
+		public SecureFile makeFile(String name) throws FileAlreadyExistsException {
+			checkDeleted();
+			File file = new File(backing, name);
+			if (file.exists())
+				throw new FileAlreadyExistsException(name);
+			return new SecureFile(file);
+		}
+
+		public void clearDir() {
+			checkDeleted();
+			for (File f : backing.listFiles())
+				if (!f.getPath().endsWith(".kdc"))
+					f.delete();
+		}
+
+		public boolean delete() {
+			checkDeleted();
+			deleted = true;
+			return backing.delete();
+		}
+
+		public boolean delete(String name) {
+			checkDeleted();
+			return new File(backing, name).delete();
+		}
+
+		public SecureFolder makeFolder(String name) throws FileAlreadyExistsException {
+			checkDeleted();
+			File folder = new File(backing, name);
+			if (folder.exists())
+				throw new FileAlreadyExistsException(name);
+			return new SecureFolder(folder);
+		}
+
 		/**
 		 * The {@link File} object that backs this {@link SecureFolder}.
 		 */
@@ -98,8 +140,7 @@ public final class Domain {
 		 */
 		private SecureFolder(File backing) {
 			if (!backing.exists())
-				if (!backing.mkdir())
-					throw new RuntimeException("Failed to make a folder.");
+				throw new RuntimeException("Folder does not exist");
 			if (backing.isFile())
 				throw new RuntimeException("There already exists a file where this folder was going to be.");
 			this.backing = backing;
@@ -138,7 +179,7 @@ public final class Domain {
 		}
 
 		public SecureFile getFile(String name) throws InvalidFileNameException {
-
+			checkDeleted();
 			if (!validFileName(name))
 				throw new InvalidFileNameException(name, "Invalid file name.");
 			return new SecureFile(new File(backing, name));
@@ -147,6 +188,7 @@ public final class Domain {
 
 		public void serialize(String fileName, Serializable serializableObject)
 				throws IOException, InvalidFileNameException {
+			checkDeleted();
 			if (!validFileName(fileName))
 				throw new InvalidFileNameException(fileName);
 			File f = new File(backing, fileName);
@@ -160,6 +202,7 @@ public final class Domain {
 		}
 
 		public SecureFolder getFolder(String name) throws InvalidFolderNameException {
+			checkDeleted();
 			if (!validFileName(name))
 				throw new InvalidFolderNameException("Invalid folder name");
 			return new SecureFolder(this, name);
@@ -168,6 +211,13 @@ public final class Domain {
 	}
 
 	public class SecureFile {
+
+		private boolean deleted;
+
+		private void checkDeleted() {
+			if (deleted)
+				throw new RuntimeException("File has been deleted.");
+		}
 
 		public SecureFile(SecureFolder parent, String name) {
 			this(new File(parent.backing, name));
@@ -178,11 +228,7 @@ public final class Domain {
 		private SecureFile(File backing) {
 			this.backing = backing;
 			if (!backing.exists())
-				try {
-					backing.createNewFile();
-				} catch (IOException e) {
-					throw new RuntimeException("Failed to create a file.", e);
-				}
+				throw new RuntimeException("The file does not exist.");
 			if (backing.isDirectory())
 				throw new RuntimeException("There already exists a folder where this file was going to be.");
 		}
@@ -193,42 +239,52 @@ public final class Domain {
 
 		public <A extends BasicFileAttributes> A readAttributes(Class<A> type, LinkOption... options)
 				throws IOException {
+			checkDeleted();
 			return Files.readAttributes(backing.toPath(), type, options);
 		}
 
 		public boolean exists() {
+			checkDeleted();
 			return backing.exists();
 		}
 
 		public boolean isHidden() {
+			checkDeleted();
 			return backing.isHidden();
 		}
 
 		public long lastModified() {
+			checkDeleted();
 			return backing.lastModified();
 		}
 
 		public long length() {
+			checkDeleted();
 			return backing.length();
 		}
 
 		public boolean delete() {
+			checkDeleted();
 			return backing.delete();
 		}
 
 		public void deleteOnExit() {
+			checkDeleted();
 			backing.deleteOnExit();
 		}
 
 		public boolean setLastModified(long time) {
+			checkDeleted();
 			return backing.setLastModified(time);
 		}
 
 		public long getTotalSpace() {
+			checkDeleted();
 			return backing.getTotalSpace();
 		}
 
 		public long getUsableSpace() {
+			checkDeleted();
 			return backing.getUsableSpace();
 		}
 
@@ -236,7 +292,18 @@ public final class Domain {
 
 	public SecureFile getFile(String name) throws InvalidFileNameException {
 		return new SecureFolder().getFile(name);
+	}
 
+	public SecureFile makeFile(String name) throws FileAlreadyExistsException {
+		return new SecureFolder().makeFile(name);
+	}
+
+	public SecureFolder makeFolder(String name) throws FileAlreadyExistsException {
+		return new SecureFolder().makeFolder(name);
+	}
+
+	public SecureFolder getFolder(String name) throws InvalidFolderNameException {
+		return new SecureFolder().getFolder(name);
 	}
 
 	static Domain getDomain(ProtectionKey key) throws DomainInitializeException, UnavailableException {
