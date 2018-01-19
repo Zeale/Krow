@@ -584,6 +584,9 @@ public class Tools extends Page {
 					"Opens a Powershell window");
 			addCommandTool("START dxdiag", "DxDiag", Kröw.getImageFromFile(new File("C:/Windows/System32/dxdiag.exe"),
 					(int) ICON_WIDTH, (int) ICON_HEIGHT), "Opens DirectX Diagnostics");
+			addCommandTool("START dfrgui", "Disk Defragmenter", Kröw
+					.getImageFromFile(new File("C:/Windows/System32/dfrgui.exe"), (int) ICON_WIDTH, (int) ICON_HEIGHT),
+					"Opens the disk defragment wizard.");
 		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
