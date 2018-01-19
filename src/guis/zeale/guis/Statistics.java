@@ -73,7 +73,7 @@ public class Statistics extends WindowManager.App {
 
 		private static Collection<AutoUpdatingStatistic> statistics = new ConcurrentLinkedQueue<>();
 
-		private static long globalTimeout = Kröw.getProgramSettings().getStatsModuleUpdateSpeed();
+		private static long globalTimeout = Kröw.getProgramSettings().getStatsAppUpdateSpeed();
 
 		/**
 		 * @return the timeout

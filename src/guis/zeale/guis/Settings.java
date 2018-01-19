@@ -247,10 +247,10 @@ public class Settings extends App {
 		program.getValue().getChildren().add(useTrayIcon);
 		addItem(program);
 
-		final SettingTab moduleTab = new SettingTab("Modules");
+		final SettingTab appTab = new SettingTab("Apps");
 		final SettingTab chatRoomTab = new SettingTab("Chat Room"), statisticsTab = new SettingTab("Statistics"),
-				toolsTab = new SettingTab("Tools"), mathTab = new SettingTab("Math Module"),
-				backgroundTab = new SettingTab("Background Module");
+				toolsTab = new SettingTab("Tools"), mathTab = new SettingTab("Math App"),
+				backgroundTab = new SettingTab("Background App");
 		{
 			final Setting hostServerSetting = new Setting("Start server when the Chat Room app opens: "
 					+ (Kröw.getProgramSettings().isChatRoomHostServer() ? "Yes" : "No"));
@@ -273,7 +273,7 @@ public class Settings extends App {
 		new Object() {
 
 			private String parseSpeedInt() {
-				int speedInt = Kröw.getProgramSettings().getStatsModuleUpdateSpeed();
+				int speedInt = Kröw.getProgramSettings().getStatsAppUpdateSpeed();
 				switch (speedInt) {
 
 				case 0:
@@ -308,11 +308,11 @@ public class Settings extends App {
 
 					@Override
 					public void onToggled(TreeCell<Setting> cell) {
-						if (Kröw.getProgramSettings().getStatsModuleUpdateSpeed() == 9)
-							Kröw.getProgramSettings().setStatsModuleUpdateSpeed(0);
+						if (Kröw.getProgramSettings().getStatsAppUpdateSpeed() == 9)
+							Kröw.getProgramSettings().setStatsAppUpdateSpeed(0);
 						else
-							Kröw.getProgramSettings().setStatsModuleUpdateSpeed(
-									Kröw.getProgramSettings().getStatsModuleUpdateSpeed() + 1);
+							Kröw.getProgramSettings().setStatsAppUpdateSpeed(
+									Kröw.getProgramSettings().getStatsAppUpdateSpeed() + 1);
 						updateSpeedSetting.setText("Update Speed: " + parseSpeedInt());
 					}
 				};
@@ -321,7 +321,7 @@ public class Settings extends App {
 			}
 		};
 
-		final TreeItem<SettingTab> appsItem = new TreeItem<>(moduleTab);
+		final TreeItem<SettingTab> appsItem = new TreeItem<>(appTab);
 		appsItem.getChildren().add(new TreeItem<>(chatRoomTab));
 		appsItem.getChildren().add(new TreeItem<>(statisticsTab));
 		appsItem.getChildren().add(new TreeItem<>(toolsTab));

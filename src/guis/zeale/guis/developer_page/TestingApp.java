@@ -17,7 +17,7 @@ import javafx.scene.layout.VBox;
 import kröw.core.managers.WindowManager.App;
 import kröw.data.protection.Protection;
 
-public class TestingModule extends App {
+public class TestingApp extends App {
 
 	private @FXML Accordion accordion;
 	private @FXML BorderPane root;
@@ -27,7 +27,7 @@ public class TestingModule extends App {
 		toolbox.getChildren().add(button);
 	}
 
-	public TestingModule() {
+	public TestingApp() {
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class TestingModule extends App {
 
 	@Override
 	public String getWindowFile() {
-		return "TestingModule.fxml";
+		return "TestingApp.fxml";
 	}
 
 	private void show(Node n) {
@@ -55,7 +55,7 @@ public class TestingModule extends App {
 	}
 
 	private @FXML void testProtectionAPI() {
-		// We don't want to clutter up the TestingModule class with fields or methods,
+		// We don't want to clutter up the TestingApp class with fields or methods,
 		// so here we store those inside this class.
 		VBox pane = new VBox() {
 

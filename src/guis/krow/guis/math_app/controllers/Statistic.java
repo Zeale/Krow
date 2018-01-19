@@ -1,4 +1,4 @@
-package krow.guis.math_module.controllers;
+package krow.guis.math_app.controllers;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

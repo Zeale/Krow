@@ -15,7 +15,7 @@ import krow.guis.PopupHelper.PopupWrapper;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import zeale.guis.schedule_app.NewEvent;
-import zeale.guis.schedule_app.ScheduleModule;
+import zeale.guis.schedule_app.ScheduleApp;
 
 public class ScheduleRow extends TableRow<ScheduleEvent> {
 
@@ -56,7 +56,7 @@ public class ScheduleRow extends TableRow<ScheduleEvent> {
 
 	}
 
-	private ScheduleModule module;
+	private ScheduleApp app;
 
 	{
 
@@ -70,7 +70,7 @@ public class ScheduleRow extends TableRow<ScheduleEvent> {
 
 			if (!isEmpty() && getItem() != null && event.getButton() == MouseButton.PRIMARY) {
 				getItem().delete();
-				module.removeEvent(getItem());
+				app.removeEvent(getItem());
 				wrapper.popup.hide();
 			}
 		});
@@ -81,7 +81,7 @@ public class ScheduleRow extends TableRow<ScheduleEvent> {
 			if (event.getButton() == MouseButton.PRIMARY && !isEmpty()
 					&& !(event.getPickResult().getIntersectedNode() instanceof SelectableCell))
 				try {
-					WindowManager.setScene(new NewEvent(module, getItem()));
+					WindowManager.setScene(new NewEvent(app, getItem()));
 					event.consume();
 				} catch (IOException | NotSwitchableException e) {
 					e.printStackTrace();
@@ -100,8 +100,8 @@ public class ScheduleRow extends TableRow<ScheduleEvent> {
 		});
 	}
 
-	public ScheduleRow(final ScheduleModule module) {
-		this.module = module;
+	public ScheduleRow(final ScheduleApp app) {
+		this.app = app;
 	}
 
 	private TableRow<ScheduleEvent> getThis() {

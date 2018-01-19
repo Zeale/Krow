@@ -19,7 +19,7 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WritableValue;
-import zeale.guis.schedule_app.ScheduleModule;
+import zeale.guis.schedule_app.ScheduleApp;
 
 public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 
@@ -54,7 +54,7 @@ public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 	public final SimpleBooleanProperty urgent = new SimpleBooleanProperty(false),
 			complete = new SimpleBooleanProperty(false);
 
-	private transient File file = new File(ScheduleModule.DATA_DIR, UUID.randomUUID().toString());
+	private transient File file = new File(ScheduleApp.DATA_DIR, UUID.randomUUID().toString());
 
 	public boolean autoSave = true;
 

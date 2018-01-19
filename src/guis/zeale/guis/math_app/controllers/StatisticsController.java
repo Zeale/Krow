@@ -17,9 +17,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import krow.guis.math_app.TabGroup;
-import krow.guis.math_module.controllers.Distribution;
-import krow.guis.math_module.controllers.NumericalStatistic;
-import krow.guis.math_module.controllers.Statistic;
+import krow.guis.math_app.controllers.Distribution;
+import krow.guis.math_app.controllers.NumericalStatistic;
+import krow.guis.math_app.controllers.Statistic;
 import kröw.core.managers.WindowManager;
 
 public class StatisticsController {

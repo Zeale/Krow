@@ -22,8 +22,8 @@ import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.App;
-import zeale.guis.developer_page.DeveloperModule;
-import zeale.guis.math_app.MathModule;
+import zeale.guis.developer_page.DeveloperApp;
+import zeale.guis.math_app.MathApp;
 import zeale.guis.math_app.controllers.Calculator;
 
 public class Home extends ScrollMenu {
@@ -55,7 +55,7 @@ public class Home extends ScrollMenu {
 		final EventHandler<KeyEvent> keyHandler = event -> {
 			if (event.getCode() == KeyCode.D && event.isShiftDown() && event.isControlDown())
 				try {
-					WindowManager.setScene(DeveloperModule.class);
+					WindowManager.setScene(DeveloperApp.class);
 					event.consume();
 				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 					e.printStackTrace();
@@ -117,15 +117,15 @@ public class Home extends ScrollMenu {
 		});
 		statistics.setPickOnBounds(true);
 
-		final ImageView mathModule = new ImageView(MathModule.CALCULATOR_ICON);
-		mathModule.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+		final ImageView mathApp = new ImageView(MathApp.CALCULATOR_ICON);
+		mathApp.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			try {
 				WindowManager.setScene(Calculator.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}
 		});
-		mathModule.setPickOnBounds(true);
+		mathApp.setPickOnBounds(true);
 
 		final Shape backgroundShape = ShapeFactory.buildRegularShape(Kröw.scaleHeight(100),
 				(int) (Math.random() * 5 + 3));
@@ -138,25 +138,25 @@ public class Home extends ScrollMenu {
 		backgroundShape.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if (event.getButton() == MouseButton.PRIMARY)
 				try {
-					WindowManager.setScene(BackgroundModule.class);
+					WindowManager.setScene(BackgroundApp.class);
 				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 					e.printStackTrace();
 				}
 
 		});
 
-		horizontalScroll.getChildren().addAll(settings, krow, chatRoom, statistics, mathModule, backgroundShape);
+		horizontalScroll.getChildren().addAll(settings, krow, chatRoom, statistics, mathApp, backgroundShape);
 		horizontalScroll.selectCenter();
 
-		PopupHelper.addHoverPopup(settings, GUIHelper.makeBoldLabel("Settings Module", 18));
-		PopupHelper.addHoverPopup(krow, GUIHelper.makeBoldLabel("Tools Module", 18));
-		PopupHelper.addHoverPopup(chatRoom, GUIHelper.makeBoldLabel("Chat Room Module", 18));
-		PopupHelper.addHoverPopup(statistics, GUIHelper.makeBoldLabel("Statistics Module", 18));
-		PopupHelper.addHoverPopup(mathModule, GUIHelper.makeBoldLabel("Math Module", 18));
+		PopupHelper.addHoverPopup(settings, GUIHelper.makeBoldLabel("Settings App", 18));
+		PopupHelper.addHoverPopup(krow, GUIHelper.makeBoldLabel("Tools App", 18));
+		PopupHelper.addHoverPopup(chatRoom, GUIHelper.makeBoldLabel("Chat Room App", 18));
+		PopupHelper.addHoverPopup(statistics, GUIHelper.makeBoldLabel("Statistics App", 18));
+		PopupHelper.addHoverPopup(mathApp, GUIHelper.makeBoldLabel("Math App", 18));
 
-		final Label mathModuleCalculatorLbl = new Label("Calculator"),
-				mathModuleStatisticsLbl = new Label("Statistics");
-		mathModuleStatisticsLbl.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+		final Label mathAppCalculatorLbl = new Label("Calculator"),
+				mathAppStatisticsLbl = new Label("Statistics");
+		mathAppStatisticsLbl.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if (event.getButton().equals(MouseButton.PRIMARY))
 				try {
 					WindowManager.setScene(Calculator.class).getController().enableStatsMode();
@@ -165,7 +165,7 @@ public class Home extends ScrollMenu {
 				}
 		});
 
-		mathModuleCalculatorLbl.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+		mathAppCalculatorLbl.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if (event.getButton().equals(MouseButton.PRIMARY))
 				try {
 					WindowManager.setScene(Calculator.class);
@@ -174,7 +174,7 @@ public class Home extends ScrollMenu {
 				}
 		});
 
-		PopupHelper.addRightClickPopup(mathModule, mathModuleCalculatorLbl, mathModuleStatisticsLbl);
+		PopupHelper.addRightClickPopup(mathApp, mathAppCalculatorLbl, mathAppStatisticsLbl);
 
 	}
 

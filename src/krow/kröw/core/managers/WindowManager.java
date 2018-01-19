@@ -118,26 +118,26 @@ public final class WindowManager {
 		 * <p>
 		 * Sets the default {@link Background}.
 		 * <p>
-		 * The default {@link Background} is used at the expense of other modules. This
-		 * means that it is completely up to another module of whether or not to render
+		 * The default {@link Background} is used at the expense of other apps. This
+		 * means that it is completely up to another app of whether or not to render
 		 * a background from {@link #getDefaultBackground()}.
 		 * <p>
 		 * For the purpose of allowing the user to keep whatever background they choose
-		 * in modules that support it, <b>this method should not be called unless the
-		 * user wishes to modify the default background.</b> If a module or page wants
+		 * in apps that support it, <b>this method should not be called unless the
+		 * user wishes to modify the default background.</b> If a app or page wants
 		 * to render a custom background, it should not change any part of the program's
-		 * default {@link Background}. The said module should make use of a <i>custom
+		 * default {@link Background}. The said app should make use of a <i>custom
 		 * {@link Background}</i>, so that whatever settings the user has applied can be
 		 * kept in this default one.
 		 * <p>
 		 * One last thing: If the given manager is null, this method will throw an
 		 * {@link IllegalArgumentException}. The default {@link Background} is expected
-		 * to be used by other modules for rendering the user's chosen background, so if
-		 * it's null and other modules try to call methods off of it, there'd be
+		 * to be used by other apps for rendering the user's chosen background, so if
+		 * it's null and other apps try to call methods off of it, there'd be
 		 * {@link NullPointerException}s all over the place.
 		 * 
 		 * @param manager
-		 *            The new default {@link Background}. Modules that reference
+		 *            The new default {@link Background}. Apps that reference
 		 *            {@link #getDefaultBackground()} will be given this new manager
 		 *            when they are called.
 		 *            <p>

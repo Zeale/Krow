@@ -8,20 +8,20 @@
 <br>
 <h3 align="center">Welcome to Kröw</h3>
 <br>
-<p align="center">Kröw is a Java based desktop application made to exist. Kröw is split into <em>modules</em>, (more on that below...), and is mainly meant as a display/personal app.</p>
+<p align="center">Kröw is a Java based desktop application made to exist. Kröw is split into <em>apps</em>, (more on that below...), and is mainly meant as a display/personal app.</p>
 <br>
 <br>
 <br>
 <h3 align="center">Home</h3>
 <br>
-<p align="center">The home window opens up when the program is launched and contains links to various modules.</p>
+<p align="center">The home window opens up when the program is launched and contains links to various apps.</p>
 <br>
 <p align="center"><img src="/.screenshots/v0.8.1-beta/Home.PNG"></img></p>
 <br>
 <br>
 <br>
-<h3 align="center" id="Modules">Modules</h3>
+<h3 align="center" id="Apps">Apps</h3>
 <br>
-<p align="center">Modules are different sections of the application that act as sub-apps. Take the Chat Module, for example:</p>
+<p align="center">Apps are different sections of the application that act as sub-apps. Take the Chat App, for example:</p>
 <p align="center"><img src="/.screenshots/v0.8.1-beta/ChatRoom.PNG"></img></p>
-<p align="center">This module allows the user to host or connect to a chatting server. It acts virtually independently of other modules. Most modules function this way although some modules can make use of each other, much like normal desktop apps.
+<p align="center">This app allows the user to host or connect to a chatting server. It acts virtually independently of other apps. Most apps function this way although some apps can make use of each other, much like normal desktop apps.

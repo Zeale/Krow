@@ -22,9 +22,9 @@ import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.App;
 import zeale.guis.Home;
-import zeale.guis.schedule_app.ScheduleModule;
+import zeale.guis.schedule_app.ScheduleApp;
 
-public class DeveloperModule extends App {
+public class DeveloperApp extends App {
 
 	private final static Image TESTING_ICON = new Image("krow/resources/Testing.png");
 
@@ -35,7 +35,7 @@ public class DeveloperModule extends App {
 
 	@Override
 	public String getWindowFile() {
-		return "DeveloperModule.fxml";
+		return "DeveloperApp.fxml";
 	}
 
 	@Override
@@ -103,19 +103,19 @@ public class DeveloperModule extends App {
 	}
 
 	private void loadDefaultItems() {
-		final ImageView console = new ImageView("/krow/resources/graphics/developer-module/Console.png");
+		final ImageView console = new ImageView("/krow/resources/graphics/developer-app/Console.png");
 		console.setOnMouseClicked(event -> {
 			try {
-				WindowManager.setScene(ConsoleModule.class);
+				WindowManager.setScene(ConsoleApp.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}
 		});
 
-		final ImageView scheduler = new ImageView("/krow/resources/graphics/schedule-module/Schedule.png");
+		final ImageView scheduler = new ImageView("/krow/resources/graphics/schedule-app/Schedule.png");
 		scheduler.setOnMouseClicked(event -> {
 			try {
-				WindowManager.setScene(ScheduleModule.class);
+				WindowManager.setScene(ScheduleApp.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}
@@ -125,7 +125,7 @@ public class DeveloperModule extends App {
 		ImageView testing = new ImageView(TESTING_ICON);
 		testing.setOnMouseClicked(event -> {
 			try {
-				WindowManager.setScene(TestingModule.class);
+				WindowManager.setScene(TestingApp.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}

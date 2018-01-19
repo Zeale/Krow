@@ -24,7 +24,7 @@ import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.App;
 
-public class ScheduleModule extends App {
+public class ScheduleApp extends App {
 	public static final File DATA_DIR = new File(Kröw.DATA_DIRECTORY, "Schedule");
 
 	private static final ObservableList<ScheduleEvent> events = FXCollections.observableArrayList();
@@ -83,7 +83,7 @@ public class ScheduleModule extends App {
 	@FXML
 	private TableColumn<ScheduleEvent, ScheduleEvent> urgencyColumn, completeColumn;
 
-	public ScheduleModule() {
+	public ScheduleApp() {
 	}
 
 	@FXML
@@ -110,7 +110,7 @@ public class ScheduleModule extends App {
 
 	@Override
 	public String getWindowFile() {
-		return "ScheduleModule.fxml";
+		return "ScheduleApp.fxml";
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class ScheduleModule extends App {
 		urgencyColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue()));
 		completeColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue()));
 
-		eventTable.setRowFactory(param -> new ScheduleRow(ScheduleModule.this));
+		eventTable.setRowFactory(param -> new ScheduleRow(ScheduleApp.this));
 
 		dateColumn.setCellFactory(param -> {
 			return new TableCell<ScheduleEvent, Number>() {

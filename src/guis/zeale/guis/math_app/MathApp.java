@@ -12,7 +12,7 @@ import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import zeale.guis.math_app.controllers.Calculator;
 
-public class MathModule extends ScrollMenu {
+public class MathApp extends ScrollMenu {
 
 	/**
 	 * <p>
@@ -23,12 +23,12 @@ public class MathModule extends ScrollMenu {
 	 * visualize what a calculator icon would look like when placed in this
 	 * scroll menu.
 	 */
-	public static final Image CALCULATOR_ICON = new Image("/krow/resources/graphics/math-module/calculator-icon.png");// TODO
+	public static final Image CALCULATOR_ICON = new Image("/krow/resources/graphics/math-app/calculator-icon.png");// TODO
 																														// Change
 
 	@Override
 	public String getWindowFile() {
-		return "MathModule.fxml";
+		return "MathApp.fxml";
 	}
 
 	@Override

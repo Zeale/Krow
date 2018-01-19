@@ -210,7 +210,7 @@ public final class GUIHelper {
 		collectGarbage.setOnMouseClicked(event -> System.gc());
 		VBox wrapper = PopupHelper.addHoverPopup(collectGarbage,
 				new Label("• This attempts to free up memory used by Kröw."),
-				new Label("• When this succeeds, you can actually see this work in the Statistics module."));
+				new Label("• When this succeeds, you can actually see this work in the Statistics app."));
 		wrapper.setMaxWidth(Kröw.scaleWidth(450));
 		for (Node n : wrapper.getChildrenUnmodifiable())
 			if (n instanceof Label)
