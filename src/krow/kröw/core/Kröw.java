@@ -42,7 +42,7 @@ import kröw.core.managers.ProgramSettings;
 import kröw.core.managers.SoundManager;
 import kröw.core.managers.SystemProperties;
 import kröw.core.managers.SystemTrayManager;
-import kröw.core.managers.WindowManager;
+import kröw.gui.WindowManager;
 import sun.awt.shell.ShellFolder;
 import zeale.guis.Home;
 import zeale.guis.developer_page.ConsoleApp;

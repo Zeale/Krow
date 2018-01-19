@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import kröw.core.Kröw;
+import kröw.gui.WindowManager;
 import zeale.guis.ChatRoom;
 import zeale.guis.Statistics;
 

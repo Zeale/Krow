@@ -18,9 +18,9 @@ import krow.guis.GUIHelper;
 import krow.scene.HorizontalMultiScrollBox;
 import krow.scene.HorizontalScrollBox;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.NotSwitchableException;
-import kröw.core.managers.WindowManager.App;
+import kröw.gui.WindowManager;
+import kröw.gui.WindowManager.App;
+import kröw.gui.WindowManager.NotSwitchableException;
 import zeale.guis.Home;
 import zeale.guis.schedule_app.ScheduleApp;
 

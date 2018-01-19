@@ -20,9 +20,9 @@ import krow.guis.schedule_app.ScheduleEvent;
 import krow.guis.schedule_app.ScheduleRow;
 import krow.guis.schedule_app.SelectableCell;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.NotSwitchableException;
-import kröw.core.managers.WindowManager.App;
+import kröw.gui.WindowManager;
+import kröw.gui.WindowManager.App;
+import kröw.gui.WindowManager.NotSwitchableException;
 
 public class ScheduleApp extends App {
 	public static final File DATA_DIR = new File(Kröw.DATA_DIRECTORY, "Schedule");

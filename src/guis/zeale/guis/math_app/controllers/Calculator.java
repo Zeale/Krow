@@ -24,7 +24,7 @@ import krow.guis.GUIHelper;
 import krow.guis.GUIHelper.MenuOption;
 import krow.guis.math_app.TabGroup;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager.App;
+import kröw.gui.WindowManager.App;
 import kröw.math.lexer.EquationParser;
 import zeale.guis.math_app.controllers.StatisticsController.Mode;
 

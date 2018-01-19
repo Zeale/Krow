@@ -5,6 +5,7 @@ import java.util.List;
 
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
+import kröw.gui.WindowManager;
 
 public final class SystemProperties {
 

@@ -11,7 +11,7 @@ import krow.backgrounds.ImageBackground;
 import krow.backgrounds.ShapeBackground;
 import krow.guis.GUIHelper;
 import krow.guis.GUIHelper.MenuBox;
-import kröw.core.managers.WindowManager.App;
+import kröw.gui.WindowManager.App;
 
 public class BackgroundApp extends App {
 

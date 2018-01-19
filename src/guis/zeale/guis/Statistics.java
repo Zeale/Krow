@@ -36,8 +36,8 @@ import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.callables.ParameterizedTask;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.App;
+import kröw.gui.WindowManager;
+import kröw.gui.WindowManager.App;
 
 public class Statistics extends WindowManager.App {
 

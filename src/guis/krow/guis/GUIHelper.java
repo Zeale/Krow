@@ -36,7 +36,7 @@ import javafx.util.Duration;
 import krow.backgrounds.BackgroundBuilder;
 import krow.backgrounds.ShapeBackground;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager;
+import kröw.gui.WindowManager;
 import zeale.guis.Home;
 
 public final class GUIHelper {

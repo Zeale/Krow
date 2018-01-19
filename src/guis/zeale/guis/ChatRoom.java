@@ -34,8 +34,8 @@ import kröw.connections.FullClientListener;
 import kröw.connections.Server;
 import kröw.connections.messages.Message;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.App;
+import kröw.gui.WindowManager;
+import kröw.gui.WindowManager.App;
 
 public class ChatRoom extends WindowManager.App {
 

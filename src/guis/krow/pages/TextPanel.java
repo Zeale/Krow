@@ -12,7 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager.App;
+import kröw.gui.WindowManager.App;
 
 public abstract class TextPanel extends App {
 

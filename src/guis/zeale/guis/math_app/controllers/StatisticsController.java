@@ -20,7 +20,7 @@ import krow.guis.math_app.TabGroup;
 import krow.guis.math_app.controllers.Distribution;
 import krow.guis.math_app.controllers.NumericalStatistic;
 import krow.guis.math_app.controllers.Statistic;
-import kröw.core.managers.WindowManager;
+import kröw.gui.WindowManager;
 
 public class StatisticsController {
 

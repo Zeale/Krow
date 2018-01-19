@@ -12,8 +12,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import krow.guis.PopupHelper;
 import krow.guis.PopupHelper.PopupWrapper;
-import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.NotSwitchableException;
+import kröw.gui.WindowManager;
+import kröw.gui.WindowManager.NotSwitchableException;
 import zeale.guis.schedule_app.NewEvent;
 import zeale.guis.schedule_app.ScheduleApp;
 

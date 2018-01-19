@@ -17,6 +17,7 @@ import javafx.stage.WindowEvent;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.core.Kröw;
+import kröw.gui.WindowManager;
 
 public final class SystemTrayManager {
 

@@ -14,9 +14,9 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import krow.guis.schedule_app.ScheduleEvent;
-import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.NotSwitchableException;
-import kröw.core.managers.WindowManager.App;
+import kröw.gui.WindowManager;
+import kröw.gui.WindowManager.App;
+import kröw.gui.WindowManager.NotSwitchableException;
 
 public class NewEvent extends App {
 

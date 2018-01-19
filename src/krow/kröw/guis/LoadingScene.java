@@ -7,7 +7,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import kröw.core.managers.WindowManager;
+import kröw.gui.WindowManager;
 
 public class LoadingScene extends Scene {
 

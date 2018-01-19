@@ -14,8 +14,8 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import kröw.core.managers.WindowManager.App;
 import kröw.data.protection.Protection;
+import kröw.gui.WindowManager.App;
 
 public class TestingApp extends App {
 

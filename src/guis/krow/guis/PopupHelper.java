@@ -28,7 +28,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager;
+import kröw.gui.WindowManager;
 
 public final class PopupHelper {
 

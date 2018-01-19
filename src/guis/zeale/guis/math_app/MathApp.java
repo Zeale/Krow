@@ -8,8 +8,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import krow.guis.GUIHelper;
 import krow.pages.ScrollMenu;
-import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.NotSwitchableException;
+import kröw.gui.WindowManager;
+import kröw.gui.WindowManager.NotSwitchableException;
 import zeale.guis.math_app.controllers.Calculator;
 
 public class MathApp extends ScrollMenu {
