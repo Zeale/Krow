@@ -1,4 +1,4 @@
-package kröw.core.managers;
+package kröw.gui;
 
 import java.awt.MouseInfo;
 import java.io.IOException;
