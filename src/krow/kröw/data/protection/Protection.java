@@ -332,17 +332,18 @@ public final class Protection {
 	 *         <code>victim</code>'s {@link Domain}, <code>false</code> otherwise.
 	 */
 	private static boolean checkAccess(Class<?> accessor, Class<?> victim) {
-		if (accessor == victim)
-			return true;
+
 		while (accessor.isAnonymousClass())
 			accessor = accessor.getEnclosingClass();
 		while (victim.isAnonymousClass())
 			victim = victim.getEnclosingClass();
 		if (accessor == victim)
 			return true;
-		// I feel like this is kinda edgy, but I can't think of a better solution.
-		// Probably cuz it's almost 1 AM.
-		if (accessor.getName().equals(victim.getName()))
+
+		// Solved the edginess. I hope. Loading a class through multiple loaders is
+		// probably gonna cause bigger problems that are irrelevent to the Protection
+		// API, but whatever.
+		if (accessor.getClassLoader() != victim.getClassLoader() && accessor.getName().equals(victim.getName()))
 			return true;
 
 		// The above <i>should</i> cover all accessing if the domain is private (as in
