@@ -42,10 +42,10 @@ import krow.guis.GUIHelper;
 import krow.guis.PopupHelper;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.Page;
+import kröw.core.managers.WindowManager.App;
 import sun.awt.shell.ShellFolder;
 
-public class Tools extends Page {
+public class Tools extends App {
 
 	public static class CommandTool extends LaunchableTool {
 		private final String command;

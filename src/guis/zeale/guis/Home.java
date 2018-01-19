@@ -21,7 +21,7 @@ import krow.pages.ScrollMenu;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
-import kröw.core.managers.WindowManager.Page;
+import kröw.core.managers.WindowManager.App;
 import zeale.guis.developer_module.DeveloperModule;
 import zeale.guis.math_module.MathModule;
 import zeale.guis.math_module.controllers.Calculator;
@@ -31,7 +31,7 @@ public class Home extends ScrollMenu {
 	private static final Image CHAT_ROOM_MENU_ICON = new Image("krow/resources/ChatRoomIcon_hd.png");
 
 	@Override
-	public boolean canSwitchPage(final Class<? extends Page> newSceneClass) {
+	public boolean canSwitchPage(final Class<? extends App> newSceneClass) {
 		if (newSceneClass.equals(Home.class))
 			return false;
 		return true;

@@ -16,9 +16,9 @@ import javafx.scene.paint.Color;
 import krow.guis.schedule_module.ScheduleEvent;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
-import kröw.core.managers.WindowManager.Page;
+import kröw.core.managers.WindowManager.App;
 
-public class NewEvent extends Page {
+public class NewEvent extends App {
 
 	private final ScheduleModule module;
 

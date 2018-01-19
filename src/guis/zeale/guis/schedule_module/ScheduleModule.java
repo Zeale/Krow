@@ -22,9 +22,9 @@ import krow.guis.schedule_module.SelectableCell;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
-import kröw.core.managers.WindowManager.Page;
+import kröw.core.managers.WindowManager.App;
 
-public class ScheduleModule extends Page {
+public class ScheduleModule extends App {
 	public static final File DATA_DIR = new File(Kröw.DATA_DIRECTORY, "Schedule");
 
 	private static final ObservableList<ScheduleEvent> events = FXCollections.observableArrayList();

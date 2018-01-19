@@ -14,10 +14,10 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import kröw.core.managers.WindowManager.Page;
+import kröw.core.managers.WindowManager.App;
 import kröw.data.protection.Protection;
 
-public class TestingModule extends Page {
+public class TestingModule extends App {
 
 	private @FXML Accordion accordion;
 	private @FXML BorderPane root;

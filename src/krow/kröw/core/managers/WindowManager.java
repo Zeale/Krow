@@ -42,7 +42,7 @@ public final class WindowManager {
 	/**
 	 * <p>
 	 * Thrown when someone tries to switch the current {@link Scene} but the current
-	 * {@link Scene}'s controller's {@link Page#canSwitchScenes()} method returns
+	 * {@link Scene}'s controller's {@link App#canSwitchScenes()} method returns
 	 * false.
 	 *
 	 * @author Zeale
@@ -51,12 +51,12 @@ public final class WindowManager {
 
 		private static final long serialVersionUID = 1L;
 
-		private final Window<? extends Page> currentWindow;
-		private final Page controller;
-		private final Class<? extends Page> controllerClass;
+		private final Window<? extends App> currentWindow;
+		private final App controller;
+		private final Class<? extends App> controllerClass;
 
-		public NotSwitchableException(final Window<? extends Page> currentWindow, final Page controller,
-				final Class<? extends Page> cls) {
+		public NotSwitchableException(final Window<? extends App> currentWindow, final App controller,
+				final Class<? extends App> cls) {
 			this.currentWindow = currentWindow;
 			this.controller = controller;
 			controllerClass = cls;
@@ -65,27 +65,27 @@ public final class WindowManager {
 		/**
 		 * @return the controller
 		 */
-		public final Page getController() {
+		public final App getController() {
 			return controller;
 		}
 
 		/**
 		 * @return the controllerClass
 		 */
-		public final Class<? extends Page> getControllerClass() {
+		public final Class<? extends App> getControllerClass() {
 			return controllerClass;
 		}
 
 		/**
 		 * @return the currentWindow
 		 */
-		public final Window<? extends Page> getCurrentWindow() {
+		public final Window<? extends App> getCurrentWindow() {
 			return currentWindow;
 		}
 
 	}
 
-	public static abstract class Page {
+	public static abstract class App {
 
 		private KeyValuePairData data = new KeyValuePairData();
 		private KVPDataReader reader;// = get reader for this page somehow.
@@ -108,9 +108,9 @@ public final class WindowManager {
 		}
 
 		/**
-		 * Constructs a {@link Page} object.
+		 * Constructs a {@link App} object.
 		 */
-		protected Page() {
+		protected App() {
 
 		}
 
@@ -157,7 +157,7 @@ public final class WindowManager {
 		 * <p>
 		 * The default {@link Background} should only be retrieved for
 		 * <b><i>showing</i></b> the user's chosen background settings, unless the
-		 * {@link Page} that makes use of this method allows the user to modify the
+		 * {@link App} that makes use of this method allows the user to modify the
 		 * default background.
 		 * <p>
 		 * If a page edited the default {@link Background}, (rather than using its own
@@ -179,32 +179,32 @@ public final class WindowManager {
 
 		/**
 		 * <p>
-		 * Checked when switching {@link Page}s to verify that the current page permits
+		 * Checked when switching {@link App}s to verify that the current page permits
 		 * the user to go to a different page. This should be overridden to return false
 		 * when a window reaches a scenario in which it does not want its user to leave.
 		 * <p>
-		 * Basically, return false when {@link Page}s shouldn't be switched.
+		 * Basically, return false when {@link App}s shouldn't be switched.
 		 *
 		 * @return Whether or not the scene can currently be switched.
 		 */
-		public boolean canSwitchPage(final Class<? extends Page> newSceneClass) {
+		public boolean canSwitchPage(final Class<? extends App> newSceneClass) {
 			return true;
 		}
 
 		/**
 		 * <p>
-		 * Returns the relative path to the FXML file that this {@link Page} represents.
+		 * Returns the relative path to the FXML file that this {@link App} represents.
 		 *
 		 * @return A {@link String} object which represents the relative path of the
-		 *         FXML file that this {@link Page} represents.
+		 *         FXML file that this {@link App} represents.
 		 */
 		public abstract String getWindowFile();
 
 		/**
 		 * <p>
-		 * This method is called when a {@link Page} is initialized.
+		 * This method is called when a {@link App} is initialized.
 		 * <p>
-		 * Specifically, this method is called after a {@link Page} has had its
+		 * Specifically, this method is called after a {@link App} has had its
 		 * <code>@FXML</code> fields set. This method is the optimal place for
 		 * subclasses to use the {@link WindowManager#setPaneDraggableByNode(Node)}
 		 * method.
@@ -220,9 +220,9 @@ public final class WindowManager {
 		/**
 		 * <p>
 		 * This method is called when {@link WindowManager#goBack()} is called and this
-		 * {@link Page} is shown. It's is like an extra initialize method which is
+		 * {@link App} is shown. It's is like an extra initialize method which is
 		 * called only when the {@link WindowManager#goBack()} method shows this
-		 * {@link Page}.
+		 * {@link App}.
 		 */
 		public void onBack() {
 
@@ -236,26 +236,26 @@ public final class WindowManager {
 
 	public static class PageChangedEvent extends Event {
 
-		public final Window<? extends Page> oldWindow, newWindow;
+		public final Window<? extends App> oldWindow, newWindow;
 
-		private PageChangedEvent(final Window<? extends Page> currentPage, final Window<? extends Page> window) {
+		private PageChangedEvent(final Window<? extends App> currentPage, final Window<? extends App> window) {
 			oldWindow = currentPage;
 			newWindow = window;
 		}
 	}
 
 	public static class PageChangeRequestedEvent extends Event {
-		public final Window<? extends Page> oldWindow;
-		public final Class<? extends Page> newPageClass;
+		public final Window<? extends App> oldWindow;
+		public final Class<? extends App> newPageClass;
 
-		public PageChangeRequestedEvent(final Window<? extends Page> oldWindow,
-				final Class<? extends Page> newPageClass) {
+		public PageChangeRequestedEvent(final Window<? extends App> oldWindow,
+				final Class<? extends App> newPageClass) {
 			this.oldWindow = oldWindow;
 			this.newPageClass = newPageClass;
 		}
 	}
 
-	public static final class Window<T extends Page> {
+	public static final class Window<T extends App> {
 		private final T controller;
 		private final Parent root;
 		private final Stage stageUsed;
@@ -298,9 +298,9 @@ public final class WindowManager {
 
 	}
 
-	private static final Stack<Window<? extends Page>> history = new Stack<>();
+	private static final Stack<Window<? extends App>> history = new Stack<>();
 
-	private static Window<? extends Page> currentPage;
+	private static Window<? extends App> currentPage;
 
 	/**
 	 * The current {@link Stage}. This is set when the program starts.
@@ -322,7 +322,7 @@ public final class WindowManager {
 	/**
 	 * A getter for the {@link Stage} of the running application.
 	 *
-	 * @return The application's current {@link Page#stage}.
+	 * @return The application's current {@link App#stage}.
 	 */
 	public static Stage getStage() {
 		return WindowManager.stage;
@@ -332,13 +332,13 @@ public final class WindowManager {
 	 * <p>
 	 * Reverts the current {@link Scene} to the previous {@link Scene}.
 	 * <p>
-	 * If the user switches from the home {@link Page} to another {@link Page} and
+	 * If the user switches from the home {@link App} to another {@link App} and
 	 * then this method is called, the program will switch back to the home
-	 * {@link Page}.
+	 * {@link App}.
 	 * <p>
 	 * <i>NOTE that this only works when switching prior to this method's call is
 	 * done via any of the <code>setScene(...)</code> methods.</i> Using these
-	 * methods rather than switching the {@link Page} manually is almost necessary
+	 * methods rather than switching the {@link App} manually is almost necessary
 	 * for full functionality.
 	 *
 	 * @throws NotSwitchableException
@@ -390,12 +390,12 @@ public final class WindowManager {
 
 	/**
 	 * <p>
-	 * Sets this application's {@link Page#stage} as draggable by the specified
+	 * Sets this application's {@link App#stage} as draggable by the specified
 	 * {@link Node}.
 	 * <p>
 	 * The {@link Node#setOnMousePressed(javafx.event.EventHandler)} and
 	 * {@link Node#setOnMouseDragged(javafx.event.EventHandler)} methods are called
-	 * on the given {@link Node} to allow the current {@link Page#stage} object to
+	 * on the given {@link Node} to allow the current {@link App#stage} object to
 	 * be moved via the user dragging the given {@link Node}.
 	 *
 	 * @param node
@@ -430,16 +430,16 @@ public final class WindowManager {
 
 	/**
 	 * <p>
-	 * Loads a {@link Scene} object given a subclass of {@link Page}.
+	 * Loads a {@link Scene} object given a subclass of {@link App}.
 	 * <p>
-	 * Subclasses of the {@link Page} object are required to define the
+	 * Subclasses of the {@link App} object are required to define the
 	 * {@link #getWindowFile()} method. (This may change soon). We already have the
 	 * {@link Class} object required to call the method
 	 * {@link #setScene(Class, String)}, so when we instantiate this {@link Class},
 	 * we can get the {@link String} object as well.
 	 *
 	 * @param cls
-	 *            The {@link Page} {@link Class} to get the new {@link Scene} from.
+	 *            The {@link App} {@link Class} to get the new {@link Scene} from.
 	 * @throws InstantiationException
 	 *             if the given {@link Class} represents an abstract class, an
 	 *             interface, an array class, a primitive type, or void, if the
@@ -453,7 +453,7 @@ public final class WindowManager {
 	 * @throws NotSwitchableException
 	 *             If the current {@link Scene} can't be switched.
 	 */
-	public static <W extends Page> Window<W> setScene(final Class<W> cls)
+	public static <W extends App> Window<W> setScene(final Class<W> cls)
 			throws InstantiationException, IllegalAccessException, IOException, NotSwitchableException {
 
 		for (final EventHandler<? super PageChangeRequestedEvent> handler : pageChangeRequestedHandlers)
@@ -485,7 +485,7 @@ public final class WindowManager {
 
 	}
 
-	public static <W extends Page> Window<W> setScene(final W controller) throws IOException, NotSwitchableException {
+	public static <W extends App> Window<W> setScene(final W controller) throws IOException, NotSwitchableException {
 
 		for (final EventHandler<? super PageChangeRequestedEvent> handler : pageChangeRequestedHandlers)
 			handler.handle(new PageChangeRequestedEvent(currentPage, controller.getClass()));
@@ -526,16 +526,16 @@ public final class WindowManager {
 	 * @Internal This method is meant for internal use only.
 	 *
 	 */
-	public static Window<? extends Page> setStage_Impl(final Stage stage, final Class<? extends Page> cls)
+	public static Window<? extends App> setStage_Impl(final Stage stage, final Class<? extends App> cls)
 			throws IOException, InstantiationException, IllegalAccessException {
 
 		WindowManager.stage = stage;
-		final Page controller = cls.newInstance();
+		final App controller = cls.newInstance();
 		final FXMLLoader loader = new FXMLLoader(cls.getResource(controller.getWindowFile()));
 		loader.setController(controller);
 		final Parent root = loader.load();
 
-		final Window<? extends Page> window = new Window<>(controller, root, stage, stage.getScene());
+		final Window<? extends App> window = new Window<>(controller, root, stage, stage.getScene());
 
 		WindowManager.currentPage = window;
 		// Set the new root.

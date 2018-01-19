@@ -15,9 +15,9 @@ import javafx.scene.layout.StackPane;
 import krow.guis.GUIHelper;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.Page;
+import kröw.core.managers.WindowManager.App;
 
-public class Settings extends Page {
+public class Settings extends App {
 
 	public class Setting {
 		private String text;

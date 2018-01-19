@@ -20,11 +20,11 @@ import krow.scene.HorizontalScrollBox;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
-import kröw.core.managers.WindowManager.Page;
+import kröw.core.managers.WindowManager.App;
 import zeale.guis.Home;
 import zeale.guis.schedule_module.ScheduleModule;
 
-public class DeveloperModule extends Page {
+public class DeveloperModule extends App {
 
 	private final static Image TESTING_ICON = new Image("krow/resources/Testing.png");
 

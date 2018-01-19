@@ -35,9 +35,9 @@ import kröw.connections.Server;
 import kröw.connections.messages.Message;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.Page;
+import kröw.core.managers.WindowManager.App;
 
-public class ChatRoom extends WindowManager.Page {
+public class ChatRoom extends WindowManager.App {
 
 	private static class ChatRoomText {
 		private final ChatRoomMessage message;
@@ -157,7 +157,7 @@ public class ChatRoom extends WindowManager.Page {
 	}
 
 	@Override
-	public boolean canSwitchPage(final Class<? extends Page> newSceneClass) {
+	public boolean canSwitchPage(final Class<? extends App> newSceneClass) {
 		return true;
 	}
 
