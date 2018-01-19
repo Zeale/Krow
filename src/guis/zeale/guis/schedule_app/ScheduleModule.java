@@ -1,4 +1,4 @@
-package zeale.guis.schedule_module;
+package zeale.guis.schedule_app;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,9 +16,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import krow.guis.GUIHelper;
-import krow.guis.schedule_module.ScheduleEvent;
-import krow.guis.schedule_module.ScheduleRow;
-import krow.guis.schedule_module.SelectableCell;
+import krow.guis.schedule_app.ScheduleEvent;
+import krow.guis.schedule_app.ScheduleRow;
+import krow.guis.schedule_app.SelectableCell;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;

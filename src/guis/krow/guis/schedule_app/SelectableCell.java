@@ -1,4 +1,4 @@
-package krow.guis.schedule_module;
+package krow.guis.schedule_app;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.CheckBox;

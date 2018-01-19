@@ -45,7 +45,7 @@ import kröw.core.managers.SystemTrayManager;
 import kröw.core.managers.WindowManager;
 import sun.awt.shell.ShellFolder;
 import zeale.guis.Home;
-import zeale.guis.developer_module.ConsoleModule;
+import zeale.guis.developer_page.ConsoleModule;
 
 /**
  * The main class of Krow. It contains many useful methods.

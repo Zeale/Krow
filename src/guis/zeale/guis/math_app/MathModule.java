@@ -1,4 +1,4 @@
-package zeale.guis.math_module;
+package zeale.guis.math_app;
 
 import java.io.IOException;
 
@@ -10,7 +10,7 @@ import krow.guis.GUIHelper;
 import krow.pages.ScrollMenu;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
-import zeale.guis.math_module.controllers.Calculator;
+import zeale.guis.math_app.controllers.Calculator;
 
 public class MathModule extends ScrollMenu {
 

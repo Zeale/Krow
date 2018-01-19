@@ -1,4 +1,4 @@
-package zeale.guis.developer_module;
+package zeale.guis.developer_page;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

@@ -1,4 +1,4 @@
-package zeale.guis.schedule_module;
+package zeale.guis.schedule_app;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -13,7 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import krow.guis.schedule_module.ScheduleEvent;
+import krow.guis.schedule_app.ScheduleEvent;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.App;

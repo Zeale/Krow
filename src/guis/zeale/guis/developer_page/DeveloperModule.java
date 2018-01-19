@@ -1,4 +1,4 @@
-package zeale.guis.developer_module;
+package zeale.guis.developer_page;
 
 import java.io.IOException;
 
@@ -22,7 +22,7 @@ import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.App;
 import zeale.guis.Home;
-import zeale.guis.schedule_module.ScheduleModule;
+import zeale.guis.schedule_app.ScheduleModule;
 
 public class DeveloperModule extends App {
 

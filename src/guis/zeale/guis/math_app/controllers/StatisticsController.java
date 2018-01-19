@@ -1,4 +1,4 @@
-package zeale.guis.math_module.controllers;
+package zeale.guis.math_app.controllers;
 
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -16,7 +16,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import krow.guis.math_module.TabGroup;
+import krow.guis.math_app.TabGroup;
 import krow.guis.math_module.controllers.Distribution;
 import krow.guis.math_module.controllers.NumericalStatistic;
 import krow.guis.math_module.controllers.Statistic;

@@ -1,4 +1,4 @@
-package krow.guis.schedule_module;
+package krow.guis.schedule_app;
 
 import java.io.IOException;
 
@@ -14,8 +14,8 @@ import krow.guis.PopupHelper;
 import krow.guis.PopupHelper.PopupWrapper;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
-import zeale.guis.schedule_module.NewEvent;
-import zeale.guis.schedule_module.ScheduleModule;
+import zeale.guis.schedule_app.NewEvent;
+import zeale.guis.schedule_app.ScheduleModule;
 
 public class ScheduleRow extends TableRow<ScheduleEvent> {
 

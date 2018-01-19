@@ -22,9 +22,9 @@ import kröw.core.Kröw;
 import kröw.core.managers.WindowManager;
 import kröw.core.managers.WindowManager.NotSwitchableException;
 import kröw.core.managers.WindowManager.App;
-import zeale.guis.developer_module.DeveloperModule;
-import zeale.guis.math_module.MathModule;
-import zeale.guis.math_module.controllers.Calculator;
+import zeale.guis.developer_page.DeveloperModule;
+import zeale.guis.math_app.MathModule;
+import zeale.guis.math_app.controllers.Calculator;
 
 public class Home extends ScrollMenu {
 

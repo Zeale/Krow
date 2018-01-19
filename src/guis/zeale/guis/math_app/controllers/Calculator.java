@@ -1,4 +1,4 @@
-package zeale.guis.math_module.controllers;
+package zeale.guis.math_app.controllers;
 
 import java.util.List;
 
@@ -22,11 +22,11 @@ import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import krow.guis.GUIHelper;
 import krow.guis.GUIHelper.MenuOption;
-import krow.guis.math_module.TabGroup;
+import krow.guis.math_app.TabGroup;
 import kröw.core.Kröw;
 import kröw.core.managers.WindowManager.App;
 import kröw.math.lexer.EquationParser;
-import zeale.guis.math_module.controllers.StatisticsController.Mode;
+import zeale.guis.math_app.controllers.StatisticsController.Mode;
 
 public class Calculator extends App {
 

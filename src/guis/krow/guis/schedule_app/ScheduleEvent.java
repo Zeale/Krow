@@ -1,4 +1,4 @@
-package krow.guis.schedule_module;
+package krow.guis.schedule_app;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,7 +19,7 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.WritableValue;
-import zeale.guis.schedule_module.ScheduleModule;
+import zeale.guis.schedule_app.ScheduleModule;
 
 public class ScheduleEvent implements Serializable, Comparable<ScheduleEvent> {
 
