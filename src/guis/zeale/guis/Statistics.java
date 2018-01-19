@@ -31,6 +31,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Callback;
+import krow.guis.GUIHelper;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.callables.ParameterizedTask;
@@ -591,6 +592,7 @@ public class Statistics extends WindowManager.Page {
 		AutoUpdatingStatistic.startChecker();
 
 		applyDefaultBackground(pane);
+		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(pane));
 
 	}
 
