@@ -15,9 +15,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import kröw.data.protection.Protection;
-import kröw.gui.WindowManager.App;
+import kröw.gui.Application;
 
-public class TestingApp extends App {
+public class TestingApp extends Application {
 
 	private @FXML Accordion accordion;
 	private @FXML BorderPane root;

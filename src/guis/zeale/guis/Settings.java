@@ -14,10 +14,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import krow.guis.GUIHelper;
 import kröw.core.Kröw;
+import kröw.gui.Application;
 import kröw.gui.WindowManager;
-import kröw.gui.WindowManager.App;
 
-public class Settings extends App {
+public class Settings extends Application {
 
 	public class Setting {
 		private String text;

@@ -24,18 +24,18 @@ import krow.guis.GUIHelper;
 import krow.guis.GUIHelper.MenuOption;
 import krow.guis.math_app.TabGroup;
 import kröw.core.Kröw;
-import kröw.gui.WindowManager.App;
+import kröw.gui.Application;
 import kröw.math.lexer.EquationParser;
 import zeale.guis.math_app.controllers.StatisticsController.Mode;
 
-public class Calculator extends App {
+public class Calculator extends Application {
 
 	private static enum PropertyKeys {
 		DISCRETE_TAB;
 	}
 
 	/**
-	 * This text controls what is inside this {@link App}'s {@link #calcIO} field.
+	 * This text controls what is inside this {@link Application}'s {@link #calcIO} field.
 	 */
 	private static String cachedText;
 	private static boolean parsingDebugEnabled = false;

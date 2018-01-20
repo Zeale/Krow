@@ -9,9 +9,9 @@ import javafx.scene.input.ScrollEvent.VerticalTextScrollUnits;
 import javafx.scene.layout.Pane;
 import krow.scene.HorizontalScrollBox;
 import kröw.core.Kröw;
-import kröw.gui.WindowManager.App;
+import kröw.gui.Application;
 
-public abstract class ScrollMenu extends App {
+public abstract class ScrollMenu extends Application {
 
 	@FXML
 	protected Pane pane;

@@ -12,9 +12,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import kröw.core.Kröw;
-import kröw.gui.WindowManager.App;
+import kröw.gui.Application;
 
-public abstract class TextPanel extends App {
+public abstract class TextPanel extends Application {
 
 	private enum DataKeys {
 		FONT, COLOR

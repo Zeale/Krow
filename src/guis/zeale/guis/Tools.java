@@ -41,11 +41,11 @@ import javafx.scene.text.FontWeight;
 import krow.guis.GUIHelper;
 import krow.guis.PopupHelper;
 import kröw.core.Kröw;
+import kröw.gui.Application;
 import kröw.gui.WindowManager;
-import kröw.gui.WindowManager.App;
 import sun.awt.shell.ShellFolder;
 
-public class Tools extends App {
+public class Tools extends Application {
 
 	public static class CommandTool extends LaunchableTool {
 		private final String command;

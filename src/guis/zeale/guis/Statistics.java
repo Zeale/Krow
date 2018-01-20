@@ -36,10 +36,9 @@ import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.callables.ParameterizedTask;
 import kröw.core.Kröw;
-import kröw.gui.WindowManager;
-import kröw.gui.WindowManager.App;
+import kröw.gui.Application;
 
-public class Statistics extends WindowManager.App {
+public class Statistics extends Application {
 
 	public static class AutoUpdatingStatistic extends Statistic {
 		private static Thread globalUpdater = new Thread(new Runnable() {
@@ -446,7 +445,7 @@ public class Statistics extends WindowManager.App {
 	}
 
 	@Override
-	public boolean canSwitchPage(final Class<? extends App> newSceneClass) {
+	public boolean canSwitchPage(final Class<? extends Application> newSceneClass) {
 		return true;
 	}
 

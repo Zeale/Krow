@@ -20,11 +20,11 @@ import krow.guis.schedule_app.ScheduleEvent;
 import krow.guis.schedule_app.ScheduleRow;
 import krow.guis.schedule_app.SelectableCell;
 import kröw.core.Kröw;
+import kröw.gui.Application;
 import kröw.gui.WindowManager;
-import kröw.gui.WindowManager.App;
 import kröw.gui.WindowManager.NotSwitchableException;
 
-public class ScheduleApp extends App {
+public class ScheduleApp extends Application {
 	public static final File DATA_DIR = new File(Kröw.DATA_DIRECTORY, "Schedule");
 
 	private static final ObservableList<ScheduleEvent> events = FXCollections.observableArrayList();

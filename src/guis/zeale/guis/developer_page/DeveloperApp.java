@@ -18,13 +18,13 @@ import krow.guis.GUIHelper;
 import krow.scene.HorizontalMultiScrollBox;
 import krow.scene.HorizontalScrollBox;
 import kröw.core.Kröw;
+import kröw.gui.Application;
 import kröw.gui.WindowManager;
-import kröw.gui.WindowManager.App;
 import kröw.gui.WindowManager.NotSwitchableException;
 import zeale.guis.Home;
 import zeale.guis.schedule_app.ScheduleApp;
 
-public class DeveloperApp extends App {
+public class DeveloperApp extends Application {
 
 	private final static Image TESTING_ICON = new Image("krow/resources/Testing.png");
 

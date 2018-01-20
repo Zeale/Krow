@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,6 +45,9 @@ import kröw.core.managers.SystemProperties;
 import kröw.core.managers.SystemTrayManager;
 import kröw.gui.WindowManager;
 import sun.awt.shell.ShellFolder;
+import sun.instrument.InstrumentationImpl;
+import sun.misc.Unsafe;
+import sun.reflect.ReflectionFactory;
 import zeale.guis.Home;
 import zeale.guis.developer_page.ConsoleApp;
 
