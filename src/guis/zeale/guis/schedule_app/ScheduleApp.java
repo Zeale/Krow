@@ -21,7 +21,7 @@ import krow.guis.schedule_app.ScheduleRow;
 import krow.guis.schedule_app.SelectableCell;
 import kröw.core.Kröw;
 import kröw.gui.Application;
-import kröw.gui.WindowManager;
+import kröw.gui.ApplicationManager;
 import kröw.gui.exceptions.NotSwitchableException;
 
 public class ScheduleApp extends Application {
@@ -89,7 +89,7 @@ public class ScheduleApp extends Application {
 	@FXML
 	private void addEvent() {
 		try {
-			WindowManager.setScene(new NewEvent(this));
+			ApplicationManager.setScene(new NewEvent(this));
 		} catch (IOException | NotSwitchableException e) {
 			e.printStackTrace();
 		}

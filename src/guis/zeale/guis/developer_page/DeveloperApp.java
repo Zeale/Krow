@@ -19,7 +19,7 @@ import krow.scene.HorizontalMultiScrollBox;
 import krow.scene.HorizontalScrollBox;
 import kröw.core.Kröw;
 import kröw.gui.Application;
-import kröw.gui.WindowManager;
+import kröw.gui.ApplicationManager;
 import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.Home;
 import zeale.guis.schedule_app.ScheduleApp;
@@ -87,7 +87,7 @@ public class DeveloperApp extends Application {
 		final EventHandler<KeyEvent> keyHandler = event -> {
 			if (event.getCode() == KeyCode.D && event.isShiftDown() && event.isControlDown())
 				try {
-					WindowManager.setScene(Home.class);
+					ApplicationManager.setScene(Home.class);
 					event.consume();
 				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 					e.printStackTrace();
@@ -106,7 +106,7 @@ public class DeveloperApp extends Application {
 		final ImageView console = new ImageView("/krow/resources/graphics/developer-app/Console.png");
 		console.setOnMouseClicked(event -> {
 			try {
-				WindowManager.setScene(ConsoleApp.class);
+				ApplicationManager.setScene(ConsoleApp.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}
@@ -115,7 +115,7 @@ public class DeveloperApp extends Application {
 		final ImageView scheduler = new ImageView("/krow/resources/graphics/schedule-app/Schedule.png");
 		scheduler.setOnMouseClicked(event -> {
 			try {
-				WindowManager.setScene(ScheduleApp.class);
+				ApplicationManager.setScene(ScheduleApp.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}
@@ -125,7 +125,7 @@ public class DeveloperApp extends Application {
 		ImageView testing = new ImageView(TESTING_ICON);
 		testing.setOnMouseClicked(event -> {
 			try {
-				WindowManager.setScene(TestingApp.class);
+				ApplicationManager.setScene(TestingApp.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}

@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import kröw.core.Kröw;
-import kröw.gui.WindowManager;
+import kröw.gui.ApplicationManager;
 import zeale.guis.ChatRoom;
 import zeale.guis.Statistics;
 
@@ -245,14 +245,14 @@ public class ProgramSettings implements Serializable {
 		if (globalProgramBackground < 0)
 			globalProgramBackground = 0;
 		this.globalProgramBackground = globalProgramBackground;
-		WindowManager.getStage().getScene()
+		ApplicationManager.getStage().getScene()
 				.setFill(globalProgramBackground == 0 ? Kröw.SOLID_BACKGROUND
 						: globalProgramBackground == 1 ? Kröw.MODERATELY_TRANSPARENT_BACKGROUND
 								: Kröw.COMPLETELY_TRANSPARENT_BACKGROUND);
 		if (globalProgramBackground == 2)
-			WindowManager.getStage().setAlwaysOnTop(true);
+			ApplicationManager.getStage().setAlwaysOnTop(true);
 		else
-			WindowManager.getStage().setAlwaysOnTop(false);
+			ApplicationManager.getStage().setAlwaysOnTop(false);
 	}
 
 	/**

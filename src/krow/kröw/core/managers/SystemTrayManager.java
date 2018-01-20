@@ -17,7 +17,7 @@ import javafx.stage.WindowEvent;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.core.Kröw;
-import kröw.gui.WindowManager;
+import kröw.gui.ApplicationManager;
 
 public final class SystemTrayManager {
 
@@ -26,9 +26,9 @@ public final class SystemTrayManager {
 
 	private static ActionListener openOnActionListener = e -> Platform.runLater(() -> {
 
-		WindowManager.getStage().show();
-		WindowManager.getStage().setIconified(false);
-		WindowManager.getStage().toFront();
+		ApplicationManager.getStage().show();
+		ApplicationManager.getStage().setIconified(false);
+		ApplicationManager.getStage().toFront();
 
 	});
 
@@ -69,14 +69,14 @@ public final class SystemTrayManager {
 		if (isSystemTrayAvailable()) {
 
 			final Runnable show = () -> {
-				WindowManager.getStage().show();
-				WindowManager.getStage().setIconified(false);
-				WindowManager.getStage().toFront();
+				ApplicationManager.getStage().show();
+				ApplicationManager.getStage().setIconified(false);
+				ApplicationManager.getStage().toFront();
 			}, hideProgram = () -> {
-				WindowManager.getStage().hide();
+				ApplicationManager.getStage().hide();
 				if (!(isIconShowing() || showIcon())) {
-					WindowManager.getStage().show();
-					WindowManager.spawnLabelAtMousePos("Failed to show icon...", Color.FIREBRICK);
+					ApplicationManager.getStage().show();
+					ApplicationManager.spawnLabelAtMousePos("Failed to show icon...", Color.FIREBRICK);
 				}
 			};
 
@@ -91,15 +91,15 @@ public final class SystemTrayManager {
 			popup.add(exit);
 			popup.add(hide);
 			Platform.runLater(() -> {
-				final EventHandler<WindowEvent> previousHidingHandler = WindowManager.getStage().getOnHiding();
-				WindowManager.getStage().setOnHiding(event -> {
+				final EventHandler<WindowEvent> previousHidingHandler = ApplicationManager.getStage().getOnHiding();
+				ApplicationManager.getStage().setOnHiding(event -> {
 					if (previousHidingHandler != null)
 						previousHidingHandler.handle(event);
 					open.setLabel("Show");
 				});
 
-				final EventHandler<WindowEvent> previousShowingHandler = WindowManager.getStage().getOnShowing();
-				WindowManager.getStage().setOnShowing(event -> {
+				final EventHandler<WindowEvent> previousShowingHandler = ApplicationManager.getStage().getOnShowing();
+				ApplicationManager.getStage().setOnShowing(event -> {
 					if (previousShowingHandler != null)
 						previousShowingHandler.handle(event);
 					open.setLabel("Open");

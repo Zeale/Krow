@@ -43,7 +43,7 @@ import kröw.core.managers.ProgramSettings;
 import kröw.core.managers.SoundManager;
 import kröw.core.managers.SystemProperties;
 import kröw.core.managers.SystemTrayManager;
-import kröw.gui.WindowManager;
+import kröw.gui.ApplicationManager;
 import sun.awt.shell.ShellFolder;
 import sun.instrument.InstrumentationImpl;
 import sun.misc.Unsafe;
@@ -440,12 +440,12 @@ public final class Kröw extends Application {
 						}
 					m.invoke(invObj);
 				}
-		WindowManager.setStage_Impl(primaryStage, Home.class);
+		ApplicationManager.setStage_Impl(primaryStage, Home.class);
 
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.setTitle(Kröw.NAME);
 		primaryStage.getIcons().add(new Image(Kröw.IMAGE_KRÖW_LOCATION));
-		WindowManager.getStage().getScene()
+		ApplicationManager.getStage().getScene()
 				.setFill(programSettings.getGlobalProgramBackground() == 0 ? SOLID_BACKGROUND
 						: programSettings.getGlobalProgramBackground() == 1 ? MODERATELY_TRANSPARENT_BACKGROUND
 								: COMPLETELY_TRANSPARENT_BACKGROUND);

@@ -8,7 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import krow.guis.GUIHelper;
 import krow.pages.ScrollMenu;
-import kröw.gui.WindowManager;
+import kröw.gui.ApplicationManager;
 import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.math_app.controllers.Calculator;
 
@@ -48,7 +48,7 @@ public class MathApp extends ScrollMenu {
 				statistics = new ImageView("/krow/resources/Statistics.png");
 		calculator.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			try {
-				WindowManager.setScene(Calculator.class);
+				ApplicationManager.setScene(Calculator.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}

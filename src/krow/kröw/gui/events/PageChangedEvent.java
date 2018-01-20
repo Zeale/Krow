@@ -2,14 +2,14 @@ package kröw.gui.events;
 
 import kröw.events.Event;
 import kröw.gui.Application;
-import kröw.gui.WindowManager;
-import kröw.gui.WindowManager.Window;
+import kröw.gui.ApplicationManager;
+import kröw.gui.ApplicationManager.Frame;
 
 public class PageChangedEvent extends Event {
 
-	public final Window<? extends Application> oldWindow, newWindow;
+	public final Frame<? extends Application> oldWindow, newWindow;
 
-	public PageChangedEvent(final Window<? extends Application> currentPage, final Window<? extends Application> window) {
+	public PageChangedEvent(final Frame<? extends Application> currentPage, final Frame<? extends Application> window) {
 		oldWindow = currentPage;
 		newWindow = window;
 	}

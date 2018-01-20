@@ -15,7 +15,7 @@ import javafx.scene.layout.StackPane;
 import krow.guis.GUIHelper;
 import kröw.core.Kröw;
 import kröw.gui.Application;
-import kröw.gui.WindowManager;
+import kröw.gui.ApplicationManager;
 
 public class Settings extends Application {
 
@@ -370,12 +370,12 @@ public class Settings extends Application {
 
 	@Override
 	public void initialize() {
-		settingsLabel.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
-		optionBox.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
+		settingsLabel.setLayoutX(ApplicationManager.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
+		optionBox.setLayoutX(ApplicationManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
 
 		tabList.setPrefSize(Kröw.scaleWidth(313), Kröw.scaleHeight(1040));
 		optionBox.setPrefSize(Kröw.scaleHeight(810), Kröw.scaleWidth(850));
-		optionBox.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
+		optionBox.setLayoutX(ApplicationManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
 
 		tabList.setRoot(new TreeItem<>());
 		optionBox.setRoot(new TreeItem<>());

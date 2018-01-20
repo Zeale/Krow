@@ -12,7 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import krow.guis.PopupHelper;
 import krow.guis.PopupHelper.PopupWrapper;
-import kröw.gui.WindowManager;
+import kröw.gui.ApplicationManager;
 import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.schedule_app.NewEvent;
 import zeale.guis.schedule_app.ScheduleApp;
@@ -81,7 +81,7 @@ public class ScheduleRow extends TableRow<ScheduleEvent> {
 			if (event.getButton() == MouseButton.PRIMARY && !isEmpty()
 					&& !(event.getPickResult().getIntersectedNode() instanceof SelectableCell))
 				try {
-					WindowManager.setScene(new NewEvent(app, getItem()));
+					ApplicationManager.setScene(new NewEvent(app, getItem()));
 					event.consume();
 				} catch (IOException | NotSwitchableException e) {
 					e.printStackTrace();

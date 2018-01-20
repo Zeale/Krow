@@ -20,7 +20,7 @@ import krow.guis.math_app.TabGroup;
 import krow.guis.math_app.controllers.Distribution;
 import krow.guis.math_app.controllers.NumericalStatistic;
 import krow.guis.math_app.controllers.Statistic;
-import kröw.gui.WindowManager;
+import kröw.gui.ApplicationManager;
 
 public class StatisticsController {
 
@@ -217,7 +217,7 @@ public class StatisticsController {
 			mode.controller = this;
 			return mode.tabs = new TabGroup(loader.<TabPane>load().getTabs());
 		} catch (final IOException e) {
-			WindowManager.spawnLabelAtMousePos("An error has occurred.", Color.FIREBRICK);
+			ApplicationManager.spawnLabelAtMousePos("An error has occurred.", Color.FIREBRICK);
 			e.printStackTrace();
 			mode.controller = null;
 			return null;

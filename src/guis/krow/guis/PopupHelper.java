@@ -28,7 +28,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Popup;
 import javafx.util.Duration;
 import kröw.core.Kröw;
-import kröw.gui.WindowManager;
+import kröw.gui.ApplicationManager;
 
 public final class PopupHelper {
 
@@ -48,7 +48,7 @@ public final class PopupHelper {
 	private static ArrayList<Popup> popups = new ArrayList<>();
 
 	static {
-		WindowManager.addOnPageChangeRequested(event -> hideAllShowingRegisteredPopups());
+		ApplicationManager.addOnPageChangeRequested(event -> hideAllShowingRegisteredPopups());
 	}
 
 	private static final Color BASIC_POPUP_DEFAULT_BORDER_COLOR = new Color(0, 0, 0, 0.5);

@@ -15,7 +15,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import krow.guis.schedule_app.ScheduleEvent;
 import kröw.gui.Application;
-import kröw.gui.WindowManager;
+import kröw.gui.ApplicationManager;
 import kröw.gui.exceptions.NotSwitchableException;
 
 public class NewEvent extends Application {
@@ -72,7 +72,7 @@ public class NewEvent extends Application {
 	private void save() {
 
 		try {
-			WindowManager.setScene(new ScheduleApp());
+			ApplicationManager.setScene(new ScheduleApp());
 		} catch (IOException | NotSwitchableException e) {
 			e.printStackTrace();
 		}

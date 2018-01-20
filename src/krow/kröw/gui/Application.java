@@ -131,7 +131,7 @@ public abstract class Application {
 	 * <p>
 	 * Specifically, this method is called after a {@link Application} has had its
 	 * <code>@FXML</code> fields set. This method is the optimal place for
-	 * subclasses to use the {@link WindowManager#setPaneDraggableByNode(Node)}
+	 * subclasses to use the {@link ApplicationManager#setPaneDraggableByNode(Node)}
 	 * method.
 	 * <p>
 	 * This would have been reduced to <code>protected</code> visibility, however
@@ -144,9 +144,9 @@ public abstract class Application {
 
 	/**
 	 * <p>
-	 * This method is called when {@link WindowManager#goBack()} is called and this
+	 * This method is called when {@link ApplicationManager#goBack()} is called and this
 	 * {@link Application} is shown. It's is like an extra initialize method which is called
-	 * only when the {@link WindowManager#goBack()} method shows this {@link Application}.
+	 * only when the {@link ApplicationManager#goBack()} method shows this {@link Application}.
 	 */
 	public void onBack() {
 

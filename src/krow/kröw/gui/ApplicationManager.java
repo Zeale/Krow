@@ -24,15 +24,15 @@ import kröw.gui.events.PageChangeRequestedEvent;
 import kröw.gui.events.PageChangedEvent;
 import kröw.gui.exceptions.NotSwitchableException;
 
-public final class WindowManager {
+public final class ApplicationManager {
 
-	public static final class Window<T extends Application> {
+	public static final class Frame<T extends Application> {
 		private final T controller;
 		private final Parent root;
 		private final Stage stageUsed;
 		private final Scene sceneUsed;
 
-		public Window(final T controller, final Parent root, final Stage stageUsed, final Scene sceneUsed) {
+		public Frame(final T controller, final Parent root, final Stage stageUsed, final Scene sceneUsed) {
 			this.controller = controller;
 			this.root = root;
 			this.stageUsed = stageUsed;
@@ -69,9 +69,9 @@ public final class WindowManager {
 
 	}
 
-	private static final Stack<Window<? extends Application>> history = new Stack<>();
+	private static final Stack<Frame<? extends Application>> history = new Stack<>();
 
-	private static Window<? extends Application> currentPage;
+	private static Frame<? extends Application> currentPage;
 
 	/**
 	 * The current {@link Stage}. This is set when the program starts.
@@ -96,7 +96,7 @@ public final class WindowManager {
 	 * @return The application's current {@link Application#stage}.
 	 */
 	public static Stage getStage() {
-		return WindowManager.stage;
+		return ApplicationManager.stage;
 	}
 
 	/**
@@ -118,13 +118,13 @@ public final class WindowManager {
 	public static void goBack() throws NotSwitchableException {
 
 		try {
-			setScene(WindowManager.history.pop().controller.getClass());
+			setScene(ApplicationManager.history.pop().controller.getClass());
 		} catch (InstantiationException | IllegalAccessException | IOException e) {
 			e.printStackTrace();
 		}
 
 		// Call this method.
-		WindowManager.currentPage.controller.onBack();
+		ApplicationManager.currentPage.controller.onBack();
 
 	}
 
@@ -186,13 +186,13 @@ public final class WindowManager {
 
 			{
 				node.setOnMousePressed(event -> {
-					xOffset = WindowManager.stage.getX() - event.getScreenX();
-					yOffset = WindowManager.stage.getY() - event.getScreenY();
+					xOffset = ApplicationManager.stage.getX() - event.getScreenX();
+					yOffset = ApplicationManager.stage.getY() - event.getScreenY();
 				});
 
 				node.setOnMouseDragged(event -> {
-					WindowManager.stage.setX(event.getScreenX() + xOffset);
-					WindowManager.stage.setY(event.getScreenY() + yOffset);
+					ApplicationManager.stage.setX(event.getScreenX() + xOffset);
+					ApplicationManager.stage.setY(event.getScreenY() + yOffset);
 				});
 			}
 
@@ -224,7 +224,7 @@ public final class WindowManager {
 	 * @throws NotSwitchableException
 	 *             If the current {@link Scene} can't be switched.
 	 */
-	public static <W extends Application> Window<W> setScene(final Class<W> cls)
+	public static <W extends Application> Frame<W> setScene(final Class<W> cls)
 			throws InstantiationException, IllegalAccessException, IOException, NotSwitchableException {
 
 		for (final EventHandler<? super PageChangeRequestedEvent> handler : pageChangeRequestedHandlers)
@@ -239,24 +239,24 @@ public final class WindowManager {
 			if (!currentPage.getController().canSwitchPage(cls))
 				throw new NotSwitchableException(currentPage, controller, cls);
 			else {
-				WindowManager.history.push(currentPage);
+				ApplicationManager.history.push(currentPage);
 				currentPage.getController().onPageSwitched();
 			}
 
 		final Parent root = loader.load();
-		final Window<W> window = new Window<>(controller, root, stage, stage.getScene());
+		final Frame<W> window = new Frame<>(controller, root, stage, stage.getScene());
 
 		for (final EventHandler<? super PageChangedEvent> handler : pageChangeHandlers)
 			handler.handle(new PageChangedEvent(currentPage, window));
-		WindowManager.currentPage = window;
+		ApplicationManager.currentPage = window;
 		// Set the new root.
-		WindowManager.stage.getScene().setRoot(root);
+		ApplicationManager.stage.getScene().setRoot(root);
 
 		return window;
 
 	}
 
-	public static <W extends Application> Window<W> setScene(final W controller) throws IOException, NotSwitchableException {
+	public static <W extends Application> Frame<W> setScene(final W controller) throws IOException, NotSwitchableException {
 
 		for (final EventHandler<? super PageChangeRequestedEvent> handler : pageChangeRequestedHandlers)
 			handler.handle(new PageChangeRequestedEvent(currentPage, controller.getClass()));
@@ -268,18 +268,18 @@ public final class WindowManager {
 			if (!currentPage.getController().canSwitchPage(controller.getClass()))
 				throw new NotSwitchableException(currentPage, controller, controller.getClass());
 			else {
-				WindowManager.history.push(currentPage);
+				ApplicationManager.history.push(currentPage);
 				currentPage.getController().onPageSwitched();
 			}
 
 		final Parent root = loader.load();
-		final Window<W> window = new Window<>(controller, root, stage, stage.getScene());
+		final Frame<W> window = new Frame<>(controller, root, stage, stage.getScene());
 
 		for (final EventHandler<? super PageChangedEvent> handler : pageChangeHandlers)
 			handler.handle(new PageChangedEvent(currentPage, window));
-		WindowManager.currentPage = window;
+		ApplicationManager.currentPage = window;
 		// Set the new root.
-		WindowManager.stage.getScene().setRoot(root);
+		ApplicationManager.stage.getScene().setRoot(root);
 
 		return window;
 
@@ -290,27 +290,27 @@ public final class WindowManager {
 	 *
 	 * @param stage
 	 *            The new {@link Stage}.
-	 * @return the built {@link Window} object.
+	 * @return the built {@link Frame} object.
 	 * @throws IOException
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 * @Internal This method is meant for internal use only.
 	 *
 	 */
-	public static Window<? extends Application> setStage_Impl(final Stage stage, final Class<? extends Application> cls)
+	public static Frame<? extends Application> setStage_Impl(final Stage stage, final Class<? extends Application> cls)
 			throws IOException, InstantiationException, IllegalAccessException {
 
-		WindowManager.stage = stage;
+		ApplicationManager.stage = stage;
 		final Application controller = cls.newInstance();
 		final FXMLLoader loader = new FXMLLoader(cls.getResource(controller.getWindowFile()));
 		loader.setController(controller);
 		final Parent root = loader.load();
 
-		final Window<? extends Application> window = new Window<>(controller, root, stage, stage.getScene());
+		final Frame<? extends Application> window = new Frame<>(controller, root, stage, stage.getScene());
 
-		WindowManager.currentPage = window;
+		ApplicationManager.currentPage = window;
 		// Set the new root.
-		WindowManager.stage.setScene(new Scene(root));
+		ApplicationManager.stage.setScene(new Scene(root));
 
 		return window;
 	}
@@ -357,7 +357,7 @@ public final class WindowManager {
 		opacityTransition.setToValue(0.0);
 		opacityTransition.setOnFinished(e -> pc.hide());
 		/* Show the Popup */
-		pc.show(WindowManager.stage);
+		pc.show(ApplicationManager.stage);
 		pc.setHeight(50);
 		/* Play the transitions */
 		translateTransition.play();

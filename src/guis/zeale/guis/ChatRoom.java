@@ -35,7 +35,7 @@ import kröw.connections.Server;
 import kröw.connections.messages.Message;
 import kröw.core.Kröw;
 import kröw.gui.Application;
-import kröw.gui.WindowManager;
+import kröw.gui.ApplicationManager;
 
 public class ChatRoom extends Application {
 
@@ -175,7 +175,7 @@ public class ChatRoom extends Application {
 	}
 
 	private void emptyMessageWarning() {
-		WindowManager.spawnLabelAtMousePos("Empty message...", ERROR_COLOR);
+		ApplicationManager.spawnLabelAtMousePos("Empty message...", ERROR_COLOR);
 	}
 
 	@Override
@@ -540,7 +540,7 @@ public class ChatRoom extends Application {
 		} else if (cmd.equalsIgnoreCase("cls") || cmd.equalsIgnoreCase("clear-screen")) {
 			chatPane.getChildren().clear();
 		} else
-			WindowManager.spawnLabelAtMousePos("Unknown Command", ERROR_COLOR);
+			ApplicationManager.spawnLabelAtMousePos("Unknown Command", ERROR_COLOR);
 
 	}
 
@@ -641,7 +641,7 @@ public class ChatRoom extends Application {
 	}
 
 	private void sendingMessageNotification() {
-		WindowManager.spawnLabelAtMousePos("Sending...", SUCCESS_COLOR);
+		ApplicationManager.spawnLabelAtMousePos("Sending...", SUCCESS_COLOR);
 	}
 
 	private void sendMessage(final String message) {

@@ -20,7 +20,7 @@ import krow.guis.ShapeFactory;
 import krow.pages.ScrollMenu;
 import kröw.core.Kröw;
 import kröw.gui.Application;
-import kröw.gui.WindowManager;
+import kröw.gui.ApplicationManager;
 import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.developer_page.DeveloperApp;
 import zeale.guis.math_app.MathApp;
@@ -55,7 +55,7 @@ public class Home extends ScrollMenu {
 		final EventHandler<KeyEvent> keyHandler = event -> {
 			if (event.getCode() == KeyCode.D && event.isShiftDown() && event.isControlDown())
 				try {
-					WindowManager.setScene(DeveloperApp.class);
+					ApplicationManager.setScene(DeveloperApp.class);
 					event.consume();
 				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 					e.printStackTrace();
@@ -76,7 +76,7 @@ public class Home extends ScrollMenu {
 		final ImageView chatRoom = new ImageView(CHAT_ROOM_MENU_ICON);
 		chatRoom.setOnMouseClicked(event -> {
 			try {
-				WindowManager.setScene(ChatRoom.class);
+				ApplicationManager.setScene(ChatRoom.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e1) {
 				e1.printStackTrace();
 			}
@@ -89,7 +89,7 @@ public class Home extends ScrollMenu {
 		// Event handler
 		krow.setOnMouseClicked(event -> {
 			try {
-				WindowManager.setScene(Tools.class);
+				ApplicationManager.setScene(Tools.class);
 			} catch (InstantiationException | IllegalAccessException | IOException
 					| NotSwitchableException e) {
 				e.printStackTrace();
@@ -99,7 +99,7 @@ public class Home extends ScrollMenu {
 		final ImageView settings = new ImageView("krow/resources/Settings.png");
 		settings.setOnMouseClicked(event -> {
 			try {
-				WindowManager.setScene(Settings.class);
+				ApplicationManager.setScene(Settings.class);
 			} catch (InstantiationException | IllegalAccessException | IOException e) {
 				e.printStackTrace();
 			} catch (final NotSwitchableException e) {
@@ -110,7 +110,7 @@ public class Home extends ScrollMenu {
 		final ImageView statistics = new ImageView("krow/resources/Statistics.png");
 		statistics.setOnMouseClicked(event -> {
 			try {
-				WindowManager.setScene(Statistics.class);
+				ApplicationManager.setScene(Statistics.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}
@@ -120,7 +120,7 @@ public class Home extends ScrollMenu {
 		final ImageView mathApp = new ImageView(MathApp.CALCULATOR_ICON);
 		mathApp.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			try {
-				WindowManager.setScene(Calculator.class);
+				ApplicationManager.setScene(Calculator.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}
@@ -129,7 +129,7 @@ public class Home extends ScrollMenu {
 
 		final Shape backgroundShape = ShapeFactory.buildRegularShape(Kröw.scaleHeight(100),
 				(int) (Math.random() * 5 + 3));
-		backgroundShape.setOnMouseClicked(event -> WindowManager.spawnLabelAtMousePos("WIP", Color.FIREBRICK));
+		backgroundShape.setOnMouseClicked(event -> ApplicationManager.spawnLabelAtMousePos("WIP", Color.FIREBRICK));
 		backgroundShape.setPickOnBounds(true);
 		backgroundShape.setFill(Color.TRANSPARENT);
 		backgroundShape.setStroke(Color.WHITE);
@@ -138,7 +138,7 @@ public class Home extends ScrollMenu {
 		backgroundShape.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if (event.getButton() == MouseButton.PRIMARY)
 				try {
-					WindowManager.setScene(BackgroundApp.class);
+					ApplicationManager.setScene(BackgroundApp.class);
 				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 					e.printStackTrace();
 				}
@@ -159,7 +159,7 @@ public class Home extends ScrollMenu {
 		mathAppStatisticsLbl.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if (event.getButton().equals(MouseButton.PRIMARY))
 				try {
-					WindowManager.setScene(Calculator.class).getController().enableStatsMode();
+					ApplicationManager.setScene(Calculator.class).getController().enableStatsMode();
 				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 					e.printStackTrace();
 				}
@@ -168,7 +168,7 @@ public class Home extends ScrollMenu {
 		mathAppCalculatorLbl.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if (event.getButton().equals(MouseButton.PRIMARY))
 				try {
-					WindowManager.setScene(Calculator.class);
+					ApplicationManager.setScene(Calculator.class);
 				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 					e.printStackTrace();
 				}
