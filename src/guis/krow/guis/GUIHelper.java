@@ -163,6 +163,7 @@ public final class GUIHelper {
 		close.setOnMouseClicked(Kröw.CLOSE_PROGRAM_EVENT_HANDLER);
 
 		goHome.setOnMouseClicked(event -> ApplicationManager.setScene(Home.class.getResource("Home.fxml")));
+		goBack.setStyle("-fx-strikethrough: true;");
 
 		systemTray.setOnMouseClicked(event -> {
 			if (Kröw.getSystemTrayManager().isIconShowing())
