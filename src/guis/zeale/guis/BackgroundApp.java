@@ -55,11 +55,6 @@ public class BackgroundApp extends Application {
 		}
 	}
 
-	@Override
-	public String getWindowFile() {
-		return "BackgroundApp.fxml";
-	}
-
 	@FXML
 	private void rainbowPreset() {
 		getDefaultBackground().dispose();

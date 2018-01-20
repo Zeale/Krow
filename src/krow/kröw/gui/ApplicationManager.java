@@ -2,6 +2,7 @@ package kröw.gui;
 
 import java.awt.MouseInfo;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -17,14 +18,29 @@ import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.Duration;
 import kröw.core.Kröw;
 import kröw.events.EventHandler;
 import kröw.gui.events.PageChangeRequestedEvent;
 import kröw.gui.events.PageChangedEvent;
-import kröw.gui.exceptions.NotSwitchableException;
+import zeale.guis.Home;
 
 public final class ApplicationManager {
+
+	private static final Callback<Class<?>, Object> CONTROLLER_FACTORY = new Callback<Class<?>, Object>() {
+
+		@Override
+		public Object call(Class<?> param) {
+			try {
+				return param.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+				throw new RuntimeException(
+						"Ur constructor is retarded. (Kröw couldn't call an Application class's constructor. :(   )");
+			}
+		}
+	};
 
 	public static final class Frame<T extends Application> {
 		private final T controller;
@@ -100,35 +116,6 @@ public final class ApplicationManager {
 	}
 
 	/**
-	 * <p>
-	 * Reverts the current {@link Scene} to the previous {@link Scene}.
-	 * <p>
-	 * If the user switches from the home {@link Application} to another {@link Application} and
-	 * then this method is called, the program will switch back to the home
-	 * {@link Application}.
-	 * <p>
-	 * <i>NOTE that this only works when switching prior to this method's call is
-	 * done via any of the <code>setScene(...)</code> methods.</i> Using these
-	 * methods rather than switching the {@link Application} manually is almost necessary
-	 * for full functionality.
-	 *
-	 * @throws NotSwitchableException
-	 *             If the current {@link Scene} can't be switched.
-	 */
-	public static void goBack() throws NotSwitchableException {
-
-		try {
-			setScene(ApplicationManager.history.pop().controller.getClass());
-		} catch (InstantiationException | IllegalAccessException | IOException e) {
-			e.printStackTrace();
-		}
-
-		// Call this method.
-		ApplicationManager.currentPage.controller.onBack();
-
-	}
-
-	/**
 	 * Allows the user to drag the given {@link Node} to move the given
 	 * {@link javafx.stage.Window}.
 	 *
@@ -161,13 +148,13 @@ public final class ApplicationManager {
 
 	/**
 	 * <p>
-	 * Sets this application's {@link Application#stage} as draggable by the specified
-	 * {@link Node}.
+	 * Sets this application's {@link Application#stage} as draggable by the
+	 * specified {@link Node}.
 	 * <p>
 	 * The {@link Node#setOnMousePressed(javafx.event.EventHandler)} and
 	 * {@link Node#setOnMouseDragged(javafx.event.EventHandler)} methods are called
-	 * on the given {@link Node} to allow the current {@link Application#stage} object to
-	 * be moved via the user dragging the given {@link Node}.
+	 * on the given {@link Node} to allow the current {@link Application#stage}
+	 * object to be moved via the user dragging the given {@link Node}.
 	 *
 	 * @param node
 	 *            The {@link Node} that will be used to move the WindowManager.
@@ -199,120 +186,51 @@ public final class ApplicationManager {
 		};
 	}
 
-	/**
-	 * <p>
-	 * Loads a {@link Scene} object given a subclass of {@link Application}.
-	 * <p>
-	 * Subclasses of the {@link Application} object are required to define the
-	 * {@link #getWindowFile()} method. (This may change soon). We already have the
-	 * {@link Class} object required to call the method
-	 * {@link #setScene(Class, String)}, so when we instantiate this {@link Class},
-	 * we can get the {@link String} object as well.
-	 *
-	 * @param cls
-	 *            The {@link Application} {@link Class} to get the new {@link Scene} from.
-	 * @throws InstantiationException
-	 *             if the given {@link Class} represents an abstract class, an
-	 *             interface, an array class, a primitive type, or void, if the
-	 *             class has no nullary constructor, or if the instantiation fails
-	 *             for some other reason.
-	 * @throws IllegalAccessException
-	 *             if the given {@link Class} or its nullary constructor is not
-	 *             visible.
-	 * @throws IOException
-	 *             in case this method fails to load the FXML file.
-	 * @throws NotSwitchableException
-	 *             If the current {@link Scene} can't be switched.
-	 */
-	public static <W extends Application> Frame<W> setScene(final Class<W> cls)
-			throws InstantiationException, IllegalAccessException, IOException, NotSwitchableException {
-
-		for (final EventHandler<? super PageChangeRequestedEvent> handler : pageChangeRequestedHandlers)
-			handler.handle(new PageChangeRequestedEvent(currentPage, cls));
-
-		final W controller = cls.newInstance();
-
-		// Instantiate the loader
-		final FXMLLoader loader = new FXMLLoader(cls.getResource(controller.getWindowFile()));
-		loader.setController(controller);
-		if (currentPage != null)
-			if (!currentPage.getController().canSwitchPage(cls))
-				throw new NotSwitchableException(currentPage, controller, cls);
-			else {
-				ApplicationManager.history.push(currentPage);
-				currentPage.getController().onPageSwitched();
-			}
-
-		final Parent root = loader.load();
-		final Frame<W> window = new Frame<>(controller, root, stage, stage.getScene());
-
-		for (final EventHandler<? super PageChangedEvent> handler : pageChangeHandlers)
-			handler.handle(new PageChangedEvent(currentPage, window));
-		ApplicationManager.currentPage = window;
-		// Set the new root.
-		ApplicationManager.stage.getScene().setRoot(root);
-
-		return window;
-
+	// NOTE: InputStream prevent JavaFX from resolving locations of CSS files
+	// that are specified in an FXML document when the document is loaded from an
+	// InputStream, rather than a URL. This is because an InputStream gives a stream
+	// of data that can be read by JavaFX, but does not give a location of the file
+	// it's streaming data from, like a URL would.
+	//
+	// Testing loading with InputStreams seemed to follow this theory, and the name
+	// kinda implies it...
+	public static <W> W setScene(URL fxmlFile) {
+		try {
+			FXMLLoader loader = getNewLoader(fxmlFile);
+			stage.getScene().setRoot(loader.load());
+			return loader.getController();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException("IOException while opening a URL.");
+		}
 	}
 
-	public static <W extends Application> Frame<W> setScene(final W controller) throws IOException, NotSwitchableException {
-
-		for (final EventHandler<? super PageChangeRequestedEvent> handler : pageChangeRequestedHandlers)
-			handler.handle(new PageChangeRequestedEvent(currentPage, controller.getClass()));
-
-		// Instantiate the loader
-		final FXMLLoader loader = new FXMLLoader(controller.getClass().getResource(controller.getWindowFile()));
+	public static <W> W setScene(URL fxmlFile, W controller) {
+		FXMLLoader loader = getNewLoader(fxmlFile);
 		loader.setController(controller);
-		if (currentPage != null)
-			if (!currentPage.getController().canSwitchPage(controller.getClass()))
-				throw new NotSwitchableException(currentPage, controller, controller.getClass());
-			else {
-				ApplicationManager.history.push(currentPage);
-				currentPage.getController().onPageSwitched();
-			}
-
-		final Parent root = loader.load();
-		final Frame<W> window = new Frame<>(controller, root, stage, stage.getScene());
-
-		for (final EventHandler<? super PageChangedEvent> handler : pageChangeHandlers)
-			handler.handle(new PageChangedEvent(currentPage, window));
-		ApplicationManager.currentPage = window;
-		// Set the new root.
-		ApplicationManager.stage.getScene().setRoot(root);
-
-		return window;
-
+		try {
+			stage.getScene().setRoot(loader.load());
+			return loader.getController();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException("IOException while opening a URL.");
+		}
 	}
 
-	/**
-	 * Used to set the {@link Stage} contained in this class.
-	 *
-	 * @param stage
-	 *            The new {@link Stage}.
-	 * @return the built {@link Frame} object.
-	 * @throws IOException
-	 * @throws IllegalAccessException
-	 * @throws InstantiationException
-	 * @Internal This method is meant for internal use only.
-	 *
-	 */
-	public static Frame<? extends Application> setStage_Impl(final Stage stage, final Class<? extends Application> cls)
-			throws IOException, InstantiationException, IllegalAccessException {
+	private static FXMLLoader getNewLoader(URL location) {
+		FXMLLoader loader = new FXMLLoader(location);
+		loader.setControllerFactory(CONTROLLER_FACTORY);
+		return loader;
+	}
 
-		ApplicationManager.stage = stage;
-		final Application controller = cls.newInstance();
-		final FXMLLoader loader = new FXMLLoader(cls.getResource(controller.getWindowFile()));
-		loader.setController(controller);
-		final Parent root = loader.load();
-
-		final Frame<? extends Application> window = new Frame<>(controller, root, stage, stage.getScene());
-
-		ApplicationManager.currentPage = window;
-		// Set the new root.
-		ApplicationManager.stage.setScene(new Scene(root));
-
-		return window;
+	public static void initialize(Kröw.InitData data) {
+		stage = data.stage;
+		try {
+			stage.setScene(new Scene(getNewLoader(Home.class.getResource("Home.fxml")).load()));
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error initializing.");
+		}
 	}
 
 	/**

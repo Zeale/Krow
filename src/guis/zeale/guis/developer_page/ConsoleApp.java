@@ -137,10 +137,6 @@ public class ConsoleApp extends TextPanel {
 	protected void formatText(final Text text) {
 	}
 
-	@Override
-	public String getWindowFile() {
-		return "ConsoleApp.fxml";
-	}
 
 	@Override
 	public void initialize() {

@@ -600,10 +600,6 @@ public class Tools extends Application {
 		return button;
 	}
 
-	@Override
-	public String getWindowFile() {
-		return "Tools.fxml";
-	}
 
 	@Override
 	public void initialize() {

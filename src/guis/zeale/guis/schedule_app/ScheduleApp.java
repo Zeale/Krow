@@ -88,11 +88,7 @@ public class ScheduleApp extends Application {
 
 	@FXML
 	private void addEvent() {
-		try {
-			ApplicationManager.setScene(new NewEvent(this));
-		} catch (IOException | NotSwitchableException e) {
-			e.printStackTrace();
-		}
+		ApplicationManager.setScene(NewEvent.class.getResource("NewEvent.fxml"), new NewEvent(this));
 	}
 
 	public void addEvent(final ScheduleEvent event) {
@@ -106,11 +102,6 @@ public class ScheduleApp extends Application {
 
 	public ObservableList<ScheduleEvent> getEventList() {
 		return events;
-	}
-
-	@Override
-	public String getWindowFile() {
-		return "ScheduleApp.fxml";
 	}
 
 	@Override

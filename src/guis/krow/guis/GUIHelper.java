@@ -162,29 +162,7 @@ public final class GUIHelper {
 				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
 		close.setOnMouseClicked(Kröw.CLOSE_PROGRAM_EVENT_HANDLER);
 
-		goHome.setOnMouseClicked(event -> {
-			try {
-				ApplicationManager.setScene(Home.class);
-			} catch (InstantiationException | IllegalAccessException | IOException e1) {
-				e1.printStackTrace();
-			} catch (final NotSwitchableException e2) {
-				if (e2.getCurrentWindow().getController().getClass() == e2.getControllerClass())
-					ApplicationManager.spawnLabelAtMousePos("You're already here.", Color.FIREBRICK);
-				else
-					ApplicationManager.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
-			}
-		});
-
-		goBack.setOnMouseClicked(event -> {
-
-			try {
-				ApplicationManager.goBack();
-			} catch (final NotSwitchableException e1) {
-				ApplicationManager.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
-			} catch (final EmptyStackException e2) {
-				ApplicationManager.spawnLabelAtMousePos("Back to where???...", Color.FIREBRICK);
-			}
-		});
+		goHome.setOnMouseClicked(event -> ApplicationManager.setScene(Home.class.getResource("Home.fxml")));
 
 		systemTray.setOnMouseClicked(event -> {
 			if (Kröw.getSystemTrayManager().isIconShowing())

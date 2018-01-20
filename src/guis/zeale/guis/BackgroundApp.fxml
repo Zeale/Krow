@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="root" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="root" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="zeale.guis.BackgroundApp">
    <children>
       <AnchorPane fx:id="visualizerPane" layoutX="109.0" layoutY="95.0" minWidth="500.0" prefHeight="873.0" prefWidth="867.0" style="-fx-border-color: red; -fx-border-width: 5px; -fx-background-color: transparent;" AnchorPane.leftAnchor="109.0" AnchorPane.rightAnchor="944.0" AnchorPane.topAnchor="95.0" />
       <Accordion fx:id="backgroundMenu" layoutX="1718.0" styleClass="background" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

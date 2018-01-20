@@ -79,13 +79,11 @@ public class ScheduleRow extends TableRow<ScheduleEvent> {
 
 		setOnMouseClicked(event -> {
 			if (event.getButton() == MouseButton.PRIMARY && !isEmpty()
-					&& !(event.getPickResult().getIntersectedNode() instanceof SelectableCell))
-				try {
-					ApplicationManager.setScene(new NewEvent(app, getItem()));
-					event.consume();
-				} catch (IOException | NotSwitchableException e) {
-					e.printStackTrace();
-				}
+					&& !(event.getPickResult().getIntersectedNode() instanceof SelectableCell)) {
+				ApplicationManager.setScene(NewEvent.class.getResource("NewEvent.fxml"),
+						new NewEvent(app, getItem()));
+				event.consume();
+			}
 		});
 
 		setOnMouseEntered(event -> {
@@ -114,11 +112,11 @@ public class ScheduleRow extends TableRow<ScheduleEvent> {
 			return;
 		}
 
-		setBackground(
-				buildBackground(getItem().complete.get() ? COMPLETE_COLOR
-						: getItem().urgent.get() ? getColorFromDueDate(getItem().dueDate.get(), DEFAULT_START_COLOR,
-								URGENT_END_COLOR, URGENT_PAST_DUE_COLOR)
-								: getColorFromDueDate(getItem().dueDate.get())));
+		setBackground(buildBackground(getItem().complete.get() ? COMPLETE_COLOR
+				: getItem().urgent.get()
+						? getColorFromDueDate(getItem().dueDate.get(), DEFAULT_START_COLOR, URGENT_END_COLOR,
+								URGENT_PAST_DUE_COLOR)
+						: getColorFromDueDate(getItem().dueDate.get())));
 		setTextFill(Color.WHITE);
 	}
 

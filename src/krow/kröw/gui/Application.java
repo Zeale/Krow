@@ -1,19 +1,16 @@
 package kröw.gui;
 
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import krow.backgrounds.Background;
 import krow.backgrounds.ShapeBackground;
 import kröw.data.common.kvp.KVPDataObject;
 import kröw.data.common.kvp.KeyValuePairData;
-import kröw.data.in.KVPDataReader;
-import kröw.data.out.KVPDataWriter;
 
 public abstract class Application {
 
 	private KeyValuePairData data = new KeyValuePairData();
-	private KVPDataReader reader;// = get reader for this page somehow.
-	private KVPDataWriter writer;// This stuff will be replaced with the Protection API stuff. :)
 	private static Background defaultBackground = null;
 
 	protected final KVPDataObject storeData(String key, KVPDataObject data) {
@@ -82,8 +79,8 @@ public abstract class Application {
 	 * <p>
 	 * The default {@link Background} should only be retrieved for
 	 * <b><i>showing</i></b> the user's chosen background settings, unless the
-	 * {@link Application} that makes use of this method allows the user to modify the
-	 * default background.
+	 * {@link Application} that makes use of this method allows the user to modify
+	 * the default background.
 	 * <p>
 	 * If a page edited the default {@link Background}, (rather than using its own
 	 * to show a background), every time it was initialized, then any settings that
@@ -104,9 +101,10 @@ public abstract class Application {
 
 	/**
 	 * <p>
-	 * Checked when switching {@link Application}s to verify that the current page permits
-	 * the user to go to a different page. This should be overridden to return false
-	 * when a window reaches a scenario in which it does not want its user to leave.
+	 * Checked when switching {@link Application}s to verify that the current page
+	 * permits the user to go to a different page. This should be overridden to
+	 * return false when a window reaches a scenario in which it does not want its
+	 * user to leave.
 	 * <p>
 	 * Basically, return false when {@link Application}s shouldn't be switched.
 	 *
@@ -115,15 +113,6 @@ public abstract class Application {
 	public boolean canSwitchPage(final Class<? extends Application> newSceneClass) {
 		return true;
 	}
-
-	/**
-	 * <p>
-	 * Returns the relative path to the FXML file that this {@link Application} represents.
-	 *
-	 * @return A {@link String} object which represents the relative path of the
-	 *         FXML file that this {@link Application} represents.
-	 */
-	public abstract String getWindowFile();
 
 	/**
 	 * <p>
@@ -142,11 +131,16 @@ public abstract class Application {
 
 	}
 
+	protected Image getIcon() {
+		return null;
+	}
+
 	/**
 	 * <p>
-	 * This method is called when {@link ApplicationManager#goBack()} is called and this
-	 * {@link Application} is shown. It's is like an extra initialize method which is called
-	 * only when the {@link ApplicationManager#goBack()} method shows this {@link Application}.
+	 * This method is called when {@link ApplicationManager#goBack()} is called and
+	 * this {@link Application} is shown. It's is like an extra initialize method
+	 * which is called only when the {@link ApplicationManager#goBack()} method
+	 * shows this {@link Application}.
 	 */
 	public void onBack() {
 

@@ -1,6 +1,5 @@
 package zeale.guis.schedule_app;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
@@ -16,7 +15,6 @@ import javafx.scene.paint.Color;
 import krow.guis.schedule_app.ScheduleEvent;
 import kröw.gui.Application;
 import kröw.gui.ApplicationManager;
-import kröw.gui.exceptions.NotSwitchableException;
 
 public class NewEvent extends Application {
 
@@ -46,11 +44,6 @@ public class NewEvent extends Application {
 	}
 
 	@Override
-	public String getWindowFile() {
-		return "NewEvent.fxml";
-	}
-
-	@Override
 	public void initialize() {
 		final DropShadow effect = new DropShadow();
 		effect.setOffsetX(40);
@@ -71,11 +64,7 @@ public class NewEvent extends Application {
 	@FXML
 	private void save() {
 
-		try {
-			ApplicationManager.setScene(new ScheduleApp());
-		} catch (IOException | NotSwitchableException e) {
-			e.printStackTrace();
-		}
+		ApplicationManager.setScene(ScheduleApp.class.getResource("ScheduleApp.fxml"));
 
 		event.name.set(nameInput.getText());
 		event.description.set(descInput.getText());

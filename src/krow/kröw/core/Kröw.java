@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -45,9 +44,6 @@ import kröw.core.managers.SystemProperties;
 import kröw.core.managers.SystemTrayManager;
 import kröw.gui.ApplicationManager;
 import sun.awt.shell.ShellFolder;
-import sun.instrument.InstrumentationImpl;
-import sun.misc.Unsafe;
-import sun.reflect.ReflectionFactory;
 import zeale.guis.Home;
 import zeale.guis.developer_page.ConsoleApp;
 
@@ -440,7 +436,9 @@ public final class Kröw extends Application {
 						}
 					m.invoke(invObj);
 				}
-		ApplicationManager.setStage_Impl(primaryStage, Home.class);
+
+		ApplicationManager.initialize(new InitData(primaryStage));
+		ApplicationManager.setScene(Home.class.getResource("Home.fxml"));
 
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.setTitle(Kröw.NAME);
@@ -461,6 +459,14 @@ public final class Kröw extends Application {
 
 		primaryStage.show();
 
+	}
+
+	public static class InitData {
+		public final Stage stage;
+
+		private InitData(Stage stage) {
+			this.stage = stage;
+		}
 	}
 
 	/*

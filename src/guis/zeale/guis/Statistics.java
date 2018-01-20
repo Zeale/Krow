@@ -449,10 +449,6 @@ public class Statistics extends Application {
 		return true;
 	}
 
-	@Override
-	public String getWindowFile() {
-		return "Statistics.fxml";
-	}
 
 	@Override
 	public void initialize() {

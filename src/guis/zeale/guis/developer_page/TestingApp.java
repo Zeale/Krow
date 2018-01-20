@@ -44,11 +44,6 @@ public class TestingApp extends Application {
 		addTool(button);
 	}
 
-	@Override
-	public String getWindowFile() {
-		return "TestingApp.fxml";
-	}
-
 	private void show(Node n) {
 		root.setCenter(n);
 		root.setLeft(accordion);

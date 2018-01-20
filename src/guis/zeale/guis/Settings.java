@@ -311,8 +311,8 @@ public class Settings extends Application {
 						if (Kröw.getProgramSettings().getStatsAppUpdateSpeed() == 9)
 							Kröw.getProgramSettings().setStatsAppUpdateSpeed(0);
 						else
-							Kröw.getProgramSettings().setStatsAppUpdateSpeed(
-									Kröw.getProgramSettings().getStatsAppUpdateSpeed() + 1);
+							Kröw.getProgramSettings()
+									.setStatsAppUpdateSpeed(Kröw.getProgramSettings().getStatsAppUpdateSpeed() + 1);
 						updateSpeedSetting.setText("Update Speed: " + parseSpeedInt());
 					}
 				};
@@ -364,13 +364,9 @@ public class Settings extends Application {
 	}
 
 	@Override
-	public String getWindowFile() {
-		return "Settings.fxml";
-	}
-
-	@Override
 	public void initialize() {
-		settingsLabel.setLayoutX(ApplicationManager.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
+		settingsLabel
+				.setLayoutX(ApplicationManager.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
 		optionBox.setLayoutX(ApplicationManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
 
 		tabList.setPrefSize(Kröw.scaleWidth(313), Kröw.scaleHeight(1040));

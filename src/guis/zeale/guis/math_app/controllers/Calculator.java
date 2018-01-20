@@ -35,7 +35,8 @@ public class Calculator extends Application {
 	}
 
 	/**
-	 * This text controls what is inside this {@link Application}'s {@link #calcIO} field.
+	 * This text controls what is inside this {@link Application}'s {@link #calcIO}
+	 * field.
 	 */
 	private static String cachedText;
 	private static boolean parsingDebugEnabled = false;
@@ -162,11 +163,6 @@ public class Calculator extends Application {
 
 	public void enableStatsMode() {
 		_event_enableStatsMode();
-	}
-
-	@Override
-	public String getWindowFile() {
-		return "Calculator.fxml";
 	}
 
 	@Override

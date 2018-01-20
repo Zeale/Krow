@@ -1,7 +1,5 @@
 package zeale.guis.math_app;
 
-import java.io.IOException;
-
 import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -9,7 +7,6 @@ import javafx.scene.input.MouseEvent;
 import krow.guis.GUIHelper;
 import krow.pages.ScrollMenu;
 import kröw.gui.ApplicationManager;
-import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.math_app.controllers.Calculator;
 
 public class MathApp extends ScrollMenu {
@@ -24,11 +21,6 @@ public class MathApp extends ScrollMenu {
 	 * menu.
 	 */
 	public static final Image CALCULATOR_ICON = new Image("/krow/resources/graphics/math-app/calculator-icon.png");
-
-	@Override
-	public String getWindowFile() {
-		return "MathApp.fxml";
-	}
 
 	@Override
 	public void initialize() {
@@ -47,11 +39,7 @@ public class MathApp extends ScrollMenu {
 		final ImageView calculator = new ImageView(CALCULATOR_ICON),
 				statistics = new ImageView("/krow/resources/Statistics.png");
 		calculator.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-			try {
-				ApplicationManager.setScene(Calculator.class);
-			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-				e.printStackTrace();
-			}
+			ApplicationManager.setScene(Calculator.class.getResource("Calculator.fxml"));
 		});
 		calculator.setPickOnBounds(true);
 

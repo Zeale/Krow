@@ -1,7 +1,5 @@
 package zeale.guis.developer_page;
 
-import java.io.IOException;
-
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.effect.DropShadow;
@@ -20,7 +18,6 @@ import krow.scene.HorizontalScrollBox;
 import kröw.core.Kröw;
 import kröw.gui.Application;
 import kröw.gui.ApplicationManager;
-import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.Home;
 import zeale.guis.schedule_app.ScheduleApp;
 
@@ -32,11 +29,6 @@ public class DeveloperApp extends Application {
 	private Pane root;
 	@FXML
 	private HorizontalMultiScrollBox scroll;
-
-	@Override
-	public String getWindowFile() {
-		return "DeveloperApp.fxml";
-	}
 
 	@Override
 	public void initialize() {
@@ -85,13 +77,10 @@ public class DeveloperApp extends Application {
 		scroll.setFocusTraversable(true);
 
 		final EventHandler<KeyEvent> keyHandler = event -> {
-			if (event.getCode() == KeyCode.D && event.isShiftDown() && event.isControlDown())
-				try {
-					ApplicationManager.setScene(Home.class);
-					event.consume();
-				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-					e.printStackTrace();
-				}
+			if (event.getCode() == KeyCode.D && event.isShiftDown() && event.isControlDown()) {
+				ApplicationManager.setScene(Home.class.getResource("Home.fxml"));
+				event.consume();
+			}
 		};
 
 		scroll.addEventFilter(KeyEvent.KEY_PRESSED, keyHandler);
@@ -105,30 +94,18 @@ public class DeveloperApp extends Application {
 	private void loadDefaultItems() {
 		final ImageView console = new ImageView("/krow/resources/graphics/developer-app/Console.png");
 		console.setOnMouseClicked(event -> {
-			try {
-				ApplicationManager.setScene(ConsoleApp.class);
-			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-				e.printStackTrace();
-			}
+			ApplicationManager.setScene(ConsoleApp.class.getResource("ConsoleApp.fxml"));
 		});
 
 		final ImageView scheduler = new ImageView("/krow/resources/graphics/schedule-app/Schedule.png");
 		scheduler.setOnMouseClicked(event -> {
-			try {
-				ApplicationManager.setScene(ScheduleApp.class);
-			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-				e.printStackTrace();
-			}
+			ApplicationManager.setScene(ScheduleApp.class.getResource("ScheduleApp.fxml"));
 		});
 		scheduler.setPickOnBounds(true);
 
 		ImageView testing = new ImageView(TESTING_ICON);
 		testing.setOnMouseClicked(event -> {
-			try {
-				ApplicationManager.setScene(TestingApp.class);
-			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-				e.printStackTrace();
-			}
+			ApplicationManager.setScene(TestingApp.class.getResource("TestingApp.fxml"));
 		});
 		testing.setEffect(new DropShadow());
 

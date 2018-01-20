@@ -179,11 +179,6 @@ public class ChatRoom extends Application {
 	}
 
 	@Override
-	public String getWindowFile() {
-		return "ChatRoom.fxml";
-	}
-
-	@Override
 	public void initialize() {
 
 		chatPane.setPrefSize(Kröw.scaleWidth(CHAT_PANE_PREF_WIDTH), Kröw.scaleHeight(CHAT_PANE_PREF_HEIGHT));
