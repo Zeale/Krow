@@ -1,4 +1,4 @@
-package zeale.guis.developer_module;
+package zeale.guis.developer_page;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -14,10 +14,10 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import kröw.core.managers.WindowManager.Page;
 import kröw.data.protection.Protection;
+import kröw.gui.Application;
 
-public class TestingModule extends Page {
+public class TestingApp extends Application {
 
 	private @FXML Accordion accordion;
 	private @FXML BorderPane root;
@@ -27,7 +27,7 @@ public class TestingModule extends Page {
 		toolbox.getChildren().add(button);
 	}
 
-	public TestingModule() {
+	public TestingApp() {
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class TestingModule extends Page {
 
 	@Override
 	public String getWindowFile() {
-		return "TestingModule.fxml";
+		return "TestingApp.fxml";
 	}
 
 	private void show(Node n) {
@@ -55,7 +55,7 @@ public class TestingModule extends Page {
 	}
 
 	private @FXML void testProtectionAPI() {
-		// We don't want to clutter up the TestingModule class with fields or methods,
+		// We don't want to clutter up the TestingApp class with fields or methods,
 		// so here we store those inside this class.
 		VBox pane = new VBox() {
 

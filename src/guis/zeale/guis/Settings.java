@@ -14,10 +14,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import krow.guis.GUIHelper;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.Page;
+import kröw.gui.Application;
+import kröw.gui.ApplicationManager;
 
-public class Settings extends Page {
+public class Settings extends Application {
 
 	public class Setting {
 		private String text;
@@ -247,10 +247,10 @@ public class Settings extends Page {
 		program.getValue().getChildren().add(useTrayIcon);
 		addItem(program);
 
-		final SettingTab moduleTab = new SettingTab("Modules");
+		final SettingTab appTab = new SettingTab("Apps");
 		final SettingTab chatRoomTab = new SettingTab("Chat Room"), statisticsTab = new SettingTab("Statistics"),
-				toolsTab = new SettingTab("Tools"), mathTab = new SettingTab("Math Module"),
-				backgroundTab = new SettingTab("Background Module");
+				toolsTab = new SettingTab("Tools"), mathTab = new SettingTab("Math App"),
+				backgroundTab = new SettingTab("Background App");
 		{
 			final Setting hostServerSetting = new Setting("Start server when the Chat Room app opens: "
 					+ (Kröw.getProgramSettings().isChatRoomHostServer() ? "Yes" : "No"));
@@ -273,7 +273,7 @@ public class Settings extends Page {
 		new Object() {
 
 			private String parseSpeedInt() {
-				int speedInt = Kröw.getProgramSettings().getStatsModuleUpdateSpeed();
+				int speedInt = Kröw.getProgramSettings().getStatsAppUpdateSpeed();
 				switch (speedInt) {
 
 				case 0:
@@ -308,11 +308,11 @@ public class Settings extends Page {
 
 					@Override
 					public void onToggled(TreeCell<Setting> cell) {
-						if (Kröw.getProgramSettings().getStatsModuleUpdateSpeed() == 9)
-							Kröw.getProgramSettings().setStatsModuleUpdateSpeed(0);
+						if (Kröw.getProgramSettings().getStatsAppUpdateSpeed() == 9)
+							Kröw.getProgramSettings().setStatsAppUpdateSpeed(0);
 						else
-							Kröw.getProgramSettings().setStatsModuleUpdateSpeed(
-									Kröw.getProgramSettings().getStatsModuleUpdateSpeed() + 1);
+							Kröw.getProgramSettings().setStatsAppUpdateSpeed(
+									Kröw.getProgramSettings().getStatsAppUpdateSpeed() + 1);
 						updateSpeedSetting.setText("Update Speed: " + parseSpeedInt());
 					}
 				};
@@ -321,7 +321,7 @@ public class Settings extends Page {
 			}
 		};
 
-		final TreeItem<SettingTab> appsItem = new TreeItem<>(moduleTab);
+		final TreeItem<SettingTab> appsItem = new TreeItem<>(appTab);
 		appsItem.getChildren().add(new TreeItem<>(chatRoomTab));
 		appsItem.getChildren().add(new TreeItem<>(statisticsTab));
 		appsItem.getChildren().add(new TreeItem<>(toolsTab));
@@ -370,12 +370,12 @@ public class Settings extends Page {
 
 	@Override
 	public void initialize() {
-		settingsLabel.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
-		optionBox.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
+		settingsLabel.setLayoutX(ApplicationManager.getStage().getScene().getWidth() / 2 - settingsLabel.getPrefWidth() / 2);
+		optionBox.setLayoutX(ApplicationManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
 
 		tabList.setPrefSize(Kröw.scaleWidth(313), Kröw.scaleHeight(1040));
 		optionBox.setPrefSize(Kröw.scaleHeight(810), Kröw.scaleWidth(850));
-		optionBox.setLayoutX(WindowManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
+		optionBox.setLayoutX(ApplicationManager.getStage().getScene().getWidth() / 2 - optionBox.getPrefWidth() / 2);
 
 		tabList.setRoot(new TreeItem<>());
 		optionBox.setRoot(new TreeItem<>());

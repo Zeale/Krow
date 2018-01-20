@@ -36,10 +36,9 @@ import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.callables.ParameterizedTask;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.Page;
+import kröw.gui.Application;
 
-public class Statistics extends WindowManager.Page {
+public class Statistics extends Application {
 
 	public static class AutoUpdatingStatistic extends Statistic {
 		private static Thread globalUpdater = new Thread(new Runnable() {
@@ -73,7 +72,7 @@ public class Statistics extends WindowManager.Page {
 
 		private static Collection<AutoUpdatingStatistic> statistics = new ConcurrentLinkedQueue<>();
 
-		private static long globalTimeout = Kröw.getProgramSettings().getStatsModuleUpdateSpeed();
+		private static long globalTimeout = Kröw.getProgramSettings().getStatsAppUpdateSpeed();
 
 		/**
 		 * @return the timeout
@@ -446,7 +445,7 @@ public class Statistics extends WindowManager.Page {
 	}
 
 	@Override
-	public boolean canSwitchPage(final Class<? extends Page> newSceneClass) {
+	public boolean canSwitchPage(final Class<? extends Application> newSceneClass) {
 		return true;
 	}
 

@@ -1,4 +1,4 @@
-package zeale.guis.schedule_module;
+package zeale.guis.schedule_app;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -13,14 +13,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import krow.guis.schedule_module.ScheduleEvent;
-import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.NotSwitchableException;
-import kröw.core.managers.WindowManager.Page;
+import krow.guis.schedule_app.ScheduleEvent;
+import kröw.gui.Application;
+import kröw.gui.ApplicationManager;
+import kröw.gui.exceptions.NotSwitchableException;
 
-public class NewEvent extends Page {
+public class NewEvent extends Application {
 
-	private final ScheduleModule module;
+	private final ScheduleApp app;
 
 	@FXML
 	private TextField nameInput;
@@ -34,15 +34,15 @@ public class NewEvent extends Page {
 	private final ScheduleEvent event;
 
 	// Called when making an event.
-	NewEvent(final ScheduleModule module) {
+	NewEvent(final ScheduleApp app) {
 		event = new ScheduleEvent();
-		this.module = module;
+		this.app = app;
 	}
 
 	// Called when editing an event.
-	public NewEvent(final ScheduleModule module, final ScheduleEvent event) {
+	public NewEvent(final ScheduleApp app, final ScheduleEvent event) {
 		this.event = event;
-		this.module = module;
+		this.app = app;
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class NewEvent extends Page {
 	private void save() {
 
 		try {
-			WindowManager.setScene(new ScheduleModule());
+			ApplicationManager.setScene(new ScheduleApp());
 		} catch (IOException | NotSwitchableException e) {
 			e.printStackTrace();
 		}
@@ -82,8 +82,8 @@ public class NewEvent extends Page {
 		event.dueDate.set(dateInput.getValue() == null ? System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1)
 				: dateInput.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli());
 
-		if (!module.containsEvent(event))
-			module.addEvent(event);
+		if (!app.containsEvent(event))
+			app.addEvent(event);
 	}
 
 }

@@ -1,4 +1,4 @@
-package zeale.guis.developer_module;
+package zeale.guis.developer_page;
 
 import java.io.IOException;
 
@@ -18,13 +18,13 @@ import krow.guis.GUIHelper;
 import krow.scene.HorizontalMultiScrollBox;
 import krow.scene.HorizontalScrollBox;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.NotSwitchableException;
-import kröw.core.managers.WindowManager.Page;
+import kröw.gui.Application;
+import kröw.gui.ApplicationManager;
+import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.Home;
-import zeale.guis.schedule_module.ScheduleModule;
+import zeale.guis.schedule_app.ScheduleApp;
 
-public class DeveloperModule extends Page {
+public class DeveloperApp extends Application {
 
 	private final static Image TESTING_ICON = new Image("krow/resources/Testing.png");
 
@@ -35,7 +35,7 @@ public class DeveloperModule extends Page {
 
 	@Override
 	public String getWindowFile() {
-		return "DeveloperModule.fxml";
+		return "DeveloperApp.fxml";
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class DeveloperModule extends Page {
 		final EventHandler<KeyEvent> keyHandler = event -> {
 			if (event.getCode() == KeyCode.D && event.isShiftDown() && event.isControlDown())
 				try {
-					WindowManager.setScene(Home.class);
+					ApplicationManager.setScene(Home.class);
 					event.consume();
 				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 					e.printStackTrace();
@@ -103,19 +103,19 @@ public class DeveloperModule extends Page {
 	}
 
 	private void loadDefaultItems() {
-		final ImageView console = new ImageView("/krow/resources/graphics/developer-module/Console.png");
+		final ImageView console = new ImageView("/krow/resources/graphics/developer-app/Console.png");
 		console.setOnMouseClicked(event -> {
 			try {
-				WindowManager.setScene(ConsoleModule.class);
+				ApplicationManager.setScene(ConsoleApp.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}
 		});
 
-		final ImageView scheduler = new ImageView("/krow/resources/graphics/schedule-module/Schedule.png");
+		final ImageView scheduler = new ImageView("/krow/resources/graphics/schedule-app/Schedule.png");
 		scheduler.setOnMouseClicked(event -> {
 			try {
-				WindowManager.setScene(ScheduleModule.class);
+				ApplicationManager.setScene(ScheduleApp.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}
@@ -125,7 +125,7 @@ public class DeveloperModule extends Page {
 		ImageView testing = new ImageView(TESTING_ICON);
 		testing.setOnMouseClicked(event -> {
 			try {
-				WindowManager.setScene(TestingModule.class);
+				ApplicationManager.setScene(TestingApp.class);
 			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
 				e.printStackTrace();
 			}

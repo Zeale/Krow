@@ -1,4 +1,4 @@
-package zeale.guis.schedule_module;
+package zeale.guis.schedule_app;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,15 +16,15 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import krow.guis.GUIHelper;
-import krow.guis.schedule_module.ScheduleEvent;
-import krow.guis.schedule_module.ScheduleRow;
-import krow.guis.schedule_module.SelectableCell;
+import krow.guis.schedule_app.ScheduleEvent;
+import krow.guis.schedule_app.ScheduleRow;
+import krow.guis.schedule_app.SelectableCell;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.NotSwitchableException;
-import kröw.core.managers.WindowManager.Page;
+import kröw.gui.Application;
+import kröw.gui.ApplicationManager;
+import kröw.gui.exceptions.NotSwitchableException;
 
-public class ScheduleModule extends Page {
+public class ScheduleApp extends Application {
 	public static final File DATA_DIR = new File(Kröw.DATA_DIRECTORY, "Schedule");
 
 	private static final ObservableList<ScheduleEvent> events = FXCollections.observableArrayList();
@@ -83,13 +83,13 @@ public class ScheduleModule extends Page {
 	@FXML
 	private TableColumn<ScheduleEvent, ScheduleEvent> urgencyColumn, completeColumn;
 
-	public ScheduleModule() {
+	public ScheduleApp() {
 	}
 
 	@FXML
 	private void addEvent() {
 		try {
-			WindowManager.setScene(new NewEvent(this));
+			ApplicationManager.setScene(new NewEvent(this));
 		} catch (IOException | NotSwitchableException e) {
 			e.printStackTrace();
 		}
@@ -110,7 +110,7 @@ public class ScheduleModule extends Page {
 
 	@Override
 	public String getWindowFile() {
-		return "ScheduleModule.fxml";
+		return "ScheduleApp.fxml";
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class ScheduleModule extends Page {
 		urgencyColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue()));
 		completeColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue()));
 
-		eventTable.setRowFactory(param -> new ScheduleRow(ScheduleModule.this));
+		eventTable.setRowFactory(param -> new ScheduleRow(ScheduleApp.this));
 
 		dateColumn.setCellFactory(param -> {
 			return new TableCell<ScheduleEvent, Number>() {

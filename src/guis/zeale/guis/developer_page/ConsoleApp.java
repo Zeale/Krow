@@ -1,4 +1,4 @@
-package zeale.guis.developer_module;
+package zeale.guis.developer_page;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,7 +14,7 @@ import krow.guis.GUIHelper;
 import krow.pages.TextPanel;
 import kröw.core.Kröw;
 
-public class ConsoleModule extends TextPanel {
+public class ConsoleApp extends TextPanel {
 
 	public static class ConsoleStream extends PrintStream {
 
@@ -71,29 +71,29 @@ public class ConsoleModule extends TextPanel {
 
 	private static List<Text> texts;
 
-	private static ConsoleModule currentModule;
+	private static ConsoleApp currentApp;
 
 	static {
 		final ObservableList<Text> texts = FXCollections.observableArrayList();
 		texts.addListener((ListChangeListener<Text>) c -> {
-			if (currentModule != null)
+			if (currentApp != null)
 				while (c.next())
 					if (c.wasAdded())
 						for (final Text t : c.getAddedSubList())
 							if (isErrorText(t))
-								currentModule.printerr(t);
+								currentApp.printerr(t);
 							else if (getTextType(t) == TextType.SUCCESS) {
 								t.setFill(Color.GREEN);
-								currentModule.printRawText(t);
+								currentApp.printRawText(t);
 							} else if (getTextType(t) == TextType.WARNING) {
 								t.setFill(Color.GOLD);
-								currentModule.printRawText(t);
+								currentApp.printRawText(t);
 							} else
-								currentModule.print(t);
+								currentApp.print(t);
 
 		});
 
-		ConsoleModule.texts = texts;
+		ConsoleApp.texts = texts;
 
 	}
 
@@ -129,8 +129,8 @@ public class ConsoleModule extends TextPanel {
 	}
 
 	public void dispose() {
-		if (currentModule == this)
-			currentModule = null;
+		if (currentApp == this)
+			currentApp = null;
 	}
 
 	@Override
@@ -139,13 +139,13 @@ public class ConsoleModule extends TextPanel {
 
 	@Override
 	public String getWindowFile() {
-		return "ConsoleModule.fxml";
+		return "ConsoleApp.fxml";
 	}
 
 	@Override
 	public void initialize() {
 		super.initialize();
-		setCurrentModule();
+		setCurrentApp();
 		GUIHelper.addDefaultSettings(GUIHelper.buildMenu(root));
 	}
 
@@ -154,11 +154,11 @@ public class ConsoleModule extends TextPanel {
 		dispose();
 	}
 
-	private void setCurrentModule() throws RuntimeException {
-		if (currentModule != null)
-			throw new RuntimeException("Undisposed ConsoleModule already in use.");
+	private void setCurrentApp() throws RuntimeException {
+		if (currentApp != null)
+			throw new RuntimeException("Undisposed ConsoleApp already in use.");
 		else
-			currentModule = this;
+			currentApp = this;
 		for (final Text t : texts)
 			if (isErrorText(t))
 				printerr(t);

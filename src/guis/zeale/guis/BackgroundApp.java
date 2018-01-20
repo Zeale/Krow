@@ -11,9 +11,9 @@ import krow.backgrounds.ImageBackground;
 import krow.backgrounds.ShapeBackground;
 import krow.guis.GUIHelper;
 import krow.guis.GUIHelper.MenuBox;
-import kröw.core.managers.WindowManager.Page;
+import kröw.gui.Application;
 
-public class BackgroundModule extends Page {
+public class BackgroundApp extends Application {
 
 	@FXML
 	private AnchorPane root, visualizerPane;
@@ -57,7 +57,7 @@ public class BackgroundModule extends Page {
 
 	@Override
 	public String getWindowFile() {
-		return "BackgroundModule.fxml";
+		return "BackgroundApp.fxml";
 	}
 
 	@FXML

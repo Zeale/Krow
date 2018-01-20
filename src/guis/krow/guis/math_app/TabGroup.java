@@ -1,4 +1,4 @@
-package krow.guis.math_module;
+package krow.guis.math_app;
 
 import java.util.ArrayList;
 import java.util.Collection;
