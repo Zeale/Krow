@@ -21,7 +21,7 @@ import krow.pages.ScrollMenu;
 import kröw.core.Kröw;
 import kröw.gui.Application;
 import kröw.gui.WindowManager;
-import kröw.gui.WindowManager.NotSwitchableException;
+import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.developer_page.DeveloperApp;
 import zeale.guis.math_app.MathApp;
 import zeale.guis.math_app.controllers.Calculator;
@@ -91,7 +91,7 @@ public class Home extends ScrollMenu {
 			try {
 				WindowManager.setScene(Tools.class);
 			} catch (InstantiationException | IllegalAccessException | IOException
-					| WindowManager.NotSwitchableException e) {
+					| NotSwitchableException e) {
 				e.printStackTrace();
 			}
 		});
@@ -102,7 +102,7 @@ public class Home extends ScrollMenu {
 				WindowManager.setScene(Settings.class);
 			} catch (InstantiationException | IllegalAccessException | IOException e) {
 				e.printStackTrace();
-			} catch (final WindowManager.NotSwitchableException e) {
+			} catch (final NotSwitchableException e) {
 				e.printStackTrace();
 			}
 		});

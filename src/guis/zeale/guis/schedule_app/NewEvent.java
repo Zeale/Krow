@@ -16,7 +16,7 @@ import javafx.scene.paint.Color;
 import krow.guis.schedule_app.ScheduleEvent;
 import kröw.gui.Application;
 import kröw.gui.WindowManager;
-import kröw.gui.WindowManager.NotSwitchableException;
+import kröw.gui.exceptions.NotSwitchableException;
 
 public class NewEvent extends Application {
 

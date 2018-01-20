@@ -9,7 +9,7 @@ import javafx.scene.input.MouseEvent;
 import krow.guis.GUIHelper;
 import krow.pages.ScrollMenu;
 import kröw.gui.WindowManager;
-import kröw.gui.WindowManager.NotSwitchableException;
+import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.math_app.controllers.Calculator;
 
 public class MathApp extends ScrollMenu {

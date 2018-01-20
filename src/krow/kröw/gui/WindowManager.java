@@ -19,77 +19,12 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import kröw.core.Kröw;
-import kröw.events.Event;
 import kröw.events.EventHandler;
+import kröw.gui.events.PageChangeRequestedEvent;
+import kröw.gui.events.PageChangedEvent;
+import kröw.gui.exceptions.NotSwitchableException;
 
 public final class WindowManager {
-
-	/**
-	 * <p>
-	 * Thrown when someone tries to switch the current {@link Scene} but the current
-	 * {@link Scene}'s controller's {@link Application#canSwitchScenes()} method returns
-	 * false.
-	 *
-	 * @author Zeale
-	 */
-	public final static class NotSwitchableException extends Exception {
-
-		private static final long serialVersionUID = 1L;
-
-		private final Window<? extends Application> currentWindow;
-		private final Application controller;
-		private final Class<? extends Application> controllerClass;
-
-		public NotSwitchableException(final Window<? extends Application> currentWindow, final Application controller,
-				final Class<? extends Application> cls) {
-			this.currentWindow = currentWindow;
-			this.controller = controller;
-			controllerClass = cls;
-		}
-
-		/**
-		 * @return the controller
-		 */
-		public final Application getController() {
-			return controller;
-		}
-
-		/**
-		 * @return the controllerClass
-		 */
-		public final Class<? extends Application> getControllerClass() {
-			return controllerClass;
-		}
-
-		/**
-		 * @return the currentWindow
-		 */
-		public final Window<? extends Application> getCurrentWindow() {
-			return currentWindow;
-		}
-
-	}
-
-	public static class PageChangedEvent extends Event {
-
-		public final Window<? extends Application> oldWindow, newWindow;
-
-		private PageChangedEvent(final Window<? extends Application> currentPage, final Window<? extends Application> window) {
-			oldWindow = currentPage;
-			newWindow = window;
-		}
-	}
-
-	public static class PageChangeRequestedEvent extends Event {
-		public final Window<? extends Application> oldWindow;
-		public final Class<? extends Application> newPageClass;
-
-		public PageChangeRequestedEvent(final Window<? extends Application> oldWindow,
-				final Class<? extends Application> newPageClass) {
-			this.oldWindow = oldWindow;
-			this.newPageClass = newPageClass;
-		}
-	}
 
 	public static final class Window<T extends Application> {
 		private final T controller;

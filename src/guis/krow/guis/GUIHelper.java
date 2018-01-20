@@ -37,6 +37,7 @@ import krow.backgrounds.BackgroundBuilder;
 import krow.backgrounds.ShapeBackground;
 import kröw.core.Kröw;
 import kröw.gui.WindowManager;
+import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.Home;
 
 public final class GUIHelper {
@@ -166,7 +167,7 @@ public final class GUIHelper {
 				WindowManager.setScene(Home.class);
 			} catch (InstantiationException | IllegalAccessException | IOException e1) {
 				e1.printStackTrace();
-			} catch (final WindowManager.NotSwitchableException e2) {
+			} catch (final NotSwitchableException e2) {
 				if (e2.getCurrentWindow().getController().getClass() == e2.getControllerClass())
 					WindowManager.spawnLabelAtMousePos("You're already here.", Color.FIREBRICK);
 				else
@@ -178,7 +179,7 @@ public final class GUIHelper {
 
 			try {
 				WindowManager.goBack();
-			} catch (final WindowManager.NotSwitchableException e1) {
+			} catch (final NotSwitchableException e1) {
 				WindowManager.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
 			} catch (final EmptyStackException e2) {
 				WindowManager.spawnLabelAtMousePos("Back to where???...", Color.FIREBRICK);

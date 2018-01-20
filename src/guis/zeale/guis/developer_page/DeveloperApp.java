@@ -20,7 +20,7 @@ import krow.scene.HorizontalScrollBox;
 import kröw.core.Kröw;
 import kröw.gui.Application;
 import kröw.gui.WindowManager;
-import kröw.gui.WindowManager.NotSwitchableException;
+import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.Home;
 import zeale.guis.schedule_app.ScheduleApp;
 
