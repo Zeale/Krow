@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import kröw.core.Kröw;
+import kröw.gui.ApplicationManager;
 import zeale.guis.ChatRoom;
 import zeale.guis.Statistics;
 
@@ -56,7 +57,7 @@ public class ProgramSettings implements Serializable {
 	private int globalProgramBackground = 0;
 	// I'm ignoring the versioning of this file for now. Once the Protection API
 	// works, I can discard this class as a whole.
-	private int statsModuleUpdateSpeed = 1000;
+	private int statsAppUpdateSpeed = 1000;
 
 	private boolean useTrayIcon = false;
 	private boolean openProgramOnDoubleClickTrayIcon = true;
@@ -67,13 +68,13 @@ public class ProgramSettings implements Serializable {
 
 	}
 
-	public int getStatsModuleUpdateSpeed() {
-		return statsModuleUpdateSpeed;
+	public int getStatsAppUpdateSpeed() {
+		return statsAppUpdateSpeed;
 	}
 
-	public void setStatsModuleUpdateSpeed(int statsModuleUpdateSpeed) {
-		this.statsModuleUpdateSpeed = statsModuleUpdateSpeed;
-		switch (statsModuleUpdateSpeed) {
+	public void setStatsAppUpdateSpeed(int statsAppUpdateSpeed) {
+		this.statsAppUpdateSpeed = statsAppUpdateSpeed;
+		switch (statsAppUpdateSpeed) {
 
 		case 0:
 		default:
@@ -244,14 +245,14 @@ public class ProgramSettings implements Serializable {
 		if (globalProgramBackground < 0)
 			globalProgramBackground = 0;
 		this.globalProgramBackground = globalProgramBackground;
-		WindowManager.getStage().getScene()
+		ApplicationManager.getStage().getScene()
 				.setFill(globalProgramBackground == 0 ? Kröw.SOLID_BACKGROUND
 						: globalProgramBackground == 1 ? Kröw.MODERATELY_TRANSPARENT_BACKGROUND
 								: Kröw.COMPLETELY_TRANSPARENT_BACKGROUND);
 		if (globalProgramBackground == 2)
-			WindowManager.getStage().setAlwaysOnTop(true);
+			ApplicationManager.getStage().setAlwaysOnTop(true);
 		else
-			WindowManager.getStage().setAlwaysOnTop(false);
+			ApplicationManager.getStage().setAlwaysOnTop(false);
 	}
 
 	/**

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="pane" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="pane" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="zeale.guis.Settings">
    <children>
       <Label fx:id="settingsLabel" alignment="BOTTOM_CENTER" layoutX="737.0" layoutY="10.0" prefHeight="229.0" prefWidth="985.0" style="-fx-font-weight: bold; -fx-text-fill: white; -fx-font-size: 48px;" text="General" wrapText="true" />
       <TreeView fx:id="tabList" layoutX="20.0" layoutY="20.0" prefHeight="1040.0" prefWidth="313.0" showRoot="false" style="-fx-background-color: #00000060;" />
