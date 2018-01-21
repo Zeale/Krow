@@ -2,6 +2,7 @@ package zeale.guis.math_app.controllers;
 
 import java.util.List;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
@@ -13,6 +14,9 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -67,6 +71,7 @@ public class Calculator extends Application {
 
 	private @FXML TextField searchBar;
 	private @FXML Accordion searchResultAccordion;
+	private @FXML ImageView evaluatorHelpImgView;
 
 	@FXML
 	private Button showMenuButton;
@@ -177,6 +182,27 @@ public class Calculator extends Application {
 		dflt = new TabGroup(buttonTabPane.getTabs());
 
 		statisticsMenuBox.setSpacing(Kröw.scaleHeight(10));
+
+		evaluatorHelpImgView.setImage(new Image("/krow/resources/graphics/math-app/question-mark.png"));
+		evaluatorHelpImgView.setEffect(new DropShadow());
+		evaluatorHelpImgView.setOpacity(0.17);
+		FadeTransition ehFadeTransition = new FadeTransition();
+		ehFadeTransition.setNode(evaluatorHelpImgView);
+		evaluatorHelpImgView.setOnMouseEntered(event -> {
+			ehFadeTransition.stop();
+			ehFadeTransition.setDuration(Duration.seconds(0.3));
+			ehFadeTransition.setFromValue(evaluatorHelpImgView.getOpacity());
+			ehFadeTransition.setToValue(1);
+			ehFadeTransition.play();
+		});
+
+		evaluatorHelpImgView.setOnMouseExited(event -> {
+			ehFadeTransition.stop();
+			ehFadeTransition.setDuration(Duration.seconds(1.2));
+			ehFadeTransition.setFromValue(evaluatorHelpImgView.getOpacity());
+			ehFadeTransition.setToValue(0.17);
+			ehFadeTransition.play();
+		});
 
 		/******************************
 		 **** INJECTED NODE SIZING ****
