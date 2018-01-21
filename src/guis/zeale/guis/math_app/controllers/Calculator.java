@@ -65,6 +65,9 @@ public class Calculator extends Application {
 	private VBox statisticsMenuBox;
 	private TabGroup dflt;
 
+	private @FXML TextField searchBar;
+	private @FXML Accordion searchResultAccordion;
+
 	@FXML
 	private Button showMenuButton;
 
