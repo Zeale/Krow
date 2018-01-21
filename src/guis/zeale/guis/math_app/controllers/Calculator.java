@@ -7,6 +7,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
@@ -17,6 +18,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -71,6 +73,8 @@ public class Calculator extends Application {
 
 	private @FXML TextField searchBar;
 	private @FXML Accordion searchResultAccordion;
+	private @FXML Group searchTools;
+
 	private @FXML ImageView evaluatorHelpImgView;
 
 	@FXML
@@ -180,6 +184,8 @@ public class Calculator extends Application {
 		hasLoaded = true;
 
 		dflt = new TabGroup(buttonTabPane.getTabs());
+
+		searchTools.setVisible(false);
 
 		statisticsMenuBox.setSpacing(Kröw.scaleHeight(10));
 
@@ -305,11 +311,31 @@ public class Calculator extends Application {
 		parsingDebugEnabledMenuItem.setStartColor(parsingDebugEnabled ? Color.GREEN : Color.BLACK);
 		slideMenu.getChildren().add(parsingDebugEnabledMenuItem);
 
+		MenuOption showSearchBar = new MenuOption("Show Search Bar");
+		showSearchBar.setOnMouseClicked(event -> {
+			if (event.getButton() == MouseButton.PRIMARY)
+				if (toggleSearchBarVisibility())
+					showSearchBar.setText("Hide Search Bar");
+				else
+					showSearchBar.setText("Show Search Bar");
+		});
+		slideMenu.getChildren().add(showSearchBar);
+
 	}
 
 	private boolean isTabDiscrete(final Tab tab) {
 		return tab.getProperties().containsKey(PropertyKeys.DISCRETE_TAB)
 				&& tab.getProperties().get(PropertyKeys.DISCRETE_TAB).equals(true);
+	}
+
+	private boolean toggleSearchBarVisibility() {
+		if (searchTools.isVisible()) {
+			searchTools.setVisible(false);
+			return false;
+		} else {
+			searchTools.setVisible(true);
+			return true;
+		}
 	}
 
 	@Override
