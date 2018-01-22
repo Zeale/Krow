@@ -12,9 +12,9 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.ScrollEvent.HorizontalTextScrollUnits;
 import javafx.scene.input.ScrollEvent.VerticalTextScrollUnits;
 import javafx.scene.layout.Pane;
+import krow.fx.scene.HorizontalMultiScrollBox;
+import krow.fx.scene.HorizontalScrollBox;
 import krow.guis.GUIHelper;
-import krow.scene.HorizontalMultiScrollBox;
-import krow.scene.HorizontalScrollBox;
 import kröw.core.Kröw;
 import kröw.gui.Application;
 import kröw.gui.ApplicationManager;
@@ -47,7 +47,7 @@ public class DeveloperApp extends Application {
 
 		// Apply sizing to our container.
 		scroll.setPrefWidth(Kröw.getSystemProperties().getScreenWidth());
-		scroll.setForceHeight(HorizontalScrollBox.NODE_HEIGHT);
+		scroll.setForceHeight(HorizontalScrollBox.DEFAULT_NODE_HEIGHT);
 		scroll.setForceWidth(Kröw.getSystemProperties().getScreenWidth());
 
 		// Position our container.
