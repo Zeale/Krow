@@ -6,6 +6,7 @@ import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -346,5 +347,48 @@ public class Calculator extends Application {
 	public void show() {
 		dflt.show(buttonTabPane);
 	}
+	
+	public class CalculatorTool extends Button {
+
+		private String output;
+		
+		public CalculatorTool() {
+		}
+
+		public CalculatorTool(final String text) {
+			super(text);
+		}
+
+		public CalculatorTool(final String text, final Node graphic) {
+			super(text, graphic);
+		}
+
+		public CalculatorTool(final String text, final Node graphic, final String output) {
+			super(text, graphic);
+			this.output = output;
+		}
+
+		public CalculatorTool(final String text, final String output) {
+			super(text);
+			this.output = output;
+		}
+
+		/**
+		 * @return the output
+		 */
+		public final String getOutput() {
+			return output;
+		}
+
+		/**
+		 * @param output
+		 *            the output to set
+		 */
+		public final void setOutput(final String output) {
+			this.output = output;
+		}
+
+	}
+
 
 }
