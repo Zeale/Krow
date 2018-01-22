@@ -1,6 +1,9 @@
 package krow.fx.scene;
 
 import javafx.animation.TranslateTransition;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -9,7 +12,6 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.transform.Translate;
 import javafx.util.Duration;
-import kröw.core.Kröw;
 
 public class HorizontalScrollBox extends HBox {
 
@@ -19,8 +21,25 @@ public class HorizontalScrollBox extends HBox {
 
 	private static final long SLIDE_ANIMATION_DURATION = 1000;
 
-	public static int NODE_WIDTH = Kröw.scaleWidth(100), NODE_HEIGHT = Kröw.scaleHeight(100),
-			NODE_SPACING = (int) ((double) NODE_WIDTH / 2);
+	// TODO Fix width and heigh scaling. Or add an API for that or something...
+	public static int DEFAULT_NODE_WIDTH = 100, DEFAULT_NODE_HEIGHT = 100,
+			DEFAULT_NODE_SPACING = (int) ((double) DEFAULT_NODE_WIDTH / 2);
+
+	{
+		setSpacing(DEFAULT_NODE_SPACING);
+	}
+
+	private IntegerProperty nodeWidth = new SimpleIntegerProperty(DEFAULT_NODE_WIDTH),
+			nodeHeight = new SimpleIntegerProperty(DEFAULT_NODE_HEIGHT);
+
+	private double jumpDistance = getNodeWidth() + getSpacing();
+
+	{
+		nodeWidthProperty().addListener((ChangeListener<Number>) (observable, oldValue,
+				newValue) -> jumpDistance = newValue.doubleValue() + getSpacing());
+		spacingProperty().addListener((ChangeListener<Number>) (observable, oldValue,
+				newValue) -> jumpDistance = newValue.doubleValue() + getNodeWidth());
+	}
 
 	/**
 	 * Convenience method for obtaining a Node's slider.
@@ -39,14 +58,12 @@ public class HorizontalScrollBox extends HBox {
 
 	private final double shift = 0;
 
-	private final double SINGLE_JUMP_DISTANCE = NODE_WIDTH + NODE_SPACING;
-
 	private final EventHandler<ScrollEvent> onScroll = event -> {
 		// The amount of images to scroll.
 		final int amount = event.getDeltaY() / event.getMultiplierY() > 0 ? 1 : -1;
 
-		displacement += amount * SINGLE_JUMP_DISTANCE;
-		final double max = (getChildren().size() - 1) * SINGLE_JUMP_DISTANCE, min = 0;
+		displacement += amount * jumpDistance;
+		final double max = (getChildren().size() - 1) * jumpDistance, min = 0;
 		if (displacement > max)
 			displacement = max;
 		else if (displacement < min)
@@ -75,8 +92,8 @@ public class HorizontalScrollBox extends HBox {
 						n.setTranslateX(displacement);
 
 						if (n instanceof ImageView) {
-							((ImageView) n).setFitHeight(NODE_HEIGHT);
-							((ImageView) n).setFitWidth(NODE_WIDTH);
+							((ImageView) n).setFitHeight(getNodeHeight());
+							((ImageView) n).setFitWidth(getNodeWidth());
 						}
 
 					}
@@ -84,7 +101,7 @@ public class HorizontalScrollBox extends HBox {
 
 		addEventHandler(ScrollEvent.SCROLL, onScroll);
 
-		setSpacing(NODE_SPACING);
+		setSpacing(DEFAULT_NODE_SPACING);
 
 		setStyle(
 				"-fx-background-color:  linear-gradient(to right, #00000020 0%, #000000A8 45%, #000000A8 55%, #00000020 100%);");
@@ -97,9 +114,9 @@ public class HorizontalScrollBox extends HBox {
 	public void centerNodes() {
 		for (final Node n : getChildren()) {
 			n.getTransforms().clear();
-			n.getTransforms().add(new Translate(
-					(getForceWidth() - NODE_WIDTH) / 2 - (getChildren().size() - 1) * (NODE_WIDTH + NODE_SPACING), 0));
-			n.setTranslateX(getChildren().size() / 2 * (NODE_WIDTH + NODE_SPACING));
+			n.getTransforms().add(new Translate((getForceWidth() - DEFAULT_NODE_WIDTH) / 2
+					- (getChildren().size() - 1) * (DEFAULT_NODE_WIDTH + DEFAULT_NODE_SPACING), 0));
+			n.setTranslateX(getChildren().size() / 2 * (DEFAULT_NODE_WIDTH + DEFAULT_NODE_SPACING));
 		}
 
 	}
@@ -119,7 +136,7 @@ public class HorizontalScrollBox extends HBox {
 	}
 
 	public void selectCenter() {
-		setDisplacement(SINGLE_JUMP_DISTANCE * (getChildren().size() / 2));
+		setDisplacement(jumpDistance * (getChildren().size() / 2));
 	}
 
 	protected void setDisplacement(final double displacement) {
@@ -158,6 +175,30 @@ public class HorizontalScrollBox extends HBox {
 			super.setWidth(forceWidth);
 		else
 			super.setWidth(value);
+	}
+
+	public final IntegerProperty nodeWidthProperty() {
+		return this.nodeWidth;
+	}
+
+	public final int getNodeWidth() {
+		return this.nodeWidthProperty().get();
+	}
+
+	public final void setNodeWidth(final int nodeWidth) {
+		this.nodeWidthProperty().set(nodeWidth);
+	}
+
+	public final IntegerProperty nodeHeightProperty() {
+		return this.nodeHeight;
+	}
+
+	public final int getNodeHeight() {
+		return this.nodeHeightProperty().get();
+	}
+
+	public final void setNodeHeight(final int nodeHeight) {
+		this.nodeHeightProperty().set(nodeHeight);
 	}
 
 }

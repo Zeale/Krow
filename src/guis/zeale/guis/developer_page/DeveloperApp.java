@@ -47,7 +47,7 @@ public class DeveloperApp extends Application {
 
 		// Apply sizing to our container.
 		scroll.setPrefWidth(Kröw.getSystemProperties().getScreenWidth());
-		scroll.setForceHeight(HorizontalScrollBox.NODE_HEIGHT);
+		scroll.setForceHeight(HorizontalScrollBox.DEFAULT_NODE_HEIGHT);
 		scroll.setForceWidth(Kröw.getSystemProperties().getScreenWidth());
 
 		// Position our container.
