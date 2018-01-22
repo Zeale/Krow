@@ -1,4 +1,4 @@
-package krow.scene;
+package krow.fx.scene;
 
 import java.util.List;
 
