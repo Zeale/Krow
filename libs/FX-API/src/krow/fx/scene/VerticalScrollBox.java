@@ -1,6 +1,9 @@
 package krow.fx.scene;
 
 import javafx.animation.TranslateTransition;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -17,7 +20,24 @@ public class VerticalScrollBox extends VBox {
 
 	private static final long SLIDE_ANIMATION_DURATION = 1000;
 
-	public static int NODE_WIDTH = 100, NODE_HEIGHT = 100, NODE_SPACING = (int) ((double) NODE_HEIGHT / 2);
+	public static int DEFAULT_NODE_WIDTH = 100, DEFAULT_NODE_HEIGHT = 100,
+			DEFAULT_NODE_SPACING = (int) ((double) DEFAULT_NODE_WIDTH / 2);
+
+	{
+		setSpacing(DEFAULT_NODE_SPACING);
+	}
+
+	private IntegerProperty nodeWidth = new SimpleIntegerProperty(DEFAULT_NODE_WIDTH),
+			nodeHeight = new SimpleIntegerProperty(DEFAULT_NODE_HEIGHT);
+
+	private double jumpDistance = getNodeWidth() + getSpacing();
+
+	{
+		nodeWidthProperty().addListener((ChangeListener<Number>) (observable, oldValue,
+				newValue) -> jumpDistance = newValue.doubleValue() + getSpacing());
+		spacingProperty().addListener((ChangeListener<Number>) (observable, oldValue,
+				newValue) -> jumpDistance = newValue.doubleValue() + getNodeWidth());
+	}
 
 	/**
 	 * Convenience method for obtaining a Node's slider.
@@ -32,8 +52,6 @@ public class VerticalScrollBox extends VBox {
 
 	private double forceWidth = -1, forceHeight = -1;
 
-	private final double SINGLE_JUMP_DISTANCE = NODE_HEIGHT + NODE_SPACING;
-
 	private double displacement = 0;
 
 	private final double shift = 0;
@@ -42,8 +60,8 @@ public class VerticalScrollBox extends VBox {
 		// The amount of images to scroll.
 		final int amount = event.getDeltaY() / event.getMultiplierY() > 0 ? 1 : -1;
 
-		displacement += amount * SINGLE_JUMP_DISTANCE;
-		final double max = (getChildren().size() - 1) * SINGLE_JUMP_DISTANCE, min = 0;
+		displacement += amount * jumpDistance;
+		final double max = (getChildren().size() - 1) * jumpDistance, min = 0;
 		if (displacement > max)
 			displacement = max;
 		else if (displacement < min)
@@ -73,15 +91,15 @@ public class VerticalScrollBox extends VBox {
 						n.setTranslateX(displacement);
 
 						if (n instanceof ImageView) {
-							((ImageView) n).setFitHeight(NODE_HEIGHT);
-							((ImageView) n).setFitWidth(NODE_WIDTH);
+							((ImageView) n).setFitHeight(getNodeHeight());
+							((ImageView) n).setFitWidth(getNodeWidth());
 						}
 
 					}
 		});
 
 		addEventHandler(ScrollEvent.SCROLL, onScroll);
-		setSpacing(NODE_SPACING);
+		setSpacing(getSpacing());
 
 		setStyle(
 				"-fx-background-color:  linear-gradient(to top, #00000020 0%, #000000A8 45%, #000000A8 55%, #00000020 100%);");
@@ -94,9 +112,9 @@ public class VerticalScrollBox extends VBox {
 	public void centerNodes() {
 		for (final Node n : getChildren()) {
 			n.getTransforms().clear();
-			n.getTransforms().add(new Translate(0,
-					(getForceHeight() - NODE_HEIGHT) / 2 - (getChildren().size() - 1) * (NODE_HEIGHT + NODE_SPACING)));
-			n.setTranslateY(getChildren().size() / 2 * (NODE_HEIGHT + NODE_SPACING));
+			n.getTransforms().add(new Translate(0, (getForceHeight() - getNodeHeight()) / 2
+					- (getChildren().size() - 1) * (getNodeHeight() + getSpacing())));
+			n.setTranslateY(getChildren().size() / 2 * (getNodeHeight() + getSpacing()));
 		}
 
 	}
@@ -116,7 +134,7 @@ public class VerticalScrollBox extends VBox {
 	}
 
 	public void selectCenter() {
-		setDisplacement(SINGLE_JUMP_DISTANCE * (getChildren().size() / 2));
+		setDisplacement(jumpDistance * (getChildren().size() / 2));
 	}
 
 	protected void setDisplacement(final double displacement) {
@@ -155,6 +173,30 @@ public class VerticalScrollBox extends VBox {
 			super.setWidth(forceWidth);
 		else
 			super.setWidth(value);
+	}
+
+	public final IntegerProperty nodeWidthProperty() {
+		return this.nodeWidth;
+	}
+
+	public final int getNodeWidth() {
+		return this.nodeWidthProperty().get();
+	}
+
+	public final void setNodeWidth(final int nodeWidth) {
+		this.nodeWidthProperty().set(nodeWidth);
+	}
+
+	public final IntegerProperty nodeHeightProperty() {
+		return this.nodeHeight;
+	}
+
+	public final int getNodeHeight() {
+		return this.nodeHeightProperty().get();
+	}
+
+	public final void setNodeHeight(final int nodeHeight) {
+		this.nodeHeightProperty().set(nodeHeight);
 	}
 
 }

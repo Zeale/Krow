@@ -21,7 +21,6 @@ public class HorizontalScrollBox extends HBox {
 
 	private static final long SLIDE_ANIMATION_DURATION = 1000;
 
-	// TODO Fix width and heigh scaling. Or add an API for that or something...
 	public static int DEFAULT_NODE_WIDTH = 100, DEFAULT_NODE_HEIGHT = 100,
 			DEFAULT_NODE_SPACING = (int) ((double) DEFAULT_NODE_WIDTH / 2);
 
