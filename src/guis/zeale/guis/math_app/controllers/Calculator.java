@@ -2,10 +2,13 @@ package zeale.guis.math_app.controllers;
 
 import java.util.List;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
@@ -13,6 +16,10 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -64,6 +71,12 @@ public class Calculator extends Application {
 	@FXML
 	private VBox statisticsMenuBox;
 	private TabGroup dflt;
+
+	private @FXML TextField searchBar;
+	private @FXML Accordion searchResultAccordion;
+	private @FXML Group searchTools;
+
+	private @FXML ImageView evaluatorHelpImgView;
 
 	@FXML
 	private Button showMenuButton;
@@ -173,7 +186,30 @@ public class Calculator extends Application {
 
 		dflt = new TabGroup(buttonTabPane.getTabs());
 
+		searchTools.setVisible(false);
+
 		statisticsMenuBox.setSpacing(Kröw.scaleHeight(10));
+
+		evaluatorHelpImgView.setImage(new Image("/krow/resources/graphics/math-app/question-mark.png"));
+		evaluatorHelpImgView.setEffect(new DropShadow());
+		evaluatorHelpImgView.setOpacity(0.17);
+		FadeTransition ehFadeTransition = new FadeTransition();
+		ehFadeTransition.setNode(evaluatorHelpImgView);
+		evaluatorHelpImgView.setOnMouseEntered(event -> {
+			ehFadeTransition.stop();
+			ehFadeTransition.setDuration(Duration.seconds(0.3));
+			ehFadeTransition.setFromValue(evaluatorHelpImgView.getOpacity());
+			ehFadeTransition.setToValue(1);
+			ehFadeTransition.play();
+		});
+
+		evaluatorHelpImgView.setOnMouseExited(event -> {
+			ehFadeTransition.stop();
+			ehFadeTransition.setDuration(Duration.seconds(1.2));
+			ehFadeTransition.setFromValue(evaluatorHelpImgView.getOpacity());
+			ehFadeTransition.setToValue(0.17);
+			ehFadeTransition.play();
+		});
 
 		/******************************
 		 **** INJECTED NODE SIZING ****
@@ -276,11 +312,31 @@ public class Calculator extends Application {
 		parsingDebugEnabledMenuItem.setStartColor(parsingDebugEnabled ? Color.GREEN : Color.BLACK);
 		slideMenu.getChildren().add(parsingDebugEnabledMenuItem);
 
+		MenuOption showSearchBar = new MenuOption("Show Search Bar");
+		showSearchBar.setOnMouseClicked(event -> {
+			if (event.getButton() == MouseButton.PRIMARY)
+				if (toggleSearchBarVisibility())
+					showSearchBar.setText("Hide Search Bar");
+				else
+					showSearchBar.setText("Show Search Bar");
+		});
+		slideMenu.getChildren().add(showSearchBar);
+
 	}
 
 	private boolean isTabDiscrete(final Tab tab) {
 		return tab.getProperties().containsKey(PropertyKeys.DISCRETE_TAB)
 				&& tab.getProperties().get(PropertyKeys.DISCRETE_TAB).equals(true);
+	}
+
+	private boolean toggleSearchBarVisibility() {
+		if (searchTools.isVisible()) {
+			searchTools.setVisible(false);
+			return false;
+		} else {
+			searchTools.setVisible(true);
+			return true;
+		}
 	}
 
 	@Override
@@ -291,5 +347,48 @@ public class Calculator extends Application {
 	public void show() {
 		dflt.show(buttonTabPane);
 	}
+	
+	public class CalculatorTool extends Button {
+
+		private String output;
+		
+		public CalculatorTool() {
+		}
+
+		public CalculatorTool(final String text) {
+			super(text);
+		}
+
+		public CalculatorTool(final String text, final Node graphic) {
+			super(text, graphic);
+		}
+
+		public CalculatorTool(final String text, final Node graphic, final String output) {
+			super(text, graphic);
+			this.output = output;
+		}
+
+		public CalculatorTool(final String text, final String output) {
+			super(text);
+			this.output = output;
+		}
+
+		/**
+		 * @return the output
+		 */
+		public final String getOutput() {
+			return output;
+		}
+
+		/**
+		 * @param output
+		 *            the output to set
+		 */
+		public final void setOutput(final String output) {
+			this.output = output;
+		}
+
+	}
+
 
 }
