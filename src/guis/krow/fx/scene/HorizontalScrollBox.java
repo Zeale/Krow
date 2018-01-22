@@ -1,4 +1,4 @@
-package krow.scene;
+package krow.fx.scene;
 
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;

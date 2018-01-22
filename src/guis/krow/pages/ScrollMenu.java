@@ -7,7 +7,7 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.ScrollEvent.HorizontalTextScrollUnits;
 import javafx.scene.input.ScrollEvent.VerticalTextScrollUnits;
 import javafx.scene.layout.Pane;
-import krow.scene.HorizontalScrollBox;
+import krow.fx.scene.HorizontalScrollBox;
 import kröw.core.Kröw;
 import kröw.gui.Application;
 
