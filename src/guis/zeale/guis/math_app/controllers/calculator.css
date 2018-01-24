@@ -2,16 +2,16 @@
 	-fx-background-color: transparent;
 }
 
-#CalculatorAccordion .titled-pane {
+.calculator-accordion-vbox .button {
 	-fx-text-fill: gold;
 }
 
-#CalculatorAccordion .titled-pane .content .button {
+.calculator-accordion-vbox .button {
 	-fx-background-color: #00000020;
 	-fx-font-size: 12.0px;
 }
 
-#CalculatorAccordion .titled-pane .content .button:first {
+.calculator-accordion-vbox .button:first {
 	-fx-border-width: 1.0px 1.0px 0.5px 1.0px;
 }
 .accordion .titled-pane .title {

@@ -1,14 +1,15 @@
 package zeale.guis.math_app.controllers;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
-import javafx.event.ActionEvent;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
@@ -68,15 +69,12 @@ public class Calculator extends Application {
 	private Tab arithmeticTab, functionsTab;
 	@FXML
 	private Accordion menu;
-	@FXML
-	private VBox statisticsMenuBox;
+
 	private TabGroup dflt;
 
-	private @FXML TextField searchBar;
-	private @FXML Accordion searchResultAccordion;
-	private @FXML Group searchTools;
-
 	private @FXML ImageView evaluatorHelpImgView;
+
+	private @FXML TextField searchBar;
 
 	@FXML
 	private Button showMenuButton;
@@ -135,6 +133,7 @@ public class Calculator extends Application {
 		showMenuButton.setVisible(false);
 		menu.setVisible(false);
 		slideMenu.getParentWrapper().setVisible(true);
+		searchBar.setVisible(false);
 	}
 
 	@FXML
@@ -186,9 +185,11 @@ public class Calculator extends Application {
 
 		dflt = new TabGroup(buttonTabPane.getTabs());
 
-		searchTools.setVisible(false);
+		for (TitledPane ct : queue)
+			menu.getPanes().add(ct);
+		queue.clear();
 
-		statisticsMenuBox.setSpacing(Kröw.scaleHeight(10));
+		setupTools();
 
 		evaluatorHelpImgView.setImage(new Image("/krow/resources/graphics/math-app/question-mark.png"));
 		evaluatorHelpImgView.setEffect(new DropShadow());
@@ -298,6 +299,7 @@ public class Calculator extends Application {
 			slideMenu.getParentWrapper().setVisible(false);
 			menu.setVisible(true);
 			showMenuButton.setVisible(true);
+			searchBar.setVisible(false);
 		});
 		slideMenu.getChildren().add(showMathMenuItem);
 
@@ -312,31 +314,41 @@ public class Calculator extends Application {
 		parsingDebugEnabledMenuItem.setStartColor(parsingDebugEnabled ? Color.GREEN : Color.BLACK);
 		slideMenu.getChildren().add(parsingDebugEnabledMenuItem);
 
-		MenuOption showSearchBar = new MenuOption("Show Search Bar");
-		showSearchBar.setOnMouseClicked(event -> {
+		showSearchBarMenuOption = new MenuOption("Show Search Bar");
+		showSearchBarMenuOption.setOnMouseClicked(event -> {
 			if (event.getButton() == MouseButton.PRIMARY)
-				if (toggleSearchBarVisibility())
-					showSearchBar.setText("Hide Search Bar");
-				else
-					showSearchBar.setText("Show Search Bar");
+				toggleSearchBarVisibility();
 		});
-		slideMenu.getChildren().add(showSearchBar);
+		slideMenu.getChildren().add(showSearchBarMenuOption);
 
+	}
+
+	private MenuOption showSearchBarMenuOption;
+
+	public boolean toggleSearchBarVisibility() {
+		if (searchBar.isVisible()) {
+			// Search bar will be set to invisible, so false is returned.
+			searchBar.setVisible(false);
+			showSearchBarMenuOption.setText("Show Search Bar");
+			return false;
+		}
+		// Search bar will be set to visible, so true is returned.
+		searchBar.setVisible(true);
+		showSearchBarMenuOption.setText("Hide Search Bar");
+		slideMenu.getParentWrapper().setVisible(false);
+		menu.setVisible(true);
+		showMenuButton.setVisible(true);
+		return true;
+	}
+
+	private void setupTools() {
+		new CalculatorTool("Data Set", STATISTICS).setOnMouseClicked(event -> _event_enableStatsMode());
+		new CalculatorTool("Z Scores", STATISTICS).setOnMouseClicked(event -> _event_enableStatsZScores());
 	}
 
 	private boolean isTabDiscrete(final Tab tab) {
 		return tab.getProperties().containsKey(PropertyKeys.DISCRETE_TAB)
 				&& tab.getProperties().get(PropertyKeys.DISCRETE_TAB).equals(true);
-	}
-
-	private boolean toggleSearchBarVisibility() {
-		if (searchTools.isVisible()) {
-			searchTools.setVisible(false);
-			return false;
-		} else {
-			searchTools.setVisible(true);
-			return true;
-		}
 	}
 
 	@Override
@@ -347,48 +359,140 @@ public class Calculator extends Application {
 	public void show() {
 		dflt.show(buttonTabPane);
 	}
-	
+
 	public class CalculatorTool extends Button {
 
-		private String output;
-		
+		private StringProperty searchKeyWord = new SimpleStringProperty();
+
+		{
+
+			setStyle("-fx-background-color: #00000020;" + "	-fx-font-size: 12.0px;" + " -fx-text-fill: gold;"
+					+ " -fx-font-weight: bold;");
+			setPrefWidth(200);
+
+		}
+
+		/**
+		 * Sets this tool's text and search key word to the param specified.
+		 * 
+		 * @param name
+		 */
+		public CalculatorTool(String name) {
+			this.searchKeyWord.set(name);
+			setText(name);
+		}
+
 		public CalculatorTool() {
+			super();
 		}
 
-		public CalculatorTool(final String text) {
-			super(text);
-		}
-
-		public CalculatorTool(final String text, final Node graphic) {
+		public CalculatorTool(String text, Node graphic) {
 			super(text, graphic);
 		}
 
-		public CalculatorTool(final String text, final Node graphic, final String output) {
-			super(text, graphic);
-			this.output = output;
+		public CalculatorTool(String name, CalculatorTab tab) {
+			this(name);
+			setTab(tab);
 		}
 
-		public CalculatorTool(final String text, final String output) {
+		public final StringProperty searchKeyWordProperty() {
+			return this.searchKeyWord;
+		}
+
+		public final String getSearchKeyWord() {
+			return this.searchKeyWordProperty().get();
+		}
+
+		public final void setSearchKeyWord(final String searchKeyWord) {
+			this.searchKeyWordProperty().set(searchKeyWord);
+		}
+
+		public CalculatorTool(String text, String searchKeyWord) {
 			super(text);
-			this.output = output;
+			this.searchKeyWord.set(searchKeyWord);
 		}
 
-		/**
-		 * @return the output
-		 */
-		public final String getOutput() {
-			return output;
+		public CalculatorTool(StringProperty searchKeyWord, CalculatorTab tab) {
+			this.searchKeyWord = searchKeyWord;
+			setTab(tab);
 		}
 
-		/**
-		 * @param output
-		 *            the output to set
-		 */
-		public final void setOutput(final String output) {
-			this.output = output;
+		public CalculatorTool(String text, StringProperty searchKeyWord, CalculatorTab tab) {
+			super(text);
+			this.searchKeyWord = searchKeyWord;
+			setTab(tab);
+		}
+
+		private CalculatorTab tab;
+
+		public void setTab(CalculatorTab tab) {
+			if (tab == this.tab)
+				return;
+			if (this.tab != null)
+				this.tab.removeTool(this);
+			if (tab != null)
+				(this.tab = tab).addTool(this);
 		}
 
 	}
 
+	public final CalculatorTab STATISTICS = new CalculatorTab("Statistics"), CALCULUS = new CalculatorTab("Calculus"),
+			CHEMISTRY = new CalculatorTab("Chemistry"), PHYSICS = new CalculatorTab("Physics");
+
+	private static final List<TitledPane> queue = new LinkedList<>();
+
+	public class CalculatorTab extends TitledPane {
+
+		private VBox box = new VBox(10);
+
+		{
+			box.getStyleClass().add("calculator-accordion-vbox");
+			setContent(box);
+			setStyle("-fx-text-fill: gold;");
+			// If queue is a List of CalculatorTabs, rather than TitledPanes, then this will
+			// be an error, and require casting which is, apparently, unsafe.
+			//
+			// The ternary expression below returns its value casted to a type that
+			// encompasses both of its possible values. Since CalculatorTab is a subclass of
+			// TitledPane, in our case, this casted type turns out to be a List<? extends
+			// TitledPane> if queue is of the type List<CalculatorTab>. Since the ternary
+			// operation is evaluated independently of the following statement, the add(...)
+			// statement, the add(...) statement gets performed on what it sees as a List<?
+			// extends TitledPane>. This could mean many things. CalculatorTabs do indeed
+			// "extend" TitledPanes, but a subclass of CalculatorTab would to. Our call to
+			// add(...) wants to add a CalculatorTab to whatever is returned from the
+			// ternary, but, for all the call to add(...) knows, the ternary could be
+			// returning a List of items that are the 8th subclass of CalculatorTab, so the
+			// call to add(...) will refuse to add a CalculatorTab to the result of the
+			// ternary, even though any result the ternary could possibly give will be
+			// applicable for our add(...) call.
+			//
+			//
+			//
+			// ArrayList<Object> upperList = new ArrayList<>();
+			// LinkedList<String> lowerList = new LinkedList<>();
+			//
+			// lowerList.add("I am a String");
+			// upperList.add("I am ALSO an Object");
+			//
+			// (new Random().nextBoolean() ? upperList : lowerList).add("I am both a String
+			// and an Object");
+			//
+			//
+			(menu != null ? menu.getPanes() : queue).add(this);
+		}
+
+		public CalculatorTab(String name) {
+			setText(name);
+		}
+
+		public void addTool(CalculatorTool tool) {
+			box.getChildren().add(tool);
+		}
+
+		public void removeTool(CalculatorTool calculatorTool) {
+			box.getChildren().remove(calculatorTool);
+		}
+	}
 
 }

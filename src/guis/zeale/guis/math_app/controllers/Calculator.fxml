@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?language javascript?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.effect.*?>
+<?import krow.fx.scene.*?>
+<?import krow.scene.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.image.*?>
 <?import java.net.*?>
@@ -197,45 +201,13 @@
 				</Tab>
 			</tabs>
 		</TabPane>
-		<Accordion id="CalculatorAccordion" fx:id="menu" layoutX="1718.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-			<panes>
-				<TitledPane animated="false" style="-fx-text-fill: gold;" text="Statistics">
-					<content>
-						<VBox fx:id="statisticsMenuBox" prefHeight="200.0" prefWidth="100.0">
-							<children>
-								<Button mnemonicParsing="false" onAction="#_event_enableStatsMode" prefHeight="25.0" prefWidth="200.0" text="Data Set" />
-								<Button mnemonicParsing="false" onAction="#_event_enableStatsZScores" prefHeight="25.0" prefWidth="200.0" text="Z Scores" />
-							</children>
-						</VBox>
-					</content>
-				</TitledPane>
-				<TitledPane animated="false" style="-fx-text-fill: gold;" text="Chemistry">
-					<content>
-						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-					</content>
-				</TitledPane>
-				<TitledPane animated="false" style="-fx-text-fill: gold;" text="Calculus">
-					<content>
-						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-					</content>
-				</TitledPane>
-			</panes>
-		</Accordion>
-		<Button fx:id="showMenuButton" focusTraversable="false" layoutX="1587.0" layoutY="36.0" mnemonicParsing="false" onAction="#_event_showSlideMenu" styleClass="pop-button" text="Show Menu" />
-      <Group fx:id="searchTools">
+      <Group>
          <children>
-      		<TextField fx:id="searchBar" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="225.0" promptText="Search terms..." style="-fx-background-color: rgba(0,0,0,0.3); -fx-text-fill: white; -fx-font-weight: bold;" />
-      		<Accordion fx:id="searchResultAccordion" layoutX="14.0" layoutY="50.0" prefHeight="1013.0" prefWidth="225.0">
-      			<panes>
-      				<TitledPane animated="false" style="-fx-text-fill: gold;" text="Results">
-      					<content>
-      						<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-      					</content>
-      				</TitledPane>
-      			</panes>
-      		</Accordion>
+      		<Accordion id="CalculatorAccordion" fx:id="menu" layoutX="1721.0" prefHeight="1080.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="-1721.0" AnchorPane.topAnchor="0.0" />
+            <TextField fx:id="searchBar" alignment="CENTER" layoutX="1508.0" layoutY="150.0" visible="false" />
          </children>
       </Group>
+		<Button fx:id="showMenuButton" focusTraversable="false" layoutX="1587.0" layoutY="36.0" mnemonicParsing="false" onAction="#_event_showSlideMenu" styleClass="pop-button" text="Show Menu" />
       <ImageView fx:id="evaluatorHelpImgView" fitHeight="32.0" fitWidth="32.0" layoutX="1401.0" layoutY="180.0" pickOnBounds="true" preserveRatio="true" />
 	</children>
 	<stylesheets>
