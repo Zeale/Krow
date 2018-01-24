@@ -1,5 +1,6 @@
 package zeale.guis.math_app.controllers;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,8 +10,11 @@ import javafx.animation.ScaleTransition;
 import javafx.animation.Transition;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
@@ -286,6 +290,36 @@ public class Calculator extends Application {
 					}
 				}
 
+		searchBar.textProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				List<CalculatorTool> toCache = new LinkedList<>(), removeCache = new LinkedList<>();
+				// For each tool...
+				for (CalculatorTool ct : registeredTools)
+					// ...if the tool contains the text...
+					if (!ct.getSearchKeyWord().contains(newValue)) {
+						// remove it from it's parent,
+						((Pane) ct.getTab().getContent()).getChildren().remove(ct);
+						// add it to the cache,
+						toCache.add(ct);
+					}
+				// then remove it from the registry.
+				registeredTools.removeAll(toCache);
+				unregisteredTools.addAll(toCache);
+
+				for (CalculatorTool ct : unregisteredTools)
+					if (ct.getSearchKeyWord().contains(newValue)) {
+						removeCache.add(ct);
+						if (ct.getTab() != null) {
+							((Pane) ct.getTab().getContent()).getChildren().add(ct);
+						}
+					}
+				unregisteredTools.removeAll(removeCache);
+				registeredTools.addAll(removeCache);
+			}
+		});
+
 		if (Kröw.getProgramSettings().calculatorUseOuterZoomAnimation)
 			addHoverAnimation(1.02, pane.getChildren());
 		addHoverAnimation(1.1, ((AnchorPane) arithmeticTab.getContent()).getChildren());
@@ -360,12 +394,15 @@ public class Calculator extends Application {
 		dflt.show(buttonTabPane);
 	}
 
+	private List<CalculatorTool> registeredTools = new ArrayList<>(), unregisteredTools = new ArrayList<>();
+
 	public class CalculatorTool extends Button {
 
 		private StringProperty searchKeyWord = new SimpleStringProperty();
 
 		{
 
+			registeredTools.add(this);
 			setStyle("-fx-background-color: #00000020;" + "	-fx-font-size: 12.0px;" + " -fx-text-fill: gold;"
 					+ " -fx-font-weight: bold;");
 			setPrefWidth(200);
@@ -432,6 +469,10 @@ public class Calculator extends Application {
 				this.tab.removeTool(this);
 			if (tab != null)
 				(this.tab = tab).addTool(this);
+		}
+
+		public CalculatorTab getTab() {
+			return tab;
 		}
 
 	}
