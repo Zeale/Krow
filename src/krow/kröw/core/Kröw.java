@@ -29,11 +29,21 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import kröw.annotations.AutoLoad;
@@ -408,7 +418,79 @@ public final class Kröw extends Application {
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
 
-		System.out.println("--SWITCHING OUTPUT STREAMS--");
+		// Make the loading stage
+		Stage loadingStage = new Stage(StageStyle.TRANSPARENT);
+
+		// Make pane
+		AnchorPane pane = new AnchorPane();
+		Scene scene = new Scene(pane);
+		scene.setFill(Color.TRANSPARENT);
+
+		// Ready the stage to be shown...
+		loadingStage.setScene(scene);
+		loadingStage.setOnCloseRequest(event -> event.consume());
+
+		// Show the stage
+		loadingStage.show();
+
+		// Set height constraints and stuff.
+		pane.setMinHeight(542);
+		pane.setMaxHeight(542);
+		pane.setMinWidth(512);
+		pane.setMaxWidth(512);
+
+		loadingStage.sizeToScene();
+		loadingStage.centerOnScreen();
+
+		// Now configure stage
+		loadingStage.getScene().setFill(COMPLETELY_TRANSPARENT_BACKGROUND);
+		pane.setBackground(new Background((BackgroundFill) null));
+
+		// DONE BUILDING STAGE ----- NOW BUILD NODES
+		loadingStage.setAlwaysOnTop(true);
+
+		ProgressBar loadingBar = new ProgressBar(0.5);
+		ImageView splashscreenIcon = new ImageView("/krow/resources/Kröw_hd.png");
+		HBox bottomBox = new HBox(loadingBar);
+
+		// Done building nodes, now add them.
+		pane.getChildren().addAll(splashscreenIcon, bottomBox);
+
+		// Now configure the nodes.
+		splashscreenIcon.setPreserveRatio(true);
+		splashscreenIcon.setFitWidth(512);
+
+		bottomBox.setAlignment(Pos.CENTER);
+		AnchorPane.setTopAnchor(splashscreenIcon, 0d);
+		AnchorPane.setBottomAnchor(bottomBox, 0d);
+		AnchorPane.setLeftAnchor(bottomBox, 0d);
+		AnchorPane.setRightAnchor(bottomBox, 0d);
+
+		// Develop the done button. This is placed where it needs to go after everything
+		// is done loading. (So at the end of this method.)
+		Button done = new Button("Continue...");
+		Text failureText = new Text("Failed to show main window. Press done again to try again.");
+		done.setOnAction(event -> {
+			primaryStage.show();
+			if (!primaryStage.isShowing())
+				if (!pane.getChildren().contains(failureText))
+					pane.getChildren().add(1, failureText);
+				else
+					;
+			else
+				loadingStage.close();
+		});
+
+		// ACTUAL INITIALIZATION
+
+		initialize(primaryStage, loadingBar);
+
+		// Done loading.
+		bottomBox.getChildren().set(0, done);
+	}
+
+	private void initialize(Stage primaryStage, ProgressBar loadingBar) throws Exception {
+		// System.out.println("--SWITCHING OUTPUT STREAMS--");
 		// Set std & err output for System cls.
 		// TODO Uncomment
 		// System.setOut(ConsoleApp.out);
@@ -456,9 +538,6 @@ public final class Kröw extends Application {
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 
 		primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, CLOSE_ON_ESCAPE_HANADLER);
-
-		primaryStage.show();
-
 	}
 
 	public static class InitData {
