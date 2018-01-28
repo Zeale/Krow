@@ -1,8 +1,6 @@
 
 package zeale.guis;
 
-import java.io.IOException;
-
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -19,27 +17,21 @@ import krow.guis.PopupHelper;
 import krow.guis.ShapeFactory;
 import krow.pages.ScrollMenu;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.NotSwitchableException;
-import kröw.core.managers.WindowManager.Page;
-import zeale.guis.developer_module.DeveloperModule;
-import zeale.guis.math_module.MathModule;
-import zeale.guis.math_module.controllers.Calculator;
+import kröw.gui.Application;
+import kröw.gui.ApplicationManager;
+import zeale.guis.developer_page.DeveloperApp;
+import zeale.guis.math_app.MathApp;
+import zeale.guis.math_app.controllers.Calculator;
 
 public class Home extends ScrollMenu {
 
 	private static final Image CHAT_ROOM_MENU_ICON = new Image("krow/resources/ChatRoomIcon_hd.png");
 
 	@Override
-	public boolean canSwitchPage(final Class<? extends Page> newSceneClass) {
+	public boolean canSwitchPage(final Class<? extends Application> newSceneClass) {
 		if (newSceneClass.equals(Home.class))
 			return false;
 		return true;
-	}
-
-	@Override
-	public String getWindowFile() {
-		return "Home.fxml";
 	}
 
 	@FXML
@@ -53,13 +45,10 @@ public class Home extends ScrollMenu {
 				"-fx-background-color:  linear-gradient(to right, #00000020 0%, #000000A8 45%, #000000A8 55%, #00000020 100%);");
 
 		final EventHandler<KeyEvent> keyHandler = event -> {
-			if (event.getCode() == KeyCode.D && event.isShiftDown() && event.isControlDown())
-				try {
-					WindowManager.setScene(DeveloperModule.class);
-					event.consume();
-				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-					e.printStackTrace();
-				}
+			if (event.getCode() == KeyCode.D && event.isShiftDown() && event.isControlDown()) {
+				ApplicationManager.setScene(DeveloperApp.class.getResource("DeveloperApp.fxml"));
+				event.consume();
+			}
 		};
 
 		horizontalScroll.setFocusTraversable(true);
@@ -75,11 +64,7 @@ public class Home extends ScrollMenu {
 		// Now to add the default images to our horizontal scroll container.
 		final ImageView chatRoom = new ImageView(CHAT_ROOM_MENU_ICON);
 		chatRoom.setOnMouseClicked(event -> {
-			try {
-				WindowManager.setScene(ChatRoom.class);
-			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e1) {
-				e1.printStackTrace();
-			}
+			ApplicationManager.setScene(ChatRoom.class.getResource("ChatRoom.fxml"));
 		});
 		chatRoom.setPickOnBounds(true);
 
@@ -88,48 +73,29 @@ public class Home extends ScrollMenu {
 		// will still cause a click to be registered by the event handler.
 		// Event handler
 		krow.setOnMouseClicked(event -> {
-			try {
-				WindowManager.setScene(Tools.class);
-			} catch (InstantiationException | IllegalAccessException | IOException
-					| WindowManager.NotSwitchableException e) {
-				e.printStackTrace();
-			}
+			ApplicationManager.setScene(Tools.class.getResource("Tools.fxml"));
 		});
 
 		final ImageView settings = new ImageView("krow/resources/Settings.png");
 		settings.setOnMouseClicked(event -> {
-			try {
-				WindowManager.setScene(Settings.class);
-			} catch (InstantiationException | IllegalAccessException | IOException e) {
-				e.printStackTrace();
-			} catch (final WindowManager.NotSwitchableException e) {
-				e.printStackTrace();
-			}
+			ApplicationManager.setScene(Settings.class.getResource("Settings.fxml"));
 		});
 
 		final ImageView statistics = new ImageView("krow/resources/Statistics.png");
 		statistics.setOnMouseClicked(event -> {
-			try {
-				WindowManager.setScene(Statistics.class);
-			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-				e.printStackTrace();
-			}
+			ApplicationManager.setScene(Statistics.class.getResource("Statistics.fxml"));
 		});
 		statistics.setPickOnBounds(true);
 
-		final ImageView mathModule = new ImageView(MathModule.CALCULATOR_ICON);
-		mathModule.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-			try {
-				WindowManager.setScene(Calculator.class);
-			} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-				e.printStackTrace();
-			}
+		final ImageView mathApp = new ImageView(MathApp.CALCULATOR_ICON);
+		mathApp.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+			ApplicationManager.setScene(Calculator.class.getResource("Calculator.fxml"));
 		});
-		mathModule.setPickOnBounds(true);
+		mathApp.setPickOnBounds(true);
 
 		final Shape backgroundShape = ShapeFactory.buildRegularShape(Kröw.scaleHeight(100),
 				(int) (Math.random() * 5 + 3));
-		backgroundShape.setOnMouseClicked(event -> WindowManager.spawnLabelAtMousePos("WIP", Color.FIREBRICK));
+		backgroundShape.setOnMouseClicked(event -> ApplicationManager.spawnLabelAtMousePos("WIP", Color.FIREBRICK));
 		backgroundShape.setPickOnBounds(true);
 		backgroundShape.setFill(Color.TRANSPARENT);
 		backgroundShape.setStroke(Color.WHITE);
@@ -137,44 +103,32 @@ public class Home extends ScrollMenu {
 		// TODO: Add a right click popup with a screensaver option.
 		backgroundShape.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if (event.getButton() == MouseButton.PRIMARY)
-				try {
-					WindowManager.setScene(BackgroundModule.class);
-				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-					e.printStackTrace();
-				}
+				ApplicationManager.setScene(BackgroundApp.class.getResource("BackgroundApp.fxml"));
 
 		});
 
-		horizontalScroll.getChildren().addAll(settings, krow, chatRoom, statistics, mathModule, backgroundShape);
+		horizontalScroll.getChildren().addAll(settings, krow, chatRoom, statistics, mathApp, backgroundShape);
 		horizontalScroll.selectCenter();
 
-		PopupHelper.addHoverPopup(settings, GUIHelper.makeBoldLabel("Settings Module", 18));
-		PopupHelper.addHoverPopup(krow, GUIHelper.makeBoldLabel("Tools Module", 18));
-		PopupHelper.addHoverPopup(chatRoom, GUIHelper.makeBoldLabel("Chat Room Module", 18));
-		PopupHelper.addHoverPopup(statistics, GUIHelper.makeBoldLabel("Statistics Module", 18));
-		PopupHelper.addHoverPopup(mathModule, GUIHelper.makeBoldLabel("Math Module", 18));
+		PopupHelper.addHoverPopup(settings, GUIHelper.makeBoldLabel("Settings App", 18));
+		PopupHelper.addHoverPopup(krow, GUIHelper.makeBoldLabel("Tools App", 18));
+		PopupHelper.addHoverPopup(chatRoom, GUIHelper.makeBoldLabel("Chat Room App", 18));
+		PopupHelper.addHoverPopup(statistics, GUIHelper.makeBoldLabel("Statistics App", 18));
+		PopupHelper.addHoverPopup(mathApp, GUIHelper.makeBoldLabel("Math App", 18));
 
-		final Label mathModuleCalculatorLbl = new Label("Calculator"),
-				mathModuleStatisticsLbl = new Label("Statistics");
-		mathModuleStatisticsLbl.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+		final Label mathAppCalculatorLbl = new Label("Calculator"), mathAppStatisticsLbl = new Label("Statistics");
+		mathAppStatisticsLbl.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if (event.getButton().equals(MouseButton.PRIMARY))
-				try {
-					WindowManager.setScene(Calculator.class).getController().enableStatsMode();
-				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-					e.printStackTrace();
-				}
+				((Calculator) ApplicationManager.setScene(Calculator.class.getResource("Calculator.fxml")))
+						.enableStatsMode();
 		});
 
-		mathModuleCalculatorLbl.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+		mathAppCalculatorLbl.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
 			if (event.getButton().equals(MouseButton.PRIMARY))
-				try {
-					WindowManager.setScene(Calculator.class);
-				} catch (InstantiationException | IllegalAccessException | IOException | NotSwitchableException e) {
-					e.printStackTrace();
-				}
+				ApplicationManager.setScene(Calculator.class.getResource("Calculator.fxml"));
 		});
 
-		PopupHelper.addRightClickPopup(mathModule, mathModuleCalculatorLbl, mathModuleStatisticsLbl);
+		PopupHelper.addRightClickPopup(mathApp, mathAppCalculatorLbl, mathAppStatisticsLbl);
 
 	}
 

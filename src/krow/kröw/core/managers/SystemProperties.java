@@ -5,6 +5,7 @@ import java.util.List;
 
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
+import kröw.gui.ApplicationManager;
 
 public final class SystemProperties {
 
@@ -16,9 +17,9 @@ public final class SystemProperties {
 
 	public Screen getCurrentScreen() {
 
-		final List<Screen> screens = Screen.getScreensForRectangle(WindowManager.getStage().getX(),
-				WindowManager.getStage().getY(), 1, 1);
-		if (Double.isNaN(WindowManager.getStage().getX()) || Double.isNaN(WindowManager.getStage().getY())
+		final List<Screen> screens = Screen.getScreensForRectangle(ApplicationManager.getStage().getX(),
+				ApplicationManager.getStage().getY(), 1, 1);
+		if (Double.isNaN(ApplicationManager.getStage().getX()) || Double.isNaN(ApplicationManager.getStage().getY())
 				|| screens.isEmpty())
 			return Screen.getScreensForRectangle(1, 1, 1, 1).get(0);
 		return screens.get(0);

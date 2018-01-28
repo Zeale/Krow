@@ -36,7 +36,8 @@ import javafx.util.Duration;
 import krow.backgrounds.BackgroundBuilder;
 import krow.backgrounds.ShapeBackground;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager;
+import kröw.gui.ApplicationManager;
+import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.Home;
 
 public final class GUIHelper {
@@ -161,56 +162,35 @@ public final class GUIHelper {
 				"Tray Icon: " + (Kröw.getSystemTrayManager().isIconShowing() ? "Hide" : "Show"));
 		close.setOnMouseClicked(Kröw.CLOSE_PROGRAM_EVENT_HANDLER);
 
-		goHome.setOnMouseClicked(event -> {
-			try {
-				WindowManager.setScene(Home.class);
-			} catch (InstantiationException | IllegalAccessException | IOException e1) {
-				e1.printStackTrace();
-			} catch (final WindowManager.NotSwitchableException e2) {
-				if (e2.getCurrentWindow().getController().getClass() == e2.getControllerClass())
-					WindowManager.spawnLabelAtMousePos("You're already here.", Color.FIREBRICK);
-				else
-					WindowManager.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
-			}
-		});
-
-		goBack.setOnMouseClicked(event -> {
-
-			try {
-				WindowManager.goBack();
-			} catch (final WindowManager.NotSwitchableException e1) {
-				WindowManager.spawnLabelAtMousePos("You can't go there right now...", Color.FIREBRICK);
-			} catch (final EmptyStackException e2) {
-				WindowManager.spawnLabelAtMousePos("Back to where???...", Color.FIREBRICK);
-			}
-		});
+		goHome.setOnMouseClicked(event -> ApplicationManager.setScene(Home.class.getResource("Home.fxml")));
+		goBack.setStyle("-fx-strikethrough: true;");
 
 		systemTray.setOnMouseClicked(event -> {
 			if (Kröw.getSystemTrayManager().isIconShowing())
 				if (Kröw.getSystemTrayManager().hideIcon())
 					systemTray.setText("Tray Icon: Show");
 				else
-					WindowManager.spawnLabelAtMousePos("Something went wrong...", Color.FIREBRICK);
+					ApplicationManager.spawnLabelAtMousePos("Something went wrong...", Color.FIREBRICK);
 			else if (Kröw.getSystemTrayManager().showIcon())
 				systemTray.setText("Tray Icon: Hide");
 			else
-				WindowManager.spawnLabelAtMousePos("Something went wrong...", Color.FIREBRICK);
+				ApplicationManager.spawnLabelAtMousePos("Something went wrong...", Color.FIREBRICK);
 		});
 
 		hideProgram.setOnMouseClicked(event -> {
-			WindowManager.getStage().hide();
+			ApplicationManager.getStage().hide();
 			if (!(Kröw.getSystemTrayManager().isIconShowing() || Kröw.getSystemTrayManager().showIcon())) {
-				WindowManager.getStage().show();
-				WindowManager.spawnLabelAtMousePos("Failed to show icon...", Color.FIREBRICK);
+				ApplicationManager.getStage().show();
+				ApplicationManager.spawnLabelAtMousePos("Failed to show icon...", Color.FIREBRICK);
 			}
 		});
 
-		sendProgramToBack.setOnMouseClicked(event -> WindowManager.getStage().toBack());
+		sendProgramToBack.setOnMouseClicked(event -> ApplicationManager.getStage().toBack());
 
 		collectGarbage.setOnMouseClicked(event -> System.gc());
 		VBox wrapper = PopupHelper.addHoverPopup(collectGarbage,
 				new Label("• This attempts to free up memory used by Kröw."),
-				new Label("• When this succeeds, you can actually see this work in the Statistics module."));
+				new Label("• When this succeeds, you can actually see this work in the Statistics app."));
 		wrapper.setMaxWidth(Kröw.scaleWidth(450));
 		for (Node n : wrapper.getChildrenUnmodifiable())
 			if (n instanceof Label)

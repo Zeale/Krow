@@ -41,11 +41,11 @@ import javafx.scene.text.FontWeight;
 import krow.guis.GUIHelper;
 import krow.guis.PopupHelper;
 import kröw.core.Kröw;
-import kröw.core.managers.WindowManager;
-import kröw.core.managers.WindowManager.Page;
+import kröw.gui.Application;
+import kröw.gui.ApplicationManager;
 import sun.awt.shell.ShellFolder;
 
-public class Tools extends Page {
+public class Tools extends Application {
 
 	public static class CommandTool extends LaunchableTool {
 		private final String command;
@@ -97,7 +97,7 @@ public class Tools extends Page {
 			this.executable = executable;
 			button.setOnAction(event -> {
 				if (!launchProcess())
-					WindowManager.spawnLabelAtMousePos("Already running...", Color.FIREBRICK);
+					ApplicationManager.spawnLabelAtMousePos("Already running...", Color.FIREBRICK);
 			});
 		}
 
@@ -123,7 +123,7 @@ public class Tools extends Page {
 
 				new Thread(() -> {
 					if (!launchProcess())
-						Platform.runLater(() -> WindowManager
+						Platform.runLater(() -> ApplicationManager
 								.spawnLabelAtMousePos("The process could not be started...", Color.FIREBRICK));
 				}).start();
 			});
@@ -584,6 +584,9 @@ public class Tools extends Page {
 					"Opens a Powershell window");
 			addCommandTool("START dxdiag", "DxDiag", Kröw.getImageFromFile(new File("C:/Windows/System32/dxdiag.exe"),
 					(int) ICON_WIDTH, (int) ICON_HEIGHT), "Opens DirectX Diagnostics");
+			addCommandTool("START dfrgui", "Disk Defragmenter", Kröw
+					.getImageFromFile(new File("C:/Windows/System32/dfrgui.exe"), (int) ICON_WIDTH, (int) ICON_HEIGHT),
+					"Opens the disk defragment wizard.");
 		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -600,10 +603,6 @@ public class Tools extends Page {
 		return button;
 	}
 
-	@Override
-	public String getWindowFile() {
-		return "Tools.fxml";
-	}
 
 	@Override
 	public void initialize() {

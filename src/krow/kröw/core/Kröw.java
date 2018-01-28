@@ -42,10 +42,10 @@ import kröw.core.managers.ProgramSettings;
 import kröw.core.managers.SoundManager;
 import kröw.core.managers.SystemProperties;
 import kröw.core.managers.SystemTrayManager;
-import kröw.core.managers.WindowManager;
+import kröw.gui.ApplicationManager;
 import sun.awt.shell.ShellFolder;
 import zeale.guis.Home;
-import zeale.guis.developer_module.ConsoleModule;
+import zeale.guis.developer_page.ConsoleApp;
 
 /**
  * The main class of Krow. It contains many useful methods.
@@ -166,7 +166,7 @@ public final class Kröw extends Application {
 	 * The directory for data storage of this application.
 	 */
 	public final static File DATA_DIRECTORY = new File(KRÖW_HOME_DIRECTORY, "Data");
-	public final static File MODULE_DIRECTORY = new File(DATA_DIRECTORY, "Modules");
+	public final static File MODULE_DIRECTORY = new File(DATA_DIRECTORY, "Apps");
 	public static final File MANAGER_DIRECTORY = new File(KRÖW_HOME_DIRECTORY, "Program Managers");
 
 	public static final File USER_STARTUP_FOLDER = new File(USER_APPDATA_DIRECTORY,
@@ -233,8 +233,8 @@ public final class Kröw extends Application {
 
 	public static PrintStream defout = System.out, deferr = System.err;
 
-	public static final PrintStream out = ConsoleModule.out, err = ConsoleModule.err, wrn = ConsoleModule.wrn,
-			scs = ConsoleModule.scs;
+	public static final PrintStream out = ConsoleApp.out, err = ConsoleApp.err, wrn = ConsoleApp.wrn,
+			scs = ConsoleApp.scs;
 
 	private static void addDefaultLoadupClasses() {
 		addReflectionClass(SystemTrayManager.class);
@@ -408,11 +408,13 @@ public final class Kröw extends Application {
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
 
-		System.out.println("--SWITCHING OUTPUT STREAMS--");
+		LoadHandler loadHandler = new LoadHandler(primaryStage);
+
+		// System.out.println("--SWITCHING OUTPUT STREAMS--");
 		// Set std & err output for System cls.
 		// TODO Uncomment
-		// System.setOut(ConsoleModule.out);
-		// System.setErr(ConsoleModule.err);
+		// System.setOut(ConsoleApp.out);
+		// System.setErr(ConsoleApp.err);
 		defout.println("Streams have successfully been switched.");
 
 		Platform.setImplicitExit(false);
@@ -436,12 +438,14 @@ public final class Kröw extends Application {
 						}
 					m.invoke(invObj);
 				}
-		WindowManager.setStage_Impl(primaryStage, Home.class);
+
+		ApplicationManager.initialize(new InitData(primaryStage));
+		ApplicationManager.setScene(Home.class.getResource("Home.fxml"));
 
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		primaryStage.setTitle(Kröw.NAME);
 		primaryStage.getIcons().add(new Image(Kröw.IMAGE_KRÖW_LOCATION));
-		WindowManager.getStage().getScene()
+		ApplicationManager.getStage().getScene()
 				.setFill(programSettings.getGlobalProgramBackground() == 0 ? SOLID_BACKGROUND
 						: programSettings.getGlobalProgramBackground() == 1 ? MODERATELY_TRANSPARENT_BACKGROUND
 								: COMPLETELY_TRANSPARENT_BACKGROUND);
@@ -455,8 +459,24 @@ public final class Kröw extends Application {
 
 		primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, CLOSE_ON_ESCAPE_HANADLER);
 
-		primaryStage.show();
+		loadHandler.doneLoading();
 
+	}
+
+	private final Runnable SET_RANDOM_IMAGE_RUNNABLE = this::setRandomImage;
+
+	private void setRandomImage() {
+		if (!Platform.isFxApplicationThread())
+			Platform.runLater(SET_RANDOM_IMAGE_RUNNABLE);
+
+	}
+
+	public static class InitData {
+		public final Stage stage;
+
+		private InitData(Stage stage) {
+			this.stage = stage;
+		}
 	}
 
 	/*
