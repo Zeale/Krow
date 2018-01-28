@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
@@ -201,6 +202,19 @@ public final class Domain {
 			}
 		}
 
+		public Serializable unserialize(String fileName) throws Exception {
+			checkDeleted();
+			if (!validFileName(fileName))
+				throw new InvalidFileNameException(fileName);
+			File f = new File(backing, fileName);
+			try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
+				return (Serializable) ois.readObject();
+			} catch (Exception e) {
+				f.delete();
+				throw e;
+			}
+		}
+
 		public SecureFolder getFolder(String name) throws InvalidFolderNameException {
 			checkDeleted();
 			if (!validFileName(name))
@@ -208,6 +222,10 @@ public final class Domain {
 			return new SecureFolder(this, name);
 
 		}
+	}
+
+	public Serializable unserialize(String fileName) throws Exception {
+		return new SecureFolder(directory).unserialize(fileName);
 	}
 
 	public class SecureFile {
