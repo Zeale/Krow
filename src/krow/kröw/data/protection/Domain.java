@@ -82,13 +82,13 @@ public final class Domain {
 
 	/**
 	 * An object used to manipulate and get information of a folder in a
-	 * {@link Domain}. <b>Note</b> that making multiple {@link SecureFolder}s that
+	 * {@link Domain}. <b>Note</b> that making multiple {@link DomainFolder}s that
 	 * represent the same folder in a {@link Domain} may result in problems.
 	 * 
 	 * @author Zeale
 	 *
 	 */
-	public class SecureFolder {
+	public class DomainFolder {
 
 		private boolean deleted;
 
@@ -97,12 +97,12 @@ public final class Domain {
 				throw new RuntimeException("Folder has been deleted.");
 		}
 
-		public SecureFile makeFile(String name) throws FileAlreadyExistsException {
+		public DomainFile makeFile(String name) throws FileAlreadyExistsException {
 			checkDeleted();
 			File file = new File(backing, name);
 			if (file.exists())
 				throw new FileAlreadyExistsException(name);
-			return new SecureFile(file);
+			return new DomainFile(file);
 		}
 
 		public void clearDir() {
@@ -118,28 +118,28 @@ public final class Domain {
 			return backing.delete();
 		}
 
-		public SecureFolder makeFolder(String name) throws FileAlreadyExistsException {
+		public DomainFolder makeFolder(String name) throws FileAlreadyExistsException {
 			checkDeleted();
 			File folder = new File(backing, name);
 			if (folder.exists())
 				throw new FileAlreadyExistsException(name);
-			return new SecureFolder(folder);
+			return new DomainFolder(folder);
 		}
 
 		/**
-		 * The {@link File} object that backs this {@link SecureFolder}.
+		 * The {@link File} object that backs this {@link DomainFolder}.
 		 */
 		private final File backing;
 
 		/**
-		 * Used by this class to create a {@link SecureFolder} given a specific
-		 * {@link File}. This {@link SecureFolder} will not automatically be a direct
+		 * Used by this class to create a {@link DomainFolder} given a specific
+		 * {@link File}. This {@link DomainFolder} will not automatically be a direct
 		 * child of this {@link Domain}.
 		 * 
 		 * @param backing
-		 *            The {@link File} object that backs this {@link SecureFolder}.
+		 *            The {@link File} object that backs this {@link DomainFolder}.
 		 */
-		private SecureFolder(File backing) {
+		private DomainFolder(File backing) {
 			if (!backing.exists())
 				throw new RuntimeException("Folder does not exist");
 			if (backing.isFile())
@@ -148,25 +148,25 @@ public final class Domain {
 		}
 
 		/**
-		 * Makes a {@link SecureFolder} given its parent and its name.
+		 * Makes a {@link DomainFolder} given its parent and its name.
 		 * 
 		 * @param parent
-		 *            The parent folder of this new {@link SecureFolder}.
+		 *            The parent folder of this new {@link DomainFolder}.
 		 * @param name
-		 *            The name of this {@link SecureFolder}.
+		 *            The name of this {@link DomainFolder}.
 		 */
-		public SecureFolder(SecureFolder parent, String name) {
+		public DomainFolder(DomainFolder parent, String name) {
 			this(new File(parent.backing, name));
 		}
 
 		/**
-		 * Makes a {@link SecureFolder} that is a child of this {@link Domain} with a
+		 * Makes a {@link DomainFolder} that is a child of this {@link Domain} with a
 		 * specified name.
 		 * 
 		 * @param file
-		 *            The name of this {@link SecureFolder}.
+		 *            The name of this {@link DomainFolder}.
 		 */
-		public SecureFolder(String file) {
+		public DomainFolder(String file) {
 			this(new File(directory, file));
 		}
 
@@ -175,15 +175,15 @@ public final class Domain {
 		 * file to its {@link Domain}'s {@link Domain#directory} variable without going
 		 * through any of the checkups or attempts to make the directory.
 		 */
-		private SecureFolder() {
+		private DomainFolder() {
 			backing = directory;
 		}
 
-		public SecureFile getFile(String name) throws InvalidFileNameException {
+		public DomainFile getFile(String name) throws InvalidFileNameException {
 			checkDeleted();
 			if (!validFileName(name))
 				throw new InvalidFileNameException(name, "Invalid file name.");
-			return new SecureFile(new File(backing, name));
+			return new DomainFile(new File(backing, name));
 
 		}
 
@@ -215,20 +215,20 @@ public final class Domain {
 			}
 		}
 
-		public SecureFolder getFolder(String name) throws InvalidFolderNameException {
+		public DomainFolder getFolder(String name) throws InvalidFolderNameException {
 			checkDeleted();
 			if (!validFileName(name))
 				throw new InvalidFolderNameException("Invalid folder name");
-			return new SecureFolder(this, name);
+			return new DomainFolder(this, name);
 
 		}
 	}
 
 	public Serializable unserialize(String fileName) throws Exception {
-		return new SecureFolder(directory).unserialize(fileName);
+		return new DomainFolder(directory).unserialize(fileName);
 	}
 
-	public class SecureFile {
+	public class DomainFile {
 
 		private final FileLock lock;
 		private final FileChannel channel;
@@ -239,13 +239,13 @@ public final class Domain {
 				throw new RuntimeException("File has been deleted.");
 		}
 
-		public SecureFile(SecureFolder parent, String name) {
+		public DomainFile(DomainFolder parent, String name) {
 			this(new File(parent.backing, name));
 		}
 
 		private final File backing;
 
-		private SecureFile(File backing) {
+		private DomainFile(File backing) {
 			this.backing = backing;
 			if (backing.isDirectory())
 				throw new RuntimeException("There already exists a folder where this file was going to be.");
@@ -260,7 +260,7 @@ public final class Domain {
 
 		}
 
-		public SecureFile(String file) {
+		public DomainFile(String file) {
 			this(new File(directory, file));
 		}
 
@@ -325,20 +325,20 @@ public final class Domain {
 
 	}
 
-	public SecureFile getFile(String name) throws InvalidFileNameException {
-		return new SecureFolder().getFile(name);
+	public DomainFile getFile(String name) throws InvalidFileNameException {
+		return new DomainFolder().getFile(name);
 	}
 
-	public SecureFile makeFile(String name) throws FileAlreadyExistsException {
-		return new SecureFolder().makeFile(name);
+	public DomainFile makeFile(String name) throws FileAlreadyExistsException {
+		return new DomainFolder().makeFile(name);
 	}
 
-	public SecureFolder makeFolder(String name) throws FileAlreadyExistsException {
-		return new SecureFolder().makeFolder(name);
+	public DomainFolder makeFolder(String name) throws FileAlreadyExistsException {
+		return new DomainFolder().makeFolder(name);
 	}
 
-	public SecureFolder getFolder(String name) throws InvalidFolderNameException {
-		return new SecureFolder().getFolder(name);
+	public DomainFolder getFolder(String name) throws InvalidFolderNameException {
+		return new DomainFolder().getFolder(name);
 	}
 
 	static Domain getDomain(ProtectionKey key) throws DomainInitializeException, UnavailableException {
@@ -446,7 +446,7 @@ public final class Domain {
 
 	public void serialize(String fileName, Serializable serializableObject)
 			throws IOException, InvalidFileNameException {
-		new SecureFolder(directory).serialize(fileName, serializableObject);
+		new DomainFolder(directory).serialize(fileName, serializableObject);
 	}
 
 	/**
