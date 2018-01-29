@@ -3,18 +3,11 @@ package krow.fx.dialogues;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
-public class LoginBox {
-	private final Stage stage = new Stage(StageStyle.TRANSPARENT);
-	private final VBox pane = new VBox(10);
-	private final Scene scene = new Scene(pane);
+public class LoginBox extends Dialogue<VBox> {
 	private final TextField passwordField = new TextField(), usernameField = new TextField();
 	private final Button continueButton = new Button("Continue");
 
@@ -24,26 +17,19 @@ public class LoginBox {
 		return loginHandler;
 	}
 
+	public LoginBox() {
+		super(new VBox(10));
+	}
+
 	public void setLoginHandler(EventHandler<LoginEvent> loginHandler) {
 		this.loginHandler = loginHandler;
 	}
 
-	{
-		build();
-	}
-
-	private void build() {
-		stage.setScene(scene);
-		scene.setFill(Color.TRANSPARENT);
+	public void build() {
+		super.build();
 		pane.getChildren().addAll(usernameField, passwordField, continueButton);
 		continueButton.setOnAction(
 				event -> loginHandler.handle(new LoginEvent(usernameField.getText(), passwordField.getText(), event)));
-	}
-
-	public void show() {
-		stage.show();
-		stage.sizeToScene();
-		stage.centerOnScreen();
 	}
 
 	public class LoginEvent extends Event {

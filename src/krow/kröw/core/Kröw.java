@@ -412,6 +412,7 @@ public final class Kröw extends Application {
 	public void start(final Stage primaryStage) throws Exception {
 
 		LoginBox box = new LoginBox();
+		box.build();
 		box.setLoginHandler(new EventHandler<LoginBox.LoginEvent>() {
 
 			@Override
