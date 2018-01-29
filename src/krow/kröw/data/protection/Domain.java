@@ -412,7 +412,9 @@ public final class Domain {
 	private class DomainConfigData {
 
 		private int buildNumber = -1;
+		@SuppressWarnings("unused")
 		private InputStreamReader configReader;
+		@SuppressWarnings("unused")
 		private OutputStreamWriter configWriter;
 
 		public int getBuildNumber() {
@@ -421,6 +423,7 @@ public final class Domain {
 
 		private HashMap<String, Object> data = new HashMap<>();
 
+		@SuppressWarnings("unused")
 		public Map<String, Object> getData() {
 			return Collections.unmodifiableMap(data);
 		}
@@ -428,39 +431,8 @@ public final class Domain {
 		private DomainConfigData() throws DomainInitializeException {
 
 			try {
-
-				boolean newFile = configurationFile.createNewFile();
-
 				configReader = new InputStreamReader(new FileInputStream(configurationFile));
-
-				int numb;
-				if (newFile) {
-					InputStreamReader reader = new InputStreamReader(
-							getClass().getResourceAsStream("/krow/resources/build.data"));
-					if (!reader.ready())
-						throw new DomainInitializeException(
-								"The build.data file, (which is nested inside the program), was empty...");
-					String buildNumb = "";
-					while (reader.ready())
-						buildNumb += (char) reader.read();
-					numb = Integer.parseInt(buildNumb);
-					this.buildNumber = numb;
-				} else {
-					if (!configReader.ready())
-						throw new DomainInitializeException("The configuration file was empty...");
-					String buildNumb = "";
-					while (configReader.ready())
-						buildNumb += (char) configReader.read();
-					numb = Integer.parseInt(buildNumb);
-					this.buildNumber = numb;
-				}
-
-				// The writer erases the file, so we make it here. After we read the file.
 				configWriter = new OutputStreamWriter(new FileOutputStream(configurationFile));
-
-				configWriter.write(numb + "");
-				configWriter.flush();
-
 			} catch (IOException e) {
 				throw new DomainInitializeException(e);
 			}
@@ -468,7 +440,6 @@ public final class Domain {
 			if (buildNumber == -1)
 				throw new DomainInitializeException(
 						"Couldn't read the build number of this program that was stored in this Domain. The file may be corrupt or something, or maybe the build number couldn't be read from an internal location, if you were making a new Domain.");
-
 		}
 
 	}

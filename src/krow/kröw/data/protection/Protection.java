@@ -459,12 +459,12 @@ public final class Protection {
 			}
 		} else {
 			try {
-				DOMAINS_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Domains");
+				DOMAINS_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Protection/domains/default-set");
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
-			return true;
+			return tryEnable();
 		}
 
 	}
