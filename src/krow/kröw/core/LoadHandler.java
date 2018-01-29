@@ -2,10 +2,13 @@ package kröw.core;
 
 import java.util.Random;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -17,27 +20,24 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class LoadHandler extends Stage {
+public class LoadHandler {
 
 	private ProgressBar loadingBar = new ProgressBar(0);
 	private ImageView splashscreenIcon = new ImageView();
-	private HBox bottomBox = new HBox(loadingBar);
+	private TextField promptBox = new TextField();
+	private Button submitPromptButton;
+	private HBox bottomBox = new HBox(promptBox, submitPromptButton);
 	private AnchorPane pane = new AnchorPane(splashscreenIcon, bottomBox);
 	private Scene scene = new Scene(pane);
-	private Stage primaryStage;
-	private Button done = new Button("Continue...");
+	private final Stage primaryStage;
+	private Button continueButton = new Button("Continue...");
+	private Stage stage = new Stage(StageStyle.TRANSPARENT);
 
 	{
-		setOnCloseRequest(event -> event.consume());
-		setScene(scene);
-
-		// This gets shown after the super call in the constructor.
-		show();
 		build();
 	}
 
 	public LoadHandler(Stage primaryStage) {
-		super(StageStyle.TRANSPARENT);
 		this.primaryStage = primaryStage;
 	}
 
@@ -54,6 +54,8 @@ public class LoadHandler extends Stage {
 	}
 
 	private void build() {
+		stage.setOnCloseRequest(event -> event.consume());
+		stage.setScene(scene);
 		scene.setFill(Color.TRANSPARENT);
 
 		pane.setMinHeight(542);
@@ -61,13 +63,12 @@ public class LoadHandler extends Stage {
 		pane.setMinWidth(512);
 		pane.setMaxWidth(512);
 
-		sizeToScene();
-		centerOnScreen();
-
-		getScene().setFill(Color.TRANSPARENT);
+		scene.setFill(Color.TRANSPARENT);
 		pane.setBackground(new Background((BackgroundFill) null));
 
-		setAlwaysOnTop(true);
+		stage.setAlwaysOnTop(true);
+
+		// NODES
 
 		splashscreenIcon.setImage(getNewImage());
 		splashscreenIcon.setPreserveRatio(true);
@@ -80,7 +81,7 @@ public class LoadHandler extends Stage {
 		AnchorPane.setRightAnchor(bottomBox, 0d);
 
 		Text failureText = new Text("Failed to show main window. Press done again to try again.");
-		done.setOnAction(event -> {
+		continueButton.setOnAction(event -> {
 			primaryStage.show();
 			if (!primaryStage.isShowing())
 				if (!pane.getChildren().contains(failureText))
@@ -88,16 +89,29 @@ public class LoadHandler extends Stage {
 				else
 					;
 			else
-				close();
+				stage.close();
 		});
 
 		loadingBar.setMinWidth(512);
-		done.setMinWidth(512);
+		continueButton.setMinWidth(512);
+
+		submitPromptButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+			}
+		});
 
 	}
 
+	public void show() {
+		stage.show();
+		stage.sizeToScene();
+		stage.centerOnScreen();
+	}
+
 	public void doneLoading() {
-		bottomBox.getChildren().set(0, done);
+		bottomBox.getChildren().set(0, continueButton);
 	}
 
 	public void setProgress(double progress) {
