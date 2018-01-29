@@ -37,6 +37,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import krow.fx.dialogues.LoadHandler;
+import krow.fx.dialogues.LoginBox;
+import krow.fx.dialogues.LoginBox.LoginEvent;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.core.managers.ProgramSettings;
@@ -409,8 +411,20 @@ public final class Kröw extends Application {
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
 
-		LoadHandler loadHandler = new LoadHandler(primaryStage);
+		LoginBox box = new LoginBox();
+		box.setLoginHandler(new EventHandler<LoginBox.LoginEvent>() {
 
+			@Override
+			public void handle(LoginEvent event) {
+				box.hide();
+				primaryStage.show();
+			}
+		});
+		box.show();
+
+	}
+
+	private void load(Stage primaryStage) throws Exception {
 		// System.out.println("--SWITCHING OUTPUT STREAMS--");
 		// Set std & err output for System cls.
 		// TODO Uncomment
@@ -459,9 +473,6 @@ public final class Kröw extends Application {
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 
 		primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, CLOSE_ON_ESCAPE_HANADLER);
-
-		loadHandler.doneLoading();
-
 	}
 
 	private final Runnable SET_RANDOM_IMAGE_RUNNABLE = this::setRandomImage;
