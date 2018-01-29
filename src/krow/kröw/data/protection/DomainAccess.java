@@ -16,12 +16,6 @@ import kröw.data.protection.DomainAccess.AccessBox;
 @Repeatable(AccessBox.class)
 public @interface DomainAccess {
 
-	AccessOption[] options() default AccessOption.NONE;
-
-	SingleAccessOption overallOption() default SingleAccessOption.PRIVATE;
-
-	Class<?>[] allowedAccessors() default Void.class;
-
 	@Documented
 	@Retention(RUNTIME)
 	@Target(TYPE)
@@ -36,4 +30,10 @@ public @interface DomainAccess {
 	public static enum SingleAccessOption {
 		PUBLIC, PRIVATE;
 	}
+
+	Class<?>[] allowedAccessors() default Void.class;
+
+	AccessOption[] options() default AccessOption.NONE;
+
+	SingleAccessOption overallOption() default SingleAccessOption.PRIVATE;
 }

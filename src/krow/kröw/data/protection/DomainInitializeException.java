@@ -14,10 +14,6 @@ public class DomainInitializeException extends Exception {
 		super(message);
 	}
 
-	public DomainInitializeException(Throwable cause) {
-		super(cause);
-	}
-
 	public DomainInitializeException(String message, Throwable cause) {
 		super(message, cause);
 	}
@@ -25,6 +21,10 @@ public class DomainInitializeException extends Exception {
 	public DomainInitializeException(String message, Throwable cause, boolean enableSuppression,
 			boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
+	}
+
+	public DomainInitializeException(Throwable cause) {
+		super(cause);
 	}
 
 }
