@@ -11,22 +11,21 @@ public class InvalidFolderNameException extends Exception {
 		super();
 	}
 
-	public InvalidFolderNameException(String message, Throwable cause, boolean enableSuppression,
-			boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
+	public InvalidFolderNameException(String message) {
+		super(message);
 	}
 
 	public InvalidFolderNameException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public InvalidFolderNameException(String message) {
-		super(message);
+	public InvalidFolderNameException(String message, Throwable cause, boolean enableSuppression,
+			boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
 	}
 
 	public InvalidFolderNameException(Throwable cause) {
 		super(cause);
 	}
-	
 
 }
