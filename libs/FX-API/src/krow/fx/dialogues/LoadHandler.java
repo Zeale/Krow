@@ -1,4 +1,4 @@
-package kröw.core;
+package krow.fx.dialogues;
 
 import java.util.Random;
 

@@ -1,4 +1,4 @@
-package kröw.core;
+package krow.fx.dialogues;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
