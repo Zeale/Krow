@@ -3,9 +3,14 @@ package krow.fx.dialogues;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class LoginBox extends Dialogue<VBox> {
@@ -26,11 +31,19 @@ public class LoginBox extends Dialogue<VBox> {
 		this.loginHandler = loginHandler;
 	}
 
+	@Override
 	public void build() {
 		super.build();
 		pane.getChildren().addAll(usernameField, passwordField, continueButton);
 		continueButton.setOnAction(
 				event -> loginHandler.handle(new LoginEvent(usernameField.getText(), passwordField.getText(), event)));
+
+		pane.setBackground(new Background(new BackgroundFill(new Color(0.23, 0.23, 0.23, 1), null, null)));
+		pane.setPadding(new Insets(25));
+
+		for (Node n : pane.getChildren())
+			n.setStyle(
+					"-fx-background-color: darkgray; -fx-border-radius: 0px; -fx-border-style: solid; -fx-border-width: 3px; -fx-border-color:white; -fx-text-fill: white;");
 	}
 
 	public class LoginEvent extends Event {
@@ -51,10 +64,12 @@ public class LoginBox extends Dialogue<VBox> {
 
 	}
 
+	@Override
 	public void hide() {
 		stage.hide();
 	}
 
+	@Override
 	public void close() {
 		stage.close();
 	}

@@ -7,6 +7,7 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.ImageCursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.effect.DropShadow;
@@ -69,10 +70,8 @@ public class LoadBox extends Dialogue<AnchorPane> {
 			return new Image("/krow/resources/Kröw_hd.png");
 		else if (rand <= 8)
 			return new Image("/krow/resources/Settings.png");
-		else if (rand <= 12)
-			return new Image("/krow/resources/Testing.png");
 		else
-			return new Image("/krow/resources/graphics/github120px.png");
+			return new Image("/krow/resources/Testing.png");
 	}
 
 	protected void build() {
@@ -97,6 +96,12 @@ public class LoadBox extends Dialogue<AnchorPane> {
 		AnchorPane.setLeftAnchor(bottomBox, 0d);
 		AnchorPane.setRightAnchor(bottomBox, 0d);
 		continueButton.setOnAction(event -> onDoneLoading.run());
+
+		Image img = new Image("/krow/resources/Testing.png");
+		loadingBar.setCursor(new ImageCursor(img));
+
+		continueButton.setStyle(
+				"-fx-background-color: darkgray; -fx-border-radius: 0px; -fx-border-style: solid; -fx-border-width: 3px; -fx-border-color: black; -fx-text-fill: black;");
 
 		loadingBar.setMinWidth(512);
 		continueButton.setMinWidth(512);
