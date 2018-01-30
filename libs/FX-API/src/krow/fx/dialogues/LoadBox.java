@@ -9,6 +9,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -86,6 +87,8 @@ public class LoadBox extends Dialogue<AnchorPane> {
 		splashscreenIcon.setImage(getNewImage());
 		splashscreenIcon.setPreserveRatio(true);
 		splashscreenIcon.setFitWidth(512);
+		splashscreenIcon.setOnMouseEntered(event -> splashscreenIcon.setEffect(new DropShadow()));
+		splashscreenIcon.setOnMouseExited(event -> splashscreenIcon.setEffect(null));
 
 		bottomBox.setAlignment(Pos.CENTER);
 		AnchorPane.setTopAnchor(splashscreenIcon, 0d);
