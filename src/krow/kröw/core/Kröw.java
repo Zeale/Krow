@@ -45,8 +45,6 @@ import kröw.core.managers.ProgramSettings;
 import kröw.core.managers.SoundManager;
 import kröw.core.managers.SystemProperties;
 import kröw.core.managers.SystemTrayManager;
-import kröw.data.protection.Domain.DomainFile;
-import kröw.data.protection.Protection;
 import kröw.gui.ApplicationManager;
 import sun.awt.shell.ShellFolder;
 import zeale.guis.Home;
@@ -405,6 +403,12 @@ public final class Kröw extends Application {
 		return output;
 	}
 
+	private static String username, password;
+
+	public static String getUsername() {
+		return username;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -420,6 +424,9 @@ public final class Kröw extends Application {
 		loginBox.build();
 		loginBox.setLoginHandler(event -> {
 			loginBox.hide();
+
+			username = event.username;
+			password = event.password;
 
 			LoadBox loadBox = new LoadBox(primaryStage, stage);
 			loadBox.setLoader(loader);
