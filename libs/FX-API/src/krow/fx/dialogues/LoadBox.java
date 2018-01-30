@@ -16,7 +16,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class LoadBox extends Dialogue<AnchorPane> {
@@ -24,16 +23,19 @@ public class LoadBox extends Dialogue<AnchorPane> {
 	private final ProgressBar loadingBar = new ProgressBar(0);
 	private final ImageView splashscreenIcon = new ImageView();
 	private final HBox bottomBox = new HBox(splashscreenIcon, loadingBar);
-	private final Stage primaryStage;
 	private final Button continueButton = new Button("Continue...");
 	private Task<Boolean> loader;
+	private Runnable onDoneLoading;
+
+	public void setOnDoneLoading(Runnable onDoneLoading) {
+		this.onDoneLoading = onDoneLoading;
+	}
 
 	private final EventHandler<WorkerStateEvent> loadHandler = event -> {
 		if (event.getSource().isRunning() || event.getEventType().equals(WorkerStateEvent.WORKER_STATE_SCHEDULED))
 			return;
 		// When done loading, we can show the continueButton ourselves.
 		bottomBox.getChildren().set(0, continueButton);
-
 	};
 
 	public void setLoader(Task<Boolean> loader) {
@@ -56,10 +58,9 @@ public class LoadBox extends Dialogue<AnchorPane> {
 		build();
 	}
 
-	public LoadBox(Stage primaryStage, Stage loadStage) {
+	public LoadBox(Stage loadStage) {
 		super(new AnchorPane(), loadStage);
 		pane.getChildren().addAll(splashscreenIcon, bottomBox);
-		this.primaryStage = primaryStage;
 	}
 
 	private Image getNewImage() {
@@ -95,18 +96,7 @@ public class LoadBox extends Dialogue<AnchorPane> {
 		AnchorPane.setBottomAnchor(bottomBox, 0d);
 		AnchorPane.setLeftAnchor(bottomBox, 0d);
 		AnchorPane.setRightAnchor(bottomBox, 0d);
-
-		Text failureText = new Text("Failed to show main window. Press done again to try again.");
-		continueButton.setOnAction(event -> {
-			primaryStage.show();
-			if (!primaryStage.isShowing())
-				if (!pane.getChildren().contains(failureText))
-					pane.getChildren().add(1, failureText);
-				else
-					;
-			else
-				stage.close();
-		});
+		continueButton.setOnAction(event -> onDoneLoading.run());
 
 		loadingBar.setMinWidth(512);
 		continueButton.setMinWidth(512);

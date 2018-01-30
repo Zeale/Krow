@@ -428,8 +428,12 @@ public final class Kröw extends Application {
 			username = event.username;
 			password = event.password;
 
-			LoadBox loadBox = new LoadBox(primaryStage, stage);
+			LoadBox loadBox = new LoadBox(stage);
 			loadBox.setLoader(loader);
+			loadBox.setOnDoneLoading(() -> {
+				loadBox.close();
+				primaryStage.show();
+			});
 			loadBox.show();
 		});
 		loginBox.show();
