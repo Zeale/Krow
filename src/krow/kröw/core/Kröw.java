@@ -38,7 +38,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import krow.fx.dialogues.LoadHandler;
+import krow.fx.dialogues.LoadBox;
 import krow.fx.dialogues.LoginBox;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
@@ -419,7 +419,7 @@ public final class Kröw extends Application {
 		box.build();
 		box.setLoginHandler(event -> {
 			box.hide();
-			LoadHandler loadBox = new LoadHandler(primaryStage, stage);
+			LoadBox loadBox = new LoadBox(primaryStage, stage);
 			loadBox.setLoader(loader);
 			loadBox.show();
 		});

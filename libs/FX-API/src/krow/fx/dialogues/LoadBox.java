@@ -19,7 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class LoadHandler extends Dialogue<AnchorPane> {
+public class LoadBox extends Dialogue<AnchorPane> {
 
 	private final ProgressBar loadingBar = new ProgressBar(0);
 	private final ImageView splashscreenIcon = new ImageView();
@@ -56,7 +56,7 @@ public class LoadHandler extends Dialogue<AnchorPane> {
 		build();
 	}
 
-	public LoadHandler(Stage primaryStage, Stage loadStage) {
+	public LoadBox(Stage primaryStage, Stage loadStage) {
 		super(new AnchorPane(), loadStage);
 		pane.getChildren().addAll(splashscreenIcon, bottomBox);
 		this.primaryStage = primaryStage;
