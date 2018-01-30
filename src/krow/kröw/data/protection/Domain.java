@@ -132,7 +132,9 @@ public final class Domain {
 
 		@Override
 		protected void finalize() throws Throwable {
-			delete();
+			lock.release();
+			channel.close();
+			rafile.close();
 		}
 
 		public long getTotalSpace() {
@@ -172,6 +174,7 @@ public final class Domain {
 		}
 
 	}
+
 	/**
 	 * An object used to manipulate and get information of a folder in a
 	 * {@link Domain}. <b>Note</b> that making multiple {@link DomainFolder}s that
@@ -271,19 +274,35 @@ public final class Domain {
 
 		}
 
-		public DomainFile makeFile(String name) throws FileAlreadyExistsException {
+		/**
+		 * Makes a file in the filesystem and returns the {@link DomainFile} object
+		 * representing it. If the file already exists in the filesystem, a
+		 * {@link DomainFile} is returned representing the file and no file is created.
+		 * 
+		 * @param name
+		 *            The name of the domain file.
+		 * @return A {@link DomainFile} object representing the (new), actual file
+		 *         created.
+		 */
+		public DomainFile makeFile(String name) {
 			checkDeleted();
 			File file = new File(backing, name);
-			if (file.exists())
-				throw new FileAlreadyExistsException(name);
 			return new DomainFile(file);
 		}
 
-		public DomainFolder makeFolder(String name) throws FileAlreadyExistsException {
+		/**
+		 * Makes a folder in the filesystem and returns the {@link DomainFolder}
+		 * representing it. If the folder already exists, nothing is done on the
+		 * filesystem, but a {@link DomainFolder} object representing the folder is
+		 * returned.
+		 * 
+		 * @param name
+		 *            The name of the folder.
+		 * @return A {@link DomainFolder} object representing the (new) folder.
+		 */
+		public DomainFolder makeFolder(String name) {
 			checkDeleted();
 			File folder = new File(backing, name);
-			if (folder.exists())
-				throw new FileAlreadyExistsException(name);
 			return new DomainFolder(folder);
 		}
 
@@ -315,6 +334,7 @@ public final class Domain {
 			}
 		}
 	}
+
 	/**
 	 * The name of the configuration file that will go in each {@link Domain}.
 	 */
@@ -450,11 +470,11 @@ public final class Domain {
 		return path;
 	}
 
-	public DomainFile makeFile(String name) throws FileAlreadyExistsException {
+	public DomainFile makeFile(String name) {
 		return new DomainFolder().makeFile(name);
 	}
 
-	public DomainFolder makeFolder(String name) throws FileAlreadyExistsException {
+	public DomainFolder makeFolder(String name) {
 		return new DomainFolder().makeFolder(name);
 	}
 
