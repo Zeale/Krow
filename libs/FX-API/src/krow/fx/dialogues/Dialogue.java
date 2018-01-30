@@ -4,10 +4,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 public class Dialogue<PT extends Parent> {
-	protected final Stage stage = new Stage(StageStyle.TRANSPARENT);
+	protected final Stage stage;
 	/**
 	 * Both {@link #root} and {@link #pane} refer to the root {@link Parent} of the
 	 * scene graph. The root parent is what is passed into this class's constructor,
@@ -16,9 +15,13 @@ public class Dialogue<PT extends Parent> {
 	 */
 	protected final PT root, pane;
 
-	public Dialogue(PT root) {
+	public Dialogue(PT root, Stage stage) {
 		this.root = pane = root;
+		this.stage = stage;
 		stage.setScene(new Scene(root));
+		stage.setOnCloseRequest(event -> event.consume());
+		stage.setAlwaysOnTop(true);
+		getScene().setFill(Color.TRANSPARENT);
 	}
 
 	protected final Scene getScene() {
@@ -26,7 +29,6 @@ public class Dialogue<PT extends Parent> {
 	}
 
 	protected void build() {
-		getScene().setFill(Color.TRANSPARENT);
 	}
 
 	public void close() {

@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 public class LoginBox extends Dialogue<VBox> {
 	private final TextField passwordField = new TextField(), usernameField = new TextField();
@@ -17,8 +18,8 @@ public class LoginBox extends Dialogue<VBox> {
 		return loginHandler;
 	}
 
-	public LoginBox() {
-		super(new VBox(10));
+	public LoginBox(Stage stage) {
+		super(new VBox(10), stage);
 	}
 
 	public void setLoginHandler(EventHandler<LoginEvent> loginHandler) {

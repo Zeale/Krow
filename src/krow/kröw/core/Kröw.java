@@ -26,6 +26,8 @@ import java.util.ArrayList;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -38,7 +40,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import krow.fx.dialogues.LoadHandler;
 import krow.fx.dialogues.LoginBox;
-import krow.fx.dialogues.LoginBox.LoginEvent;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.core.managers.ProgramSettings;
@@ -411,70 +412,80 @@ public final class Kröw extends Application {
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
 
-		LoginBox box = new LoginBox();
-		box.build();
-		box.setLoginHandler(new EventHandler<LoginBox.LoginEvent>() {
+		this.primaryStage = primaryStage;
 
-			@Override
-			public void handle(LoginEvent event) {
-				box.hide();
-				primaryStage.show();
-			}
+		Stage stage = new Stage(StageStyle.TRANSPARENT);
+		LoginBox box = new LoginBox(stage);
+		box.build();
+		box.setLoginHandler(event -> {
+			box.hide();
+			LoadHandler loadBox = new LoadHandler(primaryStage, stage);
+			loadBox.setLoader(loader);
+			loadBox.show();
 		});
 		box.show();
 
 	}
 
-	private void load(Stage primaryStage) throws Exception {
-		// System.out.println("--SWITCHING OUTPUT STREAMS--");
-		// Set std & err output for System cls.
-		// TODO Uncomment
-		// System.setOut(ConsoleApp.out);
-		// System.setErr(ConsoleApp.err);
-		defout.println("Streams have successfully been switched.");
+	private Stage primaryStage;
 
-		Platform.setImplicitExit(false);
+	private Task<Boolean> loader = new Task<Boolean>() {
 
-		addDefaultLoadupClasses();
-		// Run things in reflectionClasses
-		for (final Class<?> c : reflectionClasses)
-			for (final Method m : c.getDeclaredMethods())
-				if (m.isAnnotationPresent(AutoLoad.class)
-						&& m.getAnnotation(AutoLoad.class).value().equals(LoadTime.PROGRAM_ENTER)) {
-					m.setAccessible(true);
-					Object invObj = new Object();
-					if (!Modifier.isStatic(m.getModifiers()))
-						try {
-							final Constructor<?> constructor = c.getDeclaredConstructor();
-							constructor.setAccessible(true);
-							invObj = constructor.newInstance();
-						} catch (NoSuchMethodException | IllegalArgumentException | InstantiationException
-								| InvocationTargetException | ExceptionInInitializerError e) {
-							e.printStackTrace();
-						}
-					m.invoke(invObj);
-				}
+		@Override
+		protected Boolean call() throws Exception {
 
-		ApplicationManager.initialize(new InitData(primaryStage));
-		ApplicationManager.setScene(Home.class.getResource("Home.fxml"));
+			// System.out.println("--SWITCHING OUTPUT STREAMS--");
+			// Set std & err output for System cls.
+			// TODO Uncomment
+			// System.setOut(ConsoleApp.out);
+			// System.setErr(ConsoleApp.err);
+			defout.println("Streams have successfully been switched.");
 
-		primaryStage.initStyle(StageStyle.TRANSPARENT);
-		primaryStage.setTitle(Kröw.NAME);
-		primaryStage.getIcons().add(new Image(Kröw.IMAGE_KRÖW_LOCATION));
-		ApplicationManager.getStage().getScene()
-				.setFill(programSettings.getGlobalProgramBackground() == 0 ? SOLID_BACKGROUND
-						: programSettings.getGlobalProgramBackground() == 1 ? MODERATELY_TRANSPARENT_BACKGROUND
-								: COMPLETELY_TRANSPARENT_BACKGROUND);
-		if (programSettings.getGlobalProgramBackground() == 2) {
-			primaryStage.setAlwaysOnTop(true);
+			Platform.setImplicitExit(false);
+
+			addDefaultLoadupClasses();
+			// Run things in reflectionClasses
+			for (final Class<?> c : reflectionClasses)
+				for (final Method m : c.getDeclaredMethods())
+					if (m.isAnnotationPresent(AutoLoad.class)
+							&& m.getAnnotation(AutoLoad.class).value().equals(LoadTime.PROGRAM_ENTER)) {
+						m.setAccessible(true);
+						Object invObj = new Object();
+						if (!Modifier.isStatic(m.getModifiers()))
+							try {
+								final Constructor<?> constructor = c.getDeclaredConstructor();
+								constructor.setAccessible(true);
+								invObj = constructor.newInstance();
+							} catch (NoSuchMethodException | IllegalArgumentException | InstantiationException
+									| InvocationTargetException | ExceptionInInitializerError e) {
+								e.printStackTrace();
+							}
+						m.invoke(invObj);
+					}
+
+			ApplicationManager.initialize(new InitData(primaryStage));
+			ApplicationManager.setScene(Home.class.getResource("Home.fxml"));
+
+			primaryStage.initStyle(StageStyle.TRANSPARENT);
+			primaryStage.setTitle(Kröw.NAME);
+			primaryStage.getIcons().add(new Image(Kröw.IMAGE_KRÖW_LOCATION));
+			ApplicationManager.getStage().getScene()
+					.setFill(programSettings.getGlobalProgramBackground() == 0 ? SOLID_BACKGROUND
+							: programSettings.getGlobalProgramBackground() == 1 ? MODERATELY_TRANSPARENT_BACKGROUND
+									: COMPLETELY_TRANSPARENT_BACKGROUND);
+			if (programSettings.getGlobalProgramBackground() == 2) {
+				primaryStage.setAlwaysOnTop(true);
+			}
+			primaryStage.setWidth(Kröw.getSystemProperties().getScreenWidth());
+			primaryStage.setHeight(Kröw.getSystemProperties().getScreenHeight());
+			primaryStage.setFullScreen(true);
+			primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+
+			primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, CLOSE_ON_ESCAPE_HANADLER);
+
+			return true;
 		}
-		primaryStage.setWidth(Kröw.getSystemProperties().getScreenWidth());
-		primaryStage.setHeight(Kröw.getSystemProperties().getScreenHeight());
-		primaryStage.setFullScreen(true);
-		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
-
-		primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, CLOSE_ON_ESCAPE_HANADLER);
-	}
+	};
 
 	private final Runnable SET_RANDOM_IMAGE_RUNNABLE = this::setRandomImage;
 

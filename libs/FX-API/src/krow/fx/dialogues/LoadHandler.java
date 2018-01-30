@@ -1,43 +1,64 @@
 package krow.fx.dialogues;
 
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
-import javafx.event.ActionEvent;
+import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
-public class LoadHandler {
+public class LoadHandler extends Dialogue<AnchorPane> {
 
-	private ProgressBar loadingBar = new ProgressBar(0);
-	private ImageView splashscreenIcon = new ImageView();
-	private TextField promptBox = new TextField();
-	private Button submitPromptButton;
-	private HBox bottomBox = new HBox(promptBox, submitPromptButton);
-	private AnchorPane pane = new AnchorPane(splashscreenIcon, bottomBox);
-	private Scene scene = new Scene(pane);
+	private final ProgressBar loadingBar = new ProgressBar(0);
+	private final ImageView splashscreenIcon = new ImageView();
+	private final HBox bottomBox = new HBox(splashscreenIcon, loadingBar);
 	private final Stage primaryStage;
-	private Button continueButton = new Button("Continue...");
-	private Stage stage = new Stage(StageStyle.TRANSPARENT);
+	private final Button continueButton = new Button("Continue...");
+	private Task<Boolean> loader;
+
+	private final EventHandler<WorkerStateEvent> loadHandler = event -> {
+		if (event.getSource().isRunning() || event.getEventType().equals(WorkerStateEvent.WORKER_STATE_SCHEDULED))
+			return;
+		// When done loading, we can show the continueButton ourselves.
+		bottomBox.getChildren().set(0, continueButton);
+
+	};
+
+	public void setLoader(Task<Boolean> loader) {
+		if (this.loader != null)
+			this.loader.removeEventHandler(WorkerStateEvent.ANY, loadHandler);
+		this.loader = loader;
+		loadingBar.progressProperty().bind(loader.progressProperty());
+		loader.addEventHandler(WorkerStateEvent.ANY, loadHandler);
+	}
+
+	public void load() {
+		loader.run();
+	}
+
+	public boolean getLoadResult() throws InterruptedException, ExecutionException {
+		return loader.get();
+	}
 
 	{
 		build();
 	}
 
-	public LoadHandler(Stage primaryStage) {
+	public LoadHandler(Stage primaryStage, Stage loadStage) {
+		super(new AnchorPane(), loadStage);
+		pane.getChildren().addAll(splashscreenIcon, bottomBox);
 		this.primaryStage = primaryStage;
 	}
 
@@ -53,20 +74,13 @@ public class LoadHandler {
 			return new Image("/krow/resources/graphics/github120px.png");
 	}
 
-	private void build() {
-		stage.setOnCloseRequest(event -> event.consume());
-		stage.setScene(scene);
-		scene.setFill(Color.TRANSPARENT);
-
+	protected void build() {
 		pane.setMinHeight(542);
 		pane.setMaxHeight(542);
 		pane.setMinWidth(512);
 		pane.setMaxWidth(512);
 
-		scene.setFill(Color.TRANSPARENT);
 		pane.setBackground(new Background((BackgroundFill) null));
-
-		stage.setAlwaysOnTop(true);
 
 		// NODES
 
@@ -94,24 +108,13 @@ public class LoadHandler {
 
 		loadingBar.setMinWidth(512);
 		continueButton.setMinWidth(512);
-
-		submitPromptButton.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent event) {
-			}
-		});
-
 	}
 
 	public void show() {
 		stage.show();
 		stage.sizeToScene();
 		stage.centerOnScreen();
-	}
-
-	public void doneLoading() {
-		bottomBox.getChildren().set(0, continueButton);
+		loader.run();
 	}
 
 	public void setProgress(double progress) {
