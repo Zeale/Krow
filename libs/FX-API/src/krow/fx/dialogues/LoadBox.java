@@ -4,7 +4,6 @@ import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import javafx.concurrent.Task;
-import javafx.concurrent.Worker;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;

@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.concurrent.Worker;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -46,6 +45,8 @@ import kröw.core.managers.ProgramSettings;
 import kröw.core.managers.SoundManager;
 import kröw.core.managers.SystemProperties;
 import kröw.core.managers.SystemTrayManager;
+import kröw.data.protection.Domain.DomainFile;
+import kröw.data.protection.Protection;
 import kröw.gui.ApplicationManager;
 import sun.awt.shell.ShellFolder;
 import zeale.guis.Home;
@@ -415,15 +416,16 @@ public final class Kröw extends Application {
 		this.primaryStage = primaryStage;
 
 		Stage stage = new Stage(StageStyle.TRANSPARENT);
-		LoginBox box = new LoginBox(stage);
-		box.build();
-		box.setLoginHandler(event -> {
-			box.hide();
+		LoginBox loginBox = new LoginBox(stage);
+		loginBox.build();
+		loginBox.setLoginHandler(event -> {
+			loginBox.hide();
+
 			LoadBox loadBox = new LoadBox(primaryStage, stage);
 			loadBox.setLoader(loader);
 			loadBox.show();
 		});
-		box.show();
+		loginBox.show();
 
 	}
 
