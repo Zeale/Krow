@@ -1,7 +1,5 @@
 package krow.guis;
 
-import java.io.IOException;
-import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Random;
 
@@ -37,7 +35,6 @@ import krow.backgrounds.BackgroundBuilder;
 import krow.backgrounds.ShapeBackground;
 import kröw.core.Kröw;
 import kröw.gui.ApplicationManager;
-import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.Home;
 
 public final class GUIHelper {

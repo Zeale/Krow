@@ -2,7 +2,6 @@ package kröw.gui.events;
 
 import kröw.events.Event;
 import kröw.gui.Application;
-import kröw.gui.ApplicationManager;
 import kröw.gui.ApplicationManager.Frame;
 
 public class PageChangedEvent extends Event {

@@ -39,8 +39,8 @@ public class SoundManager {
 
 	/**
 	 * Plays the specified sound with a volume between <code>0.0f</code> and
-	 * <code>1.0f</code>. <code>0.0f</code> will play the sound at a volume of
-	 * zero, while <code>1.0f</code> will play the sound at its maximum volume.
+	 * <code>1.0f</code>. <code>0.0f</code> will play the sound at a volume of zero,
+	 * while <code>1.0f</code> will play the sound at its maximum volume.
 	 *
 	 * @param sound
 	 *            The sound to play.

@@ -404,7 +404,7 @@ public final class Kröw extends Application {
 		return output;
 	}
 
-	private static String username, password;
+	private static String username;
 
 	public static String getUsername() {
 		return username;
@@ -427,7 +427,6 @@ public final class Kröw extends Application {
 			loginBox.hide();
 
 			username = event.username;
-			password = event.password;
 
 			LoadBox loadBox = new LoadBox(stage) {
 
@@ -512,14 +511,6 @@ public final class Kröw extends Application {
 			return true;
 		}
 	};
-
-	private final Runnable SET_RANDOM_IMAGE_RUNNABLE = this::setRandomImage;
-
-	private void setRandomImage() {
-		if (!Platform.isFxApplicationThread())
-			Platform.runLater(SET_RANDOM_IMAGE_RUNNABLE);
-
-	}
 
 	public static class InitData {
 		public final Stage stage;
