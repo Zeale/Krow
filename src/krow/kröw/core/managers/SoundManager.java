@@ -29,12 +29,8 @@ public class SoundManager {
 	public final Sound TICK = new Sound(Kröw.class.getResource("/krow/resources/sounds/Tick0.wav"));
 	public final Sound POP = new Sound(Kröw.class.getResource("/krow/resources/sounds/Pop0.wav"));
 
-	public void playSound(final Sound s) {
-		try {
-			s.play();
-		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-			e.printStackTrace();
-		}
+	public void playSound(final Sound s) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+		s.play();
 	}
 
 	/**

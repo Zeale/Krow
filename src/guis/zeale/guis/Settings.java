@@ -2,8 +2,12 @@ package zeale.guis;
 
 import static kröw.core.Kröw.getProgramSettings;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -418,7 +422,10 @@ public class Settings extends Application {
 						settingsLabel.setText(getItem().text);
 						for (final Setting t : getItem().children)
 							optionBox.getRoot().getChildren().add(new TreeItem<>(t));
-						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+						try {
+							Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+						}
 					} else
 						updateItem(getItem(), isEmpty());
 
