@@ -23,6 +23,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -428,7 +429,19 @@ public final class Kröw extends Application {
 			username = event.username;
 			password = event.password;
 
-			LoadBox loadBox = new LoadBox(stage);
+			LoadBox loadBox = new LoadBox(stage) {
+
+				@Override
+				protected Image getNextImage() {
+					int rand = new Random().nextInt(13) + 1;
+					if (rand <= 4)
+						return new Image("/krow/resources/Kröw_hd.png");
+					else if (rand <= 8)
+						return new Image("/krow/resources/Settings.png");
+					else
+						return new Image("/krow/resources/Testing.png");
+				}
+			};
 			loadBox.setLoader(loader);
 			loadBox.setOnDoneLoading(() -> {
 				loadBox.close();
