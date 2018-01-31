@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public final class WindowBuilder {
@@ -51,6 +52,46 @@ public final class WindowBuilder {
 
 	protected final Button makeNewWindowButton = new Button("New Window");
 	protected final Button deleteFocusedWindowButton = new Button("Delete Focused Window");
+
+	/**
+	 * <p>
+	 * The default implementation of this class (meaning, not a subclass
+	 * implementation), caches the main window's root, as recommended in
+	 * {@link #setRoot(Parent)}.
+	 * <p>
+	 * {@link #pane} and {@link #root} are synonymous.
+	 * <p>
+	 * In the default implementation, (which is defined by this class), the GUI is
+	 * created using this {@link AnchorPane}.
+	 */
+	private final AnchorPane pane = new AnchorPane(makeNewWindowButton, deleteFocusedWindowButton), root = pane;
+	/**
+	 * Just like the default {@link #root}, the default {@link Scene} is cached as
+	 * well.
+	 */
+	private final Scene scene = new Scene(root);
+
+	{
+		stage.setScene(scene);
+	}
+
+	/**
+	 * <p>
+	 * Sets the root of this WindowBuilder's main window.
+	 * <p>
+	 * It is recommended for a subclass to keep its own reference to whatever they
+	 * pass into this method, since the {@link #getRoot()} method returns the root
+	 * casted to a {@link Parent}, and casting back to the root's real type will
+	 * need to take place.
+	 * 
+	 * @param root
+	 *            The new {@link Parent} object that will be the root of this
+	 *            WindowBuilder's main window. This can be retrieved using
+	 *            {@link #getRoot()}.
+	 */
+	protected void setRoot(Parent root) {
+		getScene().setRoot(root);
+	}
 
 	{
 		// This will disable any window-dependent nodes in this WindowBuilder's window.
