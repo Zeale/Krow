@@ -107,8 +107,38 @@ public final class WindowBuilder {
 	 * Shows this WindowBuilder's main window, <b>NOT the window of any of its
 	 * children.</b>
 	 */
-	public void show() {
+	public final void show() {
+		_beforeShown();
 		stage.show();
+		_afterShown();
+	}
+
+	/**
+	 * Called right after the main window is shown. Declared for overriding.
+	 */
+	protected void _afterShown() {
+
+	}
+
+	/**
+	 * Called right before the main window is shown. Declared for overriding.
+	 */
+	protected void _beforeShown() {
+
+	}
+
+	/**
+	 * Called right before the main window is hidden.
+	 */
+	protected void _beforeHidden() {
+
+	}
+
+	/**
+	 * Called right after the main window is hidden.
+	 */
+	protected void _afterHidden() {
+
 	}
 
 	public final void requestFocus() {
@@ -119,15 +149,17 @@ public final class WindowBuilder {
 	 * Hides this WindowBuilder's main window, <b>NOT the window of any of its
 	 * children.</b>
 	 */
-	public void hide() {
+	public final void hide() {
+		_beforeHidden();
 		stage.hide();
+		_afterHidden();
 	}
 
 	/**
 	 * A synonymous method for {@link #hide()}; this method simply calls
 	 * {@link #hide()} and returns.
 	 */
-	public void close() {
+	public final void close() {
 		hide();
 	}
 
