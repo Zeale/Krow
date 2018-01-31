@@ -1,5 +1,6 @@
 package zeale.guis.developer_page;
 
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.effect.DropShadow;
@@ -20,6 +21,7 @@ import kröw.gui.Application;
 import kröw.gui.ApplicationManager;
 import zeale.guis.Home;
 import zeale.guis.schedule_app.ScheduleApp;
+import zeale.windowbuilder.api.WindowBuilder;
 
 public class DeveloperApp extends Application {
 
@@ -109,9 +111,24 @@ public class DeveloperApp extends Application {
 		});
 		testing.setEffect(new DropShadow());
 
-		scroll.getChildren().addAll(console, scheduler, testing);
+		ImageView windowBuilder = new ImageView("/krow/resources/graphics/developer-app/Console.png");
+		windowBuilder.setOnMouseClicked(new EventHandler<Event>() {
+
+			@Override
+			public void handle(Event event) {
+				if (DeveloperApp.windowBuilder == null)
+					DeveloperApp.windowBuilder = new WindowBuilder();
+
+				DeveloperApp.windowBuilder.show();
+				DeveloperApp.windowBuilder.requestFocus();
+			}
+		});
+
+		scroll.getChildren().addAll(console, scheduler, testing, windowBuilder);
 
 		scroll.centerNodes();
 	}
+
+	private static WindowBuilder windowBuilder;
 
 }

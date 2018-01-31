@@ -111,6 +111,10 @@ public final class WindowBuilder {
 		stage.show();
 	}
 
+	public final void requestFocus() {
+		stage.requestFocus();
+	}
+
 	/**
 	 * Hides this WindowBuilder's main window, <b>NOT the window of any of its
 	 * children.</b>
