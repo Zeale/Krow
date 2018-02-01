@@ -7,8 +7,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -87,25 +85,14 @@ public final class WindowBuilder extends AbstractedWindow {
 
 	private final Button makeNewWindowButton = new Button("New Window");
 	{
-		makeNewWindowButton.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent event) {
-				addWindow(new Window());
-			}
-		});
+		makeNewWindowButton.setOnAction(event -> addWindow(new Window()));
 	}
 	private final Button deleteFocusedWindowButton = new Button("Delete Focused Window");
 	private final Button addTextButton = new Button("Add Text");
 	{
-		addTextButton.setOnAction(new EventHandler<ActionEvent>() {
-
-			@Override
-			public void handle(ActionEvent event) {
-				// Add a testing element that is clearly visible. (This works! :D)
-				selectedWindow.get().addNode(setupNode(new ImageView("/krow/resources/Testing.png")));
-			}
-		});
+		// TODO Add an actual button instead of a testing image.
+		addTextButton.setOnAction(
+				event -> selectedWindow.get().addNode(setupNode(new ImageView("/krow/resources/Testing.png"))));
 	}
 
 	private final TilePane nodeSelectionPane = new TilePane(makeNewWindowButton, deleteFocusedWindowButton,
@@ -164,6 +151,9 @@ public final class WindowBuilder extends AbstractedWindow {
 		deleteFocusedWindowButton.setDisable(true);
 	}
 
+	private final Effect NODE_EDIT_DRAG_EFFECT = new DropShadow(35, Color.GOLD),
+			NODE_EDIT_HOVER_EFFECT = new DropShadow(42, Color.BLACK);
+
 	private Node setupNode(Node node) {
 		node.addEventHandler(InputEvent.ANY, event -> {
 			if (editMode.get())
@@ -172,14 +162,14 @@ public final class WindowBuilder extends AbstractedWindow {
 
 		new Object() {
 			private double relX, relY;
-			private Effect effect;
+			private Effect dragHandlerEffectCache, hoverHandlerEffectCache;
 
 			{
 				node.addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
 					if (!editMode.get())
 						return;
-					effect = node.getEffect();
-					node.setEffect(new DropShadow(35, Color.GOLD));
+					dragHandlerEffectCache = node.getEffect();
+					node.setEffect(NODE_EDIT_DRAG_EFFECT);
 					relX = event.getX();
 					relY = event.getY();
 				});
@@ -194,7 +184,16 @@ public final class WindowBuilder extends AbstractedWindow {
 				node.addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
 					if (!editMode.get())
 						return;
-					node.setEffect(effect);
+					node.setEffect(dragHandlerEffectCache);
+				});
+
+				node.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
+					if (editMode.get() && node.getEffect() != NODE_EDIT_DRAG_EFFECT)
+						node.setEffect(NODE_EDIT_HOVER_EFFECT);
+				});
+				node.addEventFilter(MouseEvent.MOUSE_EXITED, event -> {
+					if (editMode.get() && node.getEffect() != NODE_EDIT_DRAG_EFFECT)
+						node.setEffect(hoverHandlerEffectCache);
 				});
 
 			}
