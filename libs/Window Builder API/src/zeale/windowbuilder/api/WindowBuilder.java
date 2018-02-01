@@ -58,11 +58,15 @@ public final class WindowBuilder extends AbstractedWindow {
 	 *            The window that will be set up.
 	 */
 	protected void setupWindow(Window window) {
+		window.focusedProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
+			if (newValue == true) {
+				selectedWindow.set(window);
+			}
+		});
 		window.show();
 	}
 
 	public WindowBuilder() {
-		// TODO Auto-generated constructor stub
 	}
 
 	{

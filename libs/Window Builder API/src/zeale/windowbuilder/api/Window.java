@@ -3,6 +3,7 @@ package zeale.windowbuilder.api;
 import java.util.LinkedList;
 import java.util.List;
 
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.scene.Node;
 
 public class Window extends AbstractedWindow {
@@ -13,7 +14,8 @@ public class Window extends AbstractedWindow {
 		return trackedNodes;
 	}
 
-	// TODO Bind to focused property to see if the window is "Selected." This might
-	// need to be done in the WindowBuilder class.
+	public ReadOnlyBooleanProperty focusedProperty() {
+		return stage.focusedProperty();
+	}
 
 }
