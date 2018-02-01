@@ -1,5 +1,8 @@
 package zeale.windowbuilder.api;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -7,13 +10,20 @@ import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 
 public final class WindowBuilder extends AbstractedWindow {
 
-	private final ObservableList<Stage> windows = FXCollections.observableArrayList();
+	private final ObservableList<Window> windows = FXCollections.observableArrayList();
+
+	private final CheckBox editModeBox = new CheckBox("Edit Mode");
+	private final BooleanProperty editMode = editModeBox.selectedProperty();
+
+	private final ObjectProperty<Window> selectedWindow = new SimpleObjectProperty<Window>(null);
 
 	/**
 	 * <p>
@@ -27,7 +37,7 @@ public final class WindowBuilder extends AbstractedWindow {
 	 * @throws WindowAlreadyContainedException
 	 *             If this WindowBuilder already contains the specified window.
 	 */
-	public void addWindow(Stage window) throws WindowAlreadyContainedException {
+	public void addWindow(Window window) throws WindowAlreadyContainedException {
 		if (windows.contains(window))
 			throw new WindowAlreadyContainedException(window);
 		windows.add(window);
@@ -42,7 +52,7 @@ public final class WindowBuilder extends AbstractedWindow {
 	 * @param window
 	 *            The window that will be set up.
 	 */
-	protected void setupWindow(Stage window) {
+	protected void setupWindow(Window window) {
 		window.show();
 	}
 
@@ -58,8 +68,14 @@ public final class WindowBuilder extends AbstractedWindow {
 		stage.heightProperty().addListener(listener);
 	}
 
+	// TODO Remove "protected" modifier, as this class is final and can't have
+	// subclasses. At first glance, the "private" modifier would probably be better.
+
+	// TODO Implement this button.
 	protected final Button makeNewWindowButton = new Button("New Window");
 	protected final Button deleteFocusedWindowButton = new Button("Delete Focused Window");
+
+	private final TilePane nodeSelectionPane = new TilePane(makeNewWindowButton, deleteFocusedWindowButton);
 
 	/**
 	 * <p>
@@ -72,14 +88,15 @@ public final class WindowBuilder extends AbstractedWindow {
 	 * In the default implementation, (which is defined by this class), the GUI is
 	 * created using this {@link AnchorPane}.
 	 */
-	private final TilePane pane = new TilePane(makeNewWindowButton, deleteFocusedWindowButton), root = pane;
-	
+	private final HBox pane = new HBox(nodeSelectionPane), root = pane;
+
 	/**
 	 * Just like the default {@link #root}, the default {@link Scene} is cached.
 	 */
 	private Scene scene = new Scene(root);
 
 	{
+		// TODO Make AbstractedWindow constructor take a scene obj.
 		stage.setScene(scene);
 	}
 
@@ -92,8 +109,8 @@ public final class WindowBuilder extends AbstractedWindow {
 	}
 
 	/**
-	 * @return <code>true</code> if this {@link WindowBuilder} is not managing any
-	 *         windows. <code>false</code> otherwise.
+	 * @return <code>true</code> if this {@link WindowBuilder} is managing one or
+	 *         more windows. <code>false</code> otherwise.
 	 */
 	public boolean isManagingWindows() {
 		return !windows.isEmpty();

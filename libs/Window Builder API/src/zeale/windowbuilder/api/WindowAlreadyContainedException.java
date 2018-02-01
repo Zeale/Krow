@@ -1,7 +1,5 @@
 package zeale.windowbuilder.api;
 
-import javafx.stage.Stage;
-
 public class WindowAlreadyContainedException extends IllegalArgumentException {
 
 	/**
@@ -9,9 +7,9 @@ public class WindowAlreadyContainedException extends IllegalArgumentException {
 	 */
 	private static final long serialVersionUID = -966672211157069133L;
 
-	public final Stage window;
+	public final Window window;
 
-	public WindowAlreadyContainedException(Stage window) {
+	public WindowAlreadyContainedException(Window window) {
 		this.window = window;
 	}
 

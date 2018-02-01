@@ -4,6 +4,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+//TODO Fix documentation.
 public class AbstractedWindow {
 
 	/**
@@ -75,28 +76,28 @@ public class AbstractedWindow {
 	 * Called right after the main window is shown. Declared for overriding.
 	 */
 	protected void _afterShown() {
-	
+
 	}
 
 	/**
 	 * Called right before the main window is shown. Declared for overriding.
 	 */
 	protected void _beforeShown() {
-	
+
 	}
 
 	/**
 	 * Called right before the main window is hidden.
 	 */
 	protected void _beforeHidden() {
-	
+
 	}
 
 	/**
 	 * Called right after the main window is hidden.
 	 */
 	protected void _afterHidden() {
-	
+
 	}
 
 	public final void requestFocus() {
@@ -139,7 +140,7 @@ public class AbstractedWindow {
 	 */
 	protected void resize(double width, double height) {
 		// TODO Resize children and lay them out correctly.
-	
+
 	}
 
 }
