@@ -7,6 +7,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -16,6 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 
+//TODO Make protected items into private items, as this class is final and there are no subclasses to inherit the protected visibility of this class's items.
 public final class WindowBuilder extends AbstractedWindow {
 
 	private final ObservableList<Window> windows = FXCollections.observableArrayList();
@@ -71,8 +76,16 @@ public final class WindowBuilder extends AbstractedWindow {
 	// TODO Remove "protected" modifier, as this class is final and can't have
 	// subclasses. At first glance, the "private" modifier would probably be better.
 
-	// TODO Implement this button.
 	protected final Button makeNewWindowButton = new Button("New Window");
+	{
+		makeNewWindowButton.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				addWindow(new Window());
+			}
+		});
+	}
 	protected final Button deleteFocusedWindowButton = new Button("Delete Focused Window");
 
 	private final TilePane nodeSelectionPane = new TilePane(makeNewWindowButton, deleteFocusedWindowButton);
@@ -129,6 +142,15 @@ public final class WindowBuilder extends AbstractedWindow {
 	 */
 	protected void disableWindowEditingElements() {
 		deleteFocusedWindowButton.setDisable(true);
+	}
+
+	private Node setupNode(Node node) {
+		node.addEventFilter(EventType.ROOT, event -> {
+			if (editMode.get())
+				event.consume();
+		});
+
+		return node;
 	}
 
 }
