@@ -1,5 +1,6 @@
 package zeale.windowbuilder.api;
 
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -10,6 +11,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public final class WindowBuilder {
+
+	private static final double DEFAULT_PREFERRED_STAGE_WIDTH = 1000, DEFAULT_PREFERRED_STAGE_HEIGHT = 800;
+	private static final double DEFAULT_MINIMUM_STAGE_WIDTH = 400, DEFAULT_MINIMUM_STAGE_HEIGHT = 400;
 
 	private final ObservableList<Stage> windows = FXCollections.observableArrayList();
 
@@ -50,6 +54,14 @@ public final class WindowBuilder {
 	 */
 	protected final Stage stage = new Stage();
 
+	{
+		// Add a listener to the stage's dimensions as soon as it is created.
+		ChangeListener<Number> listener = (observable, oldValue, newValue) -> resize(oldValue.doubleValue(),
+				newValue.doubleValue());
+		stage.widthProperty().addListener(listener);
+		stage.heightProperty().addListener(listener);
+	}
+
 	protected final Button makeNewWindowButton = new Button("New Window");
 	protected final Button deleteFocusedWindowButton = new Button("Delete Focused Window");
 
@@ -65,11 +77,17 @@ public final class WindowBuilder {
 	 * created using this {@link AnchorPane}.
 	 */
 	private final AnchorPane pane = new AnchorPane(makeNewWindowButton, deleteFocusedWindowButton), root = pane;
+	{
+		stage.setMinHeight(DEFAULT_MINIMUM_STAGE_HEIGHT);
+		stage.setMinWidth(DEFAULT_MINIMUM_STAGE_WIDTH);
+		stage.setWidth(DEFAULT_PREFERRED_STAGE_WIDTH);
+		stage.setHeight(DEFAULT_PREFERRED_STAGE_HEIGHT);
+	}
+
 	/**
-	 * Just like the default {@link #root}, the default {@link Scene} is cached as
-	 * well.
+	 * Just like the default {@link #root}, the default {@link Scene} is cached.
 	 */
-	private final Scene scene = new Scene(root);
+	private Scene scene = new Scene(root);
 
 	{
 		stage.setScene(scene);
@@ -210,6 +228,10 @@ public final class WindowBuilder {
 	 * <p>
 	 * This method should perform any necessary layout changes that depend on the
 	 * size of the main window.
+	 * <p>
+	 * It is an exigency that <i>this method does not resize the stage itself</i>,
+	 * as this will result in infinite recursion. (By that logic, it should not
+	 * resize something that should, in turn, resize the {@link #stage}.)
 	 * 
 	 * @param width
 	 *            The new width of the window.
@@ -217,7 +239,8 @@ public final class WindowBuilder {
 	 *            The new height of the window.
 	 */
 	protected void resize(double width, double height) {
-		// TODO
+		// TODO Resize children and lay them out correctly.
+
 	}
 
 }
