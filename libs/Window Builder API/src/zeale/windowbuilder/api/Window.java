@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 
+//TODO This will soon need to be savable.....
 public class Window extends AbstractedWindow {
 
 	private AnchorPane pane = new AnchorPane(), root = pane;

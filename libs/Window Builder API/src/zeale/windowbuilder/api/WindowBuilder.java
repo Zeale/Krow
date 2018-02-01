@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.InputEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
@@ -161,10 +162,29 @@ public final class WindowBuilder extends AbstractedWindow {
 	}
 
 	private Node setupNode(Node node) {
-		node.addEventFilter(InputEvent.ANY, event -> {
+		node.addEventHandler(InputEvent.ANY, event -> {
 			if (editMode.get())
 				event.consume();
 		});
+
+		new Object() {
+			private double relX, relY;
+			{
+				node.addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
+					if (!editMode.get())
+						return;
+					relX = event.getX();
+					relY = event.getY();
+				});
+
+				node.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> {
+					if (!editMode.get())
+						return;
+					node.setLayoutX(event.getSceneX() - relX);
+					node.setLayoutY(event.getSceneY() - relY);
+				});
+			}
+		};
 
 		return node;
 	}
