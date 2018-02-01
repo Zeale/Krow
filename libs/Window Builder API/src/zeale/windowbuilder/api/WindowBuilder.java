@@ -9,12 +9,13 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.InputEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
@@ -22,6 +23,7 @@ import javafx.stage.Stage;
 
 public final class WindowBuilder extends AbstractedWindow {
 
+	// TODO Make owned windows close when this builder closes.
 	private final ObservableList<Window> windows = FXCollections.observableArrayList();
 
 	private final CheckBox editModeBox = new CheckBox("Edit Mode");
@@ -90,8 +92,20 @@ public final class WindowBuilder extends AbstractedWindow {
 		});
 	}
 	private final Button deleteFocusedWindowButton = new Button("Delete Focused Window");
+	private final Button addTextButton = new Button("Add Text");
+	{
+		addTextButton.setOnAction(new EventHandler<ActionEvent>() {
 
-	private final TilePane nodeSelectionPane = new TilePane(makeNewWindowButton, deleteFocusedWindowButton);
+			@Override
+			public void handle(ActionEvent event) {
+				// Add a testing element that is clearly visible. (This works! :D)
+				selectedWindow.get().addNode(setupNode(new ImageView("/krow/resources/Testing.png")));
+			}
+		});
+	}
+
+	private final TilePane nodeSelectionPane = new TilePane(makeNewWindowButton, deleteFocusedWindowButton,
+			addTextButton, editModeBox);
 
 	/**
 	 * <p>
@@ -112,7 +126,6 @@ public final class WindowBuilder extends AbstractedWindow {
 	private Scene scene = new Scene(root);
 
 	{
-		// TODO Make AbstractedWindow constructor take a scene obj.
 		stage.setScene(scene);
 	}
 
@@ -148,7 +161,7 @@ public final class WindowBuilder extends AbstractedWindow {
 	}
 
 	private Node setupNode(Node node) {
-		node.addEventFilter(EventType.ROOT, event -> {
+		node.addEventFilter(InputEvent.ANY, event -> {
 			if (editMode.get())
 				event.consume();
 		});

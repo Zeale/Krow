@@ -5,7 +5,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 //TODO Fix documentation.
-public class AbstractedWindow {
+public abstract class AbstractedWindow {
 
 	/**
 	 * This {@link WindowBuilder}'s main window. This is the {@link Stage} that the
