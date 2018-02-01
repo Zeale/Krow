@@ -14,12 +14,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Effect;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.InputEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public final class WindowBuilder extends AbstractedWindow {
@@ -169,10 +172,14 @@ public final class WindowBuilder extends AbstractedWindow {
 
 		new Object() {
 			private double relX, relY;
+			private Effect effect;
+
 			{
 				node.addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
 					if (!editMode.get())
 						return;
+					effect = node.getEffect();
+					node.setEffect(new DropShadow(35, Color.GOLD));
 					relX = event.getX();
 					relY = event.getY();
 				});
@@ -183,6 +190,13 @@ public final class WindowBuilder extends AbstractedWindow {
 					node.setLayoutX(event.getSceneX() - relX);
 					node.setLayoutY(event.getSceneY() - relY);
 				});
+
+				node.addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
+					if (!editMode.get())
+						return;
+					node.setEffect(effect);
+				});
+
 			}
 		};
 
