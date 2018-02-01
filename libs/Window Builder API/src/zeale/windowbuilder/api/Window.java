@@ -7,6 +7,7 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.WindowEvent;
 
 //TODO This will soon need to be savable.....
 public class Window extends AbstractedWindow {
@@ -14,6 +15,7 @@ public class Window extends AbstractedWindow {
 	private AnchorPane pane = new AnchorPane(), root = pane;
 	{
 		stage.setScene(new Scene(root));
+		stage.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, event -> event.consume());
 	}
 
 	private List<Node> trackedNodes = new LinkedList<>();
