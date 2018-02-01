@@ -20,7 +20,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 
-//TODO Make protected items into private items, as this class is final and there are no subclasses to inherit the protected visibility of this class's items.
 public final class WindowBuilder extends AbstractedWindow {
 
 	private final ObservableList<Window> windows = FXCollections.observableArrayList();
@@ -57,7 +56,7 @@ public final class WindowBuilder extends AbstractedWindow {
 	 * @param window
 	 *            The window that will be set up.
 	 */
-	protected void setupWindow(Window window) {
+	private void setupWindow(Window window) {
 		window.focusedProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 			if (newValue == true) {
 				selectedWindow.set(window);
@@ -80,7 +79,7 @@ public final class WindowBuilder extends AbstractedWindow {
 	// TODO Remove "protected" modifier, as this class is final and can't have
 	// subclasses. At first glance, the "private" modifier would probably be better.
 
-	protected final Button makeNewWindowButton = new Button("New Window");
+	private final Button makeNewWindowButton = new Button("New Window");
 	{
 		makeNewWindowButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -90,7 +89,7 @@ public final class WindowBuilder extends AbstractedWindow {
 			}
 		});
 	}
-	protected final Button deleteFocusedWindowButton = new Button("Delete Focused Window");
+	private final Button deleteFocusedWindowButton = new Button("Delete Focused Window");
 
 	private final TilePane nodeSelectionPane = new TilePane(makeNewWindowButton, deleteFocusedWindowButton);
 
@@ -144,7 +143,7 @@ public final class WindowBuilder extends AbstractedWindow {
 	 * the text node to. The "Add Text Node" button would be disabled in this
 	 * method, in such a case.
 	 */
-	protected void disableWindowEditingElements() {
+	private void disableWindowEditingElements() {
 		deleteFocusedWindowButton.setDisable(true);
 	}
 
