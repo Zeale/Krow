@@ -4,7 +4,6 @@ import java.awt.AWTException;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.io.IOException;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -31,7 +30,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
+import javafx.scene.web.PromptData;
 import javafx.stage.Stage;
+import krow.fx.dialogues.PromptDialogue;
 
 public final class WindowBuilder extends AbstractedWindow {
 
@@ -126,8 +127,11 @@ public final class WindowBuilder extends AbstractedWindow {
 	private final Button addTextButton = new Button("Add Text");
 	{
 		// TODO Add an actual button instead of a testing image.
-		addTextButton.setOnAction(
-				event -> selectedWindow.get().addNode(setupNode(new ImageView("/krow/resources/Testing.png"))));
+		addTextButton.setOnAction(event -> {
+
+			String name = PromptDialogue.promptString("Enter the text for the button to show:");
+			selectedWindow.get().addNode(setupNode(new Button(name)));
+		});
 	}
 
 	private final TilePane nodeSelectionPane = new TilePane(makeNewWindowButton, deleteFocusedWindowButton,
