@@ -22,15 +22,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Effect;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.InputEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
-import javafx.scene.web.PromptData;
 import javafx.stage.Stage;
 import krow.fx.dialogues.PromptDialogue;
 
@@ -40,6 +37,11 @@ public final class WindowBuilder extends AbstractedWindow {
 
 	public boolean isTrayIconAvailable() {
 		return trayIconAvailable;
+	}
+
+	public void hideIcon() {
+		if (isTrayIconAvailable())
+			SystemTray.getSystemTray().remove(icon);
 	}
 
 	private boolean trayIconAvailable;
@@ -121,7 +123,7 @@ public final class WindowBuilder extends AbstractedWindow {
 
 	private final Button makeNewWindowButton = new Button("New Window");
 	{
-		makeNewWindowButton.setOnAction(event -> addWindow(new Window()));
+		makeNewWindowButton.setOnAction(event -> addWindow(new Window(this)));
 	}
 	private final Button deleteFocusedWindowButton = new Button("Delete Focused Window");
 	private final Button addTextButton = new Button("Add Text");
@@ -197,7 +199,11 @@ public final class WindowBuilder extends AbstractedWindow {
 		NODE_EDIT_BLUE_GLOW.setSpread(0.2);
 	}
 
-	private Node setupNode(Node node) {
+	private <T extends Node> NodeWrapper<T> setupNode(T node) {
+
+		// Instead of passing in the selected window, it may be better to pass in a
+		// parameter.
+		NodeWrapper<T> wrapper = new NodeWrapper<T>(node, selectedWindow.get());
 
 		node.addEventHandler(InputEvent.ANY, event -> {
 			if (editMode.get())
@@ -206,7 +212,6 @@ public final class WindowBuilder extends AbstractedWindow {
 
 		new Object() {
 			private double relX, relY;
-			private Effect hoverCache, clickCache;
 			private boolean dragDetected;
 
 			{
@@ -214,22 +219,19 @@ public final class WindowBuilder extends AbstractedWindow {
 				node.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
 					if (!editMode.get())
 						return;
-					hoverCache = node.getEffect();
-					node.setEffect(NODE_EDIT_BLACK_GLOW);
+					wrapper.pushEditEffect(NODE_EDIT_BLACK_GLOW);
 				});
 
 				node.addEventFilter(MouseEvent.MOUSE_EXITED, event -> {
 					if (!editMode.get())
 						return;
-					node.setEffect(hoverCache);
-					hoverCache = null;
+					wrapper.removeEditEffect();
 				});
 
 				node.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
 					if (!editMode.get())
 						return;
-					clickCache = node.getEffect();
-					node.setEffect(NODE_EDIT_BLUE_GLOW);
+					wrapper.pushEditEffect(NODE_EDIT_BLUE_GLOW);
 					relX = event.getX();
 					relY = event.getY();
 				});
@@ -239,8 +241,13 @@ public final class WindowBuilder extends AbstractedWindow {
 					public void handle(MouseEvent event) {
 						if (!editMode.get())
 							return;
-						node.setEffect(clickCache);
-						clickCache = null;
+
+						// If the last effect was from the click, it's removed from the stack. If the
+						// last effect was from a drag, it is removed from the stack, and we remove the
+						// click effect below.
+						wrapper.removeEditEffect();
+						if (dragDetected)
+							wrapper.removeEditEffect();
 						dragDetected = false;
 					}
 				});
@@ -251,7 +258,7 @@ public final class WindowBuilder extends AbstractedWindow {
 						if (!editMode.get())
 							return;
 						dragDetected = true;
-						node.setEffect(NODE_EDIT_GOLD_GLOW);
+						wrapper.pushEditEffect(NODE_EDIT_GOLD_GLOW);
 					}
 				});
 
@@ -265,7 +272,7 @@ public final class WindowBuilder extends AbstractedWindow {
 			}
 		};
 
-		return node;
+		return wrapper;
 	}
 
 }

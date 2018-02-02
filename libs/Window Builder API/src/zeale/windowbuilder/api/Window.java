@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.WindowEvent;
@@ -13,14 +12,24 @@ import javafx.stage.WindowEvent;
 public class Window extends AbstractedWindow {
 
 	private AnchorPane pane = new AnchorPane(), root = pane;
+	private WindowBuilder owner;
+
+	public WindowBuilder getOwner() {
+		return owner;
+	}
+
 	{
 		stage.setScene(new Scene(root));
 		stage.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, event -> event.consume());
 	}
 
-	private List<Node> trackedNodes = new LinkedList<>();
+	public Window(WindowBuilder owner) {
+		this.owner = owner;
+	}
 
-	public List<Node> getTrackedNodes() {
+	private List<NodeWrapper<?>> trackedNodes = new LinkedList<>();
+
+	public List<NodeWrapper<?>> getTrackedNodes() {
 		return trackedNodes;
 	}
 
@@ -28,9 +37,9 @@ public class Window extends AbstractedWindow {
 		return stage.focusedProperty();
 	}
 
-	public void addNode(Node node) {
-		trackedNodes.add(node);
-		pane.getChildren().add(node);
+	public void addNode(NodeWrapper<?> nodeWrapper) {
+		trackedNodes.add(nodeWrapper);
+		pane.getChildren().add(nodeWrapper.getNode());
 	}
 
 }
