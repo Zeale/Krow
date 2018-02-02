@@ -1,7 +1,14 @@
 package zeale.windowbuilder.api;
 
-import java.util.Stack;
+import java.awt.AWTException;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
+import java.io.IOException;
+import java.util.List;
 
+import javax.imageio.ImageIO;
+
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -27,6 +34,39 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public final class WindowBuilder extends AbstractedWindow {
+
+	private final TrayIcon icon;
+
+	public boolean isTrayIconAvailable() {
+		return trayIconAvailable;
+	}
+
+	private boolean trayIconAvailable;
+
+	{
+		TrayIcon icon = null;
+		try {
+			icon = new TrayIcon(ImageIO.read(getClass().getResourceAsStream("/krow/resources/Testing.png")));
+			icon.setToolTip("WindowBuilder");
+			icon.setImageAutoSize(true);
+			icon.addActionListener(e -> Platform.runLater(() -> stage.show()));
+			try {
+				SystemTray.getSystemTray().add(icon);
+			} catch (AWTException e1) {
+				trayIconAvailable = false;
+			}
+		} catch (IOException e) {
+			trayIconAvailable = false;
+		}
+		this.icon = icon;
+
+		// Add a listener to the stage's dimensions as soon as it is created.
+		ChangeListener<Number> listener = (observable, oldValue, newValue) -> resize(oldValue.doubleValue(),
+				newValue.doubleValue());
+		stage.widthProperty().addListener(listener);
+		stage.heightProperty().addListener(listener);
+
+	}
 
 	// TODO Make owned windows close when this builder closes.
 	private final ObservableList<Window> windows = FXCollections.observableArrayList();
@@ -73,14 +113,6 @@ public final class WindowBuilder extends AbstractedWindow {
 	}
 
 	public WindowBuilder() {
-	}
-
-	{
-		// Add a listener to the stage's dimensions as soon as it is created.
-		ChangeListener<Number> listener = (observable, oldValue, newValue) -> resize(oldValue.doubleValue(),
-				newValue.doubleValue());
-		stage.widthProperty().addListener(listener);
-		stage.heightProperty().addListener(listener);
 	}
 
 	// TODO Remove "protected" modifier, as this class is final and can't have
