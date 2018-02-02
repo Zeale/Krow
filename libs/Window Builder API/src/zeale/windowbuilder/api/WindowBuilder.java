@@ -1,5 +1,7 @@
 package zeale.windowbuilder.api;
 
+import java.util.Stack;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -7,6 +9,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -151,10 +154,15 @@ public final class WindowBuilder extends AbstractedWindow {
 		deleteFocusedWindowButton.setDisable(true);
 	}
 
-	private final Effect NODE_EDIT_DRAG_EFFECT = new DropShadow(35, Color.GOLD),
-			NODE_EDIT_HOVER_EFFECT = new DropShadow(42, Color.BLACK);
+	private static final DropShadow NODE_EDIT_GOLD_GLOW = new DropShadow(35, Color.GOLD),
+			NODE_EDIT_BLACK_GLOW = new DropShadow(42, Color.BLACK),
+			NODE_EDIT_BLUE_GLOW = new DropShadow(40, Color.CORNFLOWERBLUE);
+	{
+		NODE_EDIT_BLUE_GLOW.setSpread(0.2);
+	}
 
 	private Node setupNode(Node node) {
+
 		node.addEventHandler(InputEvent.ANY, event -> {
 			if (editMode.get())
 				event.consume();
@@ -162,38 +170,60 @@ public final class WindowBuilder extends AbstractedWindow {
 
 		new Object() {
 			private double relX, relY;
-			private Effect dragHandlerEffectCache, hoverHandlerEffectCache;
+			private Effect hoverCache, clickCache;
+			private boolean dragDetected;
 
 			{
-				node.addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
+
+				node.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
 					if (!editMode.get())
 						return;
-					dragHandlerEffectCache = node.getEffect();
-					node.setEffect(NODE_EDIT_DRAG_EFFECT);
+					hoverCache = node.getEffect();
+					node.setEffect(NODE_EDIT_BLACK_GLOW);
+				});
+
+				node.addEventFilter(MouseEvent.MOUSE_EXITED, event -> {
+					if (!editMode.get())
+						return;
+					node.setEffect(hoverCache);
+					hoverCache = null;
+				});
+
+				node.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+					if (!editMode.get())
+						return;
+					clickCache = node.getEffect();
+					node.setEffect(NODE_EDIT_BLUE_GLOW);
 					relX = event.getX();
 					relY = event.getY();
 				});
 
+				node.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(MouseEvent event) {
+						if (!editMode.get())
+							return;
+						node.setEffect(clickCache);
+						clickCache = null;
+						dragDetected = false;
+					}
+				});
+
+				node.addEventFilter(MouseEvent.DRAG_DETECTED, new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(MouseEvent event) {
+						if (!editMode.get())
+							return;
+						dragDetected = true;
+						node.setEffect(NODE_EDIT_GOLD_GLOW);
+					}
+				});
+
 				node.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> {
-					if (!editMode.get())
+					if (!(editMode.get() && dragDetected))
 						return;
 					node.setLayoutX(event.getSceneX() - relX);
 					node.setLayoutY(event.getSceneY() - relY);
-				});
-
-				node.addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
-					if (!editMode.get())
-						return;
-					node.setEffect(dragHandlerEffectCache);
-				});
-
-				node.addEventFilter(MouseEvent.MOUSE_ENTERED, event -> {
-					if (editMode.get() && node.getEffect() != NODE_EDIT_DRAG_EFFECT)
-						node.setEffect(NODE_EDIT_HOVER_EFFECT);
-				});
-				node.addEventFilter(MouseEvent.MOUSE_EXITED, event -> {
-					if (editMode.get() && node.getEffect() != NODE_EDIT_DRAG_EFFECT)
-						node.setEffect(hoverHandlerEffectCache);
 				});
 
 			}
