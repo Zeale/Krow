@@ -295,6 +295,7 @@ public final class Kröw extends Application {
 					}
 				}
 		Platform.exit();
+		System.exit(0);
 	}
 
 	public static final Image getImageFromFile(final File dir, final int width, final int height)
