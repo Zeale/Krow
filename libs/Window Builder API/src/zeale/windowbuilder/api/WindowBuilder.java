@@ -1,15 +1,7 @@
 package zeale.windowbuilder.api;
 
-import java.awt.AWTException;
-import java.awt.SystemTray;
-import java.awt.TrayIcon;
-import java.io.IOException;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import javax.imageio.ImageIO;
-
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -28,7 +20,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -37,42 +28,12 @@ import krow.fx.dialogues.promptdialogues.PromptFactory;
 
 public final class WindowBuilder extends AbstractedWindow {
 
-	private final TrayIcon icon;
-
-	public boolean isTrayIconAvailable() {
-		return trayIconAvailable;
-	}
-
-	public void hideIcon() {
-		if (isTrayIconAvailable())
-			SystemTray.getSystemTray().remove(icon);
-	}
-
-	private boolean trayIconAvailable;
-
 	{
-		TrayIcon icon = null;
-		try {
-			icon = new TrayIcon(ImageIO.read(getClass().getResourceAsStream("/krow/resources/Testing.png")));
-			icon.setToolTip("WindowBuilder");
-			icon.setImageAutoSize(true);
-			icon.addActionListener(e -> Platform.runLater(() -> stage.show()));
-			try {
-				SystemTray.getSystemTray().add(icon);
-			} catch (AWTException e1) {
-				trayIconAvailable = false;
-			}
-		} catch (IOException e) {
-			trayIconAvailable = false;
-		}
-		this.icon = icon;
-
 		// Add a listener to the stage's dimensions as soon as it is created.
 		ChangeListener<Number> listener = (observable, oldValue, newValue) -> resize(oldValue.doubleValue(),
 				newValue.doubleValue());
 		stage.widthProperty().addListener(listener);
 		stage.heightProperty().addListener(listener);
-
 	}
 
 	// TODO Make owned windows close when this builder closes.
@@ -112,9 +73,8 @@ public final class WindowBuilder extends AbstractedWindow {
 	 */
 	private void setupWindow(Window window) {
 		window.focusedProperty().addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
-			if (newValue == true) {
+			if (newValue == true)
 				selectedWindow.set(window);
-			}
 		});
 		window.show();
 	}
