@@ -8,7 +8,7 @@
 <br>
 <h3 align="center">Welcome to Kröw</h3>
 <br>
-<p align="center">Kröw is a Java based desktop application made to exist. Kröw is split into <em>apps</em>, (more on that below...), and is mainly meant as a display/personal app.</p>
+<p align="center">Kröw is a Java based desktop application. Kröw is split into <em>apps</em>, (more on that below...), and is mainly meant as a display/personal program.</p>
 <br>
 <br>
 <br>
