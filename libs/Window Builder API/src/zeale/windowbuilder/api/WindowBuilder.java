@@ -4,6 +4,8 @@ import java.awt.AWTException;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 
@@ -15,7 +17,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -23,13 +24,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.InputEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import krow.fx.dialogues.PromptDialogue;
+import krow.fx.dialogues.promptdialogues.PromptDialogue;
+import krow.fx.dialogues.promptdialogues.PromptFactory;
 
 public final class WindowBuilder extends AbstractedWindow {
 
@@ -118,9 +122,6 @@ public final class WindowBuilder extends AbstractedWindow {
 	public WindowBuilder() {
 	}
 
-	// TODO Remove "protected" modifier, as this class is final and can't have
-	// subclasses. At first glance, the "private" modifier would probably be better.
-
 	private final Button makeNewWindowButton = new Button("New Window");
 	{
 		makeNewWindowButton.setOnAction(event -> addWindow(new Window(this)));
@@ -128,13 +129,48 @@ public final class WindowBuilder extends AbstractedWindow {
 	private final Button deleteFocusedWindowButton = new Button("Delete Focused Window");
 	private final Button addTextButton = new Button("Add Text");
 	{
-		// TODO Add an actual button instead of a testing image.
-		addTextButton.setOnAction(event -> {
 
-			String name = PromptDialogue.promptString("Enter the text for the button to show:");
-			selectedWindow.get().addNode(setupNode(new Button(name)));
+		// Testing the PromptDialogue class and its features.
+		addTextButton.setOnAction(event -> {
+			if (selectedWindow.get() == null)
+				return;
+
+			String name = PromptFactory.promptString("Enter the text for the button to show:");
+			NodeWrapper<Button> wrapper = setupNode(new Button(name));
+			wrapper.getNode().addEventFilter(MouseEvent.MOUSE_CLICKED, event1 -> {
+				if (editMode.get() && event1.getButton() == MouseButton.SECONDARY) {
+
+					PromptDialogue<Object> prompt = new PromptDialogue<>("New Button");
+					Object width = new Object(), length = new Object(), text = new Object(), id = new Object();
+
+					prompt.new Prompt(width, "Button Width:");
+					prompt.new Prompt(length, "Button Length:");
+					prompt.new Prompt(text, "Button Text:");
+					prompt.new Prompt(id, "Button ID:");
+
+					Map<Object, String> map = prompt.showAndWait().orElse(null);
+					if (map == null)
+						throw new RuntimeException("Prompt Error");
+					try {
+						wrapper.getNode().setPrefWidth(Double.parseDouble(map.get(length)));
+					} catch (Exception e) {
+					}
+
+					try {
+						wrapper.getNode().setPrefHeight(Double.parseDouble(map.get(width)));
+					} catch (Exception e) {
+					}
+
+					wrapper.getNode().setText(map.get(text));
+					wrapper.getNode().getProperties().put(NODE_ID_KEY, id);
+
+				}
+			});
+			selectedWindow.get().addNode(wrapper);
 		});
 	}
+
+	private static final Object NODE_ID_KEY = new Object();
 
 	private final TilePane nodeSelectionPane = new TilePane(makeNewWindowButton, deleteFocusedWindowButton,
 			addTextButton, editModeBox);
@@ -231,35 +267,37 @@ public final class WindowBuilder extends AbstractedWindow {
 				node.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
 					if (!editMode.get())
 						return;
+
+					if (event.getButton() != MouseButton.PRIMARY)
+						return;
+
 					wrapper.pushEditEffect(NODE_EDIT_BLUE_GLOW);
 					relX = event.getX();
 					relY = event.getY();
 				});
 
-				node.addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
-					@Override
-					public void handle(MouseEvent event) {
-						if (!editMode.get())
-							return;
+				node.addEventFilter(MouseEvent.MOUSE_RELEASED, event -> {
+					if (!editMode.get())
+						return;
 
-						// If the last effect was from the click, it's removed from the stack. If the
-						// last effect was from a drag, it is removed from the stack, and we remove the
-						// click effect below.
+					if (event.getButton() != MouseButton.PRIMARY)
+						return;
+
+					// If the last effect was from the click, it's removed from the stack. If the
+					// last effect was from a drag, it is removed from the stack, and we remove the
+					// click effect below.
+					wrapper.removeEditEffect();
+					if (dragDetected)
 						wrapper.removeEditEffect();
-						if (dragDetected)
-							wrapper.removeEditEffect();
-						dragDetected = false;
-					}
+					dragDetected = false;
 				});
 
-				node.addEventFilter(MouseEvent.DRAG_DETECTED, new EventHandler<MouseEvent>() {
-					@Override
-					public void handle(MouseEvent event) {
-						if (!editMode.get())
-							return;
-						dragDetected = true;
-						wrapper.pushEditEffect(NODE_EDIT_GOLD_GLOW);
-					}
+				node.addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
+					if (!editMode.get())
+						return;
+
+					dragDetected = true;
+					wrapper.pushEditEffect(NODE_EDIT_GOLD_GLOW);
 				});
 
 				node.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> {

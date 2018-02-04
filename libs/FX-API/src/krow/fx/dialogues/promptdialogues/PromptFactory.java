@@ -1,4 +1,4 @@
-package krow.fx.dialogues;
+package krow.fx.dialogues.promptdialogues;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
@@ -6,7 +6,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-public final class PromptDialogue {
+public final class PromptFactory {
 	public static String promptString(String prompt, String hint) {
 		Dialog<String> dialog = new Dialog<>();
 
