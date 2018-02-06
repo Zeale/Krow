@@ -6,21 +6,25 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.input.InputEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import krow.fx.dialogues.promptdialogues.PromptDialogue;
@@ -132,8 +136,33 @@ public final class WindowBuilder extends AbstractedWindow {
 
 	private static final Object NODE_ID_KEY = new Object();
 
-	private final TilePane nodeSelectionPane = new TilePane(makeNewWindowButton, deleteFocusedWindowButton,
-			addTextButton, editModeBox);
+	private final VBox optionsBox = new VBox(25, makeNewWindowButton, deleteFocusedWindowButton, addTextButton,
+			editModeBox);
+
+	private final Tab nodesTab = new Tab("Nodes");
+	private final Tab optionsTab = new Tab("Options");
+
+	private final TilePane nodeSelectionPane = new TilePane();
+	{
+		optionsTab.setContent(optionsBox);
+		nodesTab.setContent(nodeSelectionPane);
+	}
+
+	private static final Object NODE_SELECTION_BUTTON_KEY = new Object();
+	{
+		nodeSelectionPane.setPadding(new Insets(30));
+		selectedWindow.addListener(new ChangeListener<Window>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Window> observable, Window oldValue, Window newValue) {
+				nodeSelectionPane.getChildren().clear();
+				for (NodeWrapper<?> n : newValue.getTrackedNodes()) {
+					Button button = new Button();
+					button.getProperties().put(NODE_SELECTION_BUTTON_KEY, n);
+				}
+			}
+		});
+	}
 
 	/**
 	 * <p>
@@ -146,7 +175,7 @@ public final class WindowBuilder extends AbstractedWindow {
 	 * In the default implementation, (which is defined by this class), the GUI is
 	 * created using this {@link AnchorPane}.
 	 */
-	private final HBox pane = new HBox(nodeSelectionPane), root = pane;
+	private final TabPane pane = new TabPane(optionsTab, nodesTab), root = pane;
 
 	/**
 	 * Just like the default {@link #root}, the default {@link Scene} is cached.
