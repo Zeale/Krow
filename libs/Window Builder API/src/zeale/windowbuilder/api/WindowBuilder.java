@@ -101,7 +101,7 @@ public final class WindowBuilder extends AbstractedWindow {
 			Object textKey = new Object(), idKey = new Object();
 
 			buttonPrompt.new BasicPrompt(textKey, "Button Text:");
-			buttonPrompt.new BasicPrompt(idKey, "Button ID:");
+			buttonPrompt.new BasicPrompt(idKey, "Button ID:").setRequired(true);
 
 			Map<Object, String> promptedData = buttonPrompt.showAndWait().orElse(null);
 
@@ -168,7 +168,6 @@ public final class WindowBuilder extends AbstractedWindow {
 	{
 		nodeSelectionPane.setPadding(new Insets(30));
 		selectedWindow.addListener((ChangeListener<Window>) (observable, oldValue, newValue) -> {
-			System.out.println("ABCD");
 			if (selectedWindow.isNull().get())
 				return;
 			nodeSelectionPane.getChildren().clear();
