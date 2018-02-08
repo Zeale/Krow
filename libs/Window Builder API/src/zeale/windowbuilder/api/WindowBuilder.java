@@ -97,11 +97,11 @@ public final class WindowBuilder extends AbstractedWindow {
 			if (selectedWindow.get() == null)
 				return;
 
-			PromptDialogue<Object> buttonPrompt = new PromptDialogue<>("New Button");
+			PromptDialogue<Object, String> buttonPrompt = new PromptDialogue<>("New Button");
 			Object textKey = new Object(), idKey = new Object();
 
-			buttonPrompt.new Prompt(textKey, "Button Text:");
-			buttonPrompt.new Prompt(idKey, "Button ID:");
+			buttonPrompt.new BasicPrompt(textKey, "Button Text:");
+			buttonPrompt.new BasicPrompt(idKey, "Button ID:");
 
 			Map<Object, String> promptedData = buttonPrompt.showAndWait().orElse(null);
 
@@ -112,13 +112,13 @@ public final class WindowBuilder extends AbstractedWindow {
 				wrapper.getNode().addEventFilter(MouseEvent.MOUSE_CLICKED, event1 -> {
 					if (editMode.get() && event1.getButton() == MouseButton.SECONDARY) {
 
-						PromptDialogue<Object> prompt = new PromptDialogue<>("New Button");
+						PromptDialogue<Object, String> prompt = new PromptDialogue<>("New Button");
 						Object width = new Object(), length = new Object(), text = new Object(), id = new Object();
 
-						prompt.new Prompt(width, "Button Width:");
-						prompt.new Prompt(length, "Button Length:");
-						prompt.new Prompt(text, "Button Text:");
-						prompt.new Prompt(id, "Button ID:");
+						prompt.new BasicPrompt(width, "Button Width:");
+						prompt.new BasicPrompt(length, "Button Length:");
+						prompt.new BasicPrompt(text, "Button Text:");
+						prompt.new BasicPrompt(id, "Button ID:");
 
 						Map<Object, String> map = prompt.showAndWait().orElse(null);
 						if (map == null)
