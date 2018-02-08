@@ -75,6 +75,17 @@ public final class PromptFactory {
 			return Double.parseDouble(field.getText());
 		}
 
+		@Override
+		protected boolean verifyValue() {
+			try {
+				Double.parseDouble(field.getText());
+			} catch (Exception e) {
+				return false;
+			}
+
+			return true;
+		}
+
 	}
 
 }
