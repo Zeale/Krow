@@ -6,7 +6,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -28,7 +27,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import krow.fx.dialogues.promptdialogues.PromptDialogue;
-import krow.fx.dialogues.promptdialogues.PromptFactory;
 
 public final class WindowBuilder extends AbstractedWindow {
 
@@ -99,42 +97,60 @@ public final class WindowBuilder extends AbstractedWindow {
 			if (selectedWindow.get() == null)
 				return;
 
-			String name = PromptFactory.promptString("Enter the text for the button to show:");
-			NodeWrapper<Button> wrapper = setupNode(new Button(name));
-			wrapper.getNode().addEventFilter(MouseEvent.MOUSE_CLICKED, event1 -> {
-				if (editMode.get() && event1.getButton() == MouseButton.SECONDARY) {
+			PromptDialogue<Object> buttonPrompt = new PromptDialogue<>("New Button");
+			Object textKey = new Object(), idKey = new Object();
 
-					PromptDialogue<Object> prompt = new PromptDialogue<>("New Button");
-					Object width = new Object(), length = new Object(), text = new Object(), id = new Object();
+			buttonPrompt.new Prompt(textKey, "Button Text:");
+			buttonPrompt.new Prompt(idKey, "Button ID:");
 
-					prompt.new Prompt(width, "Button Width:");
-					prompt.new Prompt(length, "Button Length:");
-					prompt.new Prompt(text, "Button Text:");
-					prompt.new Prompt(id, "Button ID:");
+			Map<Object, String> promptedData = buttonPrompt.showAndWait().orElse(null);
 
-					Map<Object, String> map = prompt.showAndWait().orElse(null);
-					if (map == null)
-						throw new RuntimeException("Prompt Error");
-					try {
-						wrapper.getNode().setPrefWidth(Double.parseDouble(map.get(length)));
-					} catch (Exception e) {
+			NodeWrapper<Button> wrapper;
+			try {
+				wrapper = setupNode(new Button(promptedData.get(textKey)), promptedData.get(idKey));
+
+				wrapper.getNode().addEventFilter(MouseEvent.MOUSE_CLICKED, event1 -> {
+					if (editMode.get() && event1.getButton() == MouseButton.SECONDARY) {
+
+						PromptDialogue<Object> prompt = new PromptDialogue<>("New Button");
+						Object width = new Object(), length = new Object(), text = new Object(), id = new Object();
+
+						prompt.new Prompt(width, "Button Width:");
+						prompt.new Prompt(length, "Button Length:");
+						prompt.new Prompt(text, "Button Text:");
+						prompt.new Prompt(id, "Button ID:");
+
+						Map<Object, String> map = prompt.showAndWait().orElse(null);
+						if (map == null)
+							throw new RuntimeException("Prompt Error");
+						try {
+							wrapper.getNode().setPrefWidth(Double.parseDouble(map.get(length)));
+						} catch (Exception e) {
+						}
+
+						try {
+							wrapper.getNode().setPrefHeight(Double.parseDouble(map.get(width)));
+						} catch (Exception e) {
+						}
+
+						wrapper.getNode().setText(map.get(text));
+						try {
+							wrapper.setId(map.get(idKey));
+						} catch (IDTakenException e) {
+							e.printStackTrace();
+						}
+
 					}
+				});
+				selectedWindow.get().addNode(wrapper);
+				selectedWindow.get().addToRoot(wrapper);
+			} catch (IDTakenException e1) {
+				// Deal with this later.
+				e1.printStackTrace();
+			}
 
-					try {
-						wrapper.getNode().setPrefHeight(Double.parseDouble(map.get(width)));
-					} catch (Exception e) {
-					}
-
-					wrapper.getNode().setText(map.get(text));
-					wrapper.getNode().getProperties().put(NODE_ID_KEY, id);
-
-				}
-			});
-			selectedWindow.get().addNode(wrapper);
 		});
 	}
-
-	private static final Object NODE_ID_KEY = new Object();
 
 	private final VBox optionsBox = new VBox(25, makeNewWindowButton, deleteFocusedWindowButton, addTextButton,
 			editModeBox);
@@ -151,15 +167,16 @@ public final class WindowBuilder extends AbstractedWindow {
 	private static final Object NODE_SELECTION_BUTTON_KEY = new Object();
 	{
 		nodeSelectionPane.setPadding(new Insets(30));
-		selectedWindow.addListener(new ChangeListener<Window>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Window> observable, Window oldValue, Window newValue) {
-				nodeSelectionPane.getChildren().clear();
-				for (NodeWrapper<?> n : newValue.getTrackedNodes()) {
-					Button button = new Button();
-					button.getProperties().put(NODE_SELECTION_BUTTON_KEY, n);
-				}
+		selectedWindow.addListener((ChangeListener<Window>) (observable, oldValue, newValue) -> {
+			System.out.println("ABCD");
+			if (selectedWindow.isNull().get())
+				return;
+			nodeSelectionPane.getChildren().clear();
+			for (NodeWrapper<?> n : newValue.getTrackedNodes()) {
+				Button button = new Button();
+				button.getProperties().put(NODE_SELECTION_BUTTON_KEY, n);
+				button.setText(n.getNode().getId());
+				nodeSelectionPane.getChildren().add(button);
 			}
 		});
 	}
@@ -224,11 +241,11 @@ public final class WindowBuilder extends AbstractedWindow {
 		NODE_EDIT_BLUE_GLOW.setSpread(0.2);
 	}
 
-	private <T extends Node> NodeWrapper<T> setupNode(T node) {
+	private <T extends Node> NodeWrapper<T> setupNode(T node, String id) throws IDTakenException {
 
 		// Instead of passing in the selected window, it may be better to pass in a
 		// parameter.
-		NodeWrapper<T> wrapper = new NodeWrapper<T>(node, selectedWindow.get());
+		NodeWrapper<T> wrapper = new NodeWrapper<T>(node, selectedWindow.get(), id);
 
 		node.addEventHandler(InputEvent.ANY, event -> {
 			if (editMode.get())
