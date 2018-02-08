@@ -6,6 +6,7 @@ import java.util.Map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ScrollPane;
@@ -33,8 +34,15 @@ import javafx.scene.text.Text;
  * @param <K>
  *            The type of the Key that will be used to obtain a text field's
  *            value in the returned map.
+ * @param <V>
+ *            The type of Values stored in the returned map. If the returned map
+ *            will store Doubles, this should be {@link Double}. If the returned
+ *            map will store Integers, this should be {@link Integer}. If the
+ *            returned map will store both Doubles and Integers as values, <V>
+ *            should be the most immediate superclass of the two, so
+ *            {@link Number}. This may often be {@link Object}.
  */
-public class PromptDialogue<K> extends Dialog<Map<K, String>> {
+public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 
 	// Will contain the scrollPort and the doneButton.
 	private VBox fullContent = new VBox(20);
@@ -48,7 +56,7 @@ public class PromptDialogue<K> extends Dialog<Map<K, String>> {
 	// values.
 	private Button doneButton = new Button("Continue");
 
-	private ObservableList<Prompt> prompts = FXCollections.observableArrayList();
+	private ObservableList<Prompt<? extends V>> basicPrompts = FXCollections.observableArrayList();
 
 	{
 
@@ -59,8 +67,8 @@ public class PromptDialogue<K> extends Dialog<Map<K, String>> {
 		getDialogPane().setContent(fullContent);
 
 		doneButton.setOnAction(event -> {
-			Map<K, String> values = new HashMap<>();
-			for (Prompt p : prompts) {
+			Map<K, V> values = new HashMap<>();
+			for (Prompt<? extends V> p : basicPrompts) {
 				values.put(p.key, p.getValue());
 			}
 
@@ -76,33 +84,87 @@ public class PromptDialogue<K> extends Dialog<Map<K, String>> {
 		promptWrapper.setAlignment(Pos.TOP_CENTER);
 	}
 
-	private void addPrompt(Prompt p) {
-		if (prompts.contains(p))
+	private void addPrompt(Prompt<? extends V> prompt) {
+		if (basicPrompts.contains(prompt))
 			return;
-		prompts.add(p);
-		promptWrapper.getChildren().add(p);
+		basicPrompts.add(prompt);
+		promptWrapper.getChildren().add(prompt);
 	}
 
-	private void removePrompt(Prompt p) {
-		while (prompts.contains(p))
-			prompts.remove(p);
+	private void removePrompt(Prompt<? extends V> p) {
+		while (basicPrompts.contains(p))
+			basicPrompts.remove(p);
 		while (promptWrapper.getChildren().contains(p))
 			promptWrapper.getChildren().remove(p);
 	}
 
-	// This will include its own Type Parameter and probably be a standalone class
-	// in the next update. Along with that, the PromptDialogue<K> class will be
-	// changed to PromptDialogue<K, V>. This way, users will be able to submit
-	// Prompt objects whose returned value (V) will either be, or be a subclass of,
-	// the PromptDialogue's returned Map value (V).
-	public class Prompt extends VBox {
-
+	/**
+	 * A superclass for Prompts used by this {@link PromptDialogue}. When a
+	 * {@link Prompt} is created, it automatically adds itself to its parent
+	 * {@link PromptDialogue} [defined in this class].
+	 * 
+	 * @author Zeale
+	 *
+	 * @param <PV>
+	 *            <p>
+	 * 			The return value of this Prompt.
+	 *            <p>
+	 * 			This does NOT have to match the return type of the parent
+	 *            {@link PromptDialogue}. For example, a {@link PromptDialogue} that
+	 *            has a <V> of {@link Number} can have two prompts.
+	 *            <ul>
+	 *            <li>The first prompt can have a <PV> of {@link Double},</li>
+	 *            <li>and the second prompt can have a <PV> of {@link Integer}.</li>
+	 *            <ul>
+	 *            <p>
+	 * 			Simply put <PV> must be a subtype of <V> or must be the same as
+	 *            <V>.
+	 */
+	public abstract class Prompt<PV extends V> extends VBox {
 		private K key;
-		private TextField field = new TextField();
 		private Text fieldDescription = new Text();
 
 		public void setDescription(String text) {
 			fieldDescription.setText(text);
+		}
+
+		public abstract PV getValue();
+
+		public Prompt(K key, String description) {
+			setKey(key);
+			setDescription(description);
+		}
+
+		public void setKey(K key) {
+			this.key = key;
+		}
+
+		{
+			addPrompt(this);
+			getChildren().addAll(fieldDescription);
+		}
+
+		protected void addContent(Node content) {
+			getChildren().add(content);
+		}
+
+		protected void removeContent(Node content) {
+			getChildren().remove(content);
+		}
+
+		/**
+		 * Cannot be undone.
+		 */
+		public final void remove() {
+			removePrompt(this);
+		}
+	}
+
+	public class BasicPrompt extends PromptDialogue<K, ? super String>.Prompt<String> {
+
+		private TextField field = new TextField();
+		{
+			addContent(field);
 		}
 
 		// This will become abstract, to follow the change described right above the
@@ -115,30 +177,13 @@ public class PromptDialogue<K> extends Dialog<Map<K, String>> {
 			field.setPromptText(text);
 		}
 
-		public void setKey(K key) {
-			this.key = key;
+		public BasicPrompt(K key, String description) {
+			super(key, description);
 		}
 
-		public Prompt(K key, String description) {
-			setKey(key);
-			setDescription(description);
-		}
-
-		public Prompt(K key, String description, String hint) {
+		public BasicPrompt(K key, String description, String hint) {
 			this(key, description);
 			setHint(hint);
-		}
-
-		{
-			addPrompt(this);
-			getChildren().addAll(fieldDescription, field);
-		}
-
-		/**
-		 * Cannot be undone.
-		 */
-		public void remove() {
-			removePrompt(this);
 		}
 
 	}

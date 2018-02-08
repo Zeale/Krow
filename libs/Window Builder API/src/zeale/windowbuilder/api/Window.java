@@ -39,7 +39,14 @@ public class Window extends AbstractedWindow {
 
 	public void addNode(NodeWrapper<?> nodeWrapper) {
 		trackedNodes.add(nodeWrapper);
-		pane.getChildren().add(nodeWrapper.getNode());
+	}
+
+	public void addToRoot(NodeWrapper<?> node) {
+		root.getChildren().add(node.getNode());
+	}
+
+	public void removeNode(NodeWrapper<?> nodeWrapper) {
+		trackedNodes.remove(nodeWrapper);
 	}
 
 }

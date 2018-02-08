@@ -39,4 +39,42 @@ public final class PromptFactory {
 	public static String promptString(String string) {
 		return promptString(string, null);
 	}
+
+	public static class NumberPrompt<K> extends PromptDialogue<K, ? super Number>.Prompt<Number> {
+
+		private TextField field = new TextField();
+		{
+			field.setOnKeyTyped(event -> {
+				for (char c : event.getCharacter().toCharArray()) {
+					if (c == '.')
+						if (field.getText().contains("."))
+							event.consume();
+						else
+							;
+					else if (!Character.isDigit(c))
+						event.consume();
+
+				}
+			});
+
+			field.setOnScroll(event -> {
+				double numb = Double.parseDouble(field.getText());
+				numb += event.getDeltaY();
+				field.setText("" + numb);
+			});
+
+			addContent(field);
+		}
+
+		private NumberPrompt(PromptDialogue<K, ? super Number> owner, K key, String description) {
+			owner.super(key, description);
+		}
+
+		@Override
+		public Number getValue() {
+			return Double.parseDouble(field.getText());
+		}
+
+	}
+
 }
