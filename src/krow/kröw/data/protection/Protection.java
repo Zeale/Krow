@@ -13,11 +13,6 @@ import sun.reflect.CallerSensitive;
 public final class Protection {
 
 	/**
-	 * The directory where {@link Domain}s are stored on the physical hard drive.
-	 */
-	static File DOMAINS_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Protection/domains/default-set");
-
-	/**
 	 * <p>
 	 * This class was added as a protective mechanism against clients making
 	 * classes, in the protection package, that would abuse the
@@ -41,13 +36,127 @@ public final class Protection {
 
 		String path;
 
-		private ProtectionKey(String path) {
-			this.path = path;
-		}
-
 		private ProtectionKey(Class<?> owner) {
 			this(Domain.pkgToDom(owner.getName(), owner.getCanonicalName()));
 		}
+
+		private ProtectionKey(String path) {
+			this.path = path;
+		}
+	}
+
+	/**
+	 * The directory where {@link Domain}s are stored on the physical hard drive.
+	 */
+	static File DOMAINS_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Protection/domains/default-set");
+
+	/**
+	 * Checks to see if <code>accessor</code> can access <code>victim</code>'s
+	 * {@link Domain}.
+	 * 
+	 * @param accessor
+	 *            The accessing class.
+	 * @param victim
+	 *            The class whose {@link Domain} is being accessed.
+	 * @return <code>true</code> if <code>accessor</code> can access
+	 *         <code>victim</code>'s {@link Domain}, <code>false</code> otherwise.
+	 */
+	private static boolean checkAccess(Class<?> accessor, Class<?> victim) {
+
+		while (accessor.isAnonymousClass())
+			accessor = accessor.getEnclosingClass();
+		while (victim.isAnonymousClass())
+			victim = victim.getEnclosingClass();
+		if (accessor == victim)
+			return true;
+
+		// Solved the edginess. I hope. Loading a class through multiple loaders is
+		// probably gonna cause bigger problems that are irrelevent to the Protection
+		// API, but whatever.
+		if (accessor.getClassLoader() != victim.getClassLoader() && accessor.getName().equals(victim.getName()))
+			return true;
+
+		// The above <i>should</i> cover all accessing if the domain is private (as in
+		// it is only accessible by the class that it represents).
+
+		DomainAccess[] dms = victim.getDeclaredAnnotationsByType(DomainAccess.class);
+		List<AccessOption> options = new ArrayList<>();
+		SingleAccessOption overallOption = null;
+		List<Class<?>> explicitlyAllowedClasses = new ArrayList<>();
+		for (DomainAccess dm : dms) {
+			for (AccessOption ao : dm.options())
+				if (options.contains(ao))
+					throw new RuntimeException("Class declared with duplicate AccessOptions: " + victim.getName());
+				else
+					options.add(ao);
+			if (dm.overallOption() != null)
+				if (overallOption != null)
+					throw new RuntimeException("Class declared with multiple SingleAccessOptions: " + victim.getName());
+				else
+					overallOption = dm.overallOption();
+			for (Class<?> c : dm.allowedAccessors())
+				if (!explicitlyAllowedClasses.contains(c))
+					explicitlyAllowedClasses.add(c);
+		}
+
+		// First off, if our "victim" is public, then our "accessor" can jump right in
+		// and access its domain.
+		if (overallOption == SingleAccessOption.PUBLIC)
+			return true;
+		// For now, if the above isn't true, then the option is PRIVATE, since that's
+		// the only other SingleAccessOption defined.
+
+		// Now lets see if this class qualifies for one of the other customization
+		// options. (Regular AccessOptions)
+		if (options.contains(AccessOption.INHERITED)) {
+			// INHERITED is placed on a class to signify that its subclasses can access its
+			// domain.
+
+			// If we're in this if block, then "victim" has added INHERITED to its array of
+			// AccessOptions.
+
+			// This means that we can go ahead and return true IF the "accessor" is a
+			// subclass of "victim".
+
+			Class<?> c = accessor;
+			while (c != null)
+				if (c.getSuperclass() == victim)
+					return true;
+				else
+					c = c.getSuperclass();
+		}
+
+		// We do the same thing as above but by iterating through "victim"'s
+		// superclasses for UP_INHERITED
+		if (options.contains(AccessOption.UP_INHERITED)) {
+			Class<?> c = victim;
+			while (c != null)
+				if (c.getSuperclass() == accessor)
+					return true;
+				else
+					c = c.getSuperclass();
+		}
+
+		// Lastly, if they've explictly allowed this accessor access, then by golly gosh
+		// m8. Let's give them access.
+		if (explicitlyAllowedClasses.contains(accessor))
+			return true;
+
+		return false;
+	}
+
+	/**
+	 * Convenience method for checking availability by <code>getDomain(...)</code>
+	 * methods.
+	 * 
+	 * @throws UnavailableException
+	 *             If the Protection API is unavailable.
+	 */
+	private static void doAvailabilityCheck() throws UnavailableException {
+		if (!isAvailable())
+			tryEnable();
+		if (!isAvailable())
+			throw new UnavailableException("Protection API Unavailable.");
 	}
 
 	/**
@@ -126,6 +235,85 @@ public final class Protection {
 		// See the Domain class (literally referenced below) for more details.
 		return Domain
 				.getDomain(new ProtectionKey(Domain.pkgToDom(callingClass.getName(), callingClass.getCanonicalName())));
+	}
+
+	/**
+	 * <p>
+	 * This method attempts to return a {@link Domain} given the class that
+	 * {@link Domain owns} it.
+	 * <p>
+	 * This method is {@link CallerSensitive} and will throw a
+	 * {@link RuntimeException} if the calling class is not allowed to access the
+	 * specified {@link Class}'s {@link Domain}. (Access can be given to different
+	 * classes via the {@link DomainAccess} annotation.)
+	 * <p>
+	 * If the calling class is an anonymous class, then the class in which it is
+	 * defined is used to access the Domain. That means that the enclosing class is
+	 * what is checked for accessibility. Inner and nested classes have their own
+	 * domains, like normal classes.
+	 * <p>
+	 * If the calling class is anonymous and its enclosing class is anonymous as
+	 * well, (and that class’s enclosing class is anonymous, etc. etc.,) then this
+	 * method iterates until it finds an enclosing class that it can use. That class
+	 * is then checked to see if it has permission to access the domain.
+	 * 
+	 * @param owner
+	 *            The {@link Class} that owns the domain.
+	 * @return The domain belonging to the specified class.
+	 * @throws DomainInitializeException
+	 *             In case there was an exception while initializing the domain.
+	 * @throws UnavailableException
+	 *             In case the Protection API is unavailable. See
+	 *             {@link #isAvailable()} and {@link #tryEnable()} for details and
+	 *             fixes.
+	 */
+	public static @CallerSensitive Domain getDomain(Class<?> owner)
+			throws DomainInitializeException, UnavailableException {
+
+		doAvailabilityCheck();
+
+		// Check access to this Domain and see if the calling class is allowed to obtain
+		// an instance of it.
+
+		// "Get caller method" code adapted from javafx.application.Application
+		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+
+		String name = null;
+		boolean found = false;
+
+		for (StackTraceElement ste : stackTrace) {
+
+			// The "getDomain" string literal may be replaced later with code that will
+			// dynamically get this method's name.
+			if (found) {
+
+				name = ste.getClassName();
+				break;
+
+			} else if (ste.getClassName().equals(Protection.class.getName()) && ste.getMethodName().equals("getDomain"))
+
+				// We are iterating over stackTrace with an enhanced for loop (Item i:itemList)
+				// so we don't have an index that we can use to get the next element from here,
+				// (which is (hopefully) the class/method name we want). To solve this, we
+				// continue the loop, setting "found" to true. The above if will be called in
+				// the for loop with the item we want.
+				found = true;
+
+		}
+		if (name == null)
+			throw new RuntimeException(
+					"Couldn't find the calling class and generate a domain for it. (For some reason, its not in the stack trace.)");
+		Class<?> callingClass;
+		try {
+			callingClass = Class.forName(name, false, Thread.currentThread().getContextClassLoader());
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("A class name was found, (" + name
+					+ "), but attempting to get its corresponding object threw a ClassNotfoundException.", e);
+		}
+
+		if (!checkAccess(callingClass, owner))
+			throw new RuntimeException("Illegal class accessing.");// This should also be a checked exception.
+		return Domain.getDomain(new ProtectionKey(owner));
 	}
 
 	/**
@@ -242,191 +430,11 @@ public final class Protection {
 	}
 
 	/**
-	 * <p>
-	 * This method attempts to return a {@link Domain} given the class that
-	 * {@link Domain owns} it.
-	 * <p>
-	 * This method is {@link CallerSensitive} and will throw a
-	 * {@link RuntimeException} if the calling class is not allowed to access the
-	 * specified {@link Class}'s {@link Domain}. (Access can be given to different
-	 * classes via the {@link DomainAccess} annotation.)
-	 * <p>
-	 * If the calling class is an anonymous class, then the class in which it is
-	 * defined is used to access the Domain. That means that the enclosing class is
-	 * what is checked for accessibility. Inner and nested classes have their own
-	 * domains, like normal classes.
-	 * <p>
-	 * If the calling class is anonymous and its enclosing class is anonymous as
-	 * well, (and that class’s enclosing class is anonymous, etc. etc.,) then this
-	 * method iterates until it finds an enclosing class that it can use. That class
-	 * is then checked to see if it has permission to access the domain.
-	 * 
-	 * @param owner
-	 *            The {@link Class} that owns the domain.
-	 * @return The domain belonging to the specified class.
-	 * @throws DomainInitializeException
-	 *             In case there was an exception while initializing the domain.
-	 * @throws UnavailableException
-	 *             In case the Protection API is unavailable. See
-	 *             {@link #isAvailable()} and {@link #tryEnable()} for details and
-	 *             fixes.
+	 * @return <code>true</code> if the Protection API is available,
+	 *         <code>false</code> otherwise. See {@link #tryEnable()}.
 	 */
-	public static @CallerSensitive Domain getDomain(Class<?> owner)
-			throws DomainInitializeException, UnavailableException {
-
-		doAvailabilityCheck();
-
-		// Check access to this Domain and see if the calling class is allowed to obtain
-		// an instance of it.
-
-		// "Get caller method" code adapted from javafx.application.Application
-		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-
-		String name = null;
-		boolean found = false;
-
-		for (StackTraceElement ste : stackTrace) {
-
-			// The "getDomain" string literal may be replaced later with code that will
-			// dynamically get this method's name.
-			if (found) {
-
-				name = ste.getClassName();
-				break;
-
-			} else if (ste.getClassName().equals(Protection.class.getName()) && ste.getMethodName().equals("getDomain"))
-
-				// We are iterating over stackTrace with an enhanced for loop (Item i:itemList)
-				// so we don't have an index that we can use to get the next element from here,
-				// (which is (hopefully) the class/method name we want). To solve this, we
-				// continue the loop, setting "found" to true. The above if will be called in
-				// the for loop with the item we want.
-				found = true;
-
-		}
-		if (name == null)
-			throw new RuntimeException(
-					"Couldn't find the calling class and generate a domain for it. (For some reason, its not in the stack trace.)");
-		Class<?> callingClass;
-		try {
-			callingClass = Class.forName(name, false, Thread.currentThread().getContextClassLoader());
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("A class name was found, (" + name
-					+ "), but attempting to get its corresponding object threw a ClassNotfoundException.", e);
-		}
-
-		if (!checkAccess(callingClass, owner))
-			throw new RuntimeException("Illegal class accessing.");// This should also be a checked exception.
-		return Domain.getDomain(new ProtectionKey(owner));
-	}
-
-	/**
-	 * Checks to see if <code>accessor</code> can access <code>victim</code>'s
-	 * {@link Domain}.
-	 * 
-	 * @param accessor
-	 *            The accessing class.
-	 * @param victim
-	 *            The class whose {@link Domain} is being accessed.
-	 * @return <code>true</code> if <code>accessor</code> can access
-	 *         <code>victim</code>'s {@link Domain}, <code>false</code> otherwise.
-	 */
-	private static boolean checkAccess(Class<?> accessor, Class<?> victim) {
-
-		while (accessor.isAnonymousClass())
-			accessor = accessor.getEnclosingClass();
-		while (victim.isAnonymousClass())
-			victim = victim.getEnclosingClass();
-		if (accessor == victim)
-			return true;
-
-		// Solved the edginess. I hope. Loading a class through multiple loaders is
-		// probably gonna cause bigger problems that are irrelevent to the Protection
-		// API, but whatever.
-		if (accessor.getClassLoader() != victim.getClassLoader() && accessor.getName().equals(victim.getName()))
-			return true;
-
-		// The above <i>should</i> cover all accessing if the domain is private (as in
-		// it is only accessible by the class that it represents).
-
-		DomainAccess[] dms = victim.getDeclaredAnnotationsByType(DomainAccess.class);
-		List<AccessOption> options = new ArrayList<>();
-		SingleAccessOption overallOption = null;
-		List<Class<?>> explicitlyAllowedClasses = new ArrayList<>();
-		for (DomainAccess dm : dms) {
-			for (AccessOption ao : dm.options())
-				if (options.contains(ao))
-					throw new RuntimeException("Class declared with duplicate AccessOptions: " + victim.getName());
-				else
-					options.add(ao);
-			if (dm.overallOption() != null)
-				if (overallOption != null)
-					throw new RuntimeException("Class declared with multiple SingleAccessOptions: " + victim.getName());
-				else
-					overallOption = dm.overallOption();
-			for (Class<?> c : dm.allowedAccessors())
-				if (!explicitlyAllowedClasses.contains(c))
-					explicitlyAllowedClasses.add(c);
-		}
-
-		// First off, if our "victim" is public, then our "accessor" can jump right in
-		// and access its domain.
-		if (overallOption == SingleAccessOption.PUBLIC)
-			return true;
-		// For now, if the above isn't true, then the option is PRIVATE, since that's
-		// the only other SingleAccessOption defined.
-
-		// Now lets see if this class qualifies for one of the other customization
-		// options. (Regular AccessOptions)
-		if (options.contains(AccessOption.INHERITED)) {
-			// INHERITED is placed on a class to signify that its subclasses can access its
-			// domain.
-
-			// If we're in this if block, then "victim" has added INHERITED to its array of
-			// AccessOptions.
-
-			// This means that we can go ahead and return true IF the "accessor" is a
-			// subclass of "victim".
-
-			Class<?> c = accessor;
-			while (c != null)
-				if (c.getSuperclass() == victim)
-					return true;
-				else
-					c = c.getSuperclass();
-		}
-
-		// We do the same thing as above but by iterating through "victim"'s
-		// superclasses for UP_INHERITED
-		if (options.contains(AccessOption.UP_INHERITED)) {
-			Class<?> c = victim;
-			while (c != null)
-				if (c.getSuperclass() == accessor)
-					return true;
-				else
-					c = c.getSuperclass();
-		}
-
-		// Lastly, if they've explictly allowed this accessor access, then by golly gosh
-		// m8. Let's give them access.
-		if (explicitlyAllowedClasses.contains(accessor))
-			return true;
-
-		return false;
-	}
-
-	/**
-	 * Convenience method for checking availability by <code>getDomain(...)</code>
-	 * methods.
-	 * 
-	 * @throws UnavailableException
-	 *             If the Protection API is unavailable.
-	 */
-	private static void doAvailabilityCheck() throws UnavailableException {
-		if (!isAvailable())
-			tryEnable();
-		if (!isAvailable())
-			throw new UnavailableException("Protection API Unavailable.");
+	public static boolean isAvailable() {
+		return DOMAINS_DIRECTORY != null && DOMAINS_DIRECTORY.isDirectory();
 	}
 
 	/**
@@ -459,22 +467,14 @@ public final class Protection {
 			}
 		} else {
 			try {
-				DOMAINS_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Domains");
+				DOMAINS_DIRECTORY = new File(Kröw.DATA_DIRECTORY, "Protection/domains/default-set");
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
-			return true;
+			return tryEnable();
 		}
 
-	}
-
-	/**
-	 * @return <code>true</code> if the Protection API is available,
-	 *         <code>false</code> otherwise. See {@link #tryEnable()}.
-	 */
-	public static boolean isAvailable() {
-		return DOMAINS_DIRECTORY != null && DOMAINS_DIRECTORY.isDirectory();
 	}
 
 	/**

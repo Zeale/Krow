@@ -6,6 +6,6 @@ public class Module {
 	private final Application[] apps;
 
 	public Module(Application... apps) {
-		this.apps=apps;
+		this.apps = apps;
 	}
 }

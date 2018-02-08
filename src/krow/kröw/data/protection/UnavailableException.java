@@ -11,17 +11,17 @@ public class UnavailableException extends Exception {
 		super();
 	}
 
-	public UnavailableException(String message, Throwable cause, boolean enableSuppression,
-			boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
+	public UnavailableException(String message) {
+		super(message);
 	}
 
 	public UnavailableException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public UnavailableException(String message) {
-		super(message);
+	public UnavailableException(String message, Throwable cause, boolean enableSuppression,
+			boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
 	}
 
 	public UnavailableException(Throwable cause) {

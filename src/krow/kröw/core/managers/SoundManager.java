@@ -29,18 +29,14 @@ public class SoundManager {
 	public final Sound TICK = new Sound(Kröw.class.getResource("/krow/resources/sounds/Tick0.wav"));
 	public final Sound POP = new Sound(Kröw.class.getResource("/krow/resources/sounds/Pop0.wav"));
 
-	public void playSound(final Sound s) {
-		try {
-			s.play();
-		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-			e.printStackTrace();
-		}
+	public void playSound(final Sound s) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+		s.play();
 	}
 
 	/**
 	 * Plays the specified sound with a volume between <code>0.0f</code> and
-	 * <code>1.0f</code>. <code>0.0f</code> will play the sound at a volume of
-	 * zero, while <code>1.0f</code> will play the sound at its maximum volume.
+	 * <code>1.0f</code>. <code>0.0f</code> will play the sound at a volume of zero,
+	 * while <code>1.0f</code> will play the sound at its maximum volume.
 	 *
 	 * @param sound
 	 *            The sound to play.

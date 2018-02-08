@@ -2,14 +2,13 @@ package kröw.gui.exceptions;
 
 import javafx.scene.Scene;
 import kröw.gui.Application;
-import kröw.gui.ApplicationManager;
 import kröw.gui.ApplicationManager.Frame;
 
 /**
  * <p>
  * Thrown when someone tries to switch the current {@link Scene} but the current
- * {@link Scene}'s controller's {@link Application#canSwitchScenes()} method returns
- * false.
+ * {@link Scene}'s controller's {@link Application#canSwitchScenes()} method
+ * returns false.
  *
  * @author Zeale
  */

@@ -8,7 +8,7 @@
 <br>
 <h3 align="center">Welcome to Kröw</h3>
 <br>
-<p align="center">Kröw is a Java based desktop application made to exist. Kröw is split into <em>apps</em>, (more on that below...), and is mainly meant as a display/personal app.</p>
+<p align="center">Kröw is a Java based desktop application. Kröw is split into <em>apps</em>, (more on that below...), and is mainly meant as a display/personal program.</p>
 <br>
 <br>
 <br>
@@ -24,4 +24,4 @@
 <br>
 <p align="center">Apps are different sections of the application that act as sub-apps. Take the Chat App, for example:</p>
 <p align="center"><img src="/.screenshots/v0.8.1-beta/ChatRoom.PNG"></img></p>
-<p align="center">This app allows the user to host or connect to a chatting server. It acts virtually independently of other apps. Most apps function this way although some apps can make use of each other, much like normal desktop apps.
+<p align="center">This app allows the user to host or connect to a chatting server. It acts virtually independently of other apps. Most apps function this way although some apps can make use of each other, much like normal desktop applications.

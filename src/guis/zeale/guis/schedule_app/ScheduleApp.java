@@ -1,12 +1,10 @@
 package zeale.guis.schedule_app;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -22,7 +20,6 @@ import krow.guis.schedule_app.SelectableCell;
 import kröw.core.Kröw;
 import kröw.gui.Application;
 import kröw.gui.ApplicationManager;
-import kröw.gui.exceptions.NotSwitchableException;
 
 public class ScheduleApp extends Application {
 	public static final File DATA_DIR = new File(Kröw.DATA_DIRECTORY, "Schedule");

@@ -1,8 +1,5 @@
 package krow.guis.schedule_app;
 
-import java.io.IOException;
-
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableRow;
 import javafx.scene.input.MouseButton;
@@ -13,7 +10,6 @@ import javafx.scene.paint.Color;
 import krow.guis.PopupHelper;
 import krow.guis.PopupHelper.PopupWrapper;
 import kröw.gui.ApplicationManager;
-import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.schedule_app.NewEvent;
 import zeale.guis.schedule_app.ScheduleApp;
 

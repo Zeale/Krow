@@ -1,9 +1,11 @@
 package krow.guis;
 
 import java.io.IOException;
-import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Random;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
@@ -37,7 +39,6 @@ import krow.backgrounds.BackgroundBuilder;
 import krow.backgrounds.ShapeBackground;
 import kröw.core.Kröw;
 import kröw.gui.ApplicationManager;
-import kröw.gui.exceptions.NotSwitchableException;
 import zeale.guis.Home;
 
 public final class GUIHelper {
@@ -297,7 +298,10 @@ public final class GUIHelper {
 									DEFAULT_MENU_CHILD_NODE_HOVER_ANIMATION_DURATION, t);
 							ft.setInterpolator(MENU_CHILD_TRANSITION_INTERPOLATOR);
 							t.setOnMouseEntered(event -> {
-								Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+								try {
+									Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+								} catch (LineUnavailableException | UnsupportedAudioFileException | IOException e) {
+								}
 								ft.stop();
 								ft.setDuration(Kröw.getProgramSettings().getCurrentAnimationMode() == 0
 										? MENU_BUTTON_ANIMATION_DURATION
@@ -339,7 +343,10 @@ public final class GUIHelper {
 				final EventHandler<? super MouseEvent> enterHandler = event -> {
 					if (event.getPickResult().getIntersectedNode() == cover && opening)
 						return;
-					Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+					try {
+						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+					} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+					}
 					open();
 				};
 
@@ -356,12 +363,18 @@ public final class GUIHelper {
 				final EventHandler<MouseEvent> coverClickHandler = event -> {
 					if (opening) {
 						close();
-						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+						try {
+							Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+						}
 						return;
 					}
 					if (closing) {
 						open();
-						Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+						try {
+							Kröw.getSoundManager().playSound(Kröw.getSoundManager().TICK);
+						} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+						}
 					}
 
 				};
