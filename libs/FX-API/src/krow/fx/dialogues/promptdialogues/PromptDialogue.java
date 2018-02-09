@@ -39,8 +39,8 @@ import javafx.scene.text.Text;
  *            The type of Values stored in the returned map. If the returned map
  *            will store Doubles, this should be {@link Double}. If the returned
  *            map will store Integers, this should be {@link Integer}. If the
- *            returned map will store both Doubles and Integers as values, <V>
- *            should be the most immediate superclass of the two, so
+ *            returned map will store both Doubles and Integers as values,
+ *            &lt;V&gt; should be the most immediate superclass of the two, so
  *            {@link Number}. This may often be {@link Object}.
  */
 public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
@@ -129,14 +129,15 @@ public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 	 *            <p>
 	 *            This does NOT have to match the return type of the parent
 	 *            {@link PromptDialogue}. For example, a {@link PromptDialogue} that
-	 *            has a <V> of {@link Number} can have two prompts.
+	 *            has a &lt;V&gt; of {@link Number} can have two prompts.
 	 *            <ul>
-	 *            <li>The first prompt can have a <PV> of {@link Double},</li>
-	 *            <li>and the second prompt can have a <PV> of {@link Integer}.</li>
+	 *            <li>The first prompt can have a &lt;PV&gt; of {@link Double},</li>
+	 *            <li>and the second prompt can have a &lt;PV&gt; of
+	 *            {@link Integer}.</li>
 	 *            <ul>
 	 *            <p>
-	 *            Simply put <PV> must be a subtype of <V> or must be the same as
-	 *            <V>.
+	 *            Simply put &lt;PV&gt; must be a subtype of &lt;V&gt; or must be
+	 *            the same as &lt;V>.
 	 */
 	public abstract class Prompt<PV extends V> extends VBox {
 
@@ -235,6 +236,15 @@ public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 		public BasicPrompt(K key, String description, String hint) {
 			this(key, description);
 			setHint(hint);
+		}
+
+		public BasicPrompt(K key, String description, String hint, String defaultValue) {
+			this(key, description);
+			setHint(hint);
+		}
+
+		public void setValue(String value) {
+			field.setText(value);
 		}
 
 		@Override
