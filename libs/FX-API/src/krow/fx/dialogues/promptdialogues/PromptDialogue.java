@@ -1,6 +1,8 @@
 package krow.fx.dialogues.promptdialogues;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import javafx.collections.FXCollections;
@@ -102,6 +104,8 @@ public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 		promptWrapper.setAlignment(Pos.TOP_CENTER);
 	}
 
+	private Collection<K> keys = new LinkedList<>();
+
 	private void addPrompt(Prompt<? extends V> prompt) {
 		if (basicPrompts.contains(prompt))
 			return;
@@ -114,6 +118,10 @@ public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 			basicPrompts.remove(p);
 		while (promptWrapper.getChildren().contains(p))
 			promptWrapper.getChildren().remove(p);
+	}
+
+	private boolean keyTaken(K key) {
+		return keys.contains(key);
 	}
 
 	/**
@@ -188,12 +196,23 @@ public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 		protected abstract PV getValue();
 
 		public Prompt(K key, String description) {
-			setKey(key);
+			if (!setKey(key))
+				throw new RuntimeException("Invalid key.");
 			setDescription(description);
 		}
 
-		public final void setKey(K key) {
+		/**
+		 * Attempts to set this prompt's key.
+		 * 
+		 * @param key
+		 *            The new key.
+		 * @return <code>true</code> if this succeeded, <code>false</code> otherwise.
+		 */
+		public final boolean setKey(K key) {
+			if (keyTaken(key))
+				return false;
 			this.key = key;
+			return true;
 		}
 
 		{
