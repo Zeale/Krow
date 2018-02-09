@@ -151,6 +151,8 @@ public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 			fieldDescription.setStrokeWidth(1.0);
 		}
 
+		public abstract void setValue(PV value);
+
 		private K key;
 		private Text fieldDescription = new Text();
 		private boolean required;
@@ -243,6 +245,7 @@ public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 			setHint(hint);
 		}
 
+		@Override
 		public void setValue(String value) {
 			field.setText(value);
 		}

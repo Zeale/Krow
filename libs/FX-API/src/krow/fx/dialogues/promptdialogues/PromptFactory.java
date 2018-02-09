@@ -46,6 +46,7 @@ public final class PromptFactory {
 			setValue(value);
 		}
 
+		@Override
 		public void setValue(Number number) {
 			field.setText("" + number);
 		}
