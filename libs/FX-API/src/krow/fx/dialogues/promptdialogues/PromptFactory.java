@@ -98,33 +98,24 @@ public final class PromptFactory {
 							numb = (int) numb + (increase ? 1 : -1);
 							break CALC_BLOCK;
 						}
-
-						// If we're incrementing.
-						if (increase) {
-							// Handle -1 so we don't go into decimals. (e.g. -0.9, -0.8, -0.7, etc.)
+						if (increase)
 							if (numb >= -1 && numb <= -0.1) {
 								numb = (int) numb + 1;
 								break CALC_BLOCK;
-							}
-							// Handle positive numbs.
-							if (numb > 0)
-								numb += Math.pow(10, Math.floor(Math.log10(Math.abs(numb))));
-							// Handle negative numbs.
-							else
-								numb += Math.pow(10, Math.ceil(Math.log10(Math.abs(numb))) - 1);
+							} else
+								;
+						else if (numb <= 1 && numb >= 0.1) {
+							numb = (int) numb - 1;
+							break CALC_BLOCK;
 						}
-						// If we're decrementing...
-						else {
-							// Handle 1 so we don't go into decimals.
-							if (numb <= 1 && numb >= 0.1) {
-								numb = (int) numb - 1;
-								break CALC_BLOCK;
-							}
-							if (numb < 0)
-								numb -= Math.pow(10, Math.floor(Math.log10(Math.abs(numb))));
-							else
-								numb -= Math.pow(10, Math.ceil(Math.log10(Math.abs(numb))) - 1);
-						}
+
+						numb += (increase ? (numb > 0 ? Math.pow(10, Math.floor(Math.log10(Math.abs(numb))))
+
+								: Math.pow(10, Math.ceil(Math.log10(Math.abs(numb))) - 1))
+
+								: -(numb < 0 ? Math.pow(10, Math.floor(Math.log10(Math.abs(numb))))
+
+										: Math.pow(10, Math.ceil(Math.log10(Math.abs(numb))) - 1)));
 					}
 
 				} catch (Exception e) {
