@@ -1,5 +1,6 @@
 package krow.fx.dialogues.promptdialogues;
 
+import javafx.beans.value.ChangeListener;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
@@ -60,32 +61,71 @@ public final class PromptFactory {
 							event.consume();
 						else
 							;
-					else if (!Character.isDigit(c))
+					else if (c == '-') {
+						// Cache the caret position.
+						int carPos = field.getCaretPosition();
+
+						if (field.getText().contains("-")) {
+							// Remove the '-' in front.
+							field.setText(field.getText().substring(1));
+							field.positionCaret(carPos - 1);// A char was removed.
+						} else {
+							field.setText('-' + field.getText());
+							field.positionCaret(carPos + 1);// A char was added.
+						}
+
+						event.consume();
+					} else if (!Character.isDigit(c))
 						event.consume();
 
 				}
 			});
 
+			field.caretPositionProperty().addListener((ChangeListener<Number>) (observable, oldValue, newValue) -> {
+				if (field.getText().contains("-") && newValue.intValue() < 1)
+					field.positionCaret(1);
+			});
+
 			field.setOnScroll(event -> {
 				double numb = 0;
 				try {
+					CALC_BLOCK: {
+						numb = Double.parseDouble(field.getText());
+						boolean increase = event.getDeltaY() > 0;
 
-					numb = Double.parseDouble(field.getText());
+						// Increment or decrement from 0.
+						if (numb >= -0.1 && numb <= 0.1) {
+							numb = (int) numb + (increase ? 1 : -1);
+							break CALC_BLOCK;
+						}
 
-					if (numb == 0)
-						numb = 1;
-
-					// getDeltaY is returned in "Pixels", so "one scroll" of my mousewheel will
-					// cause this method to return 40.
-					double increaseAmount = event.getDeltaY() / 40;
-
-					// The greater numb is, the greater this should be. If numb is 1, this should be
-					// about 0.8. If numb is 500, this should be about 40. In other words, this
-					// number is based off of numb, and as numb grows greater, so does this number,
-					// but this number grows at a slower rate.
-					double increaseMultiplier = 0.8;
-
-					numb += increaseAmount * increaseMultiplier * Math.abs(numb) * (increaseAmount > 0 ? 1 : -1);
+						// If we're incrementing.
+						if (increase) {
+							// Handle -1 so we don't go into decimals. (e.g. -0.9, -0.8, -0.7, etc.)
+							if (numb >= -1 && numb <= -0.1) {
+								numb = (int) numb + 1;
+								break CALC_BLOCK;
+							}
+							// Handle positive numbs.
+							if (numb > 0)
+								numb += Math.pow(10, Math.floor(Math.log10(Math.abs(numb))));
+							// Handle negative numbs.
+							else
+								numb += Math.pow(10, Math.ceil(Math.log10(Math.abs(numb))) - 1);
+						}
+						// If we're decrementing...
+						else {
+							// Handle 1 so we don't go into decimals.
+							if (numb <= 1 && numb >= 0.1) {
+								numb = (int) numb - 1;
+								break CALC_BLOCK;
+							}
+							if (numb < 0)
+								numb -= Math.pow(10, Math.floor(Math.log10(Math.abs(numb))));
+							else
+								numb -= Math.pow(10, Math.ceil(Math.log10(Math.abs(numb))) - 1);
+						}
+					}
 
 				} catch (Exception e) {
 				} finally {
