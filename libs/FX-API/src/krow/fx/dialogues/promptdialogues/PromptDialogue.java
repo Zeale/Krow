@@ -48,7 +48,7 @@ import javafx.scene.text.Text;
  */
 public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 
-	public class BasicPrompt extends PromptDialogue<K, String>.TextFieldPrompt<String> {
+	public class BasicPrompt extends PromptDialogue<? super K, ? super String>.TextFieldPrompt<String> {
 
 		// This will become abstract, to follow the change described right above the
 		// class declaration. Next commit :D

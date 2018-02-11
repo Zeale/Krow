@@ -95,16 +95,18 @@ public final class PromptFactory {
 
 		}
 
-		public NumberPrompt(PromptDialogue<K, ? super Number> owner, K key, String description) {
+		public NumberPrompt(PromptDialogue<? super K, ? super Number> owner, K key, String description) {
 			super(owner, key, description);
 		}
 
-		public NumberPrompt(PromptDialogue<K, ? super Number> owner, K key, String description, Number defaultValue) {
+		public NumberPrompt(PromptDialogue<? super K, ? super Number> owner, K key, String description,
+				Number defaultValue) {
 			super(owner, key, description);
 			setValue(defaultValue);
 		}
 
-		public NumberPrompt(PromptDialogue<K, ? super Number> owner, K key, String description, String defaultValue) {
+		public NumberPrompt(PromptDialogue<? super K, ? super Number> owner, K key, String description,
+				String defaultValue) {
 			super(owner, key, description);
 			setValue(defaultValue);
 		}
@@ -167,7 +169,7 @@ public final class PromptFactory {
 
 	}
 
-	public static class DateStringPrompt<K> extends PromptDialogue<K, ? super Date>.TextFieldPrompt<Date> {
+	public static class DateStringPrompt<K> extends PromptDialogue<? super K, ? super Date>.TextFieldPrompt<Date> {
 
 		private DateFormat formatter = new SimpleDateFormat();
 		private Button currentDate = new Button("•");
@@ -187,16 +189,18 @@ public final class PromptFactory {
 			setValue(new Date());
 		}
 
-		public DateStringPrompt(PromptDialogue<K, ? super Date> owner, K key, String description) {
+		public DateStringPrompt(PromptDialogue<? super K, ? super Date> owner, K key, String description) {
 			owner.super(key, description);
 		}
 
-		public DateStringPrompt(PromptDialogue<K, ? super Date> owner, K key, String description, Date defaultValue) {
+		public DateStringPrompt(PromptDialogue<? super K, ? super Date> owner, K key, String description,
+				Date defaultValue) {
 			owner.super(key, description);
 			setValue(defaultValue);
 		}
 
-		public DateStringPrompt(PromptDialogue<K, ? super Date> owner, K key, String description, String defaultValue) {
+		public DateStringPrompt(PromptDialogue<? super K, ? super Date> owner, K key, String description,
+				String defaultValue) {
 			owner.super(key, description);
 			setValue(defaultValue);
 		}
