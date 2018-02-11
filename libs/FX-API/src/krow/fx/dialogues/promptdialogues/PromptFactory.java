@@ -126,6 +126,7 @@ public final class PromptFactory {
 				} catch (Exception e) {
 				} finally {
 					field.setText("" + numb);
+					event.consume();
 				}
 			});
 
