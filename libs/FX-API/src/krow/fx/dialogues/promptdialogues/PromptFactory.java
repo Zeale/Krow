@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import krow.fx.dialogues.promptdialogues.prompts.IncrementablePrompt;
 
 public final class PromptFactory {
 	public static String promptString(String prompt, String hint) {
@@ -48,7 +49,7 @@ public final class PromptFactory {
 		return promptString(string, null);
 	}
 
-	public static class NumberPrompt<K> extends PromptDialogue<K, ? super Number>.Prompt<Number> {
+	public static class NumberPrompt<K> extends IncrementablePrompt<K, Number> {
 
 		public void setValue(String value) {
 			setValue(value);
@@ -59,7 +60,6 @@ public final class PromptFactory {
 			field.setText("" + number);
 		}
 
-		private TextField field = new TextField();
 		{
 			field.setOnKeyTyped(event -> {
 				for (char c : event.getCharacter().toCharArray()) {
@@ -93,57 +93,19 @@ public final class PromptFactory {
 					field.positionCaret(1);
 			});
 
-			field.setOnScroll(event -> {
-				double numb = 0;
-				try {
-					CALC_BLOCK: {
-						numb = Double.parseDouble(field.getText());
-						boolean increase = event.getDeltaY() > 0;
-
-						// Increment or decrement from 0.
-						if (numb >= -0.1 && numb <= 0.1) {
-							numb = (int) numb + (increase ? 1 : -1);
-							break CALC_BLOCK;
-						}
-						if (increase)
-							if (numb >= -1 && numb <= -0.1) {
-								numb = (int) numb + 1;
-								break CALC_BLOCK;
-							} else
-								;
-						else if (numb <= 1 && numb >= 0.1) {
-							numb = (int) numb - 1;
-							break CALC_BLOCK;
-						}
-
-						numb += (increase
-								? (numb > 0 ? Math.pow(10, Math.floor(Math.log10(Math.abs(numb))))
-										: Math.pow(10, Math.ceil(Math.log10(Math.abs(numb))) - 1))
-								: -(numb < 0 ? Math.pow(10, Math.floor(Math.log10(Math.abs(numb))))
-										: Math.pow(10, Math.ceil(Math.log10(Math.abs(numb))) - 1)));
-					}
-
-				} catch (Exception e) {
-				} finally {
-					field.setText("" + numb);
-					event.consume();
-				}
-			});
-
-			addContent(field);
 		}
 
 		public NumberPrompt(PromptDialogue<K, ? super Number> owner, K key, String description) {
-			owner.super(key, description);
+			super(owner, key, description);
 		}
 
 		public NumberPrompt(PromptDialogue<K, ? super Number> owner, K key, String description, Number defaultValue) {
-			owner.super(key, description);
+			super(owner, key, description);
 			setValue(defaultValue);
 		}
 
 		public NumberPrompt(PromptDialogue<K, ? super Number> owner, K key, String description, String defaultValue) {
-			owner.super(key, description);
+			super(owner, key, description);
 			setValue(defaultValue);
 		}
 
@@ -162,12 +124,52 @@ public final class PromptFactory {
 			}
 		}
 
+		@Override
+		protected void increment(double amount) {
+			double numb = 0;
+			CALC: try {
+				numb = Double.parseDouble(getText());
+
+				if (numb >= -1 && numb <= 0.1) {
+					numb = (int) numb + 1;
+					break CALC;
+				}
+
+				numb += (numb > 0 ? Math.pow(10, Math.floor(Math.log10(Math.abs(numb))))
+						: Math.pow(10, Math.ceil(Math.log10(Math.abs(numb))) - 1));
+			} catch (Exception e) {
+			} finally {
+				field.setText("" + numb);
+			}
+		}
+
+		@Override
+		protected void decrement(double amount) {
+
+			double numb = 0;
+			CALC: try {
+				numb = Double.parseDouble(getText());
+
+				if (numb <= 1 && numb >= -0.1) {
+					numb = (int) numb - 1;
+					break CALC;
+				}
+
+				numb -= (numb < 0 ? Math.pow(10, Math.floor(Math.log10(Math.abs(numb))))
+						: Math.pow(10, Math.ceil(Math.log10(Math.abs(numb))) - 1));
+
+			} catch (Exception e) {
+			} finally {
+				field.setText("" + numb);
+			}
+
+		}
+
 	}
 
-	public static class DateStringPrompt<K> extends PromptDialogue<K, ? super Date>.Prompt<Date> {
+	public static class DateStringPrompt<K> extends PromptDialogue<K, ? super Date>.TextFieldPrompt<Date> {
 
 		private DateFormat formatter = new SimpleDateFormat();
-		private TextField field = new TextField();
 		private Button currentDate = new Button("•");
 
 		// Used to display the input field and the current date button next to each
@@ -200,7 +202,7 @@ public final class PromptFactory {
 		}
 
 		public void setValue(String value) {
-			field.setText(value);
+			setText(value);
 		}
 
 		@Override
@@ -211,7 +213,7 @@ public final class PromptFactory {
 		@Override
 		protected boolean verifyValue() {
 			try {
-				formatter.parse(field.getText());
+				formatter.parse(getText());
 				return true;
 			} catch (ParseException e) {
 				return false;
@@ -221,7 +223,7 @@ public final class PromptFactory {
 		@Override
 		protected Date getValue() {
 			try {
-				return formatter.parse(field.getText());
+				return formatter.parse(getText());
 			} catch (ParseException e) {
 			}
 			return null;

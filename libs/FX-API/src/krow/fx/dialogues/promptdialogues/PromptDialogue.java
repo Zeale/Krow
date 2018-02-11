@@ -48,12 +48,7 @@ import javafx.scene.text.Text;
  */
 public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 
-	public class BasicPrompt extends PromptDialogue<K, ? super String>.Prompt<String> {
-
-		private TextField field = new TextField();
-		{
-			addContent(field);
-		}
+	public class BasicPrompt extends PromptDialogue<K, String>.TextFieldPrompt<String> {
 
 		// This will become abstract, to follow the change described right above the
 		// class declaration. Next commit :D
@@ -135,6 +130,11 @@ public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 			setDescription(description);
 		}
 
+		public Prompt(K key, String description, PV defaultValue) {
+			this(key, description);
+			setValue(defaultValue);
+		}
+
 		protected final void addContent(Node content) {
 			getChildren().add(content);
 		}
@@ -209,6 +209,32 @@ public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 		 *         otherwise.
 		 */
 		protected abstract boolean verifyValue();
+	}
+
+	public abstract class TextFieldPrompt<PV extends V> extends Prompt<PV> {
+
+		public TextFieldPrompt(K key, String description, PV defaultValue) {
+			super(key, description, defaultValue);
+		}
+
+		protected final TextField field = new TextField();
+
+		{
+			addContent(field);
+		}
+
+		public TextFieldPrompt(K key, String description) {
+			super(key, description);
+		}
+
+		protected void setText(String text) {
+			field.setText(text);
+		}
+
+		protected String getText() {
+			return field.getText();
+		}
+
 	}
 
 	// Will contain the scrollPort and the doneButton.
