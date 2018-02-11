@@ -15,6 +15,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 /**
@@ -47,81 +48,49 @@ import javafx.scene.text.Text;
  */
 public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 
-	// Will contain the scrollPort and the doneButton.
-	private VBox fullContent = new VBox(20);
-	// Will contain each individual prompt.
-	private VBox promptWrapper = new VBox(15);
-	// Will contain the promptWrapper, allowing the user to scroll down if there are
-	// an exceedingly large amount of prompts. :)
-	private ScrollPane scrollPort = new ScrollPane(promptWrapper);
+	public class BasicPrompt extends PromptDialogue<K, ? super String>.Prompt<String> {
 
-	// The button that the user will push when they are ready to submit all the
-	// values.
-	private Button doneButton = new Button("Continue");
+		private TextField field = new TextField();
+		{
+			addContent(field);
+		}
 
-	private ObservableList<Prompt<? extends V>> basicPrompts = FXCollections.observableArrayList();
+		// This will become abstract, to follow the change described right above the
+		// class declaration. Next commit :D
 
-	{
+		public BasicPrompt(K key, String description) {
+			super(key, description);
+		}
 
-		// Add doneButton and scrollPort to the fullContent.
-		fullContent.getChildren().addAll(scrollPort, doneButton);
+		public BasicPrompt(K key, String description, String hint) {
+			this(key, description);
+			setHint(hint);
+		}
 
-		// Set this Dialog's content as fullContent.
-		getDialogPane().setContent(fullContent);
+		public BasicPrompt(K key, String description, String hint, String defaultValue) {
+			this(key, description);
+			setHint(hint);
+		}
 
-		doneButton.setOnAction(event -> {
-			Map<K, V> values = new HashMap<>();
+		@Override
+		protected String getValue() {
+			return field.getText();
+		}
 
-			boolean requiredPromptsFilled = true;
-			for (Prompt<? extends V> p : basicPrompts) {
-				if (p.isRequired() && !p.verifyValue()) {
-					p.highlightDescription(Color.FIREBRICK);
-					requiredPromptsFilled = false;
-				} else
-					p.removeDescriptionHighlight();
+		public void setHint(String text) {
+			field.setPromptText(text);
+		}
 
-				// Only continue on filling the map if we know we're gonna return it. If not all
-				// the required values were filled, then we're not gonna hide the prompt or
-				// return this map.
-				if (requiredPromptsFilled)
-					values.put(p.key, p.getValue());
-			}
+		@Override
+		public void setValue(String value) {
+			field.setText(value);
+		}
 
-			// If they haven't filled out required prompts then don't close the prompt;
-			// we're not done here.
-			if (!requiredPromptsFilled)
-				return;
+		@Override
+		protected boolean verifyValue() {
+			return !getValue().isEmpty();
+		}
 
-			setResult(values);
-
-			// This will return the showAndWait() call.
-			close();
-		});
-
-		// Stylize and space out the dialogue.
-		promptWrapper.setFillWidth(true);
-		promptWrapper.setPrefWidth(500);
-		promptWrapper.setAlignment(Pos.TOP_CENTER);
-	}
-
-	private Collection<K> keys = new LinkedList<>();
-
-	private void addPrompt(Prompt<? extends V> prompt) {
-		if (basicPrompts.contains(prompt))
-			return;
-		basicPrompts.add(prompt);
-		promptWrapper.getChildren().add(prompt);
-	}
-
-	private void removePrompt(Prompt<? extends V> p) {
-		while (basicPrompts.contains(p))
-			basicPrompts.remove(p);
-		while (promptWrapper.getChildren().contains(p))
-			promptWrapper.getChildren().remove(p);
-	}
-
-	private boolean keyTaken(K key) {
-		return keys.contains(key);
 	}
 
 	/**
@@ -149,56 +118,60 @@ public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 	 */
 	public abstract class Prompt<PV extends V> extends VBox {
 
-		private void highlightDescription(Color color) {
-			fieldDescription.setFill(color);
-			fieldDescription.setStrokeWidth(2.0);
-		}
-
-		private void removeDescriptionHighlight() {
-			fieldDescription.setFill(Color.BLACK);
-			fieldDescription.setStrokeWidth(1.0);
-		}
-
-		public abstract void setValue(PV value);
-
 		private K key;
+
 		private Text fieldDescription = new Text();
+
 		private boolean required;
 
-		public final void setDescription(String text) {
-			fieldDescription.setText(text);
+		{
+			addPrompt(this);
+			getChildren().addAll(fieldDescription);
 		}
-
-		public final void setRequired(boolean required) {
-			this.required = required;
-		}
-
-		/**
-		 * <p>
-		 * This method is called by a {@link PromptDialogue} when the user pushes the
-		 * <code>continue</code> button on each of the dialogue's prompts that are
-		 * {@link #required}. This method should return <code>true</code> if this Prompt
-		 * has a value that is acceptable.
-		 * <p>
-		 * If this method returns false when it is called by the PromptDialogue, then
-		 * the dialogue will remain hidden and this Prompt's description will become
-		 * red.
-		 * 
-		 * @return <code>true</code> if the value is acceptable, <code>false</code>
-		 *         otherwise.
-		 */
-		protected abstract boolean verifyValue();
-
-		public final boolean isRequired() {
-			return required;
-		}
-
-		protected abstract PV getValue();
 
 		public Prompt(K key, String description) {
 			if (!setKey(key))
 				throw new RuntimeException("Invalid key.");
 			setDescription(description);
+		}
+
+		protected final void addContent(Node content) {
+			getChildren().add(content);
+		}
+
+		private K getKey() {
+			return key;
+		}
+
+		protected abstract PV getValue();
+
+		private void highlightDescription(Color color) {
+			fieldDescription.setFill(color);
+			fieldDescription.setFont(Font.font(13.2));
+		}
+
+		public final boolean isRequired() {
+			return required;
+		}
+
+		/**
+		 * Cannot be undone.
+		 */
+		public final void remove() {
+			removePrompt(this);
+		}
+
+		protected final void removeContent(Node content) {
+			getChildren().remove(content);
+		}
+
+		private void removeDescHighlight() {
+			fieldDescription.setFill(Color.BLACK);
+			fieldDescription.setFont(Font.getDefault());
+		}
+
+		public final void setDescription(String text) {
+			fieldDescription.setText(text);
 		}
 
 		/**
@@ -215,76 +188,133 @@ public class PromptDialogue<K, V> extends Dialog<Map<K, V>> {
 			return true;
 		}
 
-		{
-			addPrompt(this);
-			getChildren().addAll(fieldDescription);
+		public final void setRequired(boolean required) {
+			this.required = required;
 		}
 
-		protected final void addContent(Node content) {
-			getChildren().add(content);
-		}
-
-		protected final void removeContent(Node content) {
-			getChildren().remove(content);
-		}
+		public abstract void setValue(PV value);
 
 		/**
-		 * Cannot be undone.
+		 * <p>
+		 * This method is called by a {@link PromptDialogue} when the user pushes the
+		 * <code>continue</code> button on each of the dialogue's prompts that are
+		 * {@link #required}. This method should return <code>true</code> if this Prompt
+		 * has a value that is acceptable.
+		 * <p>
+		 * If this method returns false when it is called by the PromptDialogue, then
+		 * the dialogue will remain hidden and this Prompt's description will become
+		 * red.
+		 * 
+		 * @return <code>true</code> if the value is acceptable, <code>false</code>
+		 *         otherwise.
 		 */
-		public final void remove() {
-			removePrompt(this);
-		}
+		protected abstract boolean verifyValue();
 	}
 
-	public class BasicPrompt extends PromptDialogue<K, ? super String>.Prompt<String> {
+	// Will contain the scrollPort and the doneButton.
+	private VBox fullContent = new VBox(20);
 
-		private TextField field = new TextField();
-		{
-			addContent(field);
-		}
+	// Will contain each individual prompt.
+	private VBox promptWrapper = new VBox(15);
 
-		// This will become abstract, to follow the change described right above the
-		// class declaration. Next commit :D
+	// Will contain the promptWrapper, allowing the user to scroll down if there are
+	// an exceedingly large amount of prompts. :)
+	private ScrollPane scrollPort = new ScrollPane(promptWrapper);
 
-		public void setHint(String text) {
-			field.setPromptText(text);
-		}
+	// The button that the user will push when they are ready to submit all the
+	// values.
+	private Button doneButton = new Button("Continue");
 
-		public BasicPrompt(K key, String description) {
-			super(key, description);
-		}
+	private ObservableList<Prompt<? extends V>> basicPrompts = FXCollections.observableArrayList();
 
-		public BasicPrompt(K key, String description, String hint) {
-			this(key, description);
-			setHint(hint);
-		}
+	{
 
-		public BasicPrompt(K key, String description, String hint, String defaultValue) {
-			this(key, description);
-			setHint(hint);
-		}
+		// Add doneButton and scrollPort to the fullContent.
+		fullContent.getChildren().addAll(scrollPort, doneButton);
 
-		@Override
-		public void setValue(String value) {
-			field.setText(value);
-		}
+		// Set this Dialog's content as fullContent.
+		getDialogPane().setContent(fullContent);
 
-		@Override
-		protected String getValue() {
-			return field.getText();
-		}
+		doneButton.setOnAction(event -> {
+			Map<K, V> values = new HashMap<>();
 
-		@Override
-		protected boolean verifyValue() {
-			return !getValue().isEmpty();
-		}
+			boolean requiredPromptsFilled = true;
+			for (Prompt<? extends V> p : basicPrompts) {
+				// If this prompt's input isn't acceptable
+				if (!p.verifyValue()) {
+					// AND if the prompt is required
+					if (p.isRequired()) {
+						// Notify the user (colored description)
+						p.highlightDescription(Color.RED);
+						// Make sure that we don't close the prompt dialogue and give the calling
+						// program a value.
+						requiredPromptsFilled = false;
+					}
 
+					// The input is wrong, but this prompt isn't necessary.
+					else {
+						// So we notify the user but with orange, not red.
+						p.highlightDescription(Color.DARKORANGE);
+						// The orange coloring will only show if there are any necessary prompts that
+						// aren't filled as well, since this code will close the prompt window if all
+						// necessary prompts are filled. The user won't be able to see the color once
+						// the prompt closes.
+
+					}
+				}
+
+				// This prompt's value is acceptable.
+				else {
+					p.removeDescHighlight();
+					// So if required prompts are filled so far in the loop,
+					if (requiredPromptsFilled)
+						// Then we can continue to build the map that we will return.
+						values.put(p.getKey(), p.getValue());
+				}
+
+			}
+
+			// If they haven't filled out required prompts then don't close the prompt;
+			// we're not done here.
+			if (!requiredPromptsFilled)
+				return;
+
+			setResult(values);
+
+			// This will return the showAndWait() call.
+			close();
+		});
+
+		// Stylize and space out the dialogue.
+		promptWrapper.setFillWidth(true);
+		promptWrapper.setPrefWidth(500);
+		promptWrapper.setAlignment(Pos.TOP_CENTER);
 	}
+
+	private Collection<K> keys = new LinkedList<>();
 
 	public PromptDialogue() {
 	}
 
 	public PromptDialogue(String title) {
 		setTitle(title);
+	}
+
+	private void addPrompt(Prompt<? extends V> prompt) {
+		if (basicPrompts.contains(prompt))
+			return;
+		basicPrompts.add(prompt);
+		promptWrapper.getChildren().add(prompt);
+	}
+
+	private boolean keyTaken(K key) {
+		return keys.contains(key);
+	}
+
+	private void removePrompt(Prompt<? extends V> p) {
+		while (basicPrompts.contains(p))
+			basicPrompts.remove(p);
+		while (promptWrapper.getChildren().contains(p))
+			promptWrapper.getChildren().remove(p);
 	}
 }
