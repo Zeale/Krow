@@ -15,8 +15,12 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -26,6 +30,7 @@ import krow.guis.GUIHelper;
 import krow.guis.chatroom.ChatRoomServer;
 import krow.guis.chatroom.messages.ChatRoomMessage;
 import krow.guis.chatroom.messages.CommandMessage;
+import krow.guis.chatroom.messages.ImageMessage;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.callables.VarArgsTask;
@@ -140,8 +145,13 @@ public class ChatRoom extends Application {
 		public void objectReceived(final Object object) {
 			Platform.runLater(() -> {
 
+				// Handle text msgs
 				if (object instanceof ChatRoomMessage)
 					new ChatRoomText((ChatRoomMessage) object).add(chatPane);
+
+				// Handle image msgs
+				else if (object instanceof ImageMessage)
+					chatPane.getChildren().add(new ImageView(((ImageMessage) object).getImage()));
 				else
 
 					chatPane.getChildren().add(
@@ -214,6 +224,40 @@ public class ChatRoom extends Application {
 										(double) t.getProperties().get(TEXT_FONT_SIZE_KEY)));
 						}
 
+		});
+
+		chatPane.setOnDragOver(new EventHandler<DragEvent>() {
+
+			@Override
+			public void handle(DragEvent event) {
+				if (event.getDragboard().hasImage() && event.getSource() != chatPane)
+					event.acceptTransferModes(TransferMode.COPY);
+			}
+		});
+
+		chatPane.setOnDragDropped(new EventHandler<DragEvent>() {
+
+			@Override
+			public void handle(DragEvent event) {
+				Dragboard board = event.getDragboard();
+				if (board.hasImage()) {
+					try {
+						send(new ImageMessage(board.getImage()));
+						event.setDropCompleted(true);
+					} catch (Exception e) {
+						printError("There was an error sending the image...");
+						event.setDropCompleted(false);
+						return;
+					} finally {
+						// Called after the return in the catch statement if the catch statement is
+						// called.
+						event.consume();
+					}
+					// We get to here if everything succeeded. Now we need to show the image in the
+					// chat pane
+					chatPane.getChildren().add(new ImageView(board.getImage()));
+				}
+			}
 		});
 
 		chatBox.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -626,12 +670,18 @@ public class ChatRoom extends Application {
 		chatPane.getChildren().add(t);
 	}
 
+	private static final String ERROR_LOG_NAME = "[ERR]";
+
+	private void printError(String errorText) {
+		printLineToConsole(ERROR_LOG_NAME + ": " + errorText, Color.FIREBRICK);
+	}
+
 	private void send(final Message message) {
 		if (client != null)
 			try {
 				client.sendMessage(message);
 			} catch (final IOException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 	}
 
@@ -647,7 +697,7 @@ public class ChatRoom extends Application {
 				println("You can't send messages without being connected to a server! See /help for details...",
 						ERROR_COLOR);
 		} catch (final IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
