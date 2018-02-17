@@ -399,7 +399,7 @@ public class ChatRoom extends ConsoleWindow {
 			if (args != null)
 				for (final String s : args)
 					cmd += " " + s;
-			sendMessage(cmd);
+			sendTextMessage(cmd);
 			sendingMessageNotification();
 			return;
 		}
@@ -605,7 +605,7 @@ public class ChatRoom extends ConsoleWindow {
 			}
 			parseCommand(cmd, args);
 		} else {
-			sendMessage(input);
+			sendTextMessage(input);
 			sendingMessageNotification();
 			if (history.isEmpty() || !input.equals(history.peek()))
 				history.add(chatBox.getText());
@@ -632,7 +632,9 @@ public class ChatRoom extends ConsoleWindow {
 		ApplicationManager.spawnLabelAtMousePos("Sending...", SUCCESS_COLOR);
 	}
 
-	private void sendMessage(final String message) {
+	private void sendTextMessage(final String message) {
+		
+		
 		try {
 			if (client != null)
 				client.sendMessage(new ChatRoomMessage(message, user == null ? "" : user, new Date().getTime()));

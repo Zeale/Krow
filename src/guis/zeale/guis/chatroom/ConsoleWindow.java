@@ -11,6 +11,9 @@ import javafx.scene.text.TextFlow;
 import kröw.gui.Application;
 
 public class ConsoleWindow extends Application {
+
+	protected String username;
+
 	@FXML
 	protected TextFlow chatPane;
 	@FXML
@@ -48,7 +51,4 @@ public class ConsoleWindow extends Application {
 		chatPane.getChildren().add(t);
 	}
 
-	protected void sendTextMessage(String text) {
-
-	}
 }
