@@ -3,6 +3,7 @@ package zeale.guis.chatroom;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -18,6 +19,8 @@ public class ConsoleWindow extends Application {
 	protected TextFlow chatPane;
 	@FXML
 	protected TextArea chatBox;
+	@FXML
+	protected ScrollPane chatBoxScrollPane;
 
 	@FXML
 	protected AnchorPane pane;
