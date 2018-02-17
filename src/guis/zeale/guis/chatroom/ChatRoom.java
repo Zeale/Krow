@@ -11,17 +11,13 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -42,7 +38,7 @@ import kröw.core.Kröw;
 import kröw.gui.Application;
 import kröw.gui.ApplicationManager;
 
-public class ChatRoom extends Application {
+public class ChatRoom extends ConsoleWindow {
 
 	private static class ChatRoomText {
 		private final ChatRoomMessage message;
@@ -112,17 +108,6 @@ public class ChatRoom extends Application {
 	}
 
 	private final Stack<String> history = new Stack<>();
-
-	@FXML
-	private TextFlow chatPane;
-	@FXML
-	private TextArea chatBox;
-
-	@FXML
-	private AnchorPane pane;
-
-	@FXML
-	private Button sendButton;
 
 	private final FullClientListener listener = new FullClientListener() {
 
@@ -421,10 +406,10 @@ public class ChatRoom extends Application {
 
 		if (cmd.equalsIgnoreCase("setname") || cmd.equalsIgnoreCase("set-name"))
 			if (args == null || args.length == 0 || args[0].trim().isEmpty())
-				printLineToConsole("Command usage: /setname (name)", Color.RED);
+				println("Command usage: /setname (name)", Color.RED);
 			else {
 				user = args[0];
-				printLineToConsole("Your name has been changed to: " + user, Color.AQUA);
+				println("Your name has been changed to: " + user, Color.AQUA);
 				send(msg);
 			}
 		else if (cmd.equalsIgnoreCase("start-server") || cmd.equalsIgnoreCase("startserver")) {
@@ -628,52 +613,10 @@ public class ChatRoom extends Application {
 		chatBox.setText("");
 	}
 
-	public void print(final String text) {
-		printToConsole(text);
-	}
-
-	public void print(final String text, final Color color) {
-		printToConsole(text, color);
-	}
-
-	public void printLineToConsole(final String text) {
-		printLineToConsole(text, Color.WHITE);
-	}
-
-	public void printLineToConsole(final String line, final Color color) {
-		printToConsole(line + "\n", color);
-	}
-
-	public void println() {
-		printLineToConsole("");
-	}
-
-	public void println(final String text) {
-		printLineToConsole(text);
-	}
-
-	public void println(final String text, final Color color) {
-		printLineToConsole(text, color);
-	}
-
-	public void printNode(final Node node) {
-		chatPane.getChildren().add(node);
-	}
-
-	public void printToConsole(final String text) {
-		printToConsole(text, Color.WHITE);
-	}
-
-	public void printToConsole(final String text, final Color color) {
-		final Text t = new Text(text);
-		t.setFill(color);
-		chatPane.getChildren().add(t);
-	}
-
 	private static final String ERROR_LOG_NAME = "[ERR]";
 
 	private void printError(String errorText) {
-		printLineToConsole(ERROR_LOG_NAME + ": " + errorText, Color.FIREBRICK);
+		println(ERROR_LOG_NAME + ": " + errorText, Color.FIREBRICK);
 	}
 
 	private void send(final Message message) {
