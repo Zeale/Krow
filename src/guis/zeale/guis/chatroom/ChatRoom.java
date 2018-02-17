@@ -1,4 +1,4 @@
-package zeale.guis;
+package zeale.guis.chatroom;
 
 import java.io.IOException;
 import java.net.UnknownHostException;

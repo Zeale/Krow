@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="pane" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="zeale.guis.ChatRoom">
+<AnchorPane fx:id="pane" prefHeight="1080.0" prefWidth="1920.0" styleClass="background" stylesheets="@../css/stylesheet.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="zeale.guis.chatroom.ChatRoom">
    <children>
       <TextArea fx:id="chatBox" layoutY="860.0" prefHeight="220.0" prefWidth="1920.0" promptText="Type your message here..." style="-fx-font-family: Consolas; -fx-text-fill: white;" styleClass="rgba-background" wrapText="true" />
       <TextFlow fx:id="chatPane" layoutX="305.0" layoutY="14.0" prefHeight="827.0" prefWidth="1277.0" styleClass="rgba-background" />
