@@ -14,6 +14,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import krow.guis.chatroom.ChatRoomMessage;
@@ -301,26 +303,15 @@ public abstract class ConsoleWindow extends Application {
 	private class ChatRoomText {
 		/**
 		 * <p>
-		 * So, apparently, {@link WeakHashMap}s use {@link WeakReference}s to refer to
-		 * their keys, not their values. This means that {@link ChatRoomText}s can't
-		 * store a strong reference to their UUID, otherwise the UUID can't be garbage
-		 * collected, and, thus, {@link ChatRoomText}s will remain in the map (as a
-		 * value, by a strong reference), and can't be garbage collected themselves.
+		 * I can't figure out how to get rid of all the references to this {@link UUID},
+		 * so {@link ChatRoomText}s will just deliberately remove themselves from the
+		 * {@link ConsoleWindow#SENT_MESSAGES_MAP} when they are ready to be garbage
+		 * collected. This will also help prevent the issue that arises when the same
+		 * {@link UUID} appears twice, even though the chance of that happening is
+		 * astronomically small.
 		 * <p>
-		 * Once we're ready to discard this {@link ChatRoomText}, {@link #id} needs to
-		 * be set to null. We can't use a {@link WeakReference} here because then the
-		 * UUID itself would be up for garbage collection before a response is received
-		 * from the server. If the UUID were to be collected before a response was
-		 * received, this {@link ChatRoomText} object would be removed from the
-		 * {@link ConsoleWindow#SENT_MESSAGES_MAP} so when a response is received from
-		 * the server (which contains a UUID), we wouldn't be able to find a matching
-		 * {@link ChatRoomText} in the map, since its key was garbage collected. The
-		 * text itself wouldn't be garbage collected, since some of its strongly
-		 * referenced objects would still show on the screen for the user, (until they
-		 * run /cls that is), but it would stay translucent, or would have striketrhough
-		 * enabled once {@link ReplyText#noReply()} is called.
-		 * <p>
-		 * See {@link #readyForGC()}.
+		 * {@link ConsoleWindow#SENT_MESSAGES_MAP} will remain a {@link WeakHashMap} so
+		 * that it doesn't prevent garbage collection once I fix what currently does.
 		 */
 		private UUID id = UUID.randomUUID();
 
@@ -338,6 +329,7 @@ public abstract class ConsoleWindow extends Application {
 		 * @see {@link #id} for more info.
 		 */
 		private void readyForGC() {
+			SENT_MESSAGES_MAP.remove(id);
 			id = null;
 		}
 
@@ -371,8 +363,8 @@ public abstract class ConsoleWindow extends Application {
 		 */
 		public void send() {
 			name.setFill(Color.RED);
-			arrow.setFill(Color.WHITE);
 			message.setFill(Color.LIGHTBLUE);
+			arrow.setFill(Color.WHITE);
 			printNode(name);
 			printNode(arrow);
 			printNode(message);
@@ -384,11 +376,6 @@ public abstract class ConsoleWindow extends Application {
 			if (!connected())
 				throw new RuntimeException();
 			this.message.setText(message);
-		}
-
-		@Override
-		protected void finalize() throws Throwable {
-			System.out.println("Cleared");
 		}
 
 	}
