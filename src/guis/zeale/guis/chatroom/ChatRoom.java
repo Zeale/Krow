@@ -6,9 +6,7 @@ import java.util.Stack;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -16,8 +14,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import krow.guis.GUIHelper;
 import krow.guis.chatroom.messages.CommandMessage;
 import krow.guis.chatroom.messages.ImageMessage;
@@ -41,8 +37,6 @@ public class ChatRoom extends ConsoleWindow {
 			CHAT_BOX_LAYOUTY = 860;
 	private final static double SEND_BUTTON_PREF_WIDTH = 55, SEND_BUTTON_PREF_HEIGHT = 24, SEND_BUTTON_LAYOUTX = 1851,
 			SEND_BUTTON_LAYOUTY = 958;
-
-	private static final Object TEXT_FONT_SIZE_KEY = new Object(), TEXT_FONT_FAMILY_KEY = new Object();
 
 	private final Stack<String> history = new Stack<>();
 
@@ -75,22 +69,6 @@ public class ChatRoom extends ConsoleWindow {
 				handleUserInput(chatBox.getText());
 			else
 				emptyMessageWarning();
-		});
-
-		chatPane.getChildren().addListener((ListChangeListener<Node>) c -> {
-			while (c.next())
-				if (c.wasAdded())
-					for (final Node n : c.getAddedSubList())
-						if (n instanceof Text) {
-							final Text t = (Text) n;
-							t.setFont(Font.font(16));
-							if (t.getProperties().containsKey(TEXT_FONT_FAMILY_KEY))
-								t.setFont(Font.font((String) t.getProperties().get(TEXT_FONT_FAMILY_KEY)));
-							if (t.getProperties().containsKey(TEXT_FONT_SIZE_KEY))
-								t.setFont(Font.font(t.getFont().getFamily(),
-										(double) t.getProperties().get(TEXT_FONT_SIZE_KEY)));
-						}
-
 		});
 
 		chatPane.setOnDragOver(new EventHandler<DragEvent>() {

@@ -2,7 +2,6 @@ package zeale.guis.chatroom;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.ref.WeakReference;
 import java.net.UnknownHostException;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -152,6 +151,12 @@ public abstract class ConsoleWindow extends Application {
 	@FXML
 	protected Button sendButton;
 
+	/**
+	 * Prints a line of text with the default color of {@link Color#WHITE}.
+	 * 
+	 * @param text
+	 *            The text to print.
+	 */
 	protected void println(final String text) {
 		println(text, Color.WHITE);
 	}
@@ -175,6 +180,7 @@ public abstract class ConsoleWindow extends Application {
 	protected void print(final String text, final Color color) {
 		final Text t = new Text(text);
 		t.setFill(color);
+		formatTextSize(t);
 		chatPane.getChildren().add(t);
 	}
 
@@ -200,14 +206,60 @@ public abstract class ConsoleWindow extends Application {
 		if (msg instanceof UserMessage) {
 			Text name = new Text(((UserMessage) msg).sender), arrow = new Text(" > "),
 					text = new Text(((UserMessage) msg).getText());
-			name.setFill(Color.RED);
-			arrow.setFill(Color.WHITE);
-			text.setFill(Color.BLUE);
+			// Since this message is coming from the server, we pass true.
+			formatBasicMessage(name, arrow, text, true);
 			printNode(name);
 			printNode(arrow);
 			printNode(text);
 			println();
 		}
+	}
+
+	/**
+	 * Formats a basic message, either from or to the server. This also calls
+	 * {@link #formatTextSize(Text)} on each given object to size the text
+	 * correctly.
+	 * 
+	 * @param name
+	 *            The name text.
+	 * @param arrow
+	 *            The arrow text.
+	 * @param message
+	 *            The message text.
+	 * @param received
+	 *            Whether or not this basic message was received from or sent to the
+	 *            server. <code>true</code> if received, <code>false</code> if sent.
+	 */
+	protected void formatBasicMessage(Text name, Text arrow, Text message, boolean received) {
+		name.setFill(Color.RED);
+		arrow.setFill(Color.WHITE);
+		message.setFill(Color.BLUE);
+		formatTextSize(name);
+		formatTextSize(arrow);
+		formatTextSize(message);
+		if (name.getText().equals("Kröw")) {
+			if (received)
+				name.setFill(Color.PINK);
+			else
+				name.setFill(Color.BLACK);
+			name.setFont(Font.font("Brush Script MT", 22));
+			message.setFill(Color.WHITE);
+			message.setFont(
+					Font.font(Font.getDefault().getFamily(), FontWeight.EXTRA_BOLD, Font.getDefault().getSize() + 2));
+		}
+	}
+
+	/**
+	 * This readies the given text to be shown in the console, but also clears any
+	 * font weight and font posture applied to the text. This method will apply a
+	 * new {@link Font} to the text object with the family of the old font and a
+	 * size of 16.
+	 * 
+	 * @param text
+	 *            The text object to format.
+	 */
+	protected void formatTextSize(Text text) {
+		text.setFont(Font.font(text.getFont().getFamily(), 16));
 	}
 
 	protected final void handleUserInput(String input) {
@@ -362,9 +414,8 @@ public abstract class ConsoleWindow extends Application {
 		 * that was printed to the console will become fully opaque.
 		 */
 		public void send() {
-			name.setFill(Color.RED);
-			message.setFill(Color.LIGHTBLUE);
-			arrow.setFill(Color.WHITE);
+			// Since this message is going out to the server, we pass false.
+			formatBasicMessage(name, arrow, message, false);
 			printNode(name);
 			printNode(arrow);
 			printNode(message);
