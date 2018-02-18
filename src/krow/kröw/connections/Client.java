@@ -173,4 +173,16 @@ public class Client {
 		objOut.flush();
 	}
 
+	/**
+	 * Resets the output stream. This should ditch any references to objects in the
+	 * stream.
+	 */
+	public void reset() {
+		try {
+			objOut.reset();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

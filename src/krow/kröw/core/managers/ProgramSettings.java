@@ -12,8 +12,9 @@ import java.nio.file.Paths;
 
 import kröw.core.Kröw;
 import kröw.gui.ApplicationManager;
-import zeale.guis.ChatRoom;
 import zeale.guis.Statistics;
+import zeale.guis.chatroom.ChatRoom;
+import zeale.guis.chatroom.ConsoleWindow;
 
 public class ProgramSettings implements Serializable {
 
@@ -195,9 +196,7 @@ public class ProgramSettings implements Serializable {
 
 		if (chatRoomHostServer == temp)
 			return;
-		if (!chatRoomHostServer && ChatRoom.isServerOpen())
-			ChatRoom.closeServer();
-
+		// TODO Fix
 	}
 
 	/**

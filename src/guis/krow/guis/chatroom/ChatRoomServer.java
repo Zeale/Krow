@@ -4,15 +4,14 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import krow.guis.chatroom.messages.ChatRoomMessage;
 import krow.guis.chatroom.messages.CommandMessage;
 import kröw.connections.Client;
 import kröw.connections.FullClientListener;
 import kröw.connections.Server;
 import kröw.connections.messages.Message;
+import kröw.connections.messages.ReplyMessage;
 import kröw.core.Kröw;
 
 public class ChatRoomServer extends Server {
@@ -60,10 +59,19 @@ public class ChatRoomServer extends Server {
 
 					try {
 
+						if (object instanceof krow.guis.chatroom.ChatRoomMessage) {
+							for (Client c : connections)
+								if (c != client)
+									c.sendMessage(
+											new UserMessage(((krow.guis.chatroom.ChatRoomMessage) object).getText(),
+													((krow.guis.chatroom.ChatRoomMessage) object).username));
+								else
+									c.sendMessage(new ReplyMessage(((krow.guis.chatroom.ChatRoomMessage) object).id));
+						}
+
 						if (Client.isEndConnectionMessage((Message) object))
 							for (final Client c : connections)
-								c.sendObject(new ChatRoomMessage("A user has left the chatroom...", "Server",
-										new Date().getTime()));
+								c.sendObject(new ServerMessage("A user has left the chatroom..."));
 
 						if (object instanceof CommandMessage) {
 							final CommandMessage cm = (CommandMessage) object;
@@ -74,23 +82,23 @@ public class ChatRoomServer extends Server {
 								client.setName(cm.getArgs()[0]);
 								for (final Client cl : connections)
 									if (cl != client)
-										cl.sendMessage(new ChatRoomMessage(
-												prevName + " has changed their name to " + client.getName() + ".",
-												"Server", new Date().getTime()));
+										cl.sendMessage(new ServerMessage(
+												prevName + " has changed their name to " + client.getName() + "."));
 							}
 							return;
 						}
 
 						for (final Client cl : connections)
-							// if (cl != client)
-							try {
-								if (Kröw.DEBUG_MODE)
-									System.out.println(
-											"Server: Sending object to clients via server-client... (Ignore upcoming client send msgs...)");
-								cl.sendObject((Serializable) object);
-							} catch (final IOException e) {
-								e.printStackTrace();
-							}
+							// Send to all those who didn't send it.
+							if (cl != client)
+								try {
+									if (Kröw.DEBUG_MODE)
+										System.out.println(
+												"Server: Sending object to clients via server-client... (Ignore upcoming client send msgs...)");
+									cl.sendObject((Serializable) object);
+								} catch (final IOException e) {
+									e.printStackTrace();
+								}
 
 					} catch (final Exception e) {
 						e.printStackTrace();

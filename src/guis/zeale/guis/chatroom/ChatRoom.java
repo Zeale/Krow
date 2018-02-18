@@ -1,76 +1,28 @@
-package zeale.guis;
+package zeale.guis.chatroom;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Date;
 import java.util.Stack;
 
-import javafx.application.Platform;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import krow.guis.GUIHelper;
-import krow.guis.chatroom.ChatRoomServer;
-import krow.guis.chatroom.messages.ChatRoomMessage;
 import krow.guis.chatroom.messages.CommandMessage;
 import krow.guis.chatroom.messages.ImageMessage;
-import kröw.annotations.AutoLoad;
-import kröw.annotations.LoadTime;
 import kröw.callables.VarArgsTask;
-import kröw.connections.Client;
-import kröw.connections.FullClientListener;
-import kröw.connections.Server;
-import kröw.connections.messages.Message;
 import kröw.core.Kröw;
 import kröw.gui.Application;
 import kröw.gui.ApplicationManager;
 
-public class ChatRoom extends Application {
-
-	private static class ChatRoomText {
-		private final ChatRoomMessage message;
-
-		public ChatRoomText(final ChatRoomMessage message) {
-			this.message = message;
-		}
-
-		public void add(final TextFlow pane) {
-			final Text name = new Text();
-			if (message.getAuthor().isEmpty()) {
-				name.setText("Unnamed");
-				// TODO Ask server to send color from a queue
-				name.setFill(ERROR_COLOR);
-			} else {
-				name.setText(message.getAuthor());
-				name.setFill(Color.LIGHTGOLDENRODYELLOW);
-			}
-			final Text splitter = new Text(" > ");
-			final Text message = new Text(this.message.getText() + "\n");
-			message.setFill(Color.WHITE);
-			splitter.setFill(Color.BLUE);
-
-			pane.getChildren().addAll(name, splitter, message);
-
-		}
-
-	}
+public class ChatRoom extends ConsoleWindow {
 
 	private static final Color NOTIFICATION_COLOR = Color.LIGHTBLUE, ERROR_COLOR = Color.FIREBRICK,
 			SUCCESS_COLOR = Color.GREEN, WARNING_COLOR = Color.GOLD;
@@ -86,101 +38,10 @@ public class ChatRoom extends Application {
 	private final static double SEND_BUTTON_PREF_WIDTH = 55, SEND_BUTTON_PREF_HEIGHT = 24, SEND_BUTTON_LAYOUTX = 1851,
 			SEND_BUTTON_LAYOUTY = 958;
 
-	private static Client client;
-
-	private static Server server;
-
-	private static final Object TEXT_FONT_SIZE_KEY = new Object(), TEXT_FONT_FAMILY_KEY = new Object();
-
-	@AutoLoad(LoadTime.PROGRAM_EXIT)
-	public static void closeServer() {
-		try {
-			if (server != null)
-				server.stop();
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-		server = null;
-	}
-
-	public static boolean isClientConnected() {
-		return client != null;
-	}
-
-	public static boolean isServerOpen() {
-		return server != null;
-	}
-
 	private final Stack<String> history = new Stack<>();
-
-	@FXML
-	private TextFlow chatPane;
-	@FXML
-	private TextArea chatBox;
-
-	@FXML
-	private AnchorPane pane;
-
-	@FXML
-	private Button sendButton;
-
-	private final FullClientListener listener = new FullClientListener() {
-
-		@Override
-		public void connectionClosed() {
-			client = null;
-		}
-
-		@Override
-		public void connectionEstablished() {
-
-		}
-
-		@Override
-		public void connectionLost() {
-			client = null;
-		}
-
-		@Override
-		public void objectReceived(final Object object) {
-			Platform.runLater(() -> {
-
-				// Handle text msgs
-				if (object instanceof ChatRoomMessage)
-					new ChatRoomText((ChatRoomMessage) object).add(chatPane);
-
-				// Handle image msgs
-				else if (object instanceof ImageMessage)
-					chatPane.getChildren().add(new ImageView(((ImageMessage) object).getImage()));
-				else
-
-					chatPane.getChildren().add(
-							new Text("Message unreceived!   " + (Kröw.DEBUG_MODE ? object.toString() : "") + "\n"));
-			});
-		}
-	};
-
-	private String user;
-
-	public boolean canCreateServer() {
-		return server == null;
-	}
 
 	@Override
 	public boolean canSwitchPage(final Class<? extends Application> newSceneClass) {
-		return true;
-	}
-
-	public boolean createServer() throws IOException {
-		return createServer(25000);
-	}
-
-	public boolean createServer(final int port) throws IOException {
-		if (!canCreateServer())
-			return false;
-		server = new ChatRoomServer(port);
-		if (client == null)
-			setClient("localhost", port);
 		return true;
 	}
 
@@ -205,25 +66,9 @@ public class ChatRoom extends Application {
 
 		sendButton.setOnAction(event -> {
 			if (!chatBox.getText().isEmpty())
-				parseInput(chatBox.getText());
+				handleUserInput(chatBox.getText());
 			else
 				emptyMessageWarning();
-		});
-
-		chatPane.getChildren().addListener((ListChangeListener<Node>) c -> {
-			while (c.next())
-				if (c.wasAdded())
-					for (final Node n : c.getAddedSubList())
-						if (n instanceof Text) {
-							final Text t = (Text) n;
-							t.setFont(Font.font(16));
-							if (t.getProperties().containsKey(TEXT_FONT_FAMILY_KEY))
-								t.setFont(Font.font((String) t.getProperties().get(TEXT_FONT_FAMILY_KEY)));
-							if (t.getProperties().containsKey(TEXT_FONT_SIZE_KEY))
-								t.setFont(Font.font(t.getFont().getFamily(),
-										(double) t.getProperties().get(TEXT_FONT_SIZE_KEY)));
-						}
-
 		});
 
 		chatPane.setOnDragOver(new EventHandler<DragEvent>() {
@@ -242,7 +87,7 @@ public class ChatRoom extends Application {
 				Dragboard board = event.getDragboard();
 				if (board.hasImage()) {
 					try {
-						send(new ImageMessage(board.getImage()));
+						rawSend(new ImageMessage(board.getImage()));
 						event.setDropCompleted(true);
 					} catch (Exception e) {
 						printError("There was an error sending the image...");
@@ -319,9 +164,13 @@ public class ChatRoom extends Application {
 						chatBox.appendText("\n");
 					if (!event.isShiftDown()) {
 						event.consume();
-						if (!chatBox.getText().isEmpty())
-							parseInput(chatBox.getText());
-						else
+						if (!chatBox.getText().isEmpty()) {
+							// TODO Move this up to superclass.
+
+							if (history.isEmpty() || !chatBox.getText().equals(history.peek().trim()))
+								history.add(chatBox.getText());
+							handleUserInput(chatBox.getText());
+						} else
 							emptyMessageWarning();
 					}
 				} else if (event.getCode().equals(KeyCode.LEFT)) {
@@ -375,9 +224,9 @@ public class ChatRoom extends Application {
 		});
 
 		try {
-			if (canCreateServer() && Kröw.getProgramSettings().isChatRoomHostServer()) {
+			if (!hostingServer() && Kröw.getProgramSettings().isChatRoomHostServer()) {
 				println("Starting a server...", NOTIFICATION_COLOR);
-				createServer();
+				startServer();
 				println("Created a server successfully!", SUCCESS_COLOR);
 			} else {
 				print("Please use ", ERROR_COLOR);
@@ -395,40 +244,52 @@ public class ChatRoom extends Application {
 
 	@Override
 	protected void onPageSwitched() {
-		if (client != null) {
-			client.removeListener(listener);
-			client.closeConnection();
+		disconnect();
+		try {
+			stopServer();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		if (server != null)
-			try {
-				server.stop();
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
 	}
 
-	private void parseCommand(String cmd, final String[] args) {
+	private static final String ERROR_LOG_NAME = "[ERR]";
+
+	private void printError(String errorText) {
+		println(ERROR_LOG_NAME + ": " + errorText, Color.FIREBRICK);
+	}
+
+	private void sendingMessageNotification() {
+		ApplicationManager.spawnLabelAtMousePos("Sending...", SUCCESS_COLOR);
+	}
+
+	@Override
+	protected void commandInput(String cmd, String... args) {
+
 		final CommandMessage msg = new CommandMessage(cmd, args);
 
 		if (cmd.startsWith("/")) {
 			if (args != null)
 				for (final String s : args)
 					cmd += " " + s;
-			sendMessage(cmd);
-			sendingMessageNotification();
+			if (connected()) {
+				send(cmd);
+				sendingMessageNotification();
+			} else {
+				printError("You can't send messages without being connected to a server.");
+			}
 			return;
 		}
 
 		if (cmd.equalsIgnoreCase("setname") || cmd.equalsIgnoreCase("set-name"))
-			if (args == null || args.length == 0 || args[0].trim().isEmpty())
-				printLineToConsole("Command usage: /setname (name)", Color.RED);
+			if (args.length == 0 || args[0].trim().isEmpty())
+				println("Command usage: /setname (name)", Color.RED);
 			else {
-				user = args[0];
-				printLineToConsole("Your name has been changed to: " + user, Color.AQUA);
-				send(msg);
+				username = args[0];
+				println("Your name has been changed to: " + username, Color.AQUA);
+				rawSend(msg);
 			}
 		else if (cmd.equalsIgnoreCase("start-server") || cmd.equalsIgnoreCase("startserver")) {
-			if (!canCreateServer()) {
+			if (hostingServer()) {
 				println("The server already exists!", ERROR_COLOR);
 				print("Use ", ERROR_COLOR);
 				print("/stop-server ", Color.RED);
@@ -436,9 +297,9 @@ public class ChatRoom extends Application {
 			} else
 				try {
 					if (args != null && args.length > 0)
-						createServer(Short.parseShort(args[0]));
+						startServer(Short.parseShort(args[0]));
 					else
-						createServer();
+						startServer();
 					println("The server was created successfully!", SUCCESS_COLOR);
 				} catch (final IOException e) {
 					println("The server could not be created! (Perhaps the port number is taken :(  )", ERROR_COLOR);
@@ -449,9 +310,16 @@ public class ChatRoom extends Application {
 				}
 
 		} else if (cmd.equalsIgnoreCase("stopserver") || cmd.equalsIgnoreCase("stop-server")) {
-			if (isServerOpen()) {
-				closeServer();
-				println("The server is being closed...", SUCCESS_COLOR);
+			STOP_SERVER: if (hostingServer()) {
+				try {
+					stopServer();
+					println("The server is being closed...", SUCCESS_COLOR);
+				} catch (IOException e) {
+					printError("Failed to close the server...");
+					e.printStackTrace();
+					break STOP_SERVER;
+				}
+				println("The server was closed successfully.", SUCCESS_COLOR);
 			} else {
 				println("The server wasn't open...", ERROR_COLOR);
 				print("Use ", ERROR_COLOR);
@@ -500,15 +368,16 @@ public class ChatRoom extends Application {
 					"Connects to the specified server if you're not already connected to one. The port is optional, and defaults to 25000.");
 			showHelp.execute("disconnect", "Disconnects from a server, if you are connected to one.");
 			showHelp.execute("clear-screen", "Clears the screen; removes all the messages being displayed.");
+			showHelp.execute("debug {(Text) option}", "Shows some debug information based on the given option.");
 
-			send(msg);
+			rawSend(msg);
 			return;
 		} else if (cmd.equalsIgnoreCase("connect")) {
-			if (args == null || args.length == 0 || args.length > 2) {
+			if (args.length == 0 || args.length > 2) {
 				println("Usage: /connect (address) [port]", ERROR_COLOR);
 				return;
 			}
-			if (client != null) {
+			if (connected()) {
 				println("You are already connected to a server...", ERROR_COLOR);
 				return;
 			}
@@ -517,7 +386,7 @@ public class ChatRoom extends Application {
 				if (strings.length < 2)
 					try {
 						println("Attempting to connect using the default port...", NOTIFICATION_COLOR);
-						setClient(args[0], 25000);
+						connect(args[0]);
 
 						print("Connected to server ", SUCCESS_COLOR);
 						print(args[0] + ":" + 25000, Color.DARKGREEN);
@@ -530,7 +399,7 @@ public class ChatRoom extends Application {
 				else
 					try {
 						println("Attempting to connect...", NOTIFICATION_COLOR);
-						setClient(strings[0], strings[1]);
+						connect(strings[0], Short.parseShort(strings[1]));
 						print("Connected to server ", SUCCESS_COLOR);
 						print(strings[0] + ":" + strings[1], Color.DARKGREEN);
 						println(" successfully.", SUCCESS_COLOR);
@@ -545,7 +414,7 @@ public class ChatRoom extends Application {
 
 				try {
 					println("Attempting to connect...", NOTIFICATION_COLOR);
-					setClient(args[0], args[1]);
+					connect(args[0], Short.parseShort(args[1]));
 					print("Connected to server ", SUCCESS_COLOR);
 					print(args[0] + ":" + args[1], Color.DARKGREEN);
 					println(" successfully.", SUCCESS_COLOR);
@@ -558,18 +427,17 @@ public class ChatRoom extends Application {
 				}
 
 		} else if (cmd.equalsIgnoreCase("disconnect")) {
-			if (client == null) {
+			if (!connected()) {
 				println("You are not connected to a server.", WARNING_COLOR);
-				if (server != null)
+				if (hostingServer())
 					println("\tYou are hosting one though...", WARNING_COLOR);
 			} else {
 				println("Attempting to disconnect...", NOTIFICATION_COLOR);
-				if (server != null)
+				if (hostingServer())
 					println("\tYou're still hosting a server though...", WARNING_COLOR);
 				try {
-					send(msg);
-					client.closeConnection();
-					client = null;
+					rawSend(msg);
+					disconnect();
 				} catch (final Exception e) {
 					println("Failed to close the connection...", ERROR_COLOR);
 					return;
@@ -578,144 +446,35 @@ public class ChatRoom extends Application {
 			}
 		} else if (cmd.equalsIgnoreCase("cls") || cmd.equalsIgnoreCase("clear-screen")) {
 			chatPane.getChildren().clear();
+		} else if (cmd.equalsIgnoreCase("debug")) {
+			if (args.length == 0)
+				printError("Too few arguments. Usage: /debug {(Text) option}");
+			else if (args.length > 1)
+				printError("Too many arguments. Usage: /debug {(Text) option}");
+			else {
+				if (args[0].equalsIgnoreCase("textObjectsReferenced"))
+					println("" + getReferencedTexts(), Color.PEACHPUFF);
+				else
+					printError("Argument unrecognized: '" + args[0] + "'");
+			}
+		} else if (cmd.equalsIgnoreCase("clstream") || cmd.equalsIgnoreCase("clear-stream")) {
+			if (connected()) {
+				getClient().reset();
+				println("Stream cleared");
+			} else {
+				printError("You're not connected to a server.");
+			}
 		} else
 			ApplicationManager.spawnLabelAtMousePos("Unknown Command", ERROR_COLOR);
 
 	}
 
-	public void parseInput(String input) {
-		input = input.trim();
-		final boolean del = false;
-
-		if (input == null || input.isEmpty())
-			return;
-
-		if (input.startsWith("/")) {
-
-			String temp = "";
-			for (final char c : input.toCharArray())
-				if (c == ' ')
-					if (del)
-						continue;
-					else
-						temp += c;
-				else if (c == '\n')
-					continue;
-				else
-					temp += c;
-			input = temp;
-
-			if (history.isEmpty() || !input.equals(history.peek().trim()))
-				history.add(chatBox.getText());
-
-			String cmd;
-			String[] args;
-			if (input.contains(" ")) {
-				cmd = input.substring(1, input.indexOf(" "));
-				input = input.substring(input.indexOf(" ") + 1);
-				args = input.split(" ");
-			} else {
-				cmd = input.substring(1);
-				args = null;
-			}
-			parseCommand(cmd, args);
-		} else {
-			sendMessage(input);
-			sendingMessageNotification();
-			if (history.isEmpty() || !input.equals(history.peek()))
-				history.add(chatBox.getText());
-		}
-		chatBox.setText("");
-	}
-
-	public void print(final String text) {
-		printToConsole(text);
-	}
-
-	public void print(final String text, final Color color) {
-		printToConsole(text, color);
-	}
-
-	public void printLineToConsole(final String text) {
-		printLineToConsole(text, Color.WHITE);
-	}
-
-	public void printLineToConsole(final String line, final Color color) {
-		printToConsole(line + "\n", color);
-	}
-
-	public void println() {
-		printLineToConsole("");
-	}
-
-	public void println(final String text) {
-		printLineToConsole(text);
-	}
-
-	public void println(final String text, final Color color) {
-		printLineToConsole(text, color);
-	}
-
-	public void printNode(final Node node) {
-		chatPane.getChildren().add(node);
-	}
-
-	public void printToConsole(final String text) {
-		printToConsole(text, Color.WHITE);
-	}
-
-	public void printToConsole(final String text, final Color color) {
-		final Text t = new Text(text);
-		t.setFill(color);
-		chatPane.getChildren().add(t);
-	}
-
-	private static final String ERROR_LOG_NAME = "[ERR]";
-
-	private void printError(String errorText) {
-		printLineToConsole(ERROR_LOG_NAME + ": " + errorText, Color.FIREBRICK);
-	}
-
-	private void send(final Message message) {
-		if (client != null)
-			try {
-				client.sendMessage(message);
-			} catch (final IOException e) {
-				throw new RuntimeException(e);
-			}
-	}
-
-	private void sendingMessageNotification() {
-		ApplicationManager.spawnLabelAtMousePos("Sending...", SUCCESS_COLOR);
-	}
-
-	private void sendMessage(final String message) {
-		try {
-			if (client != null)
-				client.sendMessage(new ChatRoomMessage(message, user == null ? "" : user, new Date().getTime()));
-			else
-				println("You can't send messages without being connected to a server! See /help for details...",
-						ERROR_COLOR);
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	private boolean setClient(final String hostname, final int port) throws UnknownHostException, IOException {
-		if (client != null)
-			return false;
-		client = new Client(hostname, port);
-		client.addListener(listener);
-		return true;
-	}
-
-	private boolean setClient(final String hostname, final String port)
-			throws NumberFormatException, UnknownHostException, IOException {
-		if (client != null)
-			return false;
-		client = new Client(hostname, Short.parseShort(port));
-		client.addListener(listener);
-		return true;
+	@Override
+	protected void textInput(String message) {
+		if (connected())
+			send(message);
+		else
+			printError("You can't send messages without being connected to a server.");
 	}
 
 }

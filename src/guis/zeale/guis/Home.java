@@ -19,6 +19,7 @@ import krow.pages.ScrollMenu;
 import kröw.core.Kröw;
 import kröw.gui.Application;
 import kröw.gui.ApplicationManager;
+import zeale.guis.chatroom.ChatRoom;
 import zeale.guis.developer_page.DeveloperApp;
 import zeale.guis.math_app.MathApp;
 import zeale.guis.math_app.controllers.Calculator;
