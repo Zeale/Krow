@@ -18,46 +18,15 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import krow.guis.GUIHelper;
-import krow.guis.chatroom.messages.ChatRoomMessage;
 import krow.guis.chatroom.messages.CommandMessage;
 import krow.guis.chatroom.messages.ImageMessage;
 import kröw.callables.VarArgsTask;
-import kröw.connections.messages.Message;
 import kröw.core.Kröw;
 import kröw.gui.Application;
 import kröw.gui.ApplicationManager;
 
 public class ChatRoom extends ConsoleWindow {
-
-	private static class ChatRoomText {
-		private final ChatRoomMessage message;
-
-		public ChatRoomText(final ChatRoomMessage message) {
-			this.message = message;
-		}
-
-		public void add(final TextFlow pane) {
-			final Text name = new Text();
-			if (message.getAuthor().isEmpty()) {
-				name.setText("Unnamed");
-				// TODO Ask server to send color from a queue
-				name.setFill(ERROR_COLOR);
-			} else {
-				name.setText(message.getAuthor());
-				name.setFill(Color.LIGHTGOLDENRODYELLOW);
-			}
-			final Text splitter = new Text(" > ");
-			final Text message = new Text(this.message.getText() + "\n");
-			message.setFill(Color.WHITE);
-			splitter.setFill(Color.BLUE);
-
-			pane.getChildren().addAll(name, splitter, message);
-
-		}
-
-	}
 
 	private static final Color NOTIFICATION_COLOR = Color.LIGHTBLUE, ERROR_COLOR = Color.FIREBRICK,
 			SUCCESS_COLOR = Color.GREEN, WARNING_COLOR = Color.GOLD;
@@ -140,7 +109,7 @@ public class ChatRoom extends ConsoleWindow {
 				Dragboard board = event.getDragboard();
 				if (board.hasImage()) {
 					try {
-						send(new ImageMessage(board.getImage()));
+						rawSend(new ImageMessage(board.getImage()));
 						event.setDropCompleted(true);
 					} catch (Exception e) {
 						printError("There was an error sending the image...");
@@ -217,10 +186,13 @@ public class ChatRoom extends ConsoleWindow {
 						chatBox.appendText("\n");
 					if (!event.isShiftDown()) {
 						event.consume();
-						if (!chatBox.getText().isEmpty())
+						if (!chatBox.getText().isEmpty()) {
 							// TODO Move this up to superclass.
+
+							if (history.isEmpty() || !chatBox.getText().equals(history.peek().trim()))
+								history.add(chatBox.getText());
 							handleUserInput(chatBox.getText());
-						else
+						} else
 							emptyMessageWarning();
 					}
 				} else if (event.getCode().equals(KeyCode.LEFT)) {
@@ -308,31 +280,12 @@ public class ChatRoom extends ConsoleWindow {
 		println(ERROR_LOG_NAME + ": " + errorText, Color.FIREBRICK);
 	}
 
-	private void send(final Message message) {
-		if (connected())
-			// TODO Fix
-			// client.sendMessage(message);
-			;
-	}
-
 	private void sendingMessageNotification() {
 		ApplicationManager.spawnLabelAtMousePos("Sending...", SUCCESS_COLOR);
 	}
 
-	private void sendTextMessage(final String message) {
-
-		if (connected())
-			// TODO Fix
-			// client.sendMessage(new ChatRoomMessage(message, user == null ? "" : user, new
-			// Date().getTime()));
-			;
-		else
-			println("You can't send messages without being connected to a server! See /help for details...",
-					ERROR_COLOR);
-	}
-
 	@Override
-	protected void handleCommand(String cmd, String... args) {
+	protected void commandInput(String cmd, String... args) {
 
 		final CommandMessage msg = new CommandMessage(cmd, args);
 
@@ -340,8 +293,12 @@ public class ChatRoom extends ConsoleWindow {
 			if (args != null)
 				for (final String s : args)
 					cmd += " " + s;
-			sendTextMessage(cmd);
-			sendingMessageNotification();
+			if (connected()) {
+				send(cmd);
+				sendingMessageNotification();
+			} else {
+				printError("You can't send messages without being connected to a server.");
+			}
 			return;
 		}
 
@@ -351,7 +308,7 @@ public class ChatRoom extends ConsoleWindow {
 			else {
 				username = args[0];
 				println("Your name has been changed to: " + username, Color.AQUA);
-				send(msg);
+				rawSend(msg);
 			}
 		else if (cmd.equalsIgnoreCase("start-server") || cmd.equalsIgnoreCase("startserver")) {
 			if (hostingServer()) {
@@ -434,7 +391,7 @@ public class ChatRoom extends ConsoleWindow {
 			showHelp.execute("disconnect", "Disconnects from a server, if you are connected to one.");
 			showHelp.execute("clear-screen", "Clears the screen; removes all the messages being displayed.");
 
-			send(msg);
+			rawSend(msg);
 			return;
 		} else if (cmd.equalsIgnoreCase("connect")) {
 			if (args == null || args.length == 0 || args.length > 2) {
@@ -500,7 +457,7 @@ public class ChatRoom extends ConsoleWindow {
 				if (hostingServer())
 					println("\tYou're still hosting a server though...", WARNING_COLOR);
 				try {
-					send(msg);
+					rawSend(msg);
 					disconnect();
 				} catch (final Exception e) {
 					println("Failed to close the connection...", ERROR_COLOR);
@@ -516,15 +473,11 @@ public class ChatRoom extends ConsoleWindow {
 	}
 
 	@Override
-	protected void handleInput(String rawInput) {
-		if (history.isEmpty() || !rawInput.equals(history.peek().trim()))
-			history.add(chatBox.getText());
-	}
-
-	@Override
-	protected void handleMessage(String message) {
-		// TODO Auto-generated method stub ~ Implement this
-
+	protected void textInput(String message) {
+		if (connected())
+			send(message);
+		else
+			printError("You can't send messages without being connected to a server.");
 	}
 
 }

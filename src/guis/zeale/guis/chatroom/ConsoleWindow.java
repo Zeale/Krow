@@ -3,6 +3,8 @@ package zeale.guis.chatroom;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.UnknownHostException;
+import java.util.UUID;
+import java.util.WeakHashMap;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -13,13 +15,16 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import krow.guis.chatroom.ChatRoomMessage;
 import krow.guis.chatroom.ChatRoomServer;
+import krow.guis.chatroom.UserMessage;
 import kröw.annotations.AutoLoad;
 import kröw.annotations.LoadTime;
 import kröw.connections.Client;
 import kröw.connections.ClientListener;
 import kröw.connections.Server;
 import kröw.connections.messages.Message;
+import kröw.connections.messages.ReplyMessage;
 import kröw.gui.Application;
 
 public abstract class ConsoleWindow extends Application {
@@ -28,6 +33,14 @@ public abstract class ConsoleWindow extends Application {
 
 	private static Client client;
 	private static Server server;
+
+	public Client getClient() {
+		return client;
+	}
+
+	public Server getServer() {
+		return server;
+	}
 
 	@AutoLoad(LoadTime.PROGRAM_EXIT)
 	private static void stopServer_Impl() {
@@ -54,7 +67,7 @@ public abstract class ConsoleWindow extends Application {
 	 *         <code>false</code> otherwise.
 	 */
 	public boolean hostingServer() {
-		return server == null;
+		return server != null;
 	}
 
 	/**
@@ -81,7 +94,15 @@ public abstract class ConsoleWindow extends Application {
 	}
 
 	public boolean startServer() throws IOException {
-		return startServer(DEFAULT_SERVER_PORT);
+
+		boolean success = startServer(DEFAULT_SERVER_PORT);
+		if (!success)
+			return false;
+
+		// If we're not already connected to a server, connect to the one we just made.
+		if (!connected())
+			connect(null);// null makes this computer connect to itself.
+		return true;
 	}
 
 	public boolean startServer(int port) throws IOException {
@@ -95,6 +116,7 @@ public abstract class ConsoleWindow extends Application {
 		if (!hostingServer())
 			return false;
 		server.stop();
+		server = null;
 		return true;
 	}
 
@@ -153,16 +175,41 @@ public abstract class ConsoleWindow extends Application {
 		chatPane.getChildren().add(t);
 	}
 
+	/**
+	 * Called when an object <b>that isn't a {@link Message}</b> is received.
+	 * 
+	 * @param obj
+	 *            The received object.
+	 */
 	protected void receivedObj(Serializable obj) {
 	}
 
+	/**
+	 * Called when a {@link Message} of any type is received.
+	 * 
+	 * @param msg
+	 *            The received {@link Message}.
+	 */
 	protected void receivedMsg(Message msg) {
+		if (msg instanceof ReplyMessage)
+			if (SENT_MESSAGES_MAP.containsKey(((ReplyMessage) msg).getId()))
+				SENT_MESSAGES_MAP.get(((ReplyMessage) msg).getId()).receivedReply();
+		if (msg instanceof UserMessage) {
+			Text name = new Text(((UserMessage) msg).sender), arrow = new Text(" > "),
+					text = new Text(((UserMessage) msg).getText());
+			name.setFill(Color.RED);
+			arrow.setFill(Color.WHITE);
+			text.setFill(Color.BLUE);
+			printNode(name);
+			printNode(arrow);
+			printNode(text);
+			println();
+		}
 	}
 
 	protected final void handleUserInput(String input) {
 		input = input.trim();
 		final boolean del = false;
-		handleInput(input);
 
 		if (input == null || input.isEmpty())
 			return;
@@ -192,9 +239,9 @@ public abstract class ConsoleWindow extends Application {
 				cmd = input.substring(1);
 				args = null;
 			}
-			handleCommand(cmd, args);
+			commandInput(cmd, args);
 		} else {
-			handleMessage(input);
+			textInput(input);
 		}
 		chatBox.setText("");
 	}
@@ -214,7 +261,7 @@ public abstract class ConsoleWindow extends Application {
 	 * @param args
 	 *            Each argument of the command.
 	 */
-	protected abstract void handleCommand(String name, String... args);
+	protected abstract void commandInput(String name, String... args);
 
 	/**
 	 * Called by <b>{@link #handleUserInput(String)}</b>. Handles a basic message
@@ -223,30 +270,83 @@ public abstract class ConsoleWindow extends Application {
 	 * @param message
 	 *            The text that the user submitted.
 	 */
-	protected abstract void handleMessage(String message);
+	protected abstract void textInput(String message);
+
+	public void send(String text) {
+		new ChatRoomText(text).send();
+	}
+
+	private static final WeakHashMap<UUID, ChatRoomText> SENT_MESSAGES_MAP = new WeakHashMap<>();
 
 	/**
-	 * <p>
-	 * This method is called before {@link #handleCommand(String, String...)} or
-	 * {@link #handleMessage(String)}, whichever gets called. It is also called
-	 * once, each time either one of those methods are called.
-	 * <p>
-	 * This method can be overridden to provide custom functionality when the user
-	 * submits some form of text. The text is <b>first {@link String#trim()
-	 * trimmed}</b> so that there is no leading or trailing whitespace.
-	 * <p>
-	 * If the user submits a command, this method is called then
-	 * {@link #handleCommand(String, String...)} is called. If the user submits a
-	 * regular piece of text, this method is called then
-	 * {@link #handleMessage(String)} is called.
-	 * <p>
-	 * The {@link #chatBox} is not cleared until this method and
-	 * {@link #handleCommand(String, String...)}/{@link #handleMessage(String)} are
-	 * called.
+	 * An instance of this class should be created to give basic messages that the
+	 * user sends to a server.
 	 * 
-	 * @param rawInput
-	 *            The user's input, trimmed, but edited in no other way.
+	 * @author Zeale
+	 *
 	 */
-	protected void handleInput(String rawInput) {
+	private class ChatRoomText {
+
+		private UUID id = UUID.randomUUID();
+		{
+			SENT_MESSAGES_MAP.put(id, this);
+		}
+
+		private class ReplyText extends Text {
+			{
+				setOpacity(0.5);
+			}
+
+			public void receivedReply() {
+				setOpacity(1);
+			}
+
+			public void noReply() {
+				setStrikethrough(true);
+			}
+		}
+
+		public void receivedReply() {
+			message.receivedReply();
+		}
+
+		private ReplyText message = new ReplyText();
+		private Text name = new Text(username), arrow = new Text(" > ");
+
+		/**
+		 * Prints each text node contained to the console with the correct coloring and
+		 * sends a message to the server. Once a reply has been received, the message
+		 * that was printed to the console will become fully opaque.
+		 */
+		public void send() {
+			name.setFill(Color.RED);
+			arrow.setFill(Color.WHITE);
+			message.setFill(Color.LIGHTBLUE);
+			printNode(name);
+			printNode(arrow);
+			printNode(message);
+			println();
+			rawSend(new ChatRoomMessage(message.getText(), name.getText(), id));
+		}
+
+		public ChatRoomText(String message) {
+			if (!connected())
+				throw new RuntimeException();
+			this.message.setText(message);
+		}
+
 	}
+
+	public boolean rawSend(Serializable object) {
+		if (connected())
+			try {
+				getClient().sendObject(object);
+				return true;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+		return false;
+	}
+
 }
