@@ -2,6 +2,7 @@ package zeale.guis.chatroom;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.net.UnknownHostException;
 import java.util.UUID;
 import java.util.WeakHashMap;
@@ -134,7 +135,7 @@ public abstract class ConsoleWindow extends Application {
 		return true;
 	}
 
-	protected String username;
+	protected String username = "Unnamed";
 
 	@FXML
 	protected TextFlow chatPane;
@@ -231,13 +232,17 @@ public abstract class ConsoleWindow extends Application {
 
 			String cmd;
 			String[] args;
+			// If there are arguments...
 			if (input.contains(" ")) {
+				// Get the actual command
 				cmd = input.substring(1, input.indexOf(" "));
+				// Get everything else
 				input = input.substring(input.indexOf(" ") + 1);
+				// Split "everything else" by spaces, and return the array.
 				args = input.split(" ");
 			} else {
 				cmd = input.substring(1);
-				args = null;
+				args = new String[0];
 			}
 			commandInput(cmd, args);
 		} else {
@@ -247,8 +252,12 @@ public abstract class ConsoleWindow extends Application {
 	}
 
 	/**
+	 * <p>
 	 * Called by <b>{@link #handleUserInput(String)}</b>. This method will handle a
 	 * command and its arguments however its subclass desires.
+	 * <p>
+	 * If there are no arguments, <code>args</code> is an array of length zero.
+	 * <code>args</code> will not be null.
 	 * 
 	 * @param name
 	 *            The command's name. For example,
@@ -278,6 +287,10 @@ public abstract class ConsoleWindow extends Application {
 
 	private static final WeakHashMap<UUID, ChatRoomText> SENT_MESSAGES_MAP = new WeakHashMap<>();
 
+	protected final int getReferencedTexts() {
+		return SENT_MESSAGES_MAP.size();
+	}
+
 	/**
 	 * An instance of this class should be created to give basic messages that the
 	 * user sends to a server.
@@ -286,10 +299,46 @@ public abstract class ConsoleWindow extends Application {
 	 *
 	 */
 	private class ChatRoomText {
-
+		/**
+		 * <p>
+		 * So, apparently, {@link WeakHashMap}s use {@link WeakReference}s to refer to
+		 * their keys, not their values. This means that {@link ChatRoomText}s can't
+		 * store a strong reference to their UUID, otherwise the UUID can't be garbage
+		 * collected, and, thus, {@link ChatRoomText}s will remain in the map (as a
+		 * value, by a strong reference), and can't be garbage collected themselves.
+		 * <p>
+		 * Once we're ready to discard this {@link ChatRoomText}, {@link #id} needs to
+		 * be set to null. We can't use a {@link WeakReference} here because then the
+		 * UUID itself would be up for garbage collection before a response is received
+		 * from the server. If the UUID were to be collected before a response was
+		 * received, this {@link ChatRoomText} object would be removed from the
+		 * {@link ConsoleWindow#SENT_MESSAGES_MAP} so when a response is received from
+		 * the server (which contains a UUID), we wouldn't be able to find a matching
+		 * {@link ChatRoomText} in the map, since its key was garbage collected. The
+		 * text itself wouldn't be garbage collected, since some of its strongly
+		 * referenced objects would still show on the screen for the user, (until they
+		 * run /cls that is), but it would stay translucent, or would have striketrhough
+		 * enabled once {@link ReplyText#noReply()} is called.
+		 * <p>
+		 * See {@link #readyForGC()}.
+		 */
 		private UUID id = UUID.randomUUID();
+
 		{
 			SENT_MESSAGES_MAP.put(id, this);
+		}
+
+		/**
+		 * Sets this {@link ChatRoomText} ready for garbage collection. Unless some
+		 * weird stuff takes place, this {@link ChatRoomText} will only be prevented
+		 * from garbage collection by being shown on the screen, so if the user does
+		 * /cls and clicks Free RAM in the side menu, this {@link ChatRoomText} should
+		 * be garbage collected.
+		 * 
+		 * @see {@link #id} for more info.
+		 */
+		private void readyForGC() {
+			id = null;
 		}
 
 		private class ReplyText extends Text {
@@ -299,10 +348,12 @@ public abstract class ConsoleWindow extends Application {
 
 			public void receivedReply() {
 				setOpacity(1);
+				readyForGC();
 			}
 
 			public void noReply() {
 				setStrikethrough(true);
+				readyForGC();
 			}
 		}
 
@@ -333,6 +384,11 @@ public abstract class ConsoleWindow extends Application {
 			if (!connected())
 				throw new RuntimeException();
 			this.message.setText(message);
+		}
+
+		@Override
+		protected void finalize() throws Throwable {
+			System.out.println("Cleared");
 		}
 
 	}

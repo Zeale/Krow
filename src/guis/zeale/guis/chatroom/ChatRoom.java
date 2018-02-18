@@ -303,7 +303,7 @@ public class ChatRoom extends ConsoleWindow {
 		}
 
 		if (cmd.equalsIgnoreCase("setname") || cmd.equalsIgnoreCase("set-name"))
-			if (args == null || args.length == 0 || args[0].trim().isEmpty())
+			if (args.length == 0 || args[0].trim().isEmpty())
 				println("Command usage: /setname (name)", Color.RED);
 			else {
 				username = args[0];
@@ -390,11 +390,12 @@ public class ChatRoom extends ConsoleWindow {
 					"Connects to the specified server if you're not already connected to one. The port is optional, and defaults to 25000.");
 			showHelp.execute("disconnect", "Disconnects from a server, if you are connected to one.");
 			showHelp.execute("clear-screen", "Clears the screen; removes all the messages being displayed.");
+			showHelp.execute("debug {(Text) option}", "Shows some debug information based on the given option.");
 
 			rawSend(msg);
 			return;
 		} else if (cmd.equalsIgnoreCase("connect")) {
-			if (args == null || args.length == 0 || args.length > 2) {
+			if (args.length == 0 || args.length > 2) {
 				println("Usage: /connect (address) [port]", ERROR_COLOR);
 				return;
 			}
@@ -467,6 +468,24 @@ public class ChatRoom extends ConsoleWindow {
 			}
 		} else if (cmd.equalsIgnoreCase("cls") || cmd.equalsIgnoreCase("clear-screen")) {
 			chatPane.getChildren().clear();
+		} else if (cmd.equalsIgnoreCase("debug")) {
+			if (args.length == 0)
+				printError("Too few arguments. Usage: /debug {(Text) option}");
+			else if (args.length > 1)
+				printError("Too many arguments. Usage: /debug {(Text) option}");
+			else {
+				if (args[0].equalsIgnoreCase("textObjectsReferenced"))
+					println("" + getReferencedTexts(), Color.PEACHPUFF);
+				else
+					printError("Argument unrecognized: '" + args[0] + "'");
+			}
+		} else if (cmd.equalsIgnoreCase("clstream") || cmd.equalsIgnoreCase("clear-stream")) {
+			if (connected()) {
+				getClient().reset();
+				println("Stream cleared");
+			} else {
+				printError("You're not connected to a server.");
+			}
 		} else
 			ApplicationManager.spawnLabelAtMousePos("Unknown Command", ERROR_COLOR);
 
