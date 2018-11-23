@@ -13,8 +13,6 @@ import java.nio.file.Paths;
 import kröw.core.Kröw;
 import kröw.gui.ApplicationManager;
 import zeale.guis.Statistics;
-import zeale.guis.chatroom.ChatRoom;
-import zeale.guis.chatroom.ConsoleWindow;
 
 public class ProgramSettings implements Serializable {
 

@@ -4,7 +4,7 @@
 	<classpathentry kind="src" path="src/guis"/>
 	<classpathentry kind="src" path="src/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/FX-API"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Window Builder API"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/FXTools"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

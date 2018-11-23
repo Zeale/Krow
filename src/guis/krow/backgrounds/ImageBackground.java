@@ -120,7 +120,7 @@ public class ImageBackground extends Background {
 		if (!nodes.isEmpty()) {
 			Animator<ImageView> img = nodes.get(0);
 			if (hasUnderlyingPane())
-				getCurrentPane().getChildren().remove(img);
+				getCurrentPane().getChildren().remove(img.getNode());
 			img.dispose();
 			nodes.remove(img);
 		}
@@ -128,10 +128,12 @@ public class ImageBackground extends Background {
 
 	protected final void addImage(ImageView img) {
 		Animator<ImageView> animator = new Animator<ImageView>(img);
-		img.setTranslateX(Math.random() * (getCurrentPane().getWidth() == 0
-				? Kröw.getSystemProperties().getScreenWidth() : getCurrentPane().getWidth()));
-		img.setTranslateY(Math.random() * (getCurrentPane().getHeight() == 0
-				? Kröw.getSystemProperties().getScreenHeight() : getCurrentPane().getHeight()));
+		img.setTranslateX(
+				Math.random() * (getCurrentPane().getWidth() == 0 ? Kröw.getSystemProperties().getScreenWidth()
+						: getCurrentPane().getWidth()));
+		img.setTranslateY(
+				Math.random() * (getCurrentPane().getHeight() == 0 ? Kröw.getSystemProperties().getScreenHeight()
+						: getCurrentPane().getHeight()));
 
 		animator.getTranslator().setByX(calculateByX(img.getTranslateX()));
 		animator.getTranslator().setByY(calculateByY(img.getTranslateY()));
@@ -159,6 +161,7 @@ public class ImageBackground extends Background {
 			return;
 		Collection<Node> nodesToRemove = new ArrayList<>();
 		for (Node n : getCurrentPane().getChildren())
+			// Fix?
 			if (n.getProperties().get(this) == uniqueIdentifier && !nodes.contains(n))
 				nodesToRemove.add(n);
 		getCurrentPane().getChildren().removeAll(nodesToRemove);

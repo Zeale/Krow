@@ -206,8 +206,9 @@ public final class ApplicationManager {
 	}
 
 	public static <W> W setScene(URL fxmlFile, W controller) {
-		FXMLLoader loader = getNewLoader(fxmlFile);
-		loader.setController(controller);
+		FXMLLoader loader = new FXMLLoader(fxmlFile);
+		if (controller != null)
+			loader.setController(controller);
 		try {
 			stage.getScene().setRoot(loader.load());
 			return loader.getController();
